@@ -1,0 +1,764 @@
+
+
+
+
+
+/*
+     FILE ARCHIVED ON 16:19:27 Dec 22, 2015 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 8:18:41 Apr 25, 2016.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+
+
+/* global settings */
+
+
+/* SETUP STANDARD FONT SIZE WHERE ALL RELATIVE MEASURES APPLY TO */
+body, table, td, tr, ul {
+	font-size : 13px;
+}
+
+
+body {
+	min-width:880px;
+	min-height:1500px;
+    background-color: #ffffff;
+    color: #373534;
+	margin:0px;
+	font-family: Arial,"Helvetica Narrow",sans-serif;
+}
+
+
+a:link    { text-decoration:none; color:#2a6ebb; }
+a:visited { text-decoration:none; color:#2a6ebb; }
+a:hover   { text-decoration:underline; color:#2a6ebb; }
+a:active  { text-decoration:underline; color:#2a6ebb; }
+
+
+h1, h2, h3, h4, h5, h6 {
+	clear: both;
+    color: #373534;
+    background-color: #ebebeb;
+    margin-left: 10px;
+    margin-right: 10px;
+   	font-family: 'Times New Roman', Times, Georgia, serif; /* CD Uni Freiburg */
+}
+
+h1 {
+    background-color: #cacac8;
+	font-size:100%;
+	font-weight:bold;
+	padding:3pt 0pt 3pt 12pt;
+	margin-top:24px;
+	margin-left:0px;
+	margin-right:0px;
+}
+
+h2 { 
+	font-size:100%; 
+	margin-top:12pt; 
+	font-weight:bold; 
+	padding: 2pt 2pt 2pt 10pt;
+/*	border-bottom: 1px solid #ebebeb; */ 
+}
+
+h3 { 
+	  font-weight:normal;
+	  background-color:#ebebeb;
+	  position:relative;
+	  padding:0pt;
+	  font-size:100%;
+	  border-bottom-style:solid;
+	  border-bottom-color:#aaaaaa;
+	  border-bottom-width:0.5pt;
+	  padding: 0pt 0pt 0pt 10pt;
+	  color:#555;
+}
+
+
+
+
+/*
+ * ------------------------------------------------------
+ * class menubox
+ *
+ */
+
+
+div.menubox {
+	width:150px;
+	max-width:150px;
+/*	background-color:#cacac8;*/
+    background-color: #ebebeb;
+	color:#373534;
+	position:absolute;
+	top:220px; left:2px;
+	font-size:14px;
+	margin: 0px;
+}
+
+    
+div.menubox h1 {
+	color: white;
+	margin: 0px;
+	background-color:#003592;
+	border-top:solid 1px #ffffff;
+	padding: 2px 0px 2px 10px;
+}
+    
+div.menubox h2 {
+	margin: 0px;
+	background-color: #cacac8;
+	border-top:solid 1px #ffffff;
+	padding: 2px 0px 2px 10px;
+}
+
+div.menubox div.spacer {
+	background-color:white;
+	height:5px;
+	margin: 0px;
+}
+	
+div.menubox ul {
+	list-style:none;
+	margin:0;
+	width:150px;
+	padding:0;
+}
+
+div.menubox ul li {
+	width:150px;
+	min-width:150px;
+	border-top:solid 1px #ffffff;
+}
+
+
+.menusubtitle {
+	font-size: 70%;
+	color: #696969;
+	padding-left: 2em;
+	display: block; 
+	padding-top: 5px;
+}
+
+
+a.menu:link    { color: #373534; font-weight:normal; }
+a.menu:visited { color: #373534; font-weight:normal; }
+a.menu:active  { color: #373534; font-weight:normal; }
+a.menu:hover   { color: #ffffff; font-weight:normal; background-color: #003592; }
+a.menu:hover * { color: #ffffff; font-weight:normal; background-color: #003592; }
+
+a.menu {
+	display: block;
+	width:142px;
+	font-family: "Verdana", Arial, Helvetica, sans-serif;
+	min-width:142px;
+	text-decoration:none;
+	font-weight:normal;
+	padding: 2px 0px 2px 10px;
+}
+
+a.menuSelected:link    { color: #ffffff; font-weight:normal; background-color: #2a6ebb;}
+a.menuSelected:link *  { color: #ffffff; font-weight:normal; background-color: #2a6ebb;}
+a.menuSelected:visited { color: #ffffff; font-weight:normal; background-color: #2a6ebb; }
+a.menuSelected:visited * { color: #ffffff; font-weight:normal; background-color: #2a6ebb; }
+a.menuSelected:active  { color: #ffffff; font-weight:normal; background-color: #2a6ebb; }
+a.menuSelected:active * { color: #ffffff; font-weight:normal; background-color: #2a6ebb; }
+a.menuSelected:hover   { color: #ffffff; font-weight:normal; background-color: #003592; }
+a.menuSelected:hover * { color: #ffffff; font-weight:normal; background-color: #003592; }
+
+a.menuSelected {
+	color: #ffffff;
+	display: block;
+	width:142px;
+	font-family: "Verdana", Arial, Helvetica, sans-serif;
+	min-width:142px;
+	text-decoration:none;
+	font-weight:normal;
+	padding: 2px 0px 2px 10px;
+}
+
+/*
+  IE compatibility hack : 
+    the standard adds padding and margin to width
+    BUT IE uses width as full width and substract padding and margin
+*/
+* html a.menu {
+        width: 150px;
+        min-width: 150px;
+}
+
+
+
+
+
+/*
+ * ------------------------------------------------------
+ * class content box
+ *
+ */
+
+div.topbar {
+	width: 880px;
+	height: 19px;
+	background-color: #e2e1dd;
+	position:absolute;
+	top:134px; left:200px;
+	margin:0px;
+}
+a.language {
+	border:0px;
+	position:relative;
+	top:2px; left: 870px;
+}
+
+div.content {
+	position:absolute;
+	top:153px; left:200px;
+	margin:0px;
+	width: 880px;
+	padding: 0px;
+	text-align:left;
+	background-color: #f2f3f1;
+}
+
+div.content div, h1, h2, h3, h4, hr, table {
+	margin: 15px;
+}
+
+div.content p {
+	margin: 15px 30px 15px 30px;
+}
+
+.content div.text {
+	margin: 15px 30px 15px 30px;
+}
+
+div.content h1:first-child {
+    margin: 0px;
+}
+
+.inputform form div {
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+.preFASTA {
+	color: Blue;
+	padding-left:30px;
+}
+
+
+
+/*
+ * ------------------------------------------------------
+ * class headerbox
+ *
+ */
+
+div.logoboxALU {
+	position:absolute; top:14px; left:131px;
+}
+
+div.logoboxBIF {
+	height:100%; 
+	position:absolute; top:0px; left:610px;
+} 
+
+div.logoboxIFF {
+	height:100%; 
+	position:absolute; top:0px; left:730px;
+} 
+
+div.logobargray {
+	position:absolute; top:130px; left:0px;
+	width:127px;
+	height:4px;
+	max-height:4px;
+	min-height:4px;
+	background-color:#cccccc;
+	/*background-image: url(/web/20151222161927/http://www.bioinf.uni-freiburg.de/pics/alu-gray-bar-10x4.gif);*/
+	background-repeat: repeat;
+}
+
+div.logobarred {
+	position:absolute; top:130px; left:200px;
+	width:17px;
+	height:4px;
+	max-height:4px;
+	min-height:4px;
+	background-color:#c1002b;
+	/*background-image: url(/web/20151222161927/http://www.bioinf.uni-freiburg.de/pics/alu-red-bar-17x4.gif);*/
+	background-repeat: repeat;
+}
+
+div.headerbox {
+	height:130px;
+	max-height:130px;
+	width:880px;
+	position:absolute;
+	 top:0px; left:200px;
+	font-family: "Times New Roman", Times, Georgia, serif;
+	font-weight: bold;
+	background-color:#003592;
+	background-image: url(/web/20151222161927/http://rna.informatik.uni-freiburg.de/resources/images/alu-siegel-93x55-blau.png);
+/* 	background-image: url(/web/20151222161927/http://www.bioinf.uni-freiburg.de/pics/alu-siegel-93x55-blau.png); */
+	background-repeat: no-repeat;
+	background-position: bottom left; 
+}
+
+
+/*
+ * ------------------------------------------------------
+ * general class settings
+ *
+ */
+
+
+td.header {
+	background-color:#d8dec8;
+	font-size:120%;
+	border-bottom: 1px dashed #aaa;
+}
+
+.hide {
+	display:none;
+}
+
+.grey {
+	color:#555;
+}
+
+.black {
+  	color:#000;
+}
+
+.grey_bold {
+	color:#555;
+	font-weight:bold;
+}
+
+.olive_bold {
+	color:#5a6839;
+	font-weight:bold;
+	font-size:15pt;
+}
+
+.bold {
+	font-weight:bold;
+}
+
+.red {
+	color: red;
+}
+.red_bold {
+	color: red;
+	font-weight:bold;
+}
+.redBlink {
+	color: red;
+	text-decoration: blink;
+}
+
+/*
+ * ------------------------------------------------------
+ * taken from old main.css
+ * ------------------------------------------------------
+ *
+ */
+
+img{
+	border-style:none;
+}
+
+span.error {
+	color: red;
+	font-family: "Verdana", Arial, sans-serif; 
+	font-size: 85%;
+	font-weight: bold;
+}
+
+.hr {
+	background: #A7BAEF;
+	height: 1px;
+	padding: 0;
+	overflow: hidden;
+	margin: 1em 0 1em 0;
+}
+
+.footer {
+	text-align: center;
+	clear: both;
+	font-size: 80%;
+	border: 1px solid #C4C4C4;
+	margin-top: 50px;
+	padding: 4px;;
+}
+
+a.whiteLink:hover  {
+	color: white;
+	text-decoration: none;
+}
+
+/* the container that holds all the content below the header */
+.container {
+	background-color: #FFFFFF; 
+	margin: 0 auto 0 auto; 
+	padding-bottom: 0.3em; 
+	width: 1024px;
+}
+
+table.jobDetails {
+	font-size: 80%;
+}
+
+div.jobDetails {
+	text-align:right;
+	font-size:80%;
+}
+
+div.MultiFile-wrap {
+	color: #545454;
+	margin: 0px;
+}
+
+div.MultiFile-list {
+	color: #545454;
+	padding: 2px;
+	font-size: 80%;
+	margin: 0px;
+}
+
+div.row {
+	margin: 10px 0px 10px 0px;
+}
+
+div.rowAdvanced {
+	margin: 10px 0px 10px 0px;
+}
+
+.hybrid {
+	font-family: Courier, monospace;
+	color: Blue;
+	white-space: pre;
+}
+
+div.col {
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW50 {
+	width: 50px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW100 {
+	width: 100px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW150 {
+	width: 150px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW200 {
+	width: 200px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW225 {
+	width: 225px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW250 {
+	width: 250px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW275 {
+	width: 275px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW300 {
+	width: 300px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW350 {
+	width: 350px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW400 {
+	width: 400px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW450 {
+	width: 450px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW500 {
+	width: 500px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW550 {
+	width: 550px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+div.colW600 {
+	width: 600px;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+}
+
+
+/************  result table *********************************/
+	
+#resultTable {
+    border-collapse: collapse;
+    border-bottom: medium none;
+    border-left: 1px solid #C6D5E1;
+    border-top: 1px solid #C6D5E1;
+    width: 100%;
+    margin: 0 auto;
+}
+         
+#resultTable * {font-size: 11px;}
+
+#resultTable th {
+    background-color: #003592;
+    border-color: #FFFFFF -moz-use-text-color #FFFFFF #FFFFFF;
+    border-style: solid none solid solid;
+    border-width: 1px medium 1px 1px;
+    color: white;
+    height: 30px;
+    text-align: left;
+    padding: 5px;
+}
+
+#resultTable th a {   
+ 	color: white;
+    display: block;
+    font-weight: normal;
+   }
+
+#resultTable td {
+    border-bottom: 1px solid #C6D5E1;
+    border-right: 1px solid #C6D5E1;
+    padding: 4px 6px 6px;
+}
+
+
+/*************************************************************/
+
+
+/* TinyTable v3 related CSS */
+#tablewrapper {width:820px; margin-left:0px;}
+#tableheader {width:820px;height:35px; margin-bottom:0px;}
+.search {float:left; padding:6px; border:1px solid #cacac8; background:transparent; margin:0px;}
+#tableheader select {float:left; font-size:12px; width:125px; padding:2px 4px 4px}
+#tableheader input {float:left; font-size:12px; width:225px; padding:2px 4px 4px; margin-left:4px}
+.details {float:right;}
+.details div {float:left; margin-left:15px; font-size:15px}
+.tinytable {width:100%; border-left:1px solid #c6d5e1; border-top:1px solid #c6d5e1; border-bottom:none}
+.tinytable th {background-color:#003592; text-align:left; color:white; border:1px solid #fff; border-right:none; height:35px}
+.tinytable th h3 {font-size:13px; padding:6px 8px 8px}
+.tinytable td {padding:4px 6px 6px; border-bottom:1px solid #c6d5e1; border-right:1px solid #c6d5e1}
+/*.tinytable .head h3 {background:url(/web/20151222161927/http://rna.informatik.uni-freiburg.de/resources/TinyTable/images/sort.gif) 7px center no-repeat; cursor:pointer; padding-left:18px}*/
+.tinytable .desc, .sortable .asc {background-color:#0962ff}
+.tinytable .desc h3 {background:url(/web/20151222161927/http://rna.informatik.uni-freiburg.de/resources/TinyTable/images/desc.gif) 7px center no-repeat; cursor:pointer; padding-left:18px}
+.tinytable .asc h3 {background:url(/web/20151222161927/http://rna.informatik.uni-freiburg.de/resources/TinyTable/images/asc.gif) 7px  center no-repeat; cursor:pointer; padding-left:18px}
+.tinytable .head:hover, .tinytable .desc:hover, .tinytable .asc:hover {color:#fff}
+.tinytable .evenrow td {background:#fff}
+.tinytable .oddrow td {background:#ecf2f6}
+.tinytable td.evenselected {background:#ecf2f6}
+.tinytable td.oddselected {background:#dce6ee}
+.tinytable tfoot {background:#fff; font-weight:bold}
+.tinytable tfoot td {padding:6px 8px 8px}
+#tablefooter {height:50px; margin:0px}
+#tablenav {float:left}
+#tablenav img {cursor:pointer}
+#tablenav div {float:left; margin-right:15px}
+#tablelocation {float:right; font-size:12px}
+#tablelocation select {margin-right:3px}
+#tablelocation div {float:left; margin-left:15px}
+.page {margin-top:2px; font-style:italic}
+.tinytable .oddhoverrow td, .tinytable .evenhoverrow td {background:#C6D5E1}
+.tinytable .oddselectedrow td, .tinytable .evenselectedrow td  {background:#CCFFCC}
+
+
+
+.centered {
+	text-align: center;
+}
+
+textarea.FASTAinput {
+ 	overflow-x: scroll;		/* horizontal lift */ 
+	white-space: pre;		/* no automatic wrap */
+	background-image: url("/web/20151222161927/http://rna.informatik.uni-freiburg.de/resources/images/FASTA.png");
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+
+textarea.textinput {
+ 	overflow-x: scroll;		/* horizontal lift */ 
+	white-space: pre;		/* no automatic wrap */
+}
+
+ul.faqlist {
+	list-style-type:none;
+}
+ul.faqlist li {
+	padding-top: 3px;
+}
+
+pre.interaction {
+	color: Blue;
+	font-family: Courier,monospace;
+ 	overflow-x: auto;		/* horizontal lift */ 
+	white-space: pre;
+	padding: 0 10px 0 10px;
+	text-align: left;
+}
+
+input.numberInput {
+	text-align: right;
+}
+
+input.button_start {
+    background-image: url(/web/20151222161927/http://rna.informatik.uni-freiburg.de/resources/images/button-start.png);
+    background-color: transparent; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: none;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+	height:30px;
+	width:91px;
+    vertical-align: middle; /* align the text vertically centered */
+}
+
+input.button_reset {
+    background-image: url(/web/20151222161927/http://rna.informatik.uni-freiburg.de/resources/images/button-reset.png);
+    background-color: transparent; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: none;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+	height:30px;
+	width:63px;
+    vertical-align: middle; /* align the text vertically centered */
+}
+
+/******   /index.jsp  specific stuff ****************/
+
+div.toolNameBox {
+	width:23%; 
+	text-align: right; 
+	vertical-align: middle; 
+	display: inline-block;*zoom: 1;*display: inline;
+}
+span.toolName {
+	font-size: 30px; 
+	color:#003592; 
+	font-weight:bold; 
+	background-color:white; 
+	border: 1px solid #003592; 
+	padding: 10px;
+}
+div.toolInfoBox {
+	width:45%; 
+	text-align: justify; 
+	vertical-align: middle; 
+	display: inline-block;*zoom: 1;*display: inline;
+}
+div.toolLogoBox {
+	width:17%; 
+	text-align: center; 
+	vertical-align: middle; 
+	display: inline-block;*zoom: 1;*display: inline;
+}
+img.toolLogo {
+	border-style:solid;
+	border-width:1px;
+}
+
+/********** google reCAPTCHA stuff  *************************/
+
+#recaptcha_widget_div {
+	margin:0;
+}
+#recaptcha_area {
+	margin:0;
+}
+
+/******************************************************/
+

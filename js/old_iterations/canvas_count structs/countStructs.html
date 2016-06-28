@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- Last updated 23rd August (02:00 PM) -->
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>RNA algorithms for teaching</title>
+    
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' type='text/css'>
+    <link rel="stylesheet" href="css/joint.min.css"/>
+    <link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="css/dropdown.css"/>
+    <link rel="stylesheet" href="css/index.css"/>
+    <link rel="stylesheet" href="css/corporate-design.css"/>
+
+
+    <!-- RNA tools webserver styles -->
+    <!-- <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> -->
+</head>
+
+<body onload="getFormula_structCount();">
+
+<!-- #########  PAGE MENU  ############## -->
+
+<!-- central content DIV of the RNA tools webserver -->
+<div class="content">
+    <h1>JavaScript Implementation and Visualization of RNA algorithms</h1>
+
+    <div id="inputContainer">
+        <div class="row">
+            <div class="colW200" style="font-size: 120%">RNA sequence:</div>
+            <div class="colW400">
+                <input type="text" id="userInput" maxlength="12" placeholder="Example 'GCACGACG'" style="text-transform:uppercase" onkeyup=chkLength(event) onkeydown='validate(event)'></input>
+            </div>
+        </div>
+
+        <div class="row" >
+            <div class="colW200" style="font-size: 120%">Nussinov recursion:</div><br>
+                <dropdown id="dropdown" class="colW50" >
+                    <ul>
+                        <li id="formula"  value="0"></li>
+                    </ul>
+                </dropdown>
+
+        </div>
+
+        <div class="row">
+            <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
+            <div class="colW400">
+                <select name="LoopLength" id="looplength" onchange=chngDropdown() style="width:40px;">
+                    <option value=0 selected="selected">0</option>
+                    <option value=1>1</option>
+                    <option value=2>2</option>
+                    <option value=3>3</option>
+                    <option value=4>4</option>
+                    <option value=5>5</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="colW50" onclick="buttonCheck()" style="display:inline-block; position:relative; pointer-events: auto">
+                <!--<button id="GO" onclick="presequencecheck()" onload='$("#GO").attr("disabled","disabled");'>Go!</button>-->
+                <button id="GO" onclick="presequencecheck()">Go!</button>
+            </div>
+            <div class="colW50">
+                <img src="css/loading1.gif" alt="loading" style="width:30px;height:30px;" id="loadinggif">
+            </div>
+        </div>
+
+        <script type="text/javascript"> $("#loadinggif").hide();
+        $("#loadingtext").hide() </script>
+
+        <div class="row" id="output"></div>
+
+    </div>
+
+    <div class="footer">
+        <a href="http://rna.informatik.uni-freiburg.de/About.jsp">About this web server</a>
+        &nbsp;|&nbsp;
+        version 4.0.2
+        &nbsp;|&nbsp;
+        Copyright © 2012 - 2015 <a href="http://www.bioinf.uni-freiburg.de/">Bioinformatics Group Freiburg</a>
+        &nbsp;|&nbsp;
+        <a href="http://www.bioinf.uni-freiburg.de/impressum.html">Disclaimer</a>
+    </div>
+
+
+</div>
+<!-- content -->
+
+
+</body>
+
+<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/lodash.min.js"></script>
+<script src="js/backbone-min.js"></script>
+<script src="js/joint.min.js"></script>
+<script src="js/sequencecheck.js"></script>
+<script src="js/nussinovmatrix.js"></script>
+<script src="js/visualize_structCount.js"></script>
+<script src="js/scripts_structCount.js"></script>
+
+</html>

@@ -1,0 +1,83 @@
+[21-06-2016] Mohsin :
+    * show lower half of matrix as blank.
+    * add subscripts using custom binding function writeSeq().
+    * remove old animated dropdows list of recursion selection.
+    * add normal dropdown which shows recursion names for the formula selection.
+    * add simple div to show recursion formula.
+    * add canvas element.
+    * add info div below matrix to show coordinates of cell and its parents.
+    * add interaction to matrix and structures:
+        - click cell:
+            ->td.cell.onclick()
+            ->clickCell()
+            ->drawSingleTraceStep()
+            ->drawArrows()
+        - click structure:
+            ->td.structures.onclick()
+            ->clickStructure()
+            ->drawFullTrace()
+            ->drawArrows()
+
+
+[14-06-2016] Mohsin :
+    * create different directory called libs for libraries jquery and knockout.
+    * create folder old_iterations which has legacy code files for some references
+    * almost complete structure count visualization(formula latex needs update)
+        - visualize_structCount.js: contains data computed using nussinovmatrix.js. that data is binded to html using ko.
+        - scripts_structCount.js: completly rewritten. main function it contains is updated validate for sequence input.
+        - countStructs.html: updated with databindings using ko.
+    * begin rewritting visualization for nussinov recursion.
+        - remove sequencecheck.js
+        - remove rnavisualizematrix.js
+        - remove old visualize.js and start rewritting it using knockout function NussinovMatrixViewModel().
+        - remove old scripts.js and start rewritting it. currently it only contains validate and dropdown related functionality.
+        - nussinov.html: updated
+            - remove the need of go button
+            - bind data using ko and enumerate table with data.
+
+[31-05-2016] Mohsin :
+    * nussinovmatrix.js
+        * add NussinovMatrix_structuresCount class
+    * add countStructs.html
+        * main html page for structure counting algo
+    * add scripts_structCount.js
+        * contains scripts for countStructs.html
+    * add visualize_structs.js
+        * uses canvas to generate matrix for visualizing counting algo
+
+[25-05-2016] Martin :
+	* nussinov.html : 
+		* input fields rearranged
+		* css styling moved
+	* css/index.css :
+		+ stylings added that were hidden in JS or directly applied in html
+	* css/dropdown.css :
+		* obsolete style commented 
+
+[24-05-2016] Martin : 
+	* todo.txt updated
+	* index.html renamed to nussinov.html
+
+[23-06-2015] [12:51 AM] [Numair] - !!! IMPORTANT !!!  Sources object now start from index 1. index 0 is now exclusively used for base pair 					   information.
+				   Every source object now have an array of size 2 reserved for the 2 base pairs. If there is no base pair 
+				   information, then just leave the place empty.
+				   [changed made in function lastclickedboxrefresher() ]
+[22-06-2015] [12:26 AM] [Numair] - +1 functionality added in rnamatrixvisualizer.js. Function name is plusone().
+[21-06-2015] [12:26 AM] [Numair] - rnamatrixvisualizer.js cleaned extensively. Everything has been functionalized.
+[21-06-2015] [03:00 PM] [Numair] - sequencecheck.js extensively commented.
+[12-06-2015] [08:10 AM] [Mohsin] - Added loop length.
+								 - Updated all algos with new object structure.
+								 - Added optimal traceback(one studied in class).
+
+[12-06-2015] [08:10 AM] [Numair] - Table style changed. Background color changed to white. Only selected cells are highlighted now.
+				 - Sequence added to table borders
+				 - Information box added on the top which shows the current box clicked and boxe's parent nodes.
+[08-06-2015] [09:05 PM] [Mohsin] - Changed object stucture to "{i:i,j:j,value:initVal,ancestors:{}}".
+			 	   Created a function for checking complemantary pairs.
+				   Added the algorithm for counting number of structures.
+				   Added algorithm for ambigious nussinov.
+[08-06-2015] [09:04 PM] [Numair] - Everything shifted to joint.js instead of D3.js . 
+				   Step by step Traceback can now be visualized by clicking on the boxes. 
+[19-05-2015] [02:36 AM] [Numair] - Modified "sequencecheck.js". Added D3 'th' and 'tbody' removal methods before visualizing a new matrix.
+[18-05-2015] [11:25 PM] [Numair] - added sequencecheck.js and updated starpage.html, nussinovmatrix.js accordinly. 
+

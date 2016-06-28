@@ -1,0 +1,7 @@
+
+* best practise guide on JS programming
+  http://www.codeproject.com/Articles/580165/JavaScript-Best-Practices
+  
+* getting JS running in eclipse
+  https://z0ltan.wordpress.com/2012/12/04/configuring-eclipse-to-run-standalone-javascript-files-using-node-jsgoogle-v8-engine/
+  + set hotkey for "Run Last Launched External Tool" in Window>Preferences>General>Keys 

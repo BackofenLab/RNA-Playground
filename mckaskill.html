@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- Last updated 23rd August (02:00 PM) -->
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>RNA algorithms for teaching</title>
+
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' type='text/css'>
+    <link rel="stylesheet" href="css/joint.min.css"/>
+    <link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="css/dropdown.css"/>
+    <link rel="stylesheet" href="css/index.css"/>
+    <link rel="stylesheet" href="css/corporate-design.css"/>
+
+</head>
+
+<body onload="getFormula_structCount();">
+
+<!-- #########  PAGE MENU  ############## -->
+
+<!-- central content DIV of the RNA tools webserver -->
+<div class="content">
+    <h1>JavaScript Implementation and Visualization of RNA algorithms</h1>
+
+    <div id="inputContainer">
+        <div class="row">
+            <div class="colW200" style="font-size: 120%">RNA sequence:</div>
+            <div class="colW400">
+                <input data-bind="value: input.sequence" id="userInput" maxlength="12"
+                       placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
+                       style="text-transform:uppercase">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
+            <div class="colW400">
+                <select data-bind="value: input.loopLength" id="ll" style="width:40px;">
+                    <option value=0 selected="selected">0</option>
+                    <option value=1>1</option>
+                    <option value=2>2</option>
+                    <option value=3>3</option>
+                    <option value=4>4</option>
+                    <option value=5>5</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="colW400" style="font-size: 120%; white-space: nowrap;">Recursion for counting the number of possible structures:</div>
+        </div>
+        <div class="row">
+            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">mcKaskill</div>
+            <div class="colW300" id="recursion" style="margin-left:50px"></div>
+        </div>
+
+    </div>
+
+    <div class="row" id="output">
+        <table id="matrix" class="colw150">
+            <thead>
+            <tr>
+                <th class="cell_count"  style="font-size: 16px; color: darkslategray">Q</th>
+                <th class="cell_count"></th>
+                <!-- ko foreach: { data: seqList, as: 'base' } -->
+                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
+                <!-- /ko -->
+            </tr>
+            </thead>
+
+            <tbody id='matrix_data' data-bind="foreach: { data: cells, as: 'cell' }">
+            <tr>
+                <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
+                <!-- ko foreach: { data: cell, as: 'v' } -->
+                    <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td>
+                <!-- /ko -->
+            </tr>
+            </tbody>
+        </table>
+
+        <table id="matrix" class="colw150">
+            <thead>
+            <tr>
+                <th class="cell_count"  style="font-size: 16px; color: darkslategray">Q<sub>b</sub></th>
+                <th class="cell_count"></th>
+                <!-- ko foreach: { data: seqList, as: 'base' } -->
+                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
+                <!-- /ko -->
+            </tr>
+            </thead>
+
+            <tbody id='matrix_data' data-bind="foreach: { data: cells, as: 'cell' }">
+            <tr>
+                <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
+                <!-- ko foreach: { data: cell, as: 'v' } -->
+                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td>
+                <!-- /ko -->
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="footer">
+        <a href="http://rna.informatik.uni-freiburg.de/About.jsp">About this web server</a>
+        &nbsp;|&nbsp;
+        version 4.0.2
+        &nbsp;|&nbsp;
+        Copyright © 2012 - 2015 <a href="http://www.bioinf.uni-freiburg.de/">Bioinformatics Group Freiburg</a>
+        &nbsp;|&nbsp;
+        <a href="http://www.bioinf.uni-freiburg.de/impressum.html">Disclaimer</a>
+    </div>
+
+</div>
+<!-- content -->
+
+<script src="js/libs/knockout-3.4.0.js"></script>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script src="js/libs/jquery.min.js"></script>
+<script src="js/nussinovmatrix.js"></script>
+<script src="js/visualize.js"></script>
+<!--<script src="js/visualize_structCount.js"></script>-->
+<script src="js/scripts.js"></script>
+
+</body>
+
+</html>
