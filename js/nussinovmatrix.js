@@ -1376,9 +1376,18 @@ NussinovDPAlgorithm_McKaskill.Tables.push(Object.create(NussinovMatrix));
 NussinovDPAlgorithm_McKaskill.Tables.push(Object.create(NussinovMatrix));
 
 NussinovDPAlgorithm_McKaskill.Tables[0].latex_representation = "$$Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} * Q^{b}_{k,j} $$";
-NussinovDPAlgorithm_McKaskill.Tables[1].latex_representation = "$$Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} * \\exp(-E(bp)/RT) & \\text{ if }i,j \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}$$";
+NussinovDPAlgorithm_McKaskill.Tables[1].latex_representation = "$$Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} * \\exp(-E_{bp}/RT) & \\text{ if }i,j \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}$$";
 
-
+NussinovDPAlgorithm_McKaskill.getRecursionInLatex = function() {
+    var formula = "";
+    for (var i = 0; i < this.Tables.length; ++i) {
+        if (i > 0) {
+            formula += " ";
+        }
+        formula += this.Tables[i].latex_representation;
+    }
+    return formula;
+};
 NussinovDPAlgorithm_McKaskill.Tables[0].computeValue = function(i, j) {
     if (i > j + 1 || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
         return 0;
