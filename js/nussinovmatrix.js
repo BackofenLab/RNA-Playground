@@ -654,7 +654,7 @@ var NussinovMatrix = {
 var DPAlgorithm = {
     Description: "Algorithm",
 
-    Tables: [],
+    //Tables: [],
 
     defaultPars: {},
 
@@ -1182,6 +1182,7 @@ var NussinovDPAlgorithm_structuresCount = Object.create(DPAlgorithm);
 
 NussinovDPAlgorithm_structuresCount.Description = "Nussinov counting";
 
+NussinovDPAlgorithm_structuresCount.Tables = new Array();
 NussinovDPAlgorithm_structuresCount.Tables.push(Object.create(NussinovMatrix));
 
 NussinovDPAlgorithm_structuresCount.Tables[0].latex_representation = "$C_{i,j} = C_{i,j-1} + \\sum_{i\\leq k <(j-l) \\atop S_k,S_j \\text{ pair}} C_{i,k-1} * C_{k+1,j-1} * 1 $";
@@ -1367,13 +1368,13 @@ var NussinovDPAlgorithm_McKaskill = Object.create(DPAlgorithm);
 
 NussinovDPAlgorithm_McKaskill.Description = "Mckaskill";
 
+NussinovDPAlgorithm_McKaskill.Tables = new Array();
 NussinovDPAlgorithm_McKaskill.Tables.push(Object.create(NussinovMatrix));
 NussinovDPAlgorithm_McKaskill.Tables.push(Object.create(NussinovMatrix));
 
 NussinovDPAlgorithm_McKaskill.Tables[0].latex_representation = "$$Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} * Q^{b}_{k,j} $$";
 NussinovDPAlgorithm_McKaskill.Tables[1].latex_representation = "$$Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} * \\exp(-E(bp)/RT) & \\text{ if }i,j \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}$$";
 
-/*
 
 NussinovDPAlgorithm_McKaskill.Tables[0].computeValue = function(i, j) {
     if (i > j + 1 || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
