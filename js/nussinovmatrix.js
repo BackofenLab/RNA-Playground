@@ -211,6 +211,22 @@ var NussinovMatrix = {
         cells: [],
 
         /**
+         * The latex representation of the formula computing the matrix.
+         */
+        latex_representation: "$$",
+
+        /**
+         * The table description
+         */
+        descripion: "default description",
+
+        /**
+         * Tracebacks allowance
+         */
+        allowTraceBack: true,
+
+
+        /**
          * initialize a matrix of dim = n+1 with indices 0..n, where n is the
          * length of the provided sequence
          * @param {string} sequence the RNA sequence (not null or empty)
@@ -241,7 +257,7 @@ var NussinovMatrix = {
                 for (var j = 0; j <= n; j++) {
                     // create new cell and initialize
                     if(this.name === "structuresCount"){
-                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, 1);
+                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
                     }
                     else {
                         this.cells[i][j] = Object.create(NussinovCell).init(i, j, 0);
@@ -267,7 +283,7 @@ var NussinovMatrix = {
                 return null;
             }
             // check invalid cell access
-            if (i > j) {
+            if (i > j + 1) {
                 return null;
             }
             return this.cells[i][j];
@@ -304,6 +320,11 @@ var NussinovMatrix = {
         }
         ,
 
+        computeValue: function(i, j) {
+            // Computes the M[i, j] by accessing cells using getValue function
+            // for memoization.
+            return 0;
+        },
         /**
          * access value of cell at location (i,j) in matrix
          * @param {int} i row #.
@@ -313,9 +334,12 @@ var NussinovMatrix = {
         getValue: function (i, j) {
             // access cell at location (i,j) in the matrix
             var cell = this.getCell(i, j);
-            // check if invalid cell
             if (cell === null) {
-                return 0;
+                return null;
+            }
+            // check if invalid cell
+            if (cell.value === null) {
+                cell.value = this.computeValue(i, j);
             }
             // get cell value
             return cell.value;
@@ -475,7 +499,7 @@ var NussinovMatrix = {
             }
             ;
 
-            if (this.getValue(i, j) === 0) {
+            if (this.getValue(i, j) === null) {
                 return;
             }
             else {
@@ -626,6 +650,18 @@ var NussinovMatrix = {
 
     }
     ;
+
+var DPAlgorithm = {
+    Description: "Algorithm",
+
+    Tables: [],
+
+    defaultPars: {},
+
+    UpdateCells: function(i, j){},
+
+    computeMatrices: function(sequence, args){},
+};
 
 /****** NussinovMatrix_ambiguous extending NussinovMatrix ************************/
 
@@ -1125,6 +1161,103 @@ function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
 }
 ;
 
+/*
+ var DPAlgorithm = {
+ Description: "Algorithm",
+
+ Tables: [],
+
+ defaultPars: {},
+
+ UpdateCells: function(i, j){},
+
+ computeMatrices: function(sequence, args...){},
+ };
+
+ */
+
+/** Nussinov Structures Count*/
+
+var NussinovDPAlgorithm_structuresCount = Object.create(DPAlgorithm);
+
+NussinovDPAlgorithm_structuresCount.Description = "Nussinov counting";
+
+NussinovDPAlgorithm_structuresCount.Tables.push(Object.create(NussinovMatrix));
+
+NussinovDPAlgorithm_structuresCount.Tables[0].latex_representation = "$C_{i,j} = C_{i,j-1} + \\sum_{i\\leq k <(j-l) \\atop S_k,S_j \\text{ pair}} C_{i,k-1} * C_{k+1,j-1} * 1 $";
+
+
+NussinovDPAlgorithm_structuresCount.Tables[0].computeValue = function(i, j) {
+    if (i > j + 1 || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
+        return 0;
+    }
+    if (i >= j) {
+        return 1;
+    }
+    var res = 0;
+
+    console.log(i, j);
+    // unpaired
+    res += this.getValue(i, j - 1);
+    for (var k = i; k < j - this.minLoopLength; ++k) {
+        if (RnaUtil.areComplementary(this.sequence[k - 1], this.sequence[j - 1])) {
+            res += this.getValue(i, k - 1) * this.getValue(k + 1, j - 1) * 1;
+        }
+    }
+
+    return res;
+};
+
+NussinovDPAlgorithm_structuresCount.computeMatrix = function (sequence, minLoopLength) {
+// resize and initialize matrix
+
+    this.Tables[0].init(sequence, "structuresCount");
+    // store minimal loop length
+    this.Tables[0].minLoopLength = minLoopLength;
+
+    for (var i = 0; i < this.Tables[0].getDim(); i++) {
+        for (var j = 0; j < this.Tables[0].getDim(); ++j) {
+            // get column for current span
+            this.Tables[0].getValue(i, j);
+        }
+        ;
+    }
+    ;
+
+    return this.Tables;
+};
+
+/*
+NussinovMatrix_structuresCount.updateCell = function(i, j, curAncestor){
+    var val = 1;
+    // get cell to update
+    var curCell = this.getCell(i, j);
+    // check if something to update
+    if (curCell === null) {
+        return;
+    }
+
+    // add scores of ancestor cells
+    for (var x = 0; x < curAncestor.parents.length; x++) {
+        if(curAncestor.parents[x][0] > 0 && curAncestor.parents[x][1] > 0
+            && curAncestor.parents[x][0] < curAncestor.parents[x][1]) {
+            //var q = this.getValue(curAncestor.parents[x][0], curAncestor.parents[x][1]) * Math.exp(-1 * (-1));
+            var q = this.getValue(curAncestor.parents[x][0], curAncestor.parents[x][1]);
+            val *= q;
+        }
+    }
+    // check for case (i,j-1)
+    if(curAncestor.bps.length === 0){
+        curCell.value = val;
+    }
+    else {
+        curCell.value += val;
+    }
+    // curCell.traces.push(curAncestor);
+}
+;
+*/
+
 /****** NussinovMatrix_structuresCount extending NussinovMatrix ************************/
 
 /**
@@ -1196,7 +1329,7 @@ NussinovMatrix_structuresCount.computeMatrix = function (sequence, minLoopLength
 
     return this;
 };
-
+/**
 NussinovMatrix_structuresCount.updateCell = function(i, j, curAncestor){
     var val = 1;
     // get cell to update
@@ -1225,17 +1358,88 @@ NussinovMatrix_structuresCount.updateCell = function(i, j, curAncestor){
     // curCell.traces.push(curAncestor);
 }
 ;
+ */
 
 
 /****** McKaskill_simple extending NussinovMatrix ************************/
 
+var NussinovDPAlgorithm_McKaskill = Object.create(DPAlgorithm);
+
+NussinovDPAlgorithm_McKaskill.Description = "Mckaskill";
+
+NussinovDPAlgorithm_McKaskill.Tables.push(Object.create(NussinovMatrix));
+NussinovDPAlgorithm_McKaskill.Tables.push(Object.create(NussinovMatrix));
+
+NussinovDPAlgorithm_McKaskill.Tables[0].latex_representation = "$$Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} * Q^{b}_{k,j} $$";
+NussinovDPAlgorithm_McKaskill.Tables[1].latex_representation = "$$Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} * \\exp(-E(bp)/RT) & \\text{ if }i,j \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}$$";
+
+/*
+
+NussinovDPAlgorithm_McKaskill.Tables[0].computeValue = function(i, j) {
+    if (i > j + 1 || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
+        return 0;
+    }
+    if (i >= j) {
+        return 1;
+    }
+    var res = 0;
+
+    console.log(i, j);
+    // unpaired
+    res += this.getValue(i, j - 1);
+    for (var k = i; k < j - this.minLoopLength; ++k) {
+        if (RnaUtil.areComplementary(this.sequence[k - 1], this.sequence[j - 1])) {
+            res += this.getValue(i, k - 1) * NussinovDPAlgorithm_McKaskill.Tables[1].getValue(k, j);
+        }
+    }
+
+    return res;
+};
+
+NussinovDPAlgorithm_McKaskill.Tables[1].computeValue = function(i, j) {
+    if (i > j + 1 || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
+        return 0;
+    }
+    if (i >= j) {
+        return 1;
+    }
+    console.log(i, j);
+    // unpaired
+    return  NussinovDPAlgorithm_McKaskill.Tables[1].getValue(i + 1, j - 1) * Math.exp(1);
+};
+
+NussinovDPAlgorithm_McKaskill.computeMatrix = function (sequence, minLoopLength) {
+
+    this.Tables[0].init(sequence, "McKaskill");
+    this.Tables[1].init(sequence, "McKaskill Base");
+    // store minimal loop length
+    this.Tables[0].minLoopLength = minLoopLength;
+    this.Tables[1].minLoopLength = minLoopLength;
+
+    for (var i = 0; i < this.Tables[0].getDim(); i++) {
+        for (var j = 0; j < this.Tables[0].getDim(); ++j) {
+            // get column for current span
+            this.Tables[0].getValue(i, j);
+        }
+        ;
+    }
+    ;
+
+    for (var i = 0; i < this.Tables[1].getDim(); i++) {
+        for (var j = 0; j < this.Tables[1].getDim(); ++j) {
+            // get column for current span
+            this.Tables[1].getValue(i, j);
+        }
+        ;
+    }
+    ;
+
+    return this.Tables;
+};
 /**
  * Implements a non-ambiguous recursion
  */
 var McKaskill_simple = Object.create(NussinovMatrix);
-
-
-/**********  OVERWRITING + EXTENSION  ********************/
 
 /**
  * Returns a description for the implemented recursion
@@ -1252,8 +1456,39 @@ McKaskill_simple.getRecursionDescription = function () {
  * @returns {string} latex encoding of the recursion
  */
 McKaskill_simple.getRecursionInLatex = function () {
-    return "$Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l) \\atop S_k,S_j \\text{ pair}} Q_{i,k-1} * Q_{k+1,j-1} * \exp(-E(i, j)) $";
+    return "$$Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} * Q^{b}_{k,j} $$";
 };
+
+
+/**********  OVERWRITING + EXTENSION  ********************/
+
+McKaskill_simple.updateCell = function(i, j, curAncestor){
+    var val = 1;
+    // get cell to update
+    var curCell = this.getCell(i, j);
+    // check if something to update
+    if (curCell === null) {
+        return;
+    }
+
+    // add scores of ancestor cells
+    for (var x = 0; x < curAncestor.parents.length; x++) {
+        if(curAncestor.parents[x][0] > 0 && curAncestor.parents[x][1] > 0
+            && curAncestor.parents[x][0] < curAncestor.parents[x][1]) {
+            val *= this.getValue(curAncestor.parents[x][0], curAncestor.parents[x][1]) * Math.exp(1);
+        }
+    }
+    // check for case (i,j-1)
+    if(curAncestor.bps.length === 0){
+        curCell.value = val;
+    }
+    else {
+        curCell.value += val;
+    }
+    // curCell.traces.push(curAncestor);
+}
+;
+
 
 /**
  * Fills the matrix according to the recursion.
@@ -1299,32 +1534,93 @@ McKaskill_simple.computeMatrix = function (sequence, minLoopLength) {
     return this;
 };
 
-McKaskill_simple.updateCell = function(i, j, curAncestor){
-    var val = 1;
+
+
+/****** McKaskill_base extending NussinovMatrix ************************/
+
+
+
+/**
+ * Implements a non-ambiguous recursion
+ */
+var McKaskill_base = Object.create(NussinovMatrix);
+
+/**
+ * Returns a description for the implemented recursion
+ *
+ * @returns {string} description of the recursion
+ */
+McKaskill_base.getRecursionDescription = function () {
+    return "Recursion to count the energy of all the structures.";
+};
+
+/**
+ * Access to the recursion in LaTeX encoding that is used in the computeMatrix implementation
+ *
+ * @returns {string} latex encoding of the recursion
+ */
+McKaskill_base.getRecursionInLatex = function () {
+    return "$$Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} * \\exp(-E(bp)/RT) & \\text{ if }i,j \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}$$";
+};
+
+/**********  OVERWRITING + EXTENSION  ********************/
+
+McKaskill_base.updateCell = function(i, j){
     // get cell to update
     var curCell = this.getCell(i, j);
     // check if something to update
     if (curCell === null) {
         return;
     }
-
-    // add scores of ancestor cells
-    for (var x = 0; x < curAncestor.parents.length; x++) {
-        if(curAncestor.parents[x][0] > 0 && curAncestor.parents[x][1] > 0
-            && curAncestor.parents[x][0] < curAncestor.parents[x][1]) {
-            val *= this.getValue(curAncestor.parents[x][0], curAncestor.parents[x][1]) * Math.exp(1);
-        }
-    }
-    // check for case (i,j-1)
-    if(curAncestor.bps.length === 0){
-        curCell.value = val;
-    }
-    else {
-        curCell.value += val;
-    }
-    // curCell.traces.push(curAncestor);
+    curCell.value = McKaskill_simple.getValue(i + 1, j - 1) * Math.exp(1);
 }
 ;
+
+
+/**
+ * Fills the matrix according to the recursion.
+ *
+ * @param {string} sequence the RNA sequence to compute the matrix for
+ * @param {int} minLoopLength the minimal loop length to be used for computation
+ *
+ * @returns {McKaskill_base} this for call chaining
+ */
+McKaskill_base.computeMatrix = function (sequence, minLoopLength) {
+
+// resize and initialize matrix
+    this.init(sequence, "structuresEnergy");
+    //console.log(sequence, this.sequence.length);
+// store minimal loop length
+    this.minLoopLength = minLoopLength;
+
+// fill matrix by diagonals
+// iterate over all substructure spans that can have a base pair
+    for (var span = minLoopLength; span < this.getDim(); span++) {
+        // iterate over all rows
+        for (var i = 0; i < this.getDim() - minLoopLength; i++) {
+            // get column for current span
+            var j = i + span;
+
+            // j unpaired
+            this.updateCell(i, j);
+
+            // check base pair based decomposition : (k,j) base pair
+            //for (var k = i; k + minLoopLength < j; k++) {
+                // check if sequence positions are compatible
+                //if (RnaUtil.areComplementary(this.sequence[k - 1], this.sequence[j - 1])) {
+                    //this.updateCell(i, j, Object.create(NussinovCellTrace).init([[i, k - 1], [k + 1, j - 1]], [[k, j]]));
+                //}
+                ;
+           // }
+            ;
+
+        }
+        ;
+    }
+    ;
+
+    return this;
+};
 
 
 
@@ -1343,7 +1639,10 @@ var availableAlgorithms = {
     counting: NussinovMatrix_structuresCount,
 
     /** McCaskill */
-    mcKaskill: McKaskill_simple
+   // mcKaskill: McKaskill,
+
+    /** counting3 */
+    mycounting: NussinovDPAlgorithm_structuresCount,
 
 };
 //var availableAlgorithms = [NussinovMatrix_ambiguous, NussinovMatrix_unique];
