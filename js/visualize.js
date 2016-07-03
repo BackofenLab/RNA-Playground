@@ -29,7 +29,7 @@ function NussinovMatrixViewModel() {
         recursion: ko.observable("nussinovUnique"),
         allowTraceback: true
     };
-/**
+
     self.mckaskillRecursion = ko.computed(function(){
         //console.log($(rec_select).text());
         if($(rec_select).text()=="mcKaskill") {
@@ -38,15 +38,6 @@ function NussinovMatrixViewModel() {
             self.input.allowTraceback = false;
         }
     });
-    self.mckaskillbaseRecursion = ko.computed(function(){
-        //console.log($(rec_select).text());
-        if($(rec_select_qb).text()=="mcKaskillBase") {
-            console.log("mcKaskillBase");
-            self.input.recursion("mcKaskillBase");
-            self.input.allowTraceback = false;
-        }
-    });
-    */
 
     self.countingRecursion = ko.computed(function(){
         //console.log($(rec_select).text());
@@ -95,7 +86,12 @@ function NussinovMatrixViewModel() {
              ctx = $('#CanvasLayer')[0].getContext("2d");
              ctx.stroke();
         }
-        return self.renderer(self.formula().computeMatrix(seq, ll)[0]);
+
+        var tables = self.formula().computeMatrix(seq, ll);
+        for(var i in tables){
+            tables[i] = self.renderer(tables[i]);
+        }
+        return tables;
     }, this);
 
 
@@ -110,8 +106,14 @@ function NussinovMatrixViewModel() {
     }, this);
 
     self.cells = ko.computed(function() {
-        if(self.matrix().cells == undefined)return;
-        return self.matrix().cells.slice(1); // slice is hack to skip first row(investigate later)
+        var tables = [];
+
+        for(var i in self.matrix()){
+            if(self.matrix()[i].cells == undefined)return;
+            tables.push(self.matrix()[i].cells.slice(1));        // slice is hack to skip first row(investigate later)
+        }
+        return tables;
+
     }, this);
 
     // functions for visualization and interaction

@@ -256,7 +256,10 @@ var NussinovMatrix = {
                 this.cells[i] = [];
                 for (var j = 0; j <= n; j++) {
                     // create new cell and initialize
-                    if(this.name === "structuresCount"){
+                    if(this.name === "structuresCount") {
+                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
+                    }
+                    else if(this.name === "McKaskill" || this.name === "McKaskill Base"){
                         this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
                     }
                     else {
@@ -1640,7 +1643,7 @@ var availableAlgorithms = {
     counting: NussinovMatrix_structuresCount,
 
     /** McCaskill */
-   // mcKaskill: McKaskill,
+    mcKaskill: NussinovDPAlgorithm_McKaskill,
 
     /** counting3 */
     mycounting: NussinovDPAlgorithm_structuresCount,

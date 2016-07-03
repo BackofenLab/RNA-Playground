@@ -68,7 +68,7 @@
             </tr>
             </thead>
 
-            <tbody id='matrix_data' data-bind="foreach: { data: cells, as: 'cell' }">
+            <tbody id='matrix_data' data-bind="foreach: { data: cells()[0], as: 'cell' }">
             <tr>
                 <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
                 <!-- ko foreach: { data: cell, as: 'v' } -->
@@ -79,7 +79,7 @@
         </table>
 
         <div class="row">
-            <div class="colW300" id="rec_select_qb" style="margin-left:50px; display: none;">mcKaskillBase</div>
+            <div class="colW300" id="rec_select_qb" style="margin-left:50px; display: none;">mcKaskill</div>
             <div class="colW300" id="recursion_qb" style="margin-left:50px"></div>
         </div>
 
@@ -94,7 +94,7 @@
             </tr>
             </thead>
 
-            <tbody id='matrix_data' data-bind="foreach: { data: cells, as: 'cell' }">
+            <tbody id='matrix_data' data-bind="foreach: { data: cells()[1], as: 'cell' }">
             <tr>
                 <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
                 <!-- ko foreach: { data: cell, as: 'v' } -->
