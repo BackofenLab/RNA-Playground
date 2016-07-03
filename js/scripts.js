@@ -20,6 +20,8 @@ function showRecursion() {
 
 function getFormula_structCount(){
     document.getElementById("recursion").innerHTML = availableAlgorithms[$(rec_select).text()].getRecursionInLatex();
+    //document.getElementById("recursion_qb").innerHTML = availableAlgorithms[$(rec_select_qb).text()].getRecursionInLatex();
+
     rerendermath();
 }
 

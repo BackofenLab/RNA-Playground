@@ -29,21 +29,30 @@ function NussinovMatrixViewModel() {
         recursion: ko.observable("nussinovUnique"),
         allowTraceback: true
     };
-
+/**
     self.mckaskillRecursion = ko.computed(function(){
         //console.log($(rec_select).text());
         if($(rec_select).text()=="mcKaskill") {
-            console.log("mckaskill");
+            console.log("mcKaskill");
             self.input.recursion("mcKaskill");
             self.input.allowTraceback = false;
         }
     });
+    self.mckaskillbaseRecursion = ko.computed(function(){
+        //console.log($(rec_select).text());
+        if($(rec_select_qb).text()=="mcKaskillBase") {
+            console.log("mcKaskillBase");
+            self.input.recursion("mcKaskillBase");
+            self.input.allowTraceback = false;
+        }
+    });
+    */
 
     self.countingRecursion = ko.computed(function(){
         //console.log($(rec_select).text());
-        if($(rec_select).text()=="counting") {
-            console.log("counting");
-            self.input.recursion("counting");
+        if($(rec_select).text()=="mycounting") {
+            console.log("mycounting");
+            self.input.recursion("mycounting");
             self.input.allowTraceback = false;
         }
     });
@@ -86,8 +95,7 @@ function NussinovMatrixViewModel() {
              ctx = $('#CanvasLayer')[0].getContext("2d");
              ctx.stroke();
         }
-
-        return self.renderer(self.formula().computeMatrix(seq, ll));
+        return self.renderer(self.formula().computeMatrix(seq, ll)[0]);
     }, this);
 
 
