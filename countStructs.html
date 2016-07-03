@@ -76,7 +76,7 @@
             </tr>
             </thead>
 
-            <tbody id='matrix_data' data-bind="foreach: { data: cells, as: 'cell' }">
+            <tbody id='matrix_data' data-bind="foreach: { data: cells()[0], as: 'cell' }">
             <tr>
                 <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
                 <!-- ko foreach: { data: cell, as: 'v' } -->
