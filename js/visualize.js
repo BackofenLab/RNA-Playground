@@ -59,11 +59,14 @@ function NussinovMatrixViewModel() {
 
     self.renderer = function(matrix){
         //var res = JSON.parse(JSON.stringify(matrix));
-
+        console.log(matrix);
         for (var i = 0; i < matrix.cells.length; ++i) {
+            var p = "";
             for (var j = 0; j < matrix.cells[i].length; ++j) {
                 matrix.cells[i][j].value = parseInt(matrix.cells[i][j].value);
+                p += matrix.cells[i][j].value + " ";
             }
+            console.log(p);
         }
         return matrix;
     };
@@ -88,7 +91,7 @@ function NussinovMatrixViewModel() {
         }
 
         var tables = self.formula().computeMatrix(seq, ll);
-        for(var i in tables){
+        for(var i = 0; i < tables.length; ++i){
             tables[i] = self.renderer(tables[i]);
         }
         return tables;
