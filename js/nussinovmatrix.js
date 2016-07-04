@@ -1480,6 +1480,7 @@ NussinovMatrix_unique.getSubstructures = function(sigma, P, traces, delta, maxLe
  * WUCHTY(2nd version) enumerating up to 10 structures
  */
 function wuchty_2nd(xmat, delta, formula) {
+    console.log("entering wuchty");
 	// get maximal number of structures to report
 	var maxSOS = 10;
 	// call subroutine

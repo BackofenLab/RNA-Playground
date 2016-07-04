@@ -66,7 +66,7 @@ function NussinovMatrixViewModel() {
                 matrix.cells[i][j].value = parseInt(matrix.cells[i][j].value);
                 p += matrix.cells[i][j].value + " ";
             }
-            console.log(p);
+            //console.log(p);
         }
         return matrix;
     };
@@ -87,7 +87,8 @@ function NussinovMatrixViewModel() {
                 'padding': '0px 0px'
             });
              ctx = $('#CanvasLayer')[0].getContext("2d");
-             ctx.stroke();
+             ctx.clearRect(0, 0, $('#CanvasLayer')[0].width, $('#CanvasLayer')[0].height);
+             //ctx.stroke();
         }
 
         var tables = self.formula().computeMatrix(seq, ll);
@@ -102,8 +103,9 @@ function NussinovMatrixViewModel() {
     self.tracebacks = ko.computed(function(){
         var del = parseInt(self.input.delta());
         console.log("in traceback:", self.input.allowTraceback);
-        if (self.input.allowTraceback) {
-            return wuchty_2nd(self.matrix(), del, self.formula());
+        if (self.input.allowTraceback) {// exclusive case for nussinov recursions
+            console.log("tb allowed");
+            return wuchty_2nd(self.matrix()[0], del, self.formula().Tables[0]);
         }
         return false;
     }, this);
@@ -155,8 +157,8 @@ function NussinovMatrixViewModel() {
             ctx.font = " 18px sans-serif";
             ctx.fillStyle = "#2a6ebb";
 
-        $(info).text("");
-        $(info).hide();
+            $(info).text("");
+            $(info).hide();
             for(var i=1; i<=seqLen;i++) { // show base pairs formed at top of matrix
                 ctx.fillText(cell.structure[i-1], (i) * cW + cW / 2, cH / 2 - 2);
             }
@@ -164,6 +166,13 @@ function NussinovMatrixViewModel() {
             for(var t in cell.traces){
                 var child = cell.traces[t][0];
                 var parents = cell.traces[t][1];
+
+                for(var p in parents){
+                    if((child[0])<parents[p][0] && (child[1]-1)==parents[p][1]){
+                        ctx.font = " 10px sans-serif";
+                        ctx.fillText('+1', child[1] * cW + (3*cW/4+2), (child[0]+1) * cH + (cH/4+2));
+                    }
+                }
 
                 self.currCell.i = child[0];
                 self.currCell.j = child[1];
