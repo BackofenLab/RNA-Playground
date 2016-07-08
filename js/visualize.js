@@ -169,8 +169,9 @@ function NussinovMatrixViewModel() {
 
                 for(var p in parents){
                     if((child[0])<parents[p][0] && (child[1]-1)==parents[p][1]){
-                        ctx.font = " 10px sans-serif";
-                        ctx.fillText('+1', child[1] * cW + (3*cW/4+2), (child[0]+1) * cH + (cH/4+2));
+                        ctx.fillStyle = "#000";
+                        ctx.font = "bold 10px arial";
+                        ctx.fillText('+1', child[1] * cW + (1*cW/4-1), (child[0]+1) * cH + (cH/4+2));
                     }
                 }
 

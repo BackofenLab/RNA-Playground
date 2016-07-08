@@ -200,10 +200,7 @@ var NussinovMatrix = {
                 this.cells[i] = [];
                 for (var j = 0; j <= n; j++) {
                     // create new cell and initialize
-                    if (this.name === "structuresCount") {
-                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
-                    }
-                    else if (this.name === "McKaskill" || this.name === "McKaskill Base") {
+                    if (this.name === "structuresCount" || this.name === "McKaskill" || this.name === "McKaskill Base") {
                         this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
                     }
                     else {
@@ -695,7 +692,7 @@ NussinovDPAlgorithm_Ambiguous.Tables[0].getSubstructures = function (sigma, P, t
 
     }
 
-    //console.log("returning R:", JSON.stringify(R));
+    console.log("returning R:", JSON.stringify(R));
     return R;
 }
 ;
@@ -837,6 +834,164 @@ NussinovDPAlgorithm_Unique.Tables[0].getSubstructures = function (sigma, P, trac
     return R;
 }
 
+/**
+ * nussinov recursion 
+ * N(i,j) = max(0, N(i+1,j-1)+1 if bp(i,j), max_{i<=k<j} : N(i,k)+N(k+1,j))
+ * @type {DPAlgorithm}
+ */
+var NussinovDPAlgorithm_Neo = Object.create(DPAlgorithm);
+
+NussinovDPAlgorithm_Neo.Description = "Recursion by Nussinov et al. (1978) with Neo decomposition";
+NussinovDPAlgorithm_Neo.Tables = new Array();
+NussinovDPAlgorithm_Neo.Tables.push(Object.create(NussinovMatrix));
+NussinovDPAlgorithm_Neo.Tables[0].latex_representation = "$D(i,j) = \\max \\begin{cases} D(i+1,j-1)+1 & S_i,S_j \\text{ compl. base pair} \\\\ \\max_{i\\leq k< j} D(i,k)+D(k+1,j) \\end{cases}$";
+//NussinovDPAlgorithm_Neo.Tables[0].latex_representation = "$D(i,j) = \\max(0, D(i+1,j-1)+1 if bp(i,j), \\max_{i<=k<j} : D(i,k)+N(k+1,j))$";
+NussinovDPAlgorithm_Neo.computeMatrix = function (sequence, minLoopLength) {
+
+// resize and initialize matrix
+    this.Tables[0].init(sequence, "Neo");
+// store minimal loop length
+    this.Tables[0].minLoopLength = minLoopLength;
+
+// fill matrix by diagonals
+// iterate over all substructure spans that can have a base pair
+    for (var span = minLoopLength; span < this.Tables[0].getDim(); span++) {
+        // iterate over all rows
+        for (var i = 1; i < this.Tables[0].getDim() - minLoopLength; i++) {
+            // get column for current span
+            var j = i + span;
+
+            // check (i,j) base pair
+            if ((j - i > minLoopLength) && RnaUtil.areComplementary(sequence[i - 1], sequence[j - 1])) {
+                // get value for base pair
+                this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [[i, j]]));
+            }
+            ;
+
+            // check decomposition into substructures (minLength==2)
+            for (var k = i; k < (j - 1); k++) {
+                // get decomposition value
+                this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i, k], [k + 1, j]], []));
+            }
+            ;
+        }
+        ;
+    }
+    ;
+
+    return this.Tables;
+};
+
+
+NussinovDPAlgorithm_Neo.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
+    var Nmax = this.getCell(1, this.sequence.length).value;
+    var R = [];
+    var ij = sigma.pop();
+    console.log(ij);
+
+    // check for sane interval
+    // if i>j dont continue
+    if (ij[0] >= ij[1]) {
+        //console.log("ij[0] > ij[1]", ij[0], ij[1]);
+        var S_prime = {};
+
+        var sigma_prime = JSON.stringify(sigma);
+        sigma_prime = JSON.parse(sigma_prime);
+
+        var tmp_P = JSON.stringify(P);
+        tmp_P = JSON.parse(tmp_P);
+
+        var tmp_traces = JSON.stringify(traces);
+        tmp_traces = JSON.parse(tmp_traces);
+
+        S_prime.sigma = sigma_prime;
+        S_prime.P = tmp_P;
+        S_prime.traces = tmp_traces;
+
+        R.push(S_prime);
+        //console.log("returning R:", JSON.stringify(R));
+        return R;
+    }
+
+    // if (i,j) == (i+1,j-1) + bp(ij)
+    {
+        if (ij[1] - ij[0] > this.minLoopLength) {
+            //console.log(this.sequence);
+            //console.log(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1]);
+            if (RnaUtil.areComplementary(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1])) {
+                var sigma_prime = JSON.stringify(sigma);
+                sigma_prime = JSON.parse(sigma_prime);
+                sigma_prime.push([ij[0] + 1, ij[1] - 1]);
+
+                var tmp_P = JSON.stringify(P);
+                tmp_P = JSON.parse(tmp_P);
+                tmp_P.push([ij[0], ij[1]]);
+
+                var tmp_traces = JSON.stringify(traces);
+                tmp_traces = JSON.parse(tmp_traces);
+
+                var NSprime = this.countBasepairs(tmp_P, sigma_prime);
+
+                if (NSprime >= Nmax - delta) {
+                    var S_prime = {};
+                    S_prime.sigma = sigma_prime;
+                    S_prime.P = tmp_P;
+                    tmp_traces.unshift([ij, [[ij[0] + 1, ij[1] - 1]]]);
+                    S_prime.traces = tmp_traces;
+                    //console.log("i+1,j-1:", JSON.stringify(S_prime));
+                    // push to the front to keep base pair most prominent to refine
+                    R.unshift(S_prime);
+                }
+            }
+        }
+
+        // check if enough structures found so far
+        if (R.length >= maxLengthR) {
+            //console.log("returning R:", JSON.stringify(R));
+            return R;
+        }
+    }
+
+    // if (i,j) == (i,l) + (l+1, j)
+    for (var l = ij[0]; l < ij[1] - 1; l++) {
+        console.log('here');
+        var sigma_prime = JSON.stringify(sigma);
+        sigma_prime = JSON.parse(sigma_prime);
+        sigma_prime.push([ij[0], l]);
+        sigma_prime.push([l + 1, ij[1]]);
+
+        var tmp_P = JSON.stringify(P);
+        tmp_P = JSON.parse(tmp_P);
+
+        var tmp_traces = JSON.stringify(traces);
+        tmp_traces = JSON.parse(tmp_traces);
+
+        var NSprime = this.countBasepairs(tmp_P, sigma_prime);
+
+        if (NSprime >= Nmax - delta) {
+
+            var S_prime = {};
+            S_prime.sigma = sigma_prime;
+            S_prime.P = tmp_P;
+            tmp_traces.unshift([ij, [[ij[0], l], [l + 1, ij[1]]]]);
+            S_prime.traces = tmp_traces;
+            //console.log("ilj:", JSON.stringify(S_prime));
+            // push to the front to keep base pair most prominent to refine
+            R.unshift(S_prime);
+        }
+
+        // check if enough structures found so far
+        if (R.length >= maxLengthR) {
+            //console.log("returning R:", JSON.stringify(R));
+            return R;
+        }
+
+    }
+
+    console.log("returning R:", JSON.stringify(R));
+    return R;
+}
+;
 
 /**
  * WUCHTY(2nd version) enumerating up to 10 structures
@@ -1049,6 +1204,9 @@ var availableAlgorithms = {
 
     /** original unique recursion */
     nussinovUnique: NussinovDPAlgorithm_Unique,//NussinovMatrix_unique,
+
+    /** nussinov neo recursion */
+    nussinovNeo: NussinovDPAlgorithm_Neo,
 
     /** McCaskill */
     mcKaskill: NussinovDPAlgorithm_McKaskill,
