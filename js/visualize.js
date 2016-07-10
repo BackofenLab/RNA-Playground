@@ -11,7 +11,7 @@ function NussinovMatrixViewModel() {
     var cellHeight = 24;
     var ctx;
     var colors = ['lightseagreen', 'lightslategrey', 'lightsalmon', 'lightcoral',
-                  'lightsteelblue', 'lightseagreen', 'lightslategrey', 'lightsalmon', 'lightcoral'];
+        'lightsteelblue', 'lightseagreen', 'lightslategrey', 'lightsalmon', 'lightcoral'];
     //var colors = ['red', 'blue', 'green', 'orange', 'purple', 'brown', 'grey', 'red', 'blue'];
     var colors2 = ['red', 'blue', 'green', 'orange', 'purple', 'brown', 'grey', 'red', 'blue'];
     var color = 0;
@@ -27,12 +27,13 @@ function NussinovMatrixViewModel() {
         loopLength: ko.observable(0),
         delta: ko.observable(0),
         recursion: ko.observable("nussinovUnique"),
-        allowTraceback: true
+        allowTraceback: true,
+        energy: ko.observable(1),
     };
 
     self.mckaskillRecursion = ko.computed(function(){
         //console.log($(rec_select).text());
-        if($(rec_select).text()=="mcKaskill") {
+        if($(rec_select).text() === "mcKaskill") {
             console.log("mcKaskill");
             self.input.recursion("mcKaskill");
             self.input.allowTraceback = false;
@@ -52,7 +53,6 @@ function NussinovMatrixViewModel() {
         return self.input.sequence().toUpperCase().split("");
     }, this);
 
-
     self.formula = ko.computed(function(){
         return availableAlgorithms[self.input.recursion()];
     }, this);
@@ -60,38 +60,38 @@ function NussinovMatrixViewModel() {
     self.renderer = function(matrix){
         //var res = JSON.parse(JSON.stringify(matrix));
         console.log(matrix);
-        for (var i = 0; i < matrix.cells.length; ++i) {
-            var p = "";
-            for (var j = 0; j < matrix.cells[i].length; ++j) {
-                matrix.cells[i][j].value = parseInt(matrix.cells[i][j].value);
-                p += matrix.cells[i][j].value + " ";
+        if (self.input.recursion() === "mcKaskill") {
+            for (var i = 0; i < matrix.cells.length; ++i) {
+                for (var j = 0; j < matrix.cells[i].length; ++j) {
+                    matrix.cells[i][j].value = parseFloat(matrix.cells[i][j].value).toFixed(2);
+                }
+                //console.log(p);
             }
-            //console.log(p);
         }
         return matrix;
     };
 
     self.matrix = ko.computed(function(){
-        var seq = self.input.sequence().toUpperCase();
-        var ll = parseInt(self.input.loopLength());
-        console.log("seq len:", seq.length);
-        if(seq.length==0){
+        //var seq = self.input.sequence().toUpperCase();
+        //var ll = parseInt(self.input.loopLength());
+        console.log("seq len:", self.input.sequence().length);
+        if(self.input.sequence().length==0){
             $("#matrix").hide();
             return false;
         }
         $("#matrix").show();
-         if (self.input.allowTraceback) {
+        if (self.input.allowTraceback) {
             $('th.cell_th, td.cell').css({
                 'width': cellWidth + 'px',
                 'height': cellHeight + 'px',
                 'padding': '0px 0px'
             });
-             ctx = $('#CanvasLayer')[0].getContext("2d");
-             ctx.clearRect(0, 0, $('#CanvasLayer')[0].width, $('#CanvasLayer')[0].height);
-             //ctx.stroke();
+            ctx = $('#CanvasLayer')[0].getContext("2d");
+            ctx.clearRect(0, 0, $('#CanvasLayer')[0].width, $('#CanvasLayer')[0].height);
+            //ctx.stroke();
         }
 
-        var tables = self.formula().computeMatrix(seq, ll);
+        var tables = self.formula().computeMatrix(self.input);
         for(var i = 0; i < tables.length; ++i){
             tables[i] = self.renderer(tables[i]);
         }
@@ -138,50 +138,50 @@ function NussinovMatrixViewModel() {
     };
 
     function drawFullTrace(location, cell){
-            //console.log('loading canvas');
-            // add one to cell dims because of borders
-            var cH = cellHeight+1;
-            var cW = cellWidth+1;
+        //console.log('loading canvas');
+        // add one to cell dims because of borders
+        var cH = cellHeight+1;
+        var cW = cellWidth+1;
 
-            var seqLen = self.seqList().length;
-            var top = location.top - (2 * cH);
-            var left = location.left + cW;
-            var width = (seqLen + 1) * (cW);
-            var height = (seqLen + 2) * (cH);
+        var seqLen = self.seqList().length;
+        var top = location.top - (2 * cH);
+        var left = location.left + cW;
+        var width = (seqLen + 1) * (cW);
+        var height = (seqLen + 2) * (cH);
 
-            $('#CanvasLayer')[0].width = width;
-            $('#CanvasLayer')[0].height = height;
-            $('#CanvasLayer').css({'top': top, 'left': left, 'width': width, 'height': height});
-            ctx.textBaseline = "middle";
-            ctx.textAlign = "center";
-            ctx.font = " 18px sans-serif";
-            ctx.fillStyle = "#2a6ebb";
+        $('#CanvasLayer')[0].width = width;
+        $('#CanvasLayer')[0].height = height;
+        $('#CanvasLayer').css({'top': top, 'left': left, 'width': width, 'height': height});
+        ctx.textBaseline = "middle";
+        ctx.textAlign = "center";
+        ctx.font = " 18px sans-serif";
+        ctx.fillStyle = "#2a6ebb";
 
-            $(info).text("");
-            $(info).hide();
-            for(var i=1; i<=seqLen;i++) { // show base pairs formed at top of matrix
-                ctx.fillText(cell.structure[i-1], (i) * cW + cW / 2, cH / 2 - 2);
-            }
+        $(info).text("");
+        $(info).hide();
+        for(var i=1; i<=seqLen;i++) { // show base pairs formed at top of matrix
+            ctx.fillText(cell.structure[i-1], (i) * cW + cW / 2, cH / 2 - 2);
+        }
 
-            for(var t in cell.traces){
-                var child = cell.traces[t][0];
-                var parents = cell.traces[t][1];
+        for(var t in cell.traces){
+            var child = cell.traces[t][0];
+            var parents = cell.traces[t][1];
 
-                for(var p in parents){
-                    if((child[0])<parents[p][0] && (child[1]-1)==parents[p][1]){
-                        ctx.fillStyle = "#000";
-                        ctx.font = "bold 10px arial";
-                        ctx.fillText('+1', child[1] * cW + (1*cW/4-1), (child[0]+1) * cH + (cH/4+2));
-                    }
+            for(var p in parents){
+                if((child[0])<parents[p][0] && (child[1]-1)==parents[p][1]){
+                    ctx.fillStyle = "#000";
+                    ctx.font = "bold 10px arial";
+                    ctx.fillText('+1', child[1] * cW + (1*cW/4-1), (child[0]+1) * cH + (cH/4+2));
                 }
-
-                self.currCell.i = child[0];
-                self.currCell.j = child[1];
-                color +=1;
-                if(color >= colors.length-1)color = 0;
-
-                drawArrows(parents, cW, cH);
             }
+
+            self.currCell.i = child[0];
+            self.currCell.j = child[1];
+            color +=1;
+            if(color >= colors.length-1)color = 0;
+
+            drawArrows(parents, cW, cH);
+        }
     }
 
     self.clickCell = function(clicked_cell) {
@@ -240,19 +240,19 @@ function NussinovMatrixViewModel() {
         // show base pairs formed at top of matrix
         ctx.fillStyle = "#2a6ebb";
         for(var i=1; i<=seqLen;i++) {
-                if (cell.traces[self.currTrace].bps.length != 0) {
-                    ctx.font = " 10px sans-serif";
-                    ctx.fillText('+1', cellJ * cW + (3*cW/4+2), (cellI+1) * cH + (cH/4+2));
-                    ctx.font = " 18px sans-serif";
-                    //console.log('bps', cell.traces[self.currTrace].bps[0][0], i);
-                    if (i == cell.traces[self.currTrace].bps[0][0]) {
+            if (cell.traces[self.currTrace].bps.length != 0) {
+                ctx.font = " 10px sans-serif";
+                ctx.fillText('+1', cellJ * cW + (3*cW/4+2), (cellI+1) * cH + (cH/4+2));
+                ctx.font = " 18px sans-serif";
+                //console.log('bps', cell.traces[self.currTrace].bps[0][0], i);
+                if (i == cell.traces[self.currTrace].bps[0][0]) {
 
-                        ctx.fillText('(', (i) * cW + cW / 2, cH / 2);
-                    }
-                    else if (i == cell.traces[self.currTrace].bps[0][1]) {
-                        ctx.fillText(')', (i) * cW + cW / 2, cH / 2);
-                    }
+                    ctx.fillText('(', (i) * cW + cW / 2, cH / 2);
                 }
+                else if (i == cell.traces[self.currTrace].bps[0][1]) {
+                    ctx.fillText(')', (i) * cW + cW / 2, cH / 2);
+                }
+            }
         }
         color = 0;
 
