@@ -95,6 +95,9 @@ function NussinovMatrixViewModel() {
         for(var i = 0; i < tables.length; ++i){
             tables[i] = self.renderer(tables[i]);
         }
+        if (self.input.recursion() === "mcKaskill") {
+            console.log(parsePSFile(self.input.sequence(), tables[2].cells));
+        }
         return tables;
     }, this);
 
@@ -354,5 +357,3 @@ function NussinovMatrixViewModel() {
 
 };
 ko.applyBindings(new NussinovMatrixViewModel());
-
-
