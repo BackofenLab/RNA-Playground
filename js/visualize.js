@@ -97,6 +97,7 @@ function NussinovMatrixViewModel() {
         }
         if (self.input.recursion() === "mcKaskill") {
             console.log(parsePSFile(self.input.sequence(), tables[2].cells));
+            dp(self.input.sequence(), tables[2].cells);
         }
         return tables;
     }, this);
@@ -183,6 +184,7 @@ function NussinovMatrixViewModel() {
             color +=1;
             if(color >= colors.length-1)color = 0;
 
+
             drawArrows(parents, cW, cH);
         }
     }
@@ -218,8 +220,8 @@ function NussinovMatrixViewModel() {
         $('#CanvasLayer').css({'top': top, 'left': left, 'width': width, 'height': height});
         ctx.textBaseline = "middle";
         ctx.textAlign = "center";
-        ctx.font = " 18px sans-serif";
-        ctx.fillStyle = "#2a6ebb";
+        //ctx.font = "18px sans-serif";
+        //ctx.fillStyle = "#2a6ebb";
 
         // cycle through parents pairs
         var cellI = cell.i;
@@ -241,13 +243,14 @@ function NussinovMatrixViewModel() {
         $(info).text("Cell:[" + [cellI, cellJ] + "]  Ancestors:" + JSON.stringify(cell.traces[self.currTrace].parents));
         $(info).show();
         // show base pairs formed at top of matrix
-        ctx.fillStyle = "#2a6ebb";
+
         for(var i=1; i<=seqLen;i++) {
             if (cell.traces[self.currTrace].bps.length != 0) {
-                ctx.font = " 10px sans-serif";
-                ctx.fillText('+1', cellJ * cW + (3*cW/4+2), (cellI+1) * cH + (cH/4+2));
-                ctx.font = " 18px sans-serif";
-                //console.log('bps', cell.traces[self.currTrace].bps[0][0], i);
+                ctx.fillStyle = "#000";
+                ctx.font = "bold 10px arial";
+                ctx.fillText('+1', cellJ * cW + (1*cW/4-2), (cellI+1) * cH + (cH/4+2));
+                ctx.fillStyle = "#2a6ebb";
+                ctx.font = "18px sans-serif";
                 if (i == cell.traces[self.currTrace].bps[0][0]) {
 
                     ctx.fillText('(', (i) * cW + cW / 2, cH / 2);

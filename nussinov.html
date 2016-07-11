@@ -28,7 +28,7 @@
 
     <div id="inputContainer">
         <div class="row">
-            <div class="colW200" style="font-size: 120%">RNA sequence:</div>
+            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
             <div class="colW400">
                 <input data-bind="value: input.sequence" id="userInput" maxlength="12"
                        placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
@@ -106,7 +106,12 @@
 
                 </tbody>
             </table>
-            <div class="colw150" id="info" class="colW400"></div>
+            <div>
+                <table  style="margin: initial;">
+                    <td id="info"
+                        style="display: none; border: 1px solid grey; padding: 6px 14px;letter-spacing: 2px; background: #fff;"></td>
+                </table>
+            </div>
         </div>
         <table id="structures" class="colw200" style="float: left; margin-top:30px">
             <thead>
