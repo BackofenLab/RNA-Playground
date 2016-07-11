@@ -99,3 +99,44 @@ td[id=structTableCells] {
 div[id=max] {
     background: #86b1ff;
 }
+
+/* dotplot table*/
+
+.chart div {
+     font: 10px sans-serif;
+     background-color: steelblue;
+     text-align: right;
+     padding: 3px;
+     margin: 1px;
+     color: #001bff;
+ }
+.chart2 div {
+    font: 10px sans-serif;
+    background-color: red;
+    text-align: right;
+    padding: 3px;
+    margin: 1px;
+    color: #20ff01;
+}
+
+text.active {
+    fill: red;
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+rect.active{
+    fill: red;
+}
+
+.background {
+    fill: #ffc500;
+}
+
+line {
+    stroke: #eee;
+}
+
+svg {
+    font: 10px sans-serif;
+}
