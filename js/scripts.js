@@ -155,7 +155,7 @@ function dotplot(sequence, table) {
     });
 
     //bpm["optimal-structure"].forEach(function(link) {
-    //    matrix[link.target-1][link.source-1].z = 1;
+    //    matrix[link.target-1][link.source-1].z = link.value;
     //});
 
 
