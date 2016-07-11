@@ -15,7 +15,6 @@ function NussinovMatrixViewModel() {
     //var colors = ['red', 'blue', 'green', 'orange', 'purple', 'brown', 'grey', 'red', 'blue'];
     var colors2 = ['red', 'blue', 'green', 'orange', 'purple', 'brown', 'grey', 'red', 'blue'];
     var color = 0;
-
     self.currCell = {
         i: null,
         j: null
@@ -59,7 +58,7 @@ function NussinovMatrixViewModel() {
 
     self.renderer = function(matrix){
         //var res = JSON.parse(JSON.stringify(matrix));
-        console.log(matrix);
+        //console.log(matrix);
         if (self.input.recursion() === "mcKaskill") {
             for (var i = 0; i < matrix.cells.length; ++i) {
                 for (var j = 0; j < matrix.cells[i].length; ++j) {
@@ -96,8 +95,9 @@ function NussinovMatrixViewModel() {
             tables[i] = self.renderer(tables[i]);
         }
         if (self.input.recursion() === "mcKaskill") {
-            console.log(parsePSFile(self.input.sequence(), tables[2].cells));
-            dp(self.input.sequence(), tables[2].cells);
+            //console.log(parsePSFile(self.input.sequence(), tables[2].cells));
+            dotplot(self.input.sequence(), tables[2].cells );
+
         }
         return tables;
     }, this);
