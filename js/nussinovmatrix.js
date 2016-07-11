@@ -1171,13 +1171,13 @@ NussinovDPAlgorithm_McKaskill.Tables[2].computeValue = function(i, j) {
         return 0;
     }
     var n = this.getDim() - 1;
-    console.log("begin");
-    console.log(n);
-    console.log(NussinovDPAlgorithm_McKaskill.Tables[0].getValue(1, n));
-    console.log(NussinovDPAlgorithm_McKaskill.Tables[0].getValue(1, i - 1));
-    console.log(NussinovDPAlgorithm_McKaskill.Tables[1].getValue(i, j));
-    console.log(NussinovDPAlgorithm_McKaskill.Tables[0].getValue(j + 1, n));
-    console.log("end");
+//     console.log("begin");
+//     console.log(n);
+//     console.log(NussinovDPAlgorithm_McKaskill.Tables[0].getValue(1, n));
+//     console.log(NussinovDPAlgorithm_McKaskill.Tables[0].getValue(1, i - 1));
+//     console.log(NussinovDPAlgorithm_McKaskill.Tables[1].getValue(i, j));
+//     console.log(NussinovDPAlgorithm_McKaskill.Tables[0].getValue(j + 1, n));
+//     console.log("end");
 
     var ret = (NussinovDPAlgorithm_McKaskill.Tables[0].getValue(1, i - 1) *
         NussinovDPAlgorithm_McKaskill.Tables[1].getValue(i, j) *
