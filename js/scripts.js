@@ -97,7 +97,7 @@ function dotplot(sequence, table) {
             var a = table[i][j].i;
             var b = table[i][j].j;
             var c = Math.pow(parseFloat(table[i][j].value), 0.5);
-            c = parseFloat(c.toFixed(2));
+            c = parseFloat(c.toFixed(3));
             var roww = {};
             roww[keys[0]]=a;
             roww[keys[1]]=b;
@@ -150,7 +150,7 @@ function dotplot(sequence, table) {
         matrix[i] = d3.range(n).map(function(j) { return {x: j, y: i, z: 0}; });
     });
     bpm["base-pairing-probabilities"].forEach(function(link) {
-        matrix[link.source-1][link.target-1].z = 0.8;
+        matrix[link.source-1][link.target-1].z += link.value;
         //matrix[link.target-1][link.source-1].z += link.value;
     });
 
