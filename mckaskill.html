@@ -32,7 +32,23 @@
                        style="text-transform:uppercase">
             </div>
         </div>
+        <!--
+                var slider = $('<input>').attr({
+                id: curr_obj,
+                type: 'range',
+                min: min,
+                max: max,
+                step: (max - min) / 100
+                }).appendTo(ranges_div);
+                -->
+        <div class="row">
+            <div class="colW200" style="font-size: 120%">Energy: $E_{bp}/RT$</div>
+            <div class="colW400">
+                <input data-bind="value: input.energy" id="energy" type="range" max="5" min="-1" step="(max - min) / 100">
 
+                <p data-bind="text: input.energy" style="display: inline;"></p>
+            </div>
+        </div>
         <div class="row">
             <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
             <div class="colW400">
@@ -46,6 +62,7 @@
                 </select>
             </div>
         </div>
+
         <div class="row">
             <div class="colW400" style="font-size: 120%; white-space: nowrap;">Recursion for counting the number of possible structures:</div>
         </div>
@@ -72,7 +89,7 @@
             <tr>
                 <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
                 <!-- ko foreach: { data: cell, as: 'v' } -->
-                    <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td>
+                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td>
                 <!-- /ko -->
             </tr>
             </tbody>
@@ -104,6 +121,48 @@
             </tbody>
         </table>
 
+        <table id="matrix" class="colw150">
+            <thead>
+            <tr>
+                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^E$</th>
+                <th class="cell_count"></th>
+                <!-- ko foreach: { data: seqList, as: 'base' } -->
+                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
+                <!-- /ko -->
+            </tr>
+            </thead>
+
+            <tbody id='matrix_data' data-bind="foreach: { data: cells()[2], as: 'cell' }">
+            <tr>
+                <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
+                <!-- ko foreach: { data: cell, as: 'v' } -->
+                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td>
+                <!-- /ko -->
+            </tr>
+            </tbody>
+        </table>
+
+        <table id="matrix" class="colw150">
+            <thead>
+            <tr>
+                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^u$</th>
+                <th class="cell_count"></th>
+                <!-- ko foreach: { data: seqList, as: 'base' } -->
+                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
+                <!-- /ko -->
+            </tr>
+            </thead>
+
+            <tbody id='matrix_data' data-bind="foreach: { data: cells()[3], as: 'cell' }">
+            <tr>
+                <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
+                <!-- ko foreach: { data: cell, as: 'v' } -->
+                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td>
+                <!-- /ko -->
+            </tr>
+            </tbody>
+        </table>
+
     </div>
 
     <div class="footer">
@@ -125,10 +184,10 @@
         src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script src="js/libs/jquery.min.js"></script>
 <script src="js/nussinovmatrix.js"></script>
+<script src="js/string-format.js"></script>
+<script src="js/scripts.js"></script>
 <script src="js/visualize.js"></script>
 <!--<script src="js/visualize_structCount.js"></script>-->
-<script src="js/scripts.js"></script>
-
 </body>
 
 </html>
