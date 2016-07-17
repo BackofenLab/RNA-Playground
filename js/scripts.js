@@ -61,7 +61,7 @@ function parsePSFile(sequence, table) {
 }
 
 function mouseover(p) {
-    var par = "#" + this.parentElement.parentElement.parentElement.parentElement.id;
+    var par = "#" + this.parentElement.parentElement.parentElement.parentElement.id; // get svg name
     var rowText = par + ' .rowtext';
     var colText = par + ' .coltext';
     var rect    = par + ' .row .cell rect';
