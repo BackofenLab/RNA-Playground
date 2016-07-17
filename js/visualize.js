@@ -30,20 +30,20 @@ function NussinovMatrixViewModel() {
         energy: ko.observable(1),
     };
 
-    self.mckaskillRecursion = ko.computed(function(){
+    self.mcCaskillRecursion = ko.computed(function(){
         //console.log($(rec_select).text());
-        if($(rec_select).text() === "mcKaskill") {
-            console.log("mcKaskill");
-            self.input.recursion("mcKaskill");
+        if($(rec_select).text() === "mcCaskill") {
+            console.log("mcCaskill");
+            self.input.recursion("mcCaskill");
             self.input.allowTraceback = false;
         }
     });
 
     self.countingRecursion = ko.computed(function(){
         //console.log($(rec_select).text());
-        if($(rec_select).text()=="mycounting") {
-            console.log("mycounting");
-            self.input.recursion("mycounting");
+        if($(rec_select).text()=="nussinovCounting") {
+            console.log("nussinovCounting");
+            self.input.recursion("nussinovCounting");
             self.input.allowTraceback = false;
         }
     });
@@ -59,7 +59,7 @@ function NussinovMatrixViewModel() {
     self.renderer = function(matrix){
         //var res = JSON.parse(JSON.stringify(matrix));
         //console.log(matrix);
-        if (self.input.recursion() === "mcKaskill") {
+        if (self.input.recursion() === "mcCaskill") {
             for (var i = 0; i < matrix.cells.length; ++i) {
                 for (var j = 0; j < matrix.cells[i].length; ++j) {
                     matrix.cells[i][j].value = parseFloat(matrix.cells[i][j].value).toFixed(2);
@@ -94,9 +94,15 @@ function NussinovMatrixViewModel() {
         for(var i = 0; i < tables.length; ++i){
             tables[i] = self.renderer(tables[i]);
         }
-        if (self.input.recursion() === "mcKaskill") {
+        //if (self.input.recursion() === "mcKaskill") {
             //console.log(parsePSFile(self.input.sequence(), tables[2].cells));
-            dotplot(self.input.sequence(), tables[2].cells );
+            //dotplot(self.input.sequence(), tables[2].cells );
+        if (self.input.recursion() === "mcCaskill") {
+            //console.log(parsePSFile(self.input.sequence(), tables[2].cells));
+            $("#paired_dotplot").html(dotplot(self.input.sequence(), tables[2].cells));
+            //console.log(self.input.sequence(), tables[2].cells);
+            //console.log(matrixToCSV(self.input.sequence(), tables[2].cells));
+            $("#unpaired_dotplot").html(dotplot(self.input.sequence(), tables[3].cells));
 
         }
         return tables;
@@ -247,8 +253,8 @@ function NussinovMatrixViewModel() {
         for(var i=1; i<=seqLen;i++) {
             if (cell.traces[self.currTrace].bps.length != 0) {
                 ctx.fillStyle = "#000";
-                ctx.font = "bold 10px arial";
-                ctx.fillText('+1', cellJ * cW + (1*cW/4-2), (cellI+1) * cH + (cH/4+2));
+                ctx.font = "10px arial";
+                ctx.fillText('+1', cellJ * cW + (1*cW/4+2), (cellI+1) * cH + (cH/4+2));
                 ctx.fillStyle = "#2a6ebb";
                 ctx.font = "18px sans-serif";
                 if (i == cell.traces[self.currTrace].bps[0][0]) {
