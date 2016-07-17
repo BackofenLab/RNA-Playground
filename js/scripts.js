@@ -39,7 +39,7 @@ function validate(evt) {
         return;
     }
 }
-
+// TODO: remove
 function parsePSFile(sequence, table) {
 
     var points = "";
@@ -96,7 +96,8 @@ function dotplot(sequence, table) {
         for(var j=1; j<table[i].length; j++){
             var a = table[i][j].i;
             var b = table[i][j].j;
-            var c = Math.pow(parseFloat(table[i][j].value), 0.5);
+            //var c = Math.pow(parseFloat(table[i][j].value), 0.5);
+            var c = parseFloat(table[i][j].value);
             c = parseFloat(c.toFixed(3));
             var roww = {};
             roww[keys[0]]=a;
@@ -125,7 +126,9 @@ function dotplot(sequence, table) {
         .linkDistance(30)
         .size([width, height]);
 
-    var svg = d3.select("#output").append("svg")
+    //var svg = d3.select("#output").append("svg")
+    var dev = document.createElement("div");
+    var svg = d3.select(dev).append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .style("margin-left", -margin.left/2 + "px")
@@ -150,7 +153,9 @@ function dotplot(sequence, table) {
         matrix[i] = d3.range(n).map(function(j) { return {x: j, y: i, z: 0}; });
     });
     bpm["base-pairing-probabilities"].forEach(function(link) {
-        matrix[link.source-1][link.target-1].z += link.value;
+        //matrix[link.source-1][link.target-1].z += link.value;
+        matrix[link.source-1][link.target-1].z = link.value;
+        console.log(link.source, link.target, link.value);
         //matrix[link.target-1][link.source-1].z += link.value;
     });
 
@@ -203,7 +208,8 @@ function dotplot(sequence, table) {
             .attr("x", function(d) { return x(d.x); })
             .attr("width", x.rangeBand())
             .attr("height", x.rangeBand())
-            .style("fill-opacity", function(d) { return z(d.z); })
+            //.style("fill-opacity", function(d) { return z(d.z); })
+            .style("fill-opacity", function(d) { return Math.pow(z(d.z), 0.3); })
             .on("mouseover", mouseover)
             .on("mouseout", mouseout);
         cell.append("text")
@@ -216,4 +222,34 @@ function dotplot(sequence, table) {
             //.text("hello");
             .text(function(d) { return d.z; })
     }
+    return dev;
+}
+
+// Convert Matrix to CSV
+function matrixToCSV(sequence, matrix) {
+    var sequence_column = true;
+    var res = "";
+
+    if (sequence_column)
+        res += ",";
+    // add first row: sequence
+    for (var j in sequence) {
+        res += "," + sequence[j];
+    }
+    res += "\n";
+    for (var i = 1; i < matrix.length; ++i) {
+        if (sequence_column && i > 0)
+            res += sequence[i - 1];
+        
+        // adding row
+        for (var j in matrix[i]) {
+            if (sequence_column || j > 0)
+                res += ",";
+            if (!isNaN(matrix[i][j].value))
+                res += matrix[i][j].value;
+        }
+        res += "\n";
+    }
+
+    return res;
 }
