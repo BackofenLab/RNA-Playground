@@ -120,13 +120,13 @@ div[id=max] {
 }
 
 text.active {
-    fill: red;
+    fill: blue;
     font-weight: bolder;
     font-size: 18px;
 }
 
 rect.active{
-    fill: red;
+    fill: blue;
 }
 
 .background {

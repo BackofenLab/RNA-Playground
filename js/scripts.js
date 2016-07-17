@@ -61,29 +61,42 @@ function parsePSFile(sequence, table) {
 }
 
 function mouseover(p) {
-    d3.selectAll(".rowtext").classed("active", function(d, i) { return i == p.y; });
-    d3.selectAll(".coltext").classed("active", function(d, i) { return i == p.x; });
-    d3.selectAll(".row .cell rect").classed("active", function(d, i) { return d.y == p.y && d.x == p.x; });
-    d3.selectAll(".row .cell text").attr("display",function(d, i) { if (d.y == p.y && d.x == p.x) return "true"; else return "none" });
+    var par = "#" + this.parentElement.parentElement.parentElement.parentElement.id;
+    var rowText = par + ' .rowtext';
+    var colText = par + ' .coltext';
+    var rect    = par + ' .row .cell rect';
+    var text    = par + ' .row .cell text';
+
+    d3.selectAll(rowText).classed("active", function(d, i) { return i == p.y; });
+    d3.selectAll(colText).classed("active", function(d, i) { return i == p.x; });
+    d3.selectAll(rect).classed("active", function(d, i) { return d.y == p.y && d.x == p.x; });
+    d3.selectAll(text).attr("display",function(d, i) { if (d.y == p.y && d.x == p.x) return "true"; else return "none" });
 }
 
 function mouseout() {
+    var par = "#" + this.parentElement.parentElement.parentElement.parentElement.id;
+    var rect    = par + ' .row .cell rect';
+
     d3.selectAll("text").classed("active", false);
-    d3.selectAll(".cell").classed("active", false);
+    d3.selectAll(rect).classed("active", false);
     d3.selectAll(".row .cell text").attr("display","none");
 }
 
 function showtext() {
-    d3.selectAll(".row .cell text")
+    var par = "#" + this.parentElement.parentElement.parentElement.parentElement.id;
+    var text    = par + ' .row .cell text';
+    d3.selectAll(text)
         .attr("display","true")
 }
 
 function hidetext() {
-    d3.selectAll(".row .cell text")
+    var par = "#" + this.parentElement.parentElement.parentElement.parentElement.id;
+    var text    = par + ' .row .cell text';
+    d3.selectAll(text)
         .attr("display","none")
 }
 
-function dotplot(sequence, table) {
+function dotplot(sequence, table, pname) {
     console.log('hi');
     var maindic = {};
 
@@ -129,6 +142,7 @@ function dotplot(sequence, table) {
     //var svg = d3.select("#output").append("svg")
     var dev = document.createElement("div");
     var svg = d3.select(dev).append("svg")
+        .attr("id", pname)
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .style("margin-left", -margin.left/2 + "px")
@@ -155,7 +169,7 @@ function dotplot(sequence, table) {
     bpm["base-pairing-probabilities"].forEach(function(link) {
         //matrix[link.source-1][link.target-1].z += link.value;
         matrix[link.source-1][link.target-1].z = link.value;
-        console.log(link.source, link.target, link.value);
+        //console.log(link.source, link.target, link.value);
         //matrix[link.target-1][link.source-1].z += link.value;
     });
 

@@ -99,10 +99,10 @@ function NussinovMatrixViewModel() {
             //dotplot(self.input.sequence(), tables[2].cells );
         if (self.input.recursion() === "mcCaskill") {
             //console.log(parsePSFile(self.input.sequence(), tables[2].cells));
-            $("#paired_dotplot").html(dotplot(self.input.sequence(), tables[2].cells));
+            $("#paired_dotplot").html(dotplot(self.input.sequence(), tables[2].cells, 'pd'));
             //console.log(self.input.sequence(), tables[2].cells);
             //console.log(matrixToCSV(self.input.sequence(), tables[2].cells));
-            $("#unpaired_dotplot").html(dotplot(self.input.sequence(), tables[3].cells));
+            $("#unpaired_dotplot").html(dotplot(self.input.sequence(), tables[3].cells, 'ud'));
 
         }
         return tables;
