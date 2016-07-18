@@ -16,7 +16,7 @@
     <!-- <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> -->
 </head>
 
-<body>
+<body onload="getFormula_structCount();">
 
 <!-- #########  PAGE MENU  ############## -->
 
@@ -37,7 +37,7 @@
         <div class="row">
             <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
             <div class="colW400">
-                <select data-bind="value: input.loopLength()" id="ll" style="width:40px;">
+                <select data-bind="value: input.loopLength" id="ll" style="width:40px;">
                     <option value=0 selected="selected">0</option>
                     <option value=1>1</option>
                     <option value=2>2</option>

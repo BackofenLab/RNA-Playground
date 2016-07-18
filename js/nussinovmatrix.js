@@ -513,13 +513,14 @@ NussinovDPAlgorithm_Ambiguous.computeMatrix = function (input) {
 // resize and initialize matrix
     this.Tables[0].init(input.sequence(), "ambiguous");
 // store minimal loop length
-    this.Tables[0].minLoopLength = input.loopLength();
+    var minLL = parseInt(input.loopLength());
+    this.Tables[0].minLoopLength = minLL;
     //console.log("computing ambiguos matrix");
 // fill matrix by diagonals
 // iterate over all substructure spans that can have a base pair
-    for (var span = input.loopLength(); span < this.Tables[0].getDim(); span++) {
+    for (var span = this.Tables[0].minLoopLength; span < this.Tables[0].getDim(); span++) {
         // iterate over all rows
-        for (var i = 1; i < this.Tables[0].getDim() - input.loopLength(); i++) {
+        for (var i = 1; i < this.Tables[0].getDim() - this.Tables[0].minLoopLength; i++) {
             // get column for current span
             var j = i + span;
 
@@ -734,17 +735,19 @@ NussinovDPAlgorithm_Unique.Tables[0].latex_representation = "D(i,j) = \\max \\be
 
 NussinovDPAlgorithm_Unique.computeMatrix = function (input) {
 
+    console.log('input:', input);
 // resize and initialize matrix
     this.Tables[0].init(input.sequence(), "unique");
 // store minimal loop length
-    this.Tables[0].minLoopLength = input.loopLength();
+    var minLL = parseInt(input.loopLength());
+    this.Tables[0].minLoopLength = minLL;
 
     console.log(input.loopLength());
 // fill matrix by diagonals
 // iterate over all substructure spans that can have a base pair
-    for (var span = input.loopLength(); span < this.Tables[0].getDim(); span++) {
+    for (var span = this.Tables[0].minLoopLength; span < this.Tables[0].getDim(); span++) {
         // iterate over all rows
-        for (var i = 0; i < this.Tables[0].getDim() - input.loopLength(); i++) {
+        for (var i = 0; i < this.Tables[0].getDim() - this.Tables[0].minLoopLength ; i++) {
             // get column for current span
             var j = i + span;
 
@@ -752,7 +755,7 @@ NussinovDPAlgorithm_Unique.computeMatrix = function (input) {
             this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i, j - 1]], []));
 
             // check base pair based decomposition : (k,j) base pair
-            for (var k = i; k + input.loopLength() < j; k++) {
+            for (var k = i; k + this.Tables[0].minLoopLength < j; k++) {
                 // check if sequence positions are compatible
                 if (RnaUtil.areComplementary(input.sequence()[k - 1], input.sequence()[j - 1])) {
                     this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i, k - 1], [k + 1, j - 1]], [[k, j]]));
@@ -879,13 +882,14 @@ NussinovDPAlgorithm_Ambiguous2.computeMatrix = function (input) {
 // resize and initialize matrix
     this.Tables[0].init(input.sequence(), "Ambiguous2");
 // store minimal loop length
-    this.Tables[0].minLoopLength = input.loopLength();
+    var minLL = parseInt(input.loopLength());
+    this.Tables[0].minLoopLength = minLL;
 
 // fill matrix by diagonals
 // iterate over all substructure spans that can have a base pair
-    for (var span = input.loopLength(); span < this.Tables[0].getDim(); span++) {
+    for (var span = this.Tables[0].minLoopLength; span < this.Tables[0].getDim(); span++) {
         // iterate over all rows
-        for (var i = 1; i < this.Tables[0].getDim() - input.loopLength(); i++) {
+        for (var i = 1; i < this.Tables[0].getDim() - this.Tables[0].minLoopLength; i++) {
             // get column for current span
             var j = i + span;
 
@@ -1136,7 +1140,8 @@ NussinovDPAlgorithm_structuresCount.computeMatrix = function (input) {
 
     this.Tables[0].init(input.sequence(), "structuresCount");
     // store minimal loop length
-    this.Tables[0].minLoopLength = input.loopLength();
+    var minLL = parseInt(input.loopLength());
+    this.Tables[0].minLoopLength = minLL;
 
     for (var i = 0; i < this.Tables[0].getDim(); i++) {
         for (var j = 0; j < this.Tables[0].getDim(); ++j) {
@@ -1233,8 +1238,8 @@ NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
     this.Tables[2].init(input.sequence(), "McCaskill External Base");
     this.Tables[3].init(input.sequence(), "McCaskill Unpaired");
     // store minimal loop length
-    this.Tables[0].minLoopLength = input.loopLength();
-    this.Tables[1].minLoopLength = input.loopLength();
+    var minLL = parseInt(input.loopLength());
+    this.Tables[0].minLoopLength = minLL;
 
     this.Tables[1].energy_basepair = input.energy();
 
@@ -1283,8 +1288,9 @@ var DPAlgorithm_MEA = Object.create(DPAlgorithm);
 DPAlgorithm_MEA.Description = "Maximum Expected Accuracy";
 DPAlgorithm_MEA.Tables = new Array();
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
-DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j}";// = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
-
+DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + p^{u}_{j} & \\text{j unpaired} \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & \\text{j paired with i} \\end{cases}";
+//DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
+//DPAlgorithm_MEA.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 &  S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
 DPAlgorithm_MEA.Tables[0].updateCell = function (i, j, curVal, curAncestor) {
 
     var curCell = this.getCell(i, j);
@@ -1332,7 +1338,8 @@ DPAlgorithm_MEA.computeMatrix = function(input) {
 
     this.Tables[0].init(input.sequence(), "Maximum Expected Accuracy");
     // store minimal loop length
-    this.Tables[0].minLoopLength = input.loopLength();
+    var minLL = parseInt(input.loopLength());
+    this.Tables[0].minLoopLength = minLL;
 
     for (var i = 0; i < this.Tables[0].getDim(); i++) {
         for (var j = 0; j < this.Tables[0].getDim(); ++j) {

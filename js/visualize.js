@@ -22,12 +22,13 @@ function NussinovMatrixViewModel() {
     self.currTrace = 0;
 
     self.input = {
-        sequence: ko.observable("GCACGACG"),
         loopLength: ko.observable(0),
+        sequence: ko.observable("GCACGACG"),
         delta: ko.observable(0),
         recursion: ko.observable("nussinovUnique"),
         allowTraceback: true,
         energy: ko.observable(1),
+
     };
 
     self.mcCaskillRecursion = ko.computed(function(){
@@ -54,6 +55,8 @@ function NussinovMatrixViewModel() {
             console.log("MaxExpAcc");
             self.input.recursion("MaxExpAcc");
             self.input.allowTraceback = true;
+            cellWidth = 48;
+            cellHeight = 28;
         }
     });
 
@@ -101,6 +104,8 @@ function NussinovMatrixViewModel() {
         }
         console.log($("#rec_select").html());
         console.log("HELLO", self.formula());
+
+
         var tables = self.formula().computeMatrix(self.input);
         for(var i = 0; i < tables.length; ++i){
             tables[i] = self.renderer(tables[i]);
@@ -136,7 +141,7 @@ function NussinovMatrixViewModel() {
 
         for(var i in self.matrix()){
 
-            console.log(matrixToCSV(self.input.sequence(), self.matrix()[i].cells));
+            //console.log(matrixToCSV(self.input.sequence(), self.matrix()[i].cells));
             if(self.matrix()[i].cells == undefined)return;
             tables.push(self.matrix()[i].cells.slice(1));        // slice is hack to skip first row(investigate later)
         }
