@@ -48,18 +48,28 @@ function NussinovMatrixViewModel() {
         }
     });
 
+    self.maxExpAcc = ko.computed(function(){
+        //console.log($(rec_select).text());
+        if($(rec_select).text()=="MaxExpAcc") {
+            console.log("MaxExpAcc");
+            self.input.recursion("MaxExpAcc");
+            self.input.allowTraceback = true;
+        }
+    });
+
     self.seqList = ko.computed(function(){
         return self.input.sequence().toUpperCase().split("");
     }, this);
 
     self.formula = ko.computed(function(){
+        console.log("recur", self.input.recursion());
         return availableAlgorithms[self.input.recursion()];
     }, this);
 
     self.renderer = function(matrix){
         //var res = JSON.parse(JSON.stringify(matrix));
         //console.log(matrix);
-        if (self.input.recursion() === "mcCaskill") {
+        if (self.input.recursion() === "mcCaskill" || self.input.recursion() === "MaxExpAcc") {
             for (var i = 0; i < matrix.cells.length; ++i) {
                 for (var j = 0; j < matrix.cells[i].length; ++j) {
                     matrix.cells[i][j].value = parseFloat(matrix.cells[i][j].value).toFixed(2);
@@ -89,7 +99,8 @@ function NussinovMatrixViewModel() {
             ctx.clearRect(0, 0, $('#CanvasLayer')[0].width, $('#CanvasLayer')[0].height);
             //ctx.stroke();
         }
-
+        console.log($("#rec_select").html());
+        console.log("HELLO", self.formula());
         var tables = self.formula().computeMatrix(self.input);
         for(var i = 0; i < tables.length; ++i){
             tables[i] = self.renderer(tables[i]);
@@ -124,6 +135,8 @@ function NussinovMatrixViewModel() {
         var tables = [];
 
         for(var i in self.matrix()){
+
+            console.log(matrixToCSV(self.input.sequence(), self.matrix()[i].cells));
             if(self.matrix()[i].cells == undefined)return;
             tables.push(self.matrix()[i].cells.slice(1));        // slice is hack to skip first row(investigate later)
         }
