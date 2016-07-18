@@ -200,11 +200,13 @@ var NussinovMatrix = {
                 this.cells[i] = [];
                 for (var j = 0; j <= n; j++) {
                     // create new cell and initialize
-                    if (this.name === "structuresCount" || this.name === "McCaskill" || this.name === "McCaskill Base" || this.name === "McCaskill External Base" || this.name === "McCaskill Unpaired") {
-                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
+                    console.log("Thx", this.name);
+                    if (this.name === "unique" || this.name === "ambiguous" || this.name === "Ambiguous2" ) {
+
+                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, 0);
                     }
                     else {
-                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, 0);
+                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
                     }
                 }
                 ;
@@ -215,6 +217,10 @@ var NussinovMatrix = {
         }
         ,
 
+
+        computeCell: function(i, j) {
+           // updateCell(i, j);
+        },
         /**
          * access whole object at cell location (i,j) in matrix
          * @param {int} i row #.
@@ -223,12 +229,11 @@ var NussinovMatrix = {
          */
         getCell: function (i, j) {
             // check border cases
-            if (i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
+            if (i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim() || i > j + 1) {
                 return null;
             }
-            // check invalid cell access
-            if (i > j + 1) {
-                return null;
+            if (this.cells[i][j] === null) {
+                //this.cells[i][j] = computeCell(i, j);
             }
             return this.cells[i][j];
         }
@@ -469,7 +474,6 @@ var NussinovMatrix = {
  * @type {{Description: Algorithm description,
  *        Tables: Array of tables for all the recursive formulas,
  *        defaultPars: {}, Parameters that can be fed to the algorithm, when needed. // To Be Removed
- *        UpdateCells: DPAlgorithm.UpdateCells, // To Be Removed
  *        computeMatrix: Compute All the Tables
  *        getRecursionInLatex: Get Latex String describing the recursive equations for all the tables.}}
  */
@@ -479,9 +483,6 @@ var DPAlgorithm = {
     Tables: [], // create new array
 
     defaultPars: {},
-
-    UpdateCells: function (i, j) {
-    },
 
     computeMatrix: function (args_dict) {
     },
@@ -541,7 +542,7 @@ NussinovDPAlgorithm_Ambiguous.computeMatrix = function (input) {
                 this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i, k], [k + 1, j]], []));
             }
             ;
-        }
+         }
         ;
     }
     ;
@@ -1276,6 +1277,252 @@ NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
     return this.Tables;
 };
 
+
+var DPAlgorithm_MEA = Object.create(DPAlgorithm);
+
+DPAlgorithm_MEA.Description = "Maximum Expected Accuracy";
+DPAlgorithm_MEA.Tables = new Array();
+DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
+DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j}";// = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
+
+DPAlgorithm_MEA.Tables[0].updateCell = function (i, j, curVal, curAncestor) {
+
+    var curCell = this.getCell(i, j);
+    if (curCell === null || curCell.value <= curVal) {
+        // check for new maximal value
+        if (curCell === null || curCell.value < curVal) {
+            // reset ancestor list
+            curCell.traces = [];
+            // store new maximum
+            curCell.value = curVal;
+        }
+        ;
+        // store this ancestor
+        curCell.traces.push(curAncestor);
+    }
+    ;
+
+}
+// "{"parents":[[2,1]],"bps":[[1,2]]}"
+DPAlgorithm_MEA.Tables[0].computeValue = function(i, j) {
+
+    if (i > j || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
+        return 0;
+    }
+    var unpaired_j = 1.0;
+    for (var k = j - 1; k >= 0; --k) {
+        unpaired_j -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j);
+    }
+    this.updateCell(i, j, this.getValue(i, j - 1) + unpaired_j, Object.create(NussinovCellTrace).init([[i, j - 1]], []));
+
+    if (RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
+        this.updateCell(i, j, this.getValue(i + 1, j - 1) + NussinovDPAlgorithm_McCaskill.Tables[2].getValue(i, j), Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [i, j]));
+    }
+
+    for (var k = i; k < j - this.minLoopLength; ++k) {
+        this.updateCell(i, j, this.getValue(i, k) + this.getValue(k + 1, j), Object.create(NussinovCellTrace).init([[i, k], [k + 1, j]], []));
+    }
+
+    return this.getCell(i, j).value;
+};
+
+DPAlgorithm_MEA.computeMatrix = function(input) {
+    
+    NussinovDPAlgorithm_McCaskill.computeMatrix(input);
+
+    this.Tables[0].init(input.sequence(), "Maximum Expected Accuracy");
+    // store minimal loop length
+    this.Tables[0].minLoopLength = input.loopLength();
+
+    for (var i = 0; i < this.Tables[0].getDim(); i++) {
+        for (var j = 0; j < this.Tables[0].getDim(); ++j) {
+            // get column for current span
+            this.Tables[0].getValue(i, j);
+        }
+        ;
+    }
+    ;
+
+    return this.Tables;
+};
+
+
+DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
+    var Nmax = this.getCell(1, this.sequence.length).value;
+    var R = [];
+    var ij = sigma.pop();
+    //console.log(ij);
+
+    // check for sane interval
+    // if i>j dont continue
+    if (ij[0] >= ij[1]) {
+        //console.log("ij[0] > ij[1]", ij[0], ij[1]);
+        var S_prime = {};
+
+        var sigma_prime = JSON.stringify(sigma);
+        sigma_prime = JSON.parse(sigma_prime);
+
+        var tmp_P = JSON.stringify(P);
+        tmp_P = JSON.parse(tmp_P);
+
+        var tmp_traces = JSON.stringify(traces);
+        tmp_traces = JSON.parse(tmp_traces);
+
+        S_prime.sigma = sigma_prime;
+        S_prime.P = tmp_P;
+        S_prime.traces = tmp_traces;
+
+        R.push(S_prime);
+        //console.log("returning R:", JSON.stringify(R));
+        return R;
+    }
+
+    // if (i,j) == (i+1,j-1) + bp(ij)
+    {
+        //if (ij[1] - ij[0] > this.minLoopLength) {
+            //console.log(this.sequence);
+            //console.log(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1]);
+            //if (RnaUtil.areComplementary(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1])) {
+                var sigma_prime = JSON.stringify(sigma);
+                sigma_prime = JSON.parse(sigma_prime);
+                sigma_prime.push([ij[0] + 1, ij[1] - 1]);
+
+                var tmp_P = JSON.stringify(P);
+                tmp_P = JSON.parse(tmp_P);
+                tmp_P.push([ij[0], ij[1]]);
+
+                var tmp_traces = JSON.stringify(traces);
+                tmp_traces = JSON.parse(tmp_traces);
+
+                var NSprime = this.countBasepairs(tmp_P, sigma_prime);
+
+                if (NSprime >= Nmax - delta) {
+                    var S_prime = {};
+                    S_prime.sigma = sigma_prime;
+                    S_prime.P = tmp_P;
+                    tmp_traces.unshift([ij, [[ij[0] + 1, ij[1] - 1]]]);
+                    S_prime.traces = tmp_traces;
+                    //console.log("i+1,j-1:", JSON.stringify(S_prime));
+                    // push to the front to keep base pair most prominent to refine
+                    R.unshift(S_prime);
+                }
+           // }
+       // }
+
+        // check if enough structures found so far
+        if (R.length >= maxLengthR) {
+            //console.log("returning R:", JSON.stringify(R));
+            return R;
+        }
+    }
+
+    // if (i,j) == (i+1,j)
+    {
+        var sigma_prime = JSON.stringify(sigma);
+        sigma_prime = JSON.parse(sigma_prime);
+        sigma_prime.unshift([ij[0] + 1, ij[1]]);
+
+        var tmp_P = JSON.stringify(P);
+        tmp_P = JSON.parse(tmp_P);
+
+        var tmp_traces = JSON.stringify(traces);
+        tmp_traces = JSON.parse(tmp_traces);
+
+        var NSprime = this.countBasepairs(P, sigma_prime);
+
+        if (NSprime >= Nmax - delta) {
+            var S_prime = {};
+            S_prime.sigma = sigma_prime;
+            S_prime.P = tmp_P;
+            tmp_traces.unshift([ij, [[ij[0] + 1, ij[1]]]]);
+            S_prime.traces = tmp_traces;
+            //console.log("i+1,j:", JSON.stringify(S_prime));
+            // push to the front to keep base pair most prominent to refine
+            R.unshift(S_prime);
+        }
+
+        // check if enough structures found so far
+        if (R.length >= maxLengthR) {
+            //console.log("returning R:", JSON.stringify(R));
+            return R;
+        }
+    }
+
+    // if (i,j) == (i,j-1)
+    {
+        var sigma_prime = JSON.stringify(sigma);
+        sigma_prime = JSON.parse(sigma_prime);
+        sigma_prime.unshift([ij[0], ij[1] - 1]);
+
+        var tmp_P = JSON.stringify(P);
+        tmp_P = JSON.parse(tmp_P);
+
+        var tmp_traces = JSON.stringify(traces);
+        tmp_traces = JSON.parse(tmp_traces);
+
+        var NSprime = this.countBasepairs(P, sigma_prime);
+
+        if (NSprime >= Nmax - delta) {
+            var S_prime = {};
+            S_prime.sigma = sigma_prime;
+            S_prime.P = tmp_P;
+            tmp_traces.unshift([ij, [[ij[0], ij[1] - 1]]]);
+            S_prime.traces = tmp_traces;
+            //console.log("i,j-1:", JSON.stringify(S_prime));
+            // push to the front to keep base pair most prominent to refine
+            R.unshift(S_prime);
+        }
+
+        // check if enough structures found so far
+        if (R.length >= maxLengthR) {
+            //console.log("returning R:", JSON.stringify(R));
+            return R;
+        }
+    }
+
+    // if (i,j) == (i,l) + (l+1, j)
+    for (var l = ij[0] + 1; l < ij[1] - 1; l++) {
+
+        var sigma_prime = JSON.stringify(sigma);
+        sigma_prime = JSON.parse(sigma_prime);
+        sigma_prime.push([ij[0], l]);
+        sigma_prime.push([l + 1, ij[1]]);
+
+        var tmp_P = JSON.stringify(P);
+        tmp_P = JSON.parse(tmp_P);
+
+        var tmp_traces = JSON.stringify(traces);
+        tmp_traces = JSON.parse(tmp_traces);
+
+        var NSprime = this.countBasepairs(tmp_P, sigma_prime);
+
+        if (NSprime >= Nmax - delta) {
+
+            var S_prime = {};
+            S_prime.sigma = sigma_prime;
+            S_prime.P = tmp_P;
+            tmp_traces.unshift([ij, [[ij[0], l], [l + 1, ij[1]]]]);
+            S_prime.traces = tmp_traces;
+            //console.log("ilj:", JSON.stringify(S_prime));
+            // push to the front to keep base pair most prominent to refine
+            R.unshift(S_prime);
+        }
+
+        // check if enough structures found so far
+        if (R.length >= maxLengthR) {
+            //console.log("returning R:", JSON.stringify(R));
+            return R;
+        }
+
+    }
+
+    console.log("returning R:", JSON.stringify(R));
+    return R;
+}
+;
+
+
+
 /**
  * global list of available Nussinov algorithm implementations
  */
@@ -1295,6 +1542,9 @@ var availableAlgorithms = {
 
     /** structure counting */
     nussinovCounting: NussinovDPAlgorithm_structuresCount,
+
+    /** Maximum Expected Accuracy*/
+    MaxExpAcc: DPAlgorithm_MEA,
 
 };
 

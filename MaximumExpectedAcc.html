@@ -62,7 +62,7 @@
                 <label for="delta" style="margin-left:10px;">for suboptimal traceback</label>
             </div>
         </div>
-        <div class="row">
+        <!-- div class="row">
             <div class="colW200" style="font-size: 120%">Nussinov Recursion:</div>
             <div class="colW400">
                 <select onchange="showRecursion()" id= "formula" data-bind="value: input.recursion" style="width:150px;">
@@ -72,9 +72,9 @@
                 </select>
                 <label for="formula" style="margin-left:10px;">used for matrix calculating</label>
             </div>
-        </div>
+        </div -->
         <div class="row">
-            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">""</div>
+            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">MaxExpAcc</div>
             <div style="height: 80px;" id="recursion" class="colW400"></div>
         </div>
 
@@ -86,7 +86,7 @@
             <table  class="colw150" style="display: inline-block; float: left">
                 <thead>
                 <tr>
-                    <th class="cell_th">$D$</th>
+                    <th class="cell_th">$M$</th>
                     <th class="cell_th"></th>
                     <!-- ko foreach: { data: seqList, as: 'base' } -->
                     <th class="cell_th" data-bind="writeSeq: [base, $index()+1]"></th>
@@ -146,9 +146,6 @@
 <script src="js/nussinovmatrix.js"></script>
 <script src="js/scripts.js"></script>
 <script src="js/visualize.js"></script>
-<script type="text/javascript">
-    showRecursion();
-</script>
 </body>
 
 </html>
