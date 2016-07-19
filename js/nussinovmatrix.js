@@ -1362,7 +1362,7 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
 
     // check for sane interval
     // if i>j dont continue
-    if (ij[0] >= ij[1]) {
+    if (ij[0] > ij[1]) {
         //console.log("ij[0] > ij[1]", ij[0], ij[1]);
         var S_prime = {};
 
@@ -1386,10 +1386,10 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
 
     // if (i,j) == (i+1,j-1) + bp(ij)
     {
-        //if (ij[1] - ij[0] > this.minLoopLength) {
+        if (ij[1] - ij[0] > this.minLoopLength) {
             //console.log(this.sequence);
             //console.log(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1]);
-            //if (RnaUtil.areComplementary(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1])) {
+            if (RnaUtil.areComplementary(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1])) {
                 var sigma_prime = JSON.stringify(sigma);
                 sigma_prime = JSON.parse(sigma_prime);
                 sigma_prime.push([ij[0] + 1, ij[1] - 1]);
@@ -1413,39 +1413,7 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
                     // push to the front to keep base pair most prominent to refine
                     R.unshift(S_prime);
                 }
-           // }
-       // }
-
-        // check if enough structures found so far
-        if (R.length >= maxLengthR) {
-            //console.log("returning R:", JSON.stringify(R));
-            return R;
-        }
-    }
-
-    // if (i,j) == (i+1,j)
-    {
-        var sigma_prime = JSON.stringify(sigma);
-        sigma_prime = JSON.parse(sigma_prime);
-        sigma_prime.unshift([ij[0] + 1, ij[1]]);
-
-        var tmp_P = JSON.stringify(P);
-        tmp_P = JSON.parse(tmp_P);
-
-        var tmp_traces = JSON.stringify(traces);
-        tmp_traces = JSON.parse(tmp_traces);
-
-        var NSprime = this.countBasepairs(P, sigma_prime);
-
-        if (NSprime >= Nmax - delta) {
-            var S_prime = {};
-            S_prime.sigma = sigma_prime;
-            S_prime.P = tmp_P;
-            tmp_traces.unshift([ij, [[ij[0] + 1, ij[1]]]]);
-            S_prime.traces = tmp_traces;
-            //console.log("i+1,j:", JSON.stringify(S_prime));
-            // push to the front to keep base pair most prominent to refine
-            R.unshift(S_prime);
+            }
         }
 
         // check if enough structures found so far
@@ -1487,41 +1455,6 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
         }
     }
 
-    // if (i,j) == (i,l) + (l+1, j)
-    for (var l = ij[0] + 1; l < ij[1] - 1; l++) {
-
-        var sigma_prime = JSON.stringify(sigma);
-        sigma_prime = JSON.parse(sigma_prime);
-        sigma_prime.push([ij[0], l]);
-        sigma_prime.push([l + 1, ij[1]]);
-
-        var tmp_P = JSON.stringify(P);
-        tmp_P = JSON.parse(tmp_P);
-
-        var tmp_traces = JSON.stringify(traces);
-        tmp_traces = JSON.parse(tmp_traces);
-
-        var NSprime = this.countBasepairs(tmp_P, sigma_prime);
-
-        if (NSprime >= Nmax - delta) {
-
-            var S_prime = {};
-            S_prime.sigma = sigma_prime;
-            S_prime.P = tmp_P;
-            tmp_traces.unshift([ij, [[ij[0], l], [l + 1, ij[1]]]]);
-            S_prime.traces = tmp_traces;
-            //console.log("ilj:", JSON.stringify(S_prime));
-            // push to the front to keep base pair most prominent to refine
-            R.unshift(S_prime);
-        }
-
-        // check if enough structures found so far
-        if (R.length >= maxLengthR) {
-            //console.log("returning R:", JSON.stringify(R));
-            return R;
-        }
-
-    }
 
     console.log("returning R:", JSON.stringify(R));
     return R;
