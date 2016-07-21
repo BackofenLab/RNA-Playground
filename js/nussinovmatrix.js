@@ -22,6 +22,12 @@ var RnaUtil = {
      */
     areComplementary: function (nt1, nt2) {
         //console.log("areComp:", nt1, nt2);
+        if(nt1 != undefined) {
+            nt1 = nt1.toUpperCase();
+        }
+        if(nt2 != undefined) {
+            nt2 = nt2.toUpperCase();
+        }
         var complementary =
             (nt1 === "A" && nt2 === "U") || (nt1 === "U" && nt2 === "A") ||
             (nt1 === "G" && nt2 === "C") || (nt1 === "C" && nt2 === "G") ||
@@ -735,14 +741,13 @@ NussinovDPAlgorithm_Unique.Tables[0].latex_representation = "D(i,j) = \\max \\be
 
 NussinovDPAlgorithm_Unique.computeMatrix = function (input) {
 
-    console.log('input:', input);
+
 // resize and initialize matrix
     this.Tables[0].init(input.sequence(), "unique");
 // store minimal loop length
     var minLL = parseInt(input.loopLength());
     this.Tables[0].minLoopLength = minLL;
 
-    console.log(input.loopLength());
 // fill matrix by diagonals
 // iterate over all substructure spans that can have a base pair
     for (var span = this.Tables[0].minLoopLength; span < this.Tables[0].getDim(); span++) {
@@ -1040,7 +1045,7 @@ function wuchty_2nd(xmat, delta, formula) {
  * WUCHTY(2nd version)
  */
 function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
-    if (xmat.sequence == undefined)return;
+    if (xmat == undefined)return;
     var seq_length = xmat.sequence.length;
     var Nmax = xmat.getCell(1, seq_length).value;
     //console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");

@@ -35,6 +35,20 @@
         </div>
 
         <div class="row">
+            <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
+            <div class="colW400">
+                <select data-bind="value: input.loopLength" id="ll" style="width:40px;">
+                    <option value=0 selected="selected">0</option>
+                    <option value=1>1</option>
+                    <option value=2>2</option>
+                    <option value=3>3</option>
+                    <option value=4>4</option>
+                    <option value=5>5</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="colW200" style="font-size: 120%">Delta #bp to maximum:</div>
             <div class="colW400">
                 <select id= "delta" data-bind="value: input.delta" style="width:40px;">
@@ -48,21 +62,6 @@
                 <label for="delta" style="margin-left:10px;">for suboptimal traceback</label>
             </div>
         </div>
-
-        <div class="row">
-            <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
-            <div class="colW400">
-                <select id="ll"  data-bind="value: input.loopLength" style="width:40px;">
-                    <option value=0 selected="selected">0</option>
-                    <option value=1>1</option>
-                    <option value=2>2</option>
-                    <option value=3>3</option>
-                    <option value=4>4</option>
-                    <option value=5>5</option>
-                </select>
-            </div>
-        </div>
-
         <div class="row">
             <div class="colW200" style="font-size: 120%">Nussinov Recursion:</div>
             <div class="colW400">

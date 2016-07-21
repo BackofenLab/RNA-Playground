@@ -105,19 +105,14 @@ function NussinovMatrixViewModel() {
         console.log($("#rec_select").html());
         console.log("HELLO", self.formula());
 
-
+        console.log('input:', self.input.sequence(), self.input.loopLength(), self.input.delta(), self.input.recursion());
         var tables = self.formula().computeMatrix(self.input);
         for(var i = 0; i < tables.length; ++i){
             tables[i] = self.renderer(tables[i]);
         }
-        //if (self.input.recursion() === "mcKaskill") {
-            //console.log(parsePSFile(self.input.sequence(), tables[2].cells));
-            //dotplot(self.input.sequence(), tables[2].cells );
+
         if (self.input.recursion() === "mcCaskill") {
-            //console.log(parsePSFile(self.input.sequence(), tables[2].cells));
             $("#paired_dotplot").html(dotplot(self.input.sequence(), tables[2].cells, 'pd'));
-            //console.log(self.input.sequence(), tables[2].cells);
-            //console.log(matrixToCSV(self.input.sequence(), tables[2].cells));
             $("#unpaired_dotplot").html(dotplot(self.input.sequence(), tables[3].cells, 'ud'));
 
         }
