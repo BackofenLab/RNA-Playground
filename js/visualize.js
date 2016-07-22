@@ -21,12 +21,18 @@ function NussinovMatrixViewModel() {
     };
     self.currTrace = 0;
     self.rawSeq = ko.observable("GCACGACG");
+    self.rawSeq2 = ko.observable("GCACGACG");
     self.input = {
         loopLength: ko.observable(0),
         sequence: ko.computed(function(){
             if (self.rawSeq()==undefined)
                 return;
           return self.rawSeq().toUpperCase();
+        }),
+        sequence2: ko.computed(function(){
+            if (self.rawSeq()==undefined)
+                return;
+            return self.rawSeq().toUpperCase();
         }),
         //sequence : ko.observable("GCACGACG"),
         delta: ko.observable(0),
@@ -63,6 +69,17 @@ function NussinovMatrixViewModel() {
             self.input.allowTraceback = true;
             cellWidth = 48;
             cellHeight = 28;
+        }
+    });
+
+    self.nussiFold = ko.computed(function(){
+        //console.log($(rec_select).text());
+        if($(rec_select).text()=="nussinovFold") {
+            console.log("nussinovFold");
+            self.input.recursion("nussinovFold");
+            self.input.allowTraceback = true;
+            //cellWidth = 48;
+            //cellHeight = 28;
         }
     });
 

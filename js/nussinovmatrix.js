@@ -1461,6 +1461,130 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
 }
 ;
 
+var DPAlgorithm_nussiFold = Object.create(DPAlgorithm);
+
+DPAlgorithm_nussiFold.Description = "NussinovFolding";
+DPAlgorithm_nussiFold.Tables = new Array();
+DPAlgorithm_nussiFold.Tables.push(Object.create(NussinovMatrix));
+DPAlgorithm_nussiFold.Tables.push(Object.create(NussinovMatrix));
+//DPAlgorithm_nussiFold.Tables.push(Object.create(NussinovMatrix));
+
+DPAlgorithm_nussiFold.Tables[0].latex_representation = "D2(i,j) = \\min \\begin{cases} D2(i-1,j-1) + d(i,j) \\text{match/mismatch} \\\\ D2(i-1,j) + d(i,_) \\text{deletion}  \\\\ D2(i,j-1) + d(_,j) \\text{insertion}  \\end{cases}";
+//DPAlgorithm_nussiFold.Tables[0].latex_representation = "D2(i,j) = \\min \\begin{cases} w_{g}=1 & \\text{i=_ or j=_} \\\\ w_{m}=1 & S_{1i} \\neq S_{2j} \\\\0  & S_{1_{i}} = S_{2_{j}} \\end{cases}";
+DPAlgorithm_nussiFold.Tables[1].latex_representation = "D1(i,j) = \\max \\begin{cases} D1(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D1(i,k-1)+D1(k+1,j-1)+1 & S_k,S_j \\text{ compl. base pair} \\end{cases}";
+//DPAlgorithm_nussiFold.Tables[2].latex_representation = "D2(i,j) = \\max \\begin{cases} D2(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D2(i,k-1)+D2(k+1,j-1)+1 & S_k,S_j \\text{ compl. base pair} \\end{cases}";
+
+
+DPAlgorithm_nussiFold.Tables[0].init = function (seq1, seq2, name) { //initialize matrix
+
+    // reset data
+    this.sequence = null;
+    this.sequence2= null;
+    this.name = null;
+    this.cells = [];
+
+    // check input
+    if (sequence == null || sequence === "" || sequence2 == null || sequence2 === "" || name == null) {
+        console.log("Matrix init failed for sequence (", sequence, ") and (", sequence2, ")");
+        return this;
+    }
+
+    // store sequence
+    this.sequence = seq1;
+    this.sequence2= seq2.split('').reverse().join(''); //rev seq2
+    this.name = name;
+
+    // create matrix cells
+    var n = this.sequence.length;
+    var n2 = this.sequence2.length;
+    for (var i = 0; i <= n; i++) {
+        this.cells[i] = [];
+        for (var j = 0; j <= n2; j++) {
+            // create new cell and initialize
+            console.log("Thx", this.name);
+            this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
+        }
+        ;
+    }
+    ;
+
+    return this;
+}
+,
+
+DPAlgorithm_nussiFold.Tables[0].getDim = function () {
+    if (this.cells === null) {
+        return 0;
+    }
+    return [this.cells[0].length, this.cells.length];
+}
+,
+
+DPAlgorithm_nussiFold.Tables[0].updateCell = function (i, j, curVal) {
+
+    var curCell = this.getCell(i, j);
+    if (curCell === null || curCell.value <= curVal) {
+        // check for new maximal value
+        if (curCell === null || curCell.value < curVal) {
+            // reset ancestor list
+            curCell.traces = [];
+            // store new maximum
+            curCell.value = curVal;
+        }
+        ;
+        // store this ancestor
+        //curCell.traces.push(curAncestor);
+    }
+    ;
+
+}
+// "{"parents":[[2,1]],"bps":[[1,2]]}"
+DPAlgorithm_nussiFold.Tables[0].computeValue = function(i, j) {
+
+    if (i < 0 || j < 0 || i >= this.getDim()[0] || j >= this.getDim()[1]) {
+        return 0;
+    }
+
+    if(j==0){
+        this.updateCell(i, j, i);
+        return;
+    }
+    if(i==0){
+        this.updateCell(i, j, j);
+        return;
+    };
+
+    var left = this.getValue(i-1, j);
+    var top  = this.getValue(i, j-1);
+    var diag = (this.sequence[i - 1] == this.sequence2[j - 1]) == true ? this.getValue(i-1, j-1) :  this.getValue(i-1, j-1) + 1;
+
+    this.updateCell(i, j, Math.min(left, top, diag));
+
+    return this.getCell(i, j).value;
+};
+
+DPAlgorithm_nussiFold.computeMatrix = function(input) {
+
+    //NussinovDPAlgorithm_McCaskill.computeMatrix(input);
+
+    this.Tables[0].init(input.sequence(), input.sequence2(), "NussinovFold");
+    // store minimal loop length
+    //var minLL = parseInt(input.loopLength());
+    //this.Tables[0].minLoopLength = minLL;
+    console.log('dims:', this.Tables[0].getDim()[0], this.Tables[0].getDim()[1]);
+    for (var i = 0; i < this.Tables[0].getDim()[0]; i++) {
+        for (var j = 0; j < this.Tables[0].getDim()[1]; ++j) {
+            // get column for current span
+            this.Tables[0].getValue(i, j);
+        }
+        ;
+    }
+    ;
+
+    return this.Tables;
+};
+
+
 
 
 /**
@@ -1485,6 +1609,9 @@ var availableAlgorithms = {
 
     /** Maximum Expected Accuracy*/
     MaxExpAcc: DPAlgorithm_MEA,
+
+    /** nussinov fold*/
+    nussinovFold: DPAlgorithm_nussiFold,
 
 };
 

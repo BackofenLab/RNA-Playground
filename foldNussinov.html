@@ -4,7 +4,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>RNA algorithms for teaching NussinovRecursions</title>
+    <title>RNA algorithms for teaching</title>
 
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' type='text/css'>
     <link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css">
@@ -16,7 +16,7 @@
     <!-- <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> -->
 </head>
 
-<body>
+<body onload="getFormula_structCount();">
 
 <!-- #########  PAGE MENU  ############## -->
 
@@ -28,7 +28,16 @@
         <div class="row">
             <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq" class="userInput" maxlength="12"
+                <input data-bind="value: rawSeq" class="userInput" maxlength="8"
+                       placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
+                       style="text-transform:uppercase">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
+            <div class="colW400">
+                <input data-bind="value: rawSeq2" class="userInput" maxlength="8"
                        placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
@@ -48,34 +57,34 @@
             </div>
         </div>
 
+        <!--<div class="row">-->
+            <!--<div class="colW200" style="font-size: 120%">Delta #bp to maximum:</div>-->
+            <!--<div class="colW400">-->
+                <!--<select id= "delta" data-bind="value: input.delta" style="width:40px;">-->
+                    <!--<option value=0 selected="selected">0</option>-->
+                    <!--<option value=1>1</option>-->
+                    <!--<option value=2>2</option>-->
+                    <!--<option value=3>3</option>-->
+                    <!--<option value=4>4</option>-->
+                    <!--<option value=5>5</option>-->
+                <!--</select>-->
+                <!--<label for="delta" style="margin-left:10px;">for suboptimal traceback</label>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="row">-->
+            <!--<div class="colW200" style="font-size: 120%">Nussinov Recursion:</div>-->
+            <!--<div class="colW400">-->
+                <!--<select onchange="showRecursion()" id= "formula" data-bind="value: input.recursion" style="width:150px;">-->
+                    <!--<option value="nussinovOriginal" selected="selected">Ambiguous variant</option>-->
+                    <!--<option value="nussinovUnique">Nussinov original</option>-->
+                    <!--<option value="nussinovAmbiguous2">Ambiguous2</option>-->
+                <!--</select>-->
+                <!--<label for="formula" style="margin-left:10px;">used for matrix calculating</label>-->
+            <!--</div>-->
+        <!--</div>-->
         <div class="row">
-            <div class="colW200" style="font-size: 120%">Delta #bp to maximum:</div>
-            <div class="colW400">
-                <select id= "delta" data-bind="value: input.delta" style="width:40px;">
-                    <option value=0 selected="selected">0</option>
-                    <option value=1>1</option>
-                    <option value=2>2</option>
-                    <option value=3>3</option>
-                    <option value=4>4</option>
-                    <option value=5>5</option>
-                </select>
-                <label for="delta" style="margin-left:10px;">for suboptimal traceback</label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="colW200" style="font-size: 120%">Nussinov Recursion:</div>
-            <div class="colW400">
-                <select onchange="showRecursion()" id= "formula" data-bind="value: input.recursion" style="width:150px;">
-                    <option value="nussinovOriginal" selected="selected">Ambiguous variant</option>
-                    <option value="nussinovUnique">Nussinov original</option>
-                    <option value="nussinovAmbiguous2">Ambiguous2</option>
-                </select>
-                <label for="formula" style="margin-left:10px;">used for matrix calculating</label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">""</div>
-            <div style="height: 80px;" id="recursion" class="colW400"></div>
+            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">nussinovFold</div>
+            <div style="height: 200px;" id="recursion" class="colW400"></div>
         </div>
 
     </div>
@@ -146,9 +155,9 @@
 <script src="js/nussinovmatrix.js"></script>
 <script src="js/visualize.js"></script>
 <script src="js/scripts.js"></script>
-<script type="text/javascript">
-    showRecursion();
-</script>
+<!--<script type="text/javascript">-->
+    <!--showRecursion();-->
+<!--</script>-->
 </body>
 
 </html>

@@ -13,7 +13,7 @@ div[id=inputContainer] div.row div {
     margin: 0;
 }
 
-input[id=userInput] {
+.userInput {
     border: 1px solid #c4c4c4;
     width: 300px;
     /*height: 20px;*/
