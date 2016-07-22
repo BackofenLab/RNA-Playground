@@ -20,16 +20,22 @@ function NussinovMatrixViewModel() {
         j: null
     };
     self.currTrace = 0;
-
+    self.rawSeq = ko.observable("GCACGACG");
     self.input = {
         loopLength: ko.observable(0),
-        sequence: ko.observable("GCACGACG"),
+        sequence: ko.computed(function(){
+            if (self.rawSeq()==undefined)
+                return;
+          return self.rawSeq().toUpperCase();
+        }),
+        //sequence : ko.observable("GCACGACG"),
         delta: ko.observable(0),
         recursion: ko.observable("nussinovUnique"),
         allowTraceback: true,
         energy: ko.observable(1),
 
     };
+
 
     self.mcCaskillRecursion = ko.computed(function(){
         //console.log($(rec_select).text());

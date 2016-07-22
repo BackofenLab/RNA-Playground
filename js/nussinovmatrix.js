@@ -22,12 +22,6 @@ var RnaUtil = {
      */
     areComplementary: function (nt1, nt2) {
         //console.log("areComp:", nt1, nt2);
-        if(nt1 != undefined) {
-            nt1 = nt1.toUpperCase();
-        }
-        if(nt2 != undefined) {
-            nt2 = nt2.toUpperCase();
-        }
         var complementary =
             (nt1 === "A" && nt2 === "U") || (nt1 === "U" && nt2 === "A") ||
             (nt1 === "G" && nt2 === "C") || (nt1 === "C" && nt2 === "G") ||
@@ -1045,10 +1039,11 @@ function wuchty_2nd(xmat, delta, formula) {
  * WUCHTY(2nd version)
  */
 function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
-    if (xmat == undefined)return;
+    //if (xmat == undefined)return;
+    if (xmat.sequence == undefined)return;
     var seq_length = xmat.sequence.length;
     var Nmax = xmat.getCell(1, seq_length).value;
-    //console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
+    console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
 
     var S = {sigma: [[1, seq_length]], P: [], traces: []};
     var R = [S];
