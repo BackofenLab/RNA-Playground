@@ -24,21 +24,21 @@ function NussinovMatrixViewModel() {
     self.rawSeq2 = ko.observable("GCACGACG");
     self.input = {
         loopLength: ko.observable(0),
-        sequence: ko.computed(function(){
-            if (self.rawSeq()==undefined)
-                return;
-          return self.rawSeq().toUpperCase();
-        }),
-        sequence2: ko.computed(function(){
-            if (self.rawSeq()==undefined)
-                return;
-            return self.rawSeq().toUpperCase();
-        }),
-        //sequence : ko.observable("GCACGACG"),
+
         delta: ko.observable(0),
         recursion: ko.observable("nussinovUnique"),
         allowTraceback: true,
         energy: ko.observable(1),
+        sequence: ko.computed(function(){
+            if (self.rawSeq()==undefined)
+                return;
+            if($(rec_select).text()=="nussinovFold"){
+                if (self.rawSeq2()==undefined)
+                    return;
+                return self.rawSeq().toUpperCase() + 'XXX' + self.rawSeq2().toUpperCase();
+            }
+            return self.rawSeq().toUpperCase();
+        }),
 
     };
 
