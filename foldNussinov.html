@@ -28,8 +28,8 @@
         <div class="row">
             <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq" class="userInput" maxlength="8"
-                       placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
+                <input data-bind="value: rawSeq" class="userInput" maxlength="6"
+                       placeholder="Example 'GCACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
         </div>
@@ -37,8 +37,8 @@
         <div class="row">
             <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq2" class="userInput" maxlength="8"
-                       placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
+                <input data-bind="value: rawSeq2" class="userInput" maxlength="6"
+                       placeholder="Example 'GCACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
         </div>
@@ -57,20 +57,20 @@
             </div>
         </div>
 
-        <!--<div class="row">-->
-            <!--<div class="colW200" style="font-size: 120%">Delta #bp to maximum:</div>-->
-            <!--<div class="colW400">-->
-                <!--<select id= "delta" data-bind="value: input.delta" style="width:40px;">-->
-                    <!--<option value=0 selected="selected">0</option>-->
-                    <!--<option value=1>1</option>-->
-                    <!--<option value=2>2</option>-->
-                    <!--<option value=3>3</option>-->
-                    <!--<option value=4>4</option>-->
-                    <!--<option value=5>5</option>-->
-                <!--</select>-->
-                <!--<label for="delta" style="margin-left:10px;">for suboptimal traceback</label>-->
-            <!--</div>-->
-        <!--</div>-->
+        <div class="row">
+            <div class="colW200" style="font-size: 120%">Delta #bp to maximum:</div>
+            <div class="colW400">
+                <select id= "delta" data-bind="value: input.delta" style="width:40px;">
+                    <option value=0 selected="selected">0</option>
+                    <option value=1>1</option>
+                    <option value=2>2</option>
+                    <option value=3>3</option>
+                    <option value=4>4</option>
+                    <option value=5>5</option>
+                </select>
+                <label for="delta" style="margin-left:10px;">for suboptimal traceback</label>
+            </div>
+        </div>
         <!--<div class="row">-->
             <!--<div class="colW200" style="font-size: 120%">Nussinov Recursion:</div>-->
             <!--<div class="colW400">-->
@@ -84,7 +84,7 @@
         <!--</div>-->
         <div class="row">
             <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">nussinovFold</div>
-            <div style="height: 200px;" id="recursion" class="colW400"></div>
+            <div style="height: 60px;" id="recursion" class="colW400"></div>
         </div>
 
     </div>
@@ -120,15 +120,15 @@
                 </table>
             </div>
         </div>
-        <!--<table id="structures" class="colw200" style="float: left; margin-top:30px">-->
-            <!--<thead>-->
-            <!--<th id="structTableHeading">Possible Structures</th>-->
-            <!--</thead>-->
+        <table id="structures" class="colw200" style="float: left; margin-top:30px">
+            <thead>
+            <th id="structTableHeading">Possible Structures</th>
+            </thead>
 
-            <!--<tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">-->
-            <!--<tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"></td></tr>-->
-            <!--</tbody>-->
-        <!--</table>-->
+            <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
+            <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"></td></tr>
+            </tbody>
+        </table>
 
 
 

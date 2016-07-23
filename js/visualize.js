@@ -20,8 +20,8 @@ function NussinovMatrixViewModel() {
         j: null
     };
     self.currTrace = 0;
-    self.rawSeq = ko.observable("GCACGACG");
-    self.rawSeq2 = ko.observable("GCACGACG");
+    self.rawSeq = ko.observable("GCACGA");
+    self.rawSeq2 = ko.observable("GCACGA");
     self.input = {
         loopLength: ko.observable(0),
 
@@ -35,7 +35,7 @@ function NussinovMatrixViewModel() {
             if($(rec_select).text()=="nussinovFold"){
                 if (self.rawSeq2()==undefined)
                     return;
-                return self.rawSeq().toUpperCase() + 'XXX' + self.rawSeq2().toUpperCase();
+                return self.rawSeq().toUpperCase() + 'XXX' + self.rawSeq2().split("").reverse().join("").toUpperCase();
             }
             return self.rawSeq().toUpperCase();
         }),

@@ -1469,40 +1469,18 @@ DPAlgorithm_nussiFold.Tables.push(Object.create(NussinovMatrix));
 
 DPAlgorithm_nussiFold.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D(i,k-1)+D(k+1,j-1)+1 & S_k,S_j \\text{ compl. base pair} \\end{cases}";
 
-DPAlgorithm_nussiFold.Tables[0].updateCell = function (i, j, curVal) {
-
-
-}
-// "{"parents":[[2,1]],"bps":[[1,2]]}"
-DPAlgorithm_nussiFold.Tables[0].computeValue = function(i, j) {
-
-
-};
-
 DPAlgorithm_nussiFold.computeMatrix = function(input) {
 
-    //var newInput = JSON.parse(JSON.stringify(input));
-    //newInput.sequence = newInput.sequence + 'XXX' +newInput.sequence2;
-    //var sequence = input.sequence() + 'XXX' + input.sequence2();
-    console.log('nussifold', input.sequence);
     NussinovDPAlgorithm_Unique.computeMatrix(input);
 
     this.Tables[0].init(input.sequence(), "NussinovFold");
-
-    for (var i = 0; i < this.Tables[0].getDim(); i++) {
-        for (var j = 0; j < this.Tables[0].getDim(); ++j) {
-            // get column for current span
-            NussinovDPAlgorithm_Unique.Tables[0].getValue(i, j);
-        }
-        ;
-    }
-    ;
-
+    this.Tables[0].cells = NussinovDPAlgorithm_Unique.Tables[0].cells;
     return this.Tables;
 };
 
-
-
+DPAlgorithm_nussiFold.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
+    return NussinovDPAlgorithm_Unique.Tables[0].getSubstructures(sigma, P, traces, delta, maxLengthR);
+};
 
 /**
  * global list of available Nussinov algorithm implementations
