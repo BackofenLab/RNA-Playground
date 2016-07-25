@@ -98,7 +98,7 @@ function NussinovMatrixViewModel() {
         if (self.input.recursion() === "mcCaskill" || self.input.recursion() === "MaxExpAcc") {
             for (var i = 0; i < matrix.cells.length; ++i) {
                 for (var j = 0; j < matrix.cells[i].length; ++j) {
-                    matrix.cells[i][j].value = parseFloat(matrix.cells[i][j].value).toFixed(2);
+                    matrix.cells[i][j].value = parseFloat(matrix.cells[i][j].value).toFixed(3);
                 }
                 //console.log(p);
             }
@@ -129,16 +129,17 @@ function NussinovMatrixViewModel() {
         console.log("HELLO", self.formula());
 
         console.log('input:', self.input.sequence(), self.input.loopLength(), self.input.delta(), self.input.recursion());
-        var tables = self.formula().computeMatrix(self.input);
-        for(var i = 0; i < tables.length; ++i){
-            tables[i] = self.renderer(tables[i]);
-        }
 
+        var tables = self.formula().computeMatrix(self.input);
         if (self.input.recursion() === "mcCaskill") {
             $("#paired_dotplot").html(dotplot(self.input.sequence(), tables[2].cells, 'pd'));
             $("#unpaired_dotplot").html(dotplot(self.input.sequence(), tables[3].cells, 'ud'));
 
         }
+        for(var i = 0; i < tables.length; ++i){
+            tables[i] = self.renderer(tables[i]);
+        }
+
         return tables;
     }, this);
 
