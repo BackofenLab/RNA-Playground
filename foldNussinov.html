@@ -26,7 +26,7 @@
 
     <div id="inputContainer">
         <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
+            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence 1:</div>
             <div class="colW400">
                 <input data-bind="value: rawSeq" class="userInput" maxlength="6"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
@@ -35,7 +35,7 @@
         </div>
 
         <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
+            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence 2:</div>
             <div class="colW400">
                 <input data-bind="value: rawSeq2" class="userInput" maxlength="6"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
@@ -71,17 +71,7 @@
                 <label for="delta" style="margin-left:10px;">for suboptimal traceback</label>
             </div>
         </div>
-        <!--<div class="row">-->
-            <!--<div class="colW200" style="font-size: 120%">Nussinov Recursion:</div>-->
-            <!--<div class="colW400">-->
-                <!--<select onchange="showRecursion()" id= "formula" data-bind="value: input.recursion" style="width:150px;">-->
-                    <!--<option value="nussinovOriginal" selected="selected">Ambiguous variant</option>-->
-                    <!--<option value="nussinovUnique">Nussinov original</option>-->
-                    <!--<option value="nussinovAmbiguous2">Ambiguous2</option>-->
-                <!--</select>-->
-                <!--<label for="formula" style="margin-left:10px;">used for matrix calculating</label>-->
-            <!--</div>-->
-        <!--</div>-->
+
         <div class="row">
             <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">nussinovFold</div>
             <div style="height: 60px;" id="recursion" class="colW400"></div>
