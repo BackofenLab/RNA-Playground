@@ -68,6 +68,7 @@ table {
 
 }
 
+
 .cell_th {
     /*make cell text unselectable to get rid of ugly hover*/
     cursor: default;
@@ -102,6 +103,18 @@ div[id=max] {
 
 /* dotplot table*/
 
+
+/* cell style for table in nussinov.html */
+.dp_cell {
+    /*make cell text unselectable to get rid of ugly hover*/
+    cursor: pointer;
+    text-align: center;
+    font-size: 10px;
+    border: 1px solid #a0a0a0;
+    background: rgba(255, 255, 255, 1);
+
+}
+
 .chart div {
      font: 10px sans-serif;
      background-color: steelblue;
@@ -120,13 +133,13 @@ div[id=max] {
 }
 
 text.active {
-    fill: blue;
+    fill: rgb(0, 165, 255);
     font-weight: bolder;
     font-size: 18px;
 }
 
 rect.active{
-    fill: blue;
+    fill: rgb(0, 165, 255);
 }
 
 .background {

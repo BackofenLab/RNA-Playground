@@ -39,7 +39,7 @@
                 }).appendTo(ranges_div);
                 -->
         <div class="row">
-            <div class="colW200" style="font-size: 120%">Energy: $E_{bp}/RT$</div>
+            <div class="colW200" style="font-size: 120%">Energy weight of base pair: $E_{bp}/RT$</div>
             <div class="colW400">
                 <input data-bind="value: input.energy" id="energy" type="range" max="5" min="-1" step="(max - min) / 100">
 
@@ -61,7 +61,7 @@
         </div>
 
         <div class="row">
-            <div class="colW400" style="font-size: 120%; white-space: nowrap;">Recursion for counting the number of possible structures:</div>
+            <div class="colW400" style="font-size: 120%; white-space: nowrap;">Recursion of McCaskill:</div>
         </div>
         <div class="row">
             <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">mcCaskill</div>
@@ -121,7 +121,7 @@
         <table id="matrix" class="colw150">
             <thead>
             <tr>
-                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^E$</th>
+                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^{bp}$</th>
                 <th class="cell_count"></th>
                 <!-- ko foreach: { data: seqList, as: 'base' } -->
                 <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
@@ -142,7 +142,7 @@
         <table id="matrix" class="colw150">
             <thead>
             <tr>
-                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^u$</th>
+                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^U$</th>
                 <th class="cell_count"></th>
                 <!-- ko foreach: { data: seqList, as: 'base' } -->
                 <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>

@@ -45,8 +45,8 @@ function mouseover(p) {
     var par = "#" + this.parentElement.parentElement.parentElement.parentElement.id; // get svg name
     var rowText = par + ' .rowtext';
     var colText = par + ' .coltext';
-    var rect    = par + ' .row .cell rect';
-    var text    = par + ' .row .cell text';
+    var rect    = par + ' .row .dp_cell rect';
+    var text    = par + ' .row .dp_cell text';
 
     d3.selectAll(rowText).classed("active", function(d, i) { return i == p.y; });
     d3.selectAll(colText).classed("active", function(d, i) { return i == p.x; });
@@ -56,23 +56,23 @@ function mouseover(p) {
 
 function mouseout() {
     var par = "#" + this.parentElement.parentElement.parentElement.parentElement.id;
-    var rect    = par + ' .row .cell rect';
+    var rect    = par + ' .row .dp_cell rect';
 
     d3.selectAll("text").classed("active", false);
     d3.selectAll(rect).classed("active", false);
-    d3.selectAll(".row .cell text").attr("display","none");
+    d3.selectAll(".row .dp_cell text").attr("display","none");
 }
 
 function showtext() {
     var par = "#" + this.parentElement.parentElement.parentElement.parentElement.id;
-    var text    = par + ' .row .cell text';
+    var text    = par + ' .row .dp_cell text';
     d3.selectAll(text)
         .attr("display","true")
 }
 
 function hidetext() {
     var par = "#" + this.parentElement.parentElement.parentElement.parentElement.id;
-    var text    = par + ' .row .cell text';
+    var text    = par + ' .row .dp_cell text';
     d3.selectAll(text)
         .attr("display","none")
 }
@@ -108,7 +108,7 @@ function dotplot(sequence, table, pname) {
 
     var bpm=maindic;
 
-    var margin = {top: 80, right: 80, bottom: 10, left: 80},
+    var margin = {top: 20, right: 80, bottom: 10, left: 80},
         width = 300,
         height = 300;
     var x = d3.scale.ordinal().rangeBands([0, width]),
@@ -122,6 +122,15 @@ function dotplot(sequence, table, pname) {
 
     //var svg = d3.select("#output").append("svg")
     var dev = document.createElement("div");
+    var desc = d3.select(dev).append("div").style("margin-top", 40 + "px").style("font-size", "120%");
+
+
+    if (pname === "pd") {
+        desc.text("Dotplot for paired base pair probabilities.");
+    } else
+    if (pname === "ud") {
+        desc.text("Dotplot for unpaired base pair probabilities.");
+    }
     var svg = d3.select(dev).append("svg")
         .attr("id", pname)
         .attr("width", width + margin.left + margin.right)
@@ -174,6 +183,7 @@ function dotplot(sequence, table, pname) {
         .attr("y", x.rangeBand() / 2)
         .attr("dy", ".32em")
         .attr("text-anchor", "start")
+        .style("font-size", "140%")
         .text(function(d, i) { return isequence[i]; });
 
     var row = svg.selectAll(".row")
@@ -192,19 +202,24 @@ function dotplot(sequence, table, pname) {
         .attr("y", x.rangeBand() / 2)
         .attr("dy", ".32em")
         .attr("text-anchor", "end")
+        .style("font-size", "140%")
         .text(function(d, i) { return isequence[i]; });
 
     function row(row) {
         var cell = d3.select(this).selectAll(".cell")
             .data(row.filter(function(d) { return d.z; }))
             .enter().append("g")
-            .attr("class", "cell");
+            .attr("class", "dp_cell");
+        
         cell.append("rect")
             .attr("x", function(d) { return x(d.x); })
             .attr("width", x.rangeBand())
             .attr("height", x.rangeBand())
+            .attr("border", "2px solid red")
+            .style("stroke", "rgb(0, 165, 255)")
+            .style("stroke-width", 2)
             //.style("fill-opacity", function(d) { return z(d.z); })
-            .style("fill-opacity", function(d) { return Math.pow(z(d.z), 0.3); })
+            .style("fill-opacity", function(d) { return Math.pow(z(d.z), 0.5); })
             .on("mouseover", mouseover)
             .on("mouseout", mouseout);
         cell.append("text")

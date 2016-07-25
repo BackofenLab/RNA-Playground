@@ -444,6 +444,8 @@ var NussinovMatrix = {
             for (var l = 0; l < length; l++) {
                 str += ".";
             }
+            var linked = this.sequence.indexOf("XXX") > -1;
+
             //console.log(str, length);
             for (var i in x) {
                 str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length - 1);
@@ -1169,7 +1171,7 @@ NussinovDPAlgorithm_McCaskill.Tables.push(Object.create(NussinovMatrix)); // Pu
 
 NussinovDPAlgorithm_McCaskill.Tables[0].latex_representation = "Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} \\cdot Q^{b}_{k,j}";
 NussinovDPAlgorithm_McCaskill.Tables[1].latex_representation = "Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} \\cdot \\exp(-E_{bp}/RT) & \\text{ if }i,j \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}";
-NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{E}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot Q^{b}_{i, j} \\cdot Q_{j + 1, n})";
+NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot Q^{b}_{i, j} \\cdot Q_{j + 1, n})";
 NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{U}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot 1 \\cdot Q_{j + 1, n})";
 
 // Q(i,j) = sum[k : [i <= j < j - l] && k,j can pair] Q(i, k - 1) * Qb(k, j)
@@ -1288,7 +1290,9 @@ var DPAlgorithm_MEA = Object.create(DPAlgorithm);
 DPAlgorithm_MEA.Description = "Maximum Expected Accuracy";
 DPAlgorithm_MEA.Tables = new Array();
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
-DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + p^{u}_{j} & \\text{j unpaired} \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & \\text{j paired with i} \\end{cases}";
+DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
+DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
+DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + P^{U}_{j} & \\text{j unpaired} \\\\ M_{i + 1, j - 1} + P^{bp}_{i,j} & \\text{j paired with i} \\end{cases}";
 //DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
 //DPAlgorithm_MEA.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 &  S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
 DPAlgorithm_MEA.Tables[0].updateCell = function (i, j, curVal, curAncestor) {
@@ -1335,6 +1339,9 @@ DPAlgorithm_MEA.Tables[0].computeValue = function(i, j) {
 DPAlgorithm_MEA.computeMatrix = function(input) {
     
     NussinovDPAlgorithm_McCaskill.computeMatrix(input);
+
+    this.Tables[1] = NussinovDPAlgorithm_McCaskill.Tables[2];
+    this.Tables[2] = NussinovDPAlgorithm_McCaskill.Tables[3];
 
     this.Tables[0].init(input.sequence(), "Maximum Expected Accuracy");
     // store minimal loop length
