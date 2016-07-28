@@ -1176,7 +1176,7 @@ NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{U}_{i, j} = Q
 
 // Q(i,j) = sum[k : [i <= j < j - l] && k,j can pair] Q(i, k - 1) * Qb(k, j)
 NussinovDPAlgorithm_McCaskill.Tables[0].computeValue = function (i, j) {
-    if (i > j + 1 || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
+    if (i > j + 1 || i < 0 || j < 0 || i > this.getDim() || j > this.getDim()) {
         return 0;
     }
     if (i >= j) {
@@ -1208,14 +1208,19 @@ NussinovDPAlgorithm_McCaskill.Tables[1].computeValue = function (i, j) {
 // Probability that i, j is a base pair.
 // Pe(i, j) = Q(1, i - 1) * Qb(i, j) * Q(j + 1, n) / Q(1, n)
 NussinovDPAlgorithm_McCaskill.Tables[2].computeValue = function(i, j) {
-    if (i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
+    if (i < 0 || j < 0) {//} || i >= this.getDim() || j >= this.getDim()) {
         return 0;
     }
     var n = this.getDim() - 1;
 
-    var ret = (NussinovDPAlgorithm_McCaskill.Tables[0].getValue(1, i - 1) *
-        NussinovDPAlgorithm_McCaskill.Tables[1].getValue(i, j) *
-        NussinovDPAlgorithm_McCaskill.Tables[0].getValue(j + 1, n)) / NussinovDPAlgorithm_McCaskill.Tables[0].getValue(1, n);
+    var ret = NussinovDPAlgorithm_McCaskill.Tables[1].getValue(i, j);
+    if (i>1) {
+        ret *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(1, i - 1);
+    }
+    if (j<n) {
+        ret *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(j + 1, n);
+    }
+    ret /= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(1, n);
 
     return ret;
 };
@@ -1224,12 +1229,19 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeValue = function(i, j) {
 // Probability that i, j is unpaired.
 // Pu(i, j) = Q(1, i - 1) * Q(j + 1, n) / Q(1, n)
 NussinovDPAlgorithm_McCaskill.Tables[3].computeValue = function(i, j) {
-    if (i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
+    if (i < 0 || j < 0 || i > j) {//} || i >= this.getDim() || j >= this.getDim() || i > j) {
         return 0;
     }
     var n = this.getDim() - 1;
-    var ret = (NussinovDPAlgorithm_McCaskill.Tables[0].getValue(1, i - 1) *
-        NussinovDPAlgorithm_McCaskill.Tables[0].getValue(j + 1, n)) / NussinovDPAlgorithm_McCaskill.Tables[0].getValue(1, n);
+
+    var ret = 1.0;
+    if (i>1) {
+        ret *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(1, i - 1);
+    }
+    if (j<n) {
+        ret *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(j + 1, n);
+    }
+    ret /= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(1, n);
     return ret;
 };
 

@@ -35,7 +35,7 @@ function NussinovMatrixViewModel() {
             if($(rec_select).text()=="nussinovFold"){
                 if (self.rawSeq2()==undefined)
                     return;
-                return self.rawSeq().toUpperCase() + 'XXX' + self.rawSeq2().split("").reverse().join("").toUpperCase();
+                return self.rawSeq().toUpperCase() + '...' + self.rawSeq2().toUpperCase();//looplength +1
             }
             return self.rawSeq().toUpperCase();
         }),
