@@ -28,7 +28,7 @@
         <div class="row">
             <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq" class="userInput" maxlength="12"
+                <input data-bind="value: rawSeq" class="userInput" maxlength="10"
                        placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
@@ -37,7 +37,7 @@
         <div class="row">
             <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
             <div class="colW400">
-                <select data-bind="value: input.loopLength" id="ll" style="width:40px;">
+                <select data-bind="value: loopLength" id="ll" style="width:40px;">
                     <option value=0 selected="selected">0</option>
                     <option value=1>1</option>
                     <option value=2>2</option>
@@ -87,11 +87,12 @@
             </div>
 
         </div>
+        </div>
 
-        <div id="matrix" class="row" id="output" >
+        <div id="matrix" class="row" >
             <div style="display: inline-block; float: left">
                 <canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
-                <table  class="colw150" style="display: inline-block; float: left">
+                <table  class="colw150" style="display: inline-block;">
                     <thead>
                     <tr>
                         <th class="cell_th">$M$</th>
@@ -129,10 +130,13 @@
                 </tbody>
             </table>
 
+            <div class="spacer" style="clear: both;"></div>
+
+
         </div>
 
         <div class="row">
-
+            <div>
             <table id="matrix" class="colw150">
                 <thead>
                 <tr>
@@ -157,7 +161,7 @@
             <table id="matrix" class="colw150">
                 <thead>
                 <tr>
-                    <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^U$</th>
+                    <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^u$</th>
                     <th class="cell_count"></th>
                     <!-- ko foreach: { data: seqList, as: 'base' } -->
                     <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
@@ -174,6 +178,7 @@
                 </tr>
                 </tbody>
             </table>
+                </div>
         </div>
 
 

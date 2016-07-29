@@ -201,7 +201,7 @@ var NussinovMatrix = {
                 for (var j = 0; j <= n; j++) {
                     // create new cell and initialize
                     console.log("initializing matrix", this.name, this.sequence);
-                    if (this.name === "unique" || this.name === "ambiguous" || this.name === "Ambiguous2" || this.name === "NussinovFold") {
+                    if (this.name === "unique" || this.name === "ambiguous" || this.name === "Ambiguous2" || this.name === "coFold") {
 
                         this.cells[i][j] = Object.create(NussinovCell).init(i, j, 0);
                     }
@@ -444,14 +444,30 @@ var NussinovMatrix = {
             for (var l = 0; l < length; l++) {
                 str += ".";
             }
-            var linked = this.sequence.indexOf("XXX") > -1;
-
-            //console.log(str, length);
-            for (var i in x) {
-                str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length - 1);
-                str = str.substr(0, x[i][1] - 1) + ")" + str.substr(x[i][1], str.length - 1);
+            var linked = this.sequence.indexOf("-");
+            if(linked == -1){
+                for (var i in x) {
+                    str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length - 1);
+                    str = str.substr(0, x[i][1] - 1) + ")" + str.substr(x[i][1], str.length - 1);
+                }
+                return str;
             }
-            return str;
+            else{
+                for (var i in x) {
+                    if(x[i][0] < linked && x[i][1] > linked) {
+                        str = str.substr(0, x[i][0] - 1) + "[" + str.substr(x[i][0], str.length - 1);
+                        str = str.substr(0, x[i][1] - 1) + "]" + str.substr(x[i][1], str.length - 1);
+                    }
+                    else{
+                        str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length - 1);
+                        str = str.substr(0, x[i][1] - 1) + ")" + str.substr(x[i][1], str.length - 1);
+
+                    }
+                }
+                return str;
+
+            }
+
         },
 
     }
@@ -1172,7 +1188,7 @@ NussinovDPAlgorithm_McCaskill.Tables.push(Object.create(NussinovMatrix)); // Pu
 NussinovDPAlgorithm_McCaskill.Tables[0].latex_representation = "Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} \\cdot Q^{b}_{k,j}";
 NussinovDPAlgorithm_McCaskill.Tables[1].latex_representation = "Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} \\cdot \\exp(-E_{bp}/RT) & \\text{ if }i,j \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}";
 NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot Q^{b}_{i, j} \\cdot Q_{j + 1, n})";
-NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{U}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot 1 \\cdot Q_{j + 1, n})";
+NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot 1 \\cdot Q_{j + 1, n})";
 
 // Q(i,j) = sum[k : [i <= j < j - l] && k,j can pair] Q(i, k - 1) * Qb(k, j)
 NussinovDPAlgorithm_McCaskill.Tables[0].computeValue = function (i, j) {
@@ -1377,45 +1393,31 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
     var Nmax = this.getCell(1, this.sequence.length).value;
     var R = [];
     var ij = sigma.pop();
-    //console.log(ij);
 
-    // check for sane interval
-    // if i>j dont continue
+    // if i>j dont countinue
     if (ij[0] > ij[1]) {
         //console.log("ij[0] > ij[1]", ij[0], ij[1]);
         var S_prime = {};
-
-        var sigma_prime = JSON.stringify(sigma);
-        sigma_prime = JSON.parse(sigma_prime);
-
-        var tmp_P = JSON.stringify(P);
-        tmp_P = JSON.parse(tmp_P);
-
-        var tmp_traces = JSON.stringify(traces);
-        tmp_traces = JSON.parse(tmp_traces);
-
-        S_prime.sigma = sigma_prime;
-        S_prime.P = tmp_P;
-        S_prime.traces = tmp_traces;
-
+        S_prime.sigma = sigma;
+        S_prime.P = P;
+        S_prime.traces = traces;
         R.push(S_prime);
         //console.log("returning R:", JSON.stringify(R));
         return R;
     }
 
-    // if (i,j) == (i+1,j-1) + bp(ij)
-    {
-        if (ij[1] - ij[0] > this.minLoopLength) {
-            //console.log(this.sequence);
-            //console.log(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1]);
-            if (RnaUtil.areComplementary(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1])) {
+    // if (i,j) == (i,l-1) + (l+1, j-1) + 1
+    for (var l = ij[0]; l <= ij[1] - 1; l++) {
+        if (ij[1] - l > this.minLoopLength) {
+            if (RnaUtil.areComplementary(this.sequence[l - 1], this.sequence[ij[1] - 1])) {
                 var sigma_prime = JSON.stringify(sigma);
                 sigma_prime = JSON.parse(sigma_prime);
-                sigma_prime.push([ij[0] + 1, ij[1] - 1]);
+                sigma_prime.push([ij[0], l - 1]);
+                sigma_prime.push([l + 1, ij[1] - 1]);
 
                 var tmp_P = JSON.stringify(P);
                 tmp_P = JSON.parse(tmp_P);
-                tmp_P.push([ij[0], ij[1]]);
+                tmp_P.push([l, ij[1]]);
 
                 var tmp_traces = JSON.stringify(traces);
                 tmp_traces = JSON.parse(tmp_traces);
@@ -1423,22 +1425,24 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
                 var NSprime = this.countBasepairs(tmp_P, sigma_prime);
 
                 if (NSprime >= Nmax - delta) {
+
                     var S_prime = {};
                     S_prime.sigma = sigma_prime;
                     S_prime.P = tmp_P;
-                    tmp_traces.unshift([ij, [[ij[0] + 1, ij[1] - 1]]]);
+                    tmp_traces.unshift([ij, [[ij[0], l - 1], [l + 1, ij[1] - 1]]]);
                     S_prime.traces = tmp_traces;
-                    //console.log("i+1,j-1:", JSON.stringify(S_prime));
-                    // push to the front to keep base pair most prominent to refine
-                    R.unshift(S_prime);
+                    //console.log("ilj:", JSON.stringify(S_prime));
+                    // push to the back to keep base pair most prominent to refine
+                    R.push(S_prime);
                 }
-            }
-        }
 
-        // check if enough structures found so far
-        if (R.length >= maxLengthR) {
-            //console.log("returning R:", JSON.stringify(R));
-            return R;
+                // check if enough structures found so far
+                if (R.length >= maxLengthR) {
+                    //console.log("returning R:", JSON.stringify(R));
+                    return R;
+                }
+
+            }
         }
     }
 
@@ -1462,7 +1466,7 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
             S_prime.P = tmp_P;
             tmp_traces.unshift([ij, [[ij[0], ij[1] - 1]]]);
             S_prime.traces = tmp_traces;
-            //console.log("i,j-1:", JSON.stringify(S_prime));
+            //console.log("ij-1:", JSON.stringify(S_prime));
             // push to the front to keep base pair most prominent to refine
             R.unshift(S_prime);
         }
@@ -1474,30 +1478,29 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
         }
     }
 
-
-    console.log("returning R:", JSON.stringify(R));
+    //console.log("returning R:", JSON.stringify(R));
     return R;
 }
 ;
 
-var DPAlgorithm_nussiFold = Object.create(DPAlgorithm);
+var DPAlgorithm_coFold = Object.create(DPAlgorithm);
 
-DPAlgorithm_nussiFold.Description = "NussinovFolding";
-DPAlgorithm_nussiFold.Tables = new Array();
-DPAlgorithm_nussiFold.Tables.push(Object.create(NussinovMatrix));
+DPAlgorithm_coFold.Description = "Co-Fold";
+DPAlgorithm_coFold.Tables = new Array();
+DPAlgorithm_coFold.Tables.push(Object.create(NussinovMatrix));
 
-DPAlgorithm_nussiFold.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D(i,k-1)+D(k+1,j-1)+1 & S_k,S_j \\text{ compl. base pair} \\end{cases}";
+DPAlgorithm_coFold.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D(i,k-1)+D(k+1,j-1)+1 & S_k,S_j \\text{ compl. base pair} \\end{cases}";
 
-DPAlgorithm_nussiFold.computeMatrix = function(input) {
+DPAlgorithm_coFold.computeMatrix = function(input) {
 
     NussinovDPAlgorithm_Unique.computeMatrix(input);
 
-    this.Tables[0].init(input.sequence(), "NussinovFold");
+    this.Tables[0].init(input.sequence(), "coFold");
     this.Tables[0].cells = NussinovDPAlgorithm_Unique.Tables[0].cells;
     return this.Tables;
 };
 
-DPAlgorithm_nussiFold.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
+DPAlgorithm_coFold.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
     return NussinovDPAlgorithm_Unique.Tables[0].getSubstructures(sigma, P, traces, delta, maxLengthR);
 };
 
@@ -1524,8 +1527,8 @@ var availableAlgorithms = {
     /** Maximum Expected Accuracy*/
     MaxExpAcc: DPAlgorithm_MEA,
 
-    /** nussinov fold*/
-    nussinovFold: DPAlgorithm_nussiFold,
+    /** Co-fold*/
+    coFold: DPAlgorithm_coFold,
 
 };
 

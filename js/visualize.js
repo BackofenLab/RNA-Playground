@@ -20,22 +20,29 @@ function NussinovMatrixViewModel() {
         j: null
     };
     self.currTrace = 0;
+
     self.rawSeq = ko.observable("GCACGA");
     self.rawSeq2 = ko.observable("GCACGA");
-    self.input = {
-        loopLength: ko.observable(0),
+    self.loopLength = ko.observable(0);
 
+    self.input = {
+        loopLength: ko.computed(function(){
+            return self.loopLength();
+        }),
         delta: ko.observable(0),
         recursion: ko.observable("nussinovUnique"),
         allowTraceback: true,
         energy: ko.observable(1),
         sequence: ko.computed(function(){
+            var ll = self.loopLength();
             if (self.rawSeq()==undefined)
                 return;
-            if($(rec_select).text()=="nussinovFold"){
+            if($(rec_select).text()=="coFold"){
                 if (self.rawSeq2()==undefined)
                     return;
-                return self.rawSeq().toUpperCase() + '...' + self.rawSeq2().toUpperCase();//looplength +1
+                var linker = '';
+                for(var i=0; i<=ll; i++)linker += '-';
+                return self.rawSeq().toUpperCase() + linker + self.rawSeq2().toUpperCase();//looplength +1
             }
             return self.rawSeq().toUpperCase();
         }),
@@ -72,11 +79,11 @@ function NussinovMatrixViewModel() {
         }
     });
 
-    self.nussiFold = ko.computed(function(){
+    self.coFold = ko.computed(function(){
         //console.log($(rec_select).text());
-        if($(rec_select).text()=="nussinovFold") {
-            console.log("nussinovFold");
-            self.input.recursion("nussinovFold");
+        if($(rec_select).text()=="coFold") {
+            console.log("coFold");
+            self.input.recursion("coFold");
             self.input.allowTraceback = true;
             //cellWidth = 48;
             //cellHeight = 28;
