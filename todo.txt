@@ -2,7 +2,7 @@ After meeting on 24-Juli:
 	- All: add download tables button
 
 	- mccaskill: try to put recursion b4 tables
-	- macaskill: p^U to p^u
+	+ macaskill: p^U to p^u
 	- macaskill: change energy input to full exp expression
 	- mckaskill: add tooltips
 
