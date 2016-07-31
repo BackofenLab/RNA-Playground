@@ -301,12 +301,14 @@ function NussinovMatrixViewModel() {
                 ctx.fillText('+1', cellJ * cW + (1*cW/4+2), (cellI+1) * cH + (cH/4+2));
                 ctx.fillStyle = "#2a6ebb";
                 ctx.font = "18px sans-serif";
-                if (i == cell.traces[self.currTrace].bps[0][0]) {
+                if(self.rawSeq2 == undefined) {
+                    if (i == cell.traces[self.currTrace].bps[0][0]) {
 
-                    ctx.fillText('(', (i) * cW + cW / 2, cH / 2);
-                }
-                else if (i == cell.traces[self.currTrace].bps[0][1]) {
-                    ctx.fillText(')', (i) * cW + cW / 2, cH / 2);
+                        ctx.fillText('(', (i) * cW + cW / 2, cH / 2);
+                    }
+                    else if (i == cell.traces[self.currTrace].bps[0][1]) {
+                        ctx.fillText(')', (i) * cW + cW / 2, cH / 2);
+                    }
                 }
             }
         }
