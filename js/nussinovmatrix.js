@@ -293,7 +293,7 @@ var NussinovMatrix = {
                 cell.value = this.computeValue(i, j);
             }
             // get cell value
-            return cell.value;
+            return parseFloat(cell.value);
         }
         ,
 
@@ -454,7 +454,7 @@ var NussinovMatrix = {
             }
             else{
                 for (var i in x) {
-                    if(x[i][0] < linked && x[i][1] > linked) {
+                    if(x[i][0] <= linked && x[i][1] > linked) {
                         str = str.substr(0, x[i][0] - 1) + "[" + str.substr(x[i][0], str.length - 1);
                         str = str.substr(0, x[i][1] - 1) + "]" + str.substr(x[i][1], str.length - 1);
                     }
