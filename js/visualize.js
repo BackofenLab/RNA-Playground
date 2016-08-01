@@ -302,13 +302,25 @@ function NussinovMatrixViewModel() {
                 ctx.fillStyle = "#2a6ebb";
                 ctx.font = "18px sans-serif";
                 if(self.rawSeq2 == undefined) {
-                    if (i == cell.traces[self.currTrace].bps[0][0]) {
+                    var fillText = ['(', ')'];
+                }
+                else{
+                    if(cell.traces[self.currTrace].bps[0][0] < self.rawSeq().length+1 &&
+                        cell.traces[self.currTrace].bps[0][1] > self.rawSeq().length+1){
+                        var fillText = ['[', ']'];
+                    }
+                    else{
+                        var fillText = ['(', ')'];
+                    }
 
-                        ctx.fillText('(', (i) * cW + cW / 2, cH / 2);
-                    }
-                    else if (i == cell.traces[self.currTrace].bps[0][1]) {
-                        ctx.fillText(')', (i) * cW + cW / 2, cH / 2);
-                    }
+                }
+
+                if (i == cell.traces[self.currTrace].bps[0][0]) {
+
+                    ctx.fillText(fillText[0], (i) * cW + cW / 2, cH / 2);
+                }
+                else if (i == cell.traces[self.currTrace].bps[0][1]) {
+                    ctx.fillText(fillText[1], (i) * cW + cW / 2, cH / 2);
                 }
             }
         }
