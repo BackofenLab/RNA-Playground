@@ -37,7 +37,7 @@ function NussinovMatrixViewModel() {
             var ll = self.loopLength();
             if (self.rawSeq()==undefined)
                 return;
-            if($(rec_select).text()=="coFold"){
+            if($(rec_select).text()=="coFold" || "hybrid"){
                 if (self.rawSeq2()==undefined)
                     return;
                 var linker = '';
@@ -89,6 +89,17 @@ function NussinovMatrixViewModel() {
             //cellHeight = 28;
         }
     });
+    self.hybrid = ko.computed(function(){
+        //console.log($(rec_select).text());
+        if($(rec_select).text()=="hybrid") {
+            console.log("hybrid");
+            self.input.recursion("hybrid");
+            self.input.allowTraceback = false;
+            //cellWidth = 48;
+            //cellHeight = 28;
+        }
+    });
+
 
     self.seqList = ko.computed(function(){
         return self.input.sequence().toUpperCase().split("");

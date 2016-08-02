@@ -169,6 +169,7 @@ var NussinovMatrix = {
          */
         allowTraceBack: true,
 
+        tablesDimension: 2,
 
         /**
          * initialize a matrix of dim = n+1 with indices 0..n, where n is the
@@ -200,6 +201,15 @@ var NussinovMatrix = {
                 this.cells[i] = [];
                 for (var j = 0; j <= n; j++) {
                     // create new cell and initialize
+                    if (this.name === "RNAHybrid") {
+                        this.cells[i][j] = [];
+                        for (var k = 0; k <= n; ++k) {
+                            this.cells[i][j][k] = [];
+                            for (var r = 0; r <= n; ++r) {
+                                this.cells[i][k][j][l] = Object.create(NussinovCell).init(i, j, null);
+                            }
+                        }
+                    }
                     console.log("initializing matrix", this.name, this.sequence);
                     if (this.name === "unique" || this.name === "ambiguous" || this.name === "Ambiguous2" || this.name === "coFold") {
 
@@ -1237,6 +1247,7 @@ NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
 
     return this.Tables;
 };
+
 
 
 var DPAlgorithm_MEA = Object.create(DPAlgorithm);
