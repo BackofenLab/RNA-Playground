@@ -570,7 +570,7 @@ NussinovDPAlgorithm_Ambiguous.computeMatrix = function (input) {
 };
 
 NussinovDPAlgorithm_Ambiguous.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
-    var Nmax = this.getCell(1, this.sequence.length).value;
+    var Nmax = this.getValue(1, this.sequence.length);
     var R = [];
     var ij = sigma.pop();
     //console.log(ij);
@@ -790,7 +790,7 @@ NussinovDPAlgorithm_Unique.computeMatrix = function (input) {
 
 
 NussinovDPAlgorithm_Unique.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
-    var Nmax = this.getCell(1, this.sequence.length).value;
+    var Nmax = this.getValue(1, this.sequence.length);
     var R = [];
     var ij = sigma.pop();
 
@@ -933,7 +933,7 @@ NussinovDPAlgorithm_Ambiguous2.computeMatrix = function (input) {
 
 
 NussinovDPAlgorithm_Ambiguous2.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
-    var Nmax = this.getCell(1, this.sequence.length).value;
+    var Nmax = this.getValue(1, this.sequence.length);
     var R = [];
     var ij = sigma.pop();
     console.log(ij);
@@ -1042,80 +1042,6 @@ NussinovDPAlgorithm_Ambiguous2.Tables[0].getSubstructures = function (sigma, P, 
 }
 ;
 
-/**
- * WUCHTY(2nd version) enumerating up to 10 structures
- */
-function wuchty_2nd(xmat, delta, formula) {
-    console.log("entering wuchty");
-    // get maximal number of structures to report
-    var maxSOS = 10;
-    // call subroutine
-    return wuchty_2nd_limited(xmat, delta, formula, maxSOS);
-}
-
-/**
- * WUCHTY(2nd version)
- */
-function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
-    //if (xmat == undefined)return;
-    if (xmat.sequence == undefined)return;
-    var seq_length = xmat.sequence.length;
-    var Nmax = xmat.getCell(1, seq_length).value;
-    console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
-
-    var S = {sigma: [[1, seq_length]], P: [], traces: []};
-    var R = [S];
-    var SOS = [];
-    var loop = 0;
-
-    while (R.length != 0) {
-        //console.log("\nloop:", ++loop);
-        //console.log("R length:" + R.length);
-
-        // Pop R
-        var pop_R = R.pop();
-        var sigma = pop_R.sigma;
-        var P = pop_R.P;
-        var t_traces = JSON.stringify(pop_R.traces);
-        var traces = JSON.parse(t_traces);
-        //console.log("poped R:", JSON.stringify(pop_R));
-        //console.log("R_remaining:", JSON.stringify(R));
-
-        var sigma_remaining = 0;
-        for (var s in sigma) {//console.log("var s:", sigma[s]);
-            if ((sigma[s][0]) <= (sigma[s][1] - xmat.minLoopLength)) sigma_remaining++;
-        }
-
-        if (sigma.length == 0 || sigma_remaining == 0) {
-            //console.log("no more structs in poped R");
-            var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
-            SOS.push(temp_sos);
-
-            //console.log("pushed SOS:", JSON.stringify(SOS));
-        }
-
-        else {
-            //console.log(formula);
-            // compute maximal number of structures still to compute
-            var maxLengthR = maxSOS - SOS.length;
-            if (maxLengthR < 0) maxLengthR = 0;
-            var R_prime = formula.getSubstructures(sigma, P, traces, delta, maxLengthR);
-            for (var r in R_prime) {
-                R.push(R_prime[r]);
-            }
-        }
-        // check if enough structures found so far
-        if (SOS.length >= maxSOS)
-            break;
-        //console.log("R:", JSON.stringify(R));
-
-    }
-    //console.log("SOS:", JSON.stringify(SOS));
-    //console.log("\nwuchty end");
-    //console.log(SOS);
-    return SOS;
-}
-;
 
 
 /** Nussinov Structures Count*/
@@ -1361,7 +1287,7 @@ DPAlgorithm_MEA.Tables[0].computeValue = function(i, j) {
         this.updateCell(i, j, this.getValue(i, k) + this.getValue(k + 1, j), Object.create(NussinovCellTrace).init([[i, k], [k + 1, j]], []));
     }
 
-    return this.getCell(i, j).value;
+    return this.getValue(i, j);
 };
 
 DPAlgorithm_MEA.computeMatrix = function(input) {
@@ -1390,7 +1316,7 @@ DPAlgorithm_MEA.computeMatrix = function(input) {
 
 
 DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
-    var Nmax = this.getCell(1, this.sequence.length).value;
+    var Nmax = this.getValue(1, this.sequence.length);
     var R = [];
     var ij = sigma.pop();
 
@@ -1532,3 +1458,172 @@ var availableAlgorithms = {
 
 };
 
+
+/**
+ * WUCHTY(2nd version) enumerating up to 10 structures
+ */
+function wuchty_2nd(xmat, delta, formula) {
+    console.log("entering wuchty");
+    // get maximal number of structures to report
+    var maxSOS = 10;
+    // call subroutine
+    return wuchty_2nd_limited(xmat, delta, formula, maxSOS);
+}
+
+/**
+ * WUCHTY(2nd version)
+ */
+function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
+    //if (xmat == undefined)return;
+    if (xmat.sequence == undefined)return;
+    var seq_length = xmat.sequence.length;
+    var Nmax = xmat.getValue(1, seq_length);
+    console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
+
+    var S = {sigma: [[1, seq_length]], P: [], traces: []};
+    var R = [S];
+    var SOS = [];
+    var loop = 0;
+
+    while (R.length != 0) {
+        //console.log("\nloop:", ++loop);
+        //console.log("R length:" + R.length);
+
+        // Pop R
+        var pop_R = R.pop();
+        var sigma = pop_R.sigma;
+        var P = pop_R.P;
+        var t_traces = JSON.stringify(pop_R.traces);
+        var traces = JSON.parse(t_traces);
+        //console.log("poped R:", JSON.stringify(pop_R));
+        //console.log("R_remaining:", JSON.stringify(R));
+
+        var sigma_remaining = 0;
+        for (var s in sigma) {//console.log("var s:", sigma[s]);
+            if ((sigma[s][0]) <= (sigma[s][1] - xmat.minLoopLength)) sigma_remaining++;
+        }
+
+        if (sigma.length == 0 || sigma_remaining == 0) {
+            //console.log("no more structs in poped R");
+            var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
+            SOS.push(temp_sos);
+
+            //console.log("pushed SOS:", JSON.stringify(SOS));
+        }
+
+        else {
+            //console.log(formula);
+            // compute maximal number of structures still to compute
+            var maxLengthR = maxSOS - SOS.length;
+            if (maxLengthR < 0) maxLengthR = 0;
+            var R_prime = formula.getSubstructures(sigma, P, traces, delta, maxLengthR);
+            for (var r in R_prime) {
+                R.push(R_prime[r]);
+            }
+        }
+        // check if enough structures found so far
+        if (SOS.length >= maxSOS)
+            break;
+        //console.log("R:", JSON.stringify(R));
+
+    }
+    //console.log("SOS:", JSON.stringify(SOS));
+    //console.log("\nwuchty end");
+    //console.log(SOS);
+    return SOS;
+}
+;
+
+
+
+/**
+ * WUCHTY (generic doesnt give subomtimal structures)
+ */
+var wuchty = function (xmat) {
+    var seq_length = xmat.sequence.length;
+    var Nmax = xmat.getValue(1, seq_length);
+
+    var S = {sigma: [[1, seq_length]], P: [], traces: []};
+    var R = [S];
+    var SOS = [];
+    var loop = 0;
+
+    while (R.length != 0) {
+
+        // Pop R
+        var pop_R = R.pop();
+        var sigma = pop_R.sigma;
+        var P = pop_R.P;
+        var t_traces = JSON.stringify(pop_R.traces);
+        var traces = JSON.parse(t_traces);
+
+        var sigma_remaining = 0;
+        for (var s in sigma) {//console.log("var s:", sigma[s]);
+            if ((sigma[s][0]) <= (sigma[s][1] - xmat.minLoopLength)) sigma_remaining++;
+        }
+
+        if (sigma.length == 0 || sigma_remaining == 0) {
+            var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
+            SOS.push(temp_sos);
+        }
+
+        else {
+            var ij = sigma.pop();
+
+            if (ij[0] > ij[1]) {
+                pop_R.traces = traces;
+                R.push(pop_R);
+                continue;
+            }
+
+            var json_ij_traces = JSON.stringify(xmat.getCell(ij[0], ij[1]).traces);
+            var ij_traces = JSON.parse(json_ij_traces);
+
+            var S_prime = {};
+
+            for (var t in ij_traces) {
+                var S_prime = {};
+                var t_trace = JSON.stringify(ij_traces[t]);
+                var trace = JSON.parse(t_trace);
+                var trace_p = JSON.parse(t_trace);
+
+                // add sigma info in S_prime
+                S_prime.sigma = [];
+                if (sigma.length > 0) {
+                    for (var s in sigma)
+                        trace.parents.unshift(sigma[s]);
+                    S_prime.sigma = trace.parents;
+                }
+                else S_prime.sigma = trace.parents;
+
+                // add P(bps) info in S_prime
+                S_prime.P = []
+                if (P[0] != undefined) {
+                    for (var p in P) {
+                        S_prime.P.push(P[p]);
+                    }
+                }
+                if (trace.bps[0] != undefined) {
+                    S_prime.P.push(trace.bps[0]);
+                }
+
+                // add traces info in S_prime
+                var temp_trace = [ij];
+                temp_trace.push(trace_p.parents);
+                if (traces.length == 0) {
+                    S_prime.traces = [temp_trace];
+                }
+                else {
+                    var clone_traces = JSON.stringify(traces);
+                    var parse_clone_traces = JSON.parse(clone_traces);
+                    parse_clone_traces.unshift(temp_trace);
+                    S_prime.traces = parse_clone_traces;
+                }
+                R.push(S_prime);
+            }
+        }
+        ;
+
+    }
+    return SOS;
+}
