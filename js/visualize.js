@@ -181,11 +181,12 @@ function NussinovMatrixViewModel() {
         var tables = [];
 
         for(var i in self.matrix()){
-
-            matrixToCSV(self.input.sequence(), self.matrix()[i].cells);
+            //matrixToCSV(self.input.sequence(), self.matrix()[i].cells);
             if(self.matrix()[i].cells == undefined)return;
             tables.push(self.matrix()[i].cells.slice(1));        // slice is hack to skip first row(investigate later)
         }
+        console.log(tables);
+        matrixToCSV(self.input.sequence(), self.matrix());
         return tables;
 
     }, this);

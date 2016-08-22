@@ -47,46 +47,46 @@ function validate(evt) {
 var csv = "";
 
 function generate_tables() {
-    //var seen = findVars(data);
-    var zip = new JSZip();
-    var file = [];
-    var utc = new Date().toJSON().slice(0,16);
-    utc = utc.replace('T', '--');
-    console.log(csv, null, '\t');
-    zip.file('table.csv', csv);
-
-    zip.generateAsync({type:"blob"})
-        .then(function(content) {
-            saveAs(content, 'nussinov_' + utc + '.zip');
-        });
-
+    var file = new File([csv], "table.csv", {type: "text/plain;charset=utf-8"});
+    saveAs(file);
 }
 
 // Convert Matrix to CSV
-function matrixToCSV(sequence, matrix) {
+function matrixToCSV(sequence, matrices) {
+
     var sequence_column = true;
     var res = "";
+    console.log((matrices));
+    for (var idx in matrices)
+    {
+        if (res.length != 0) {
+            res += "\n\n";
+        }
+        var matrix = matrices[idx];
+        console.log(matrix);
 
-    if (sequence_column)
-        res += " , ";
-    // add first row: sequence
-    for (var j in sequence) {
-        res += "," + sequence[j];
-    }
-    res += "\n";
-    for (var i = 1; i < matrix.length; ++i) {
-        if (sequence_column && i > 0)
-            res += sequence[i - 1];
-
-        // adding row
-        for (var j in matrix[i]) {
-            if (sequence_column || j > 0)
-                res += ",";
-            if (!isNaN(matrix[i][j].value))
-                res += matrix[i][j].value;
+        if (sequence_column)
+            res += ",";
+        // add first row: sequence
+        for (var j in sequence) {
+            res += "," + sequence[j];
         }
         res += "\n";
+        for (var i = 1; i < matrix.cells.length; ++i) {
+            if (sequence_column && i > 0)
+                res += sequence[i - 1];
+
+            // adding row
+            for (var j in matrix.cells[i]) {
+                if (sequence_column || j > 0)
+                    res += ",";
+                if (!isNaN(matrix.cells[i][j].value))
+                    res += matrix.cells[i][j].value;
+            }
+            res += "\n";
+        }
     }
+    console.log(csv);
     csv = res;
     //return res;
 }
