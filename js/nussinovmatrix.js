@@ -1225,7 +1225,7 @@ NussinovDPAlgorithm_McCaskill.Tables[1].computeValue = function (i, j) {
         return 0;
     }
     if (RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
-        return NussinovDPAlgorithm_McCaskill.Tables[0].getValue(i + 1, j - 1) * this.energy_basepair;
+        return NussinovDPAlgorithm_McCaskill.Tables[0].getValue(i + 1, j - 1) * Math.exp(this.energy_basepair);
     } else {
         return 0;
     }
@@ -1281,7 +1281,7 @@ NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
     var minLL = parseInt(input.loopLength());
     this.Tables[0].minLoopLength = minLL;
 
-    this.Tables[1].energy_basepair = input.energy();
+    this.Tables[1].energy_basepair = -input.energy() / input.energy_normal();
 
     for (var i = 0; i <= this.Tables[0].getDim(); i++) {
         for (var j = 0; j <= this.Tables[0].getDim(); ++j) {
@@ -1332,6 +1332,8 @@ DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + P^{u}_{j} & \\text{j unpaired} \\\\ M_{i + 1, j - 1} + P^{bp}_{i,j} & \\text{j paired with i} \\end{cases}";
+DPAlgorithm_MEA.Tables[2].latex_representation = "P_{i}^{u} = 1 - \\sum_{k \\neq j}{P^{bp}_{k, i}}";
+
 //DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
 //DPAlgorithm_MEA.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 &  S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
 DPAlgorithm_MEA.Tables[0].updateCell = function (i, j, curVal, curAncestor) {
@@ -1358,11 +1360,8 @@ DPAlgorithm_MEA.Tables[0].computeValue = function(i, j) {
     if (i > j || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
         return 0;
     }
-    var unpaired_j = 1.0;
-    for (var k = j - 1; k >= 0; --k) {
-        unpaired_j -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j);
-    }
-    this.updateCell(i, j, this.getValue(i, j - 1) + unpaired_j, Object.create(NussinovCellTrace).init([[i, j - 1]], []));
+
+    this.updateCell(i, j, this.getValue(i, j - 1) + DPAlgorithm_MEA.Tables[2].getValue(j, j), Object.create(NussinovCellTrace).init([[i, j - 1]], []));
 
     if (RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
         this.updateCell(i, j, this.getValue(i + 1, j - 1) + NussinovDPAlgorithm_McCaskill.Tables[2].getValue(i, j), Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [i, j]));
@@ -1375,14 +1374,30 @@ DPAlgorithm_MEA.Tables[0].computeValue = function(i, j) {
     return this.getValue(i, j);
 };
 
+DPAlgorithm_MEA.Tables[2].computeValue = function(i, j) {
+
+    if (i != j || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
+        return 0;
+    }
+    var ret = 1.0;
+
+    for (var k = j - 1; k >= 0; --k) {
+        ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j);
+    }
+    return ret;
+};
+
+
 DPAlgorithm_MEA.computeMatrix = function(input) {
     
     NussinovDPAlgorithm_McCaskill.computeMatrix(input);
 
     this.Tables[1] = NussinovDPAlgorithm_McCaskill.Tables[2];
-    this.Tables[2] = NussinovDPAlgorithm_McCaskill.Tables[3];
+    //this.Tables[2] = NussinovDPAlgorithm_McCaskill.Tables[3];
 
     this.Tables[0].init(input.sequence(), "Maximum Expected Accuracy");
+
+    this.Tables[2].init(input.sequence(), "Unpaired probabilities");
     // store minimal loop length
     var minLL = parseInt(input.loopLength());
     this.Tables[0].minLoopLength = minLL;
@@ -1395,6 +1410,10 @@ DPAlgorithm_MEA.computeMatrix = function(input) {
         ;
     }
     ;
+
+    for (var i = 0; i < this.Tables[2].getDim(); ++i) {
+        this.Tables[2].getValue(i, i);
+    }
 
     return this.Tables;
 };

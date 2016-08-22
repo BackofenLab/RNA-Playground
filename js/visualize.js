@@ -33,6 +33,7 @@ function NussinovMatrixViewModel() {
         recursion: ko.observable("nussinovUnique"),
         allowTraceback: true,
         energy: ko.observable(1),
+        energy_normal: ko.observable(1),
         sequence: ko.computed(function(){
             var ll = self.loopLength();
             if (self.rawSeq()==undefined)
@@ -41,7 +42,7 @@ function NussinovMatrixViewModel() {
                 if (self.rawSeq2()==undefined)
                     return;
                 var linker = '';
-                for(var i=0; i<=ll; i++)linker += '-';
+                for(var i=0; i<=ll; i++)linker += 'X';
                 return self.rawSeq().toUpperCase() + linker + self.rawSeq2().toUpperCase();//looplength +1
             }
             return self.rawSeq().toUpperCase();
@@ -116,7 +117,12 @@ function NussinovMatrixViewModel() {
         if (self.input.recursion() === "mcCaskill" || self.input.recursion() === "MaxExpAcc") {
             for (var i = 0; i < matrix.cells.length; ++i) {
                 for (var j = 0; j < matrix.cells[i].length; ++j) {
-                    matrix.cells[i][j].value = parseFloat(matrix.cells[i][j].value).toFixed(3);
+                    //console.log(matrix.cells[i][j].value);
+                    if (matrix.cells[i][j].value === null || isNaN(matrix.cells[i][j].value)) {
+                        matrix.cells[i][j].value = "";//0.0;
+                    } else {
+                        matrix.cells[i][j].value = parseFloat(matrix.cells[i][j].value).toFixed(3);
+                    }
                 }
                 //console.log(p);
             }

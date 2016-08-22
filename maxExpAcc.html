@@ -49,12 +49,21 @@
         </div>
 
         <div class="row">
-            <div class="colW200" style="font-size: 120%">Energy weight of base pair: $\exp(-E_{bp}/RT)$</div>
+            <div class="colW200" style="font-size: 120%">Energy weight of base pair: $E_{bp}$</div>
             <div class="colW400">
-                <input data-bind="value: input.energy" id="energy" type="range" max="5" min="1" step="(max - min) / 100">
+                <input data-bind="value: input.energy" id="energy" type="range" max="5" min="-1" step="(max - min) / 100">
 
                 <p data-bind="text: input.energy" style="display: inline;"></p>
             </div>
+        </div>
+        <div class="row">
+            <div class="colW200" style="font-size: 120%">Energy normalizer of base pair: $RT$</div>
+            <div class="colW400">
+                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="1" step="(max - min) / 100">
+
+                <p data-bind="text: input.energy_normal" style="display: inline;"></p>
+            </div>
+        </div>
 
             <div class="row">
                 <div class="colW200" style="font-size: 120%">Delta MEA to maximum:</div>
@@ -86,7 +95,7 @@
                 <div style="height: 200px;" id="recursion" class="colW400"></div>
             </div>
 
-        </div>
+        <!-- /div -->
         </div>
 
         <div id="matrix" class="row" >
