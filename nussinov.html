@@ -109,6 +109,7 @@
                     <td id="info"
                         style="display: none; border: 1px solid grey; padding: 6px 14px;letter-spacing: 2px; background: #fff;"></td>
                 </table>
+                <button class="" type="button" onclick="generate_tables()">Download Table!</button>
             </div>
         </div>
         <table id="structures" class="colw200" style="float: left; margin-top:30px">
@@ -120,6 +121,8 @@
             <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"></td></tr>
             </tbody>
         </table>
+
+
 
 
 
@@ -140,6 +143,8 @@
 <!-- content -->
 
 <script src="js/libs/knockout-3.4.0.js"></script>
+<script src="js/libs/FileSaver.min.js"></script>
+<script src="js/libs/jszip.min.js"></script>
 <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script src="js/libs/jquery.min.js"></script>
