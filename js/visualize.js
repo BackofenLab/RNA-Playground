@@ -37,7 +37,7 @@ function NussinovMatrixViewModel() {
             var ll = self.loopLength();
             if (self.rawSeq()==undefined)
                 return;
-            if($(rec_select).text()=="coFold" || "hybrid"){
+            if($(rec_select).text()=="coFold" || $(rec_select).text()=="hybrid") {
                 if (self.rawSeq2()==undefined)
                     return;
                 var linker = '';
