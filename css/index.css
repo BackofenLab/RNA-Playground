@@ -133,13 +133,13 @@ div[id=max] {
 }
 
 text.active {
-    fill: rgb(0, 165, 255);
+    fill: red;
     font-weight: bolder;
     font-size: 18px;
 }
 
 rect.active{
-    fill: rgb(0, 165, 255);
+    fill: red;
 }
 
 .background {
