@@ -42,57 +42,61 @@ function validate(evt) {
 }
 
 /*
-#######################--- Scripts for Downloading Tables ---############################
+#######################--- Methods for Downloading Tables ---############################
  */
 var csv = "";
 
 function generate_tables() {
-    //var seen = findVars(data);
-    var zip = new JSZip();
-    var file = [];
-    var utc = new Date().toJSON().slice(0,16);
-    utc = utc.replace('T', '--');
-    console.log(csv, null, '\t');
-    zip.file('table.csv', csv);
-
-    zip.generateAsync({type:"blob"})
-        .then(function(content) {
-            saveAs(content, 'nussinov_' + utc + '.zip');
-        });
-
+    var file = new File([csv], "table.csv", {type: "text/plain;charset=utf-8"});
+    saveAs(file);
 }
 
 // Convert Matrix to CSV
-function matrixToCSV(sequence, matrix) {
+function matrixToCSV(sequence, matrices) {
+
     var sequence_column = true;
     var res = "";
+    console.log((matrices));
+    for (var idx in matrices)
+    {
+        if (res.length != 0) {
+            res += "\n\n";
+        }
+        var matrix = matrices[idx];
+        console.log(matrix);
 
-    if (sequence_column)
-        res += " , ";
-    // add first row: sequence
-    for (var j in sequence) {
-        res += "," + sequence[j];
-    }
-    res += "\n";
-    for (var i = 1; i < matrix.length; ++i) {
-        if (sequence_column && i > 0)
-            res += sequence[i - 1];
-
-        // adding row
-        for (var j in matrix[i]) {
-            if (sequence_column || j > 0)
-                res += ",";
-            if (!isNaN(matrix[i][j].value))
-                res += matrix[i][j].value;
+        if (sequence_column)
+            res += ",";
+        // add first row: sequence
+        for (var j in sequence) {
+            res += "," + sequence[j];
         }
         res += "\n";
+        for (var i = 1; i < matrix.cells.length; ++i) {
+            if (sequence_column && i > 0)
+                res += sequence[i - 1];
+
+            // adding row
+            for (var j in matrix.cells[i]) {
+                if (sequence_column || j > 0)
+                    res += ",";
+                if (!isNaN(matrix.cells[i][j].value))
+                    res += matrix.cells[i][j].value;
+            }
+            res += "\n";
+        }
     }
+    console.log(csv);
     csv = res;
     //return res;
 }
 
 /*
- #######################--- END ---############################
+ #######################--- END Download Tables ---############################
+ */
+
+/*
+ #######################--- Methods for Generating DotPlots ---############################
  */
 
 function mouseover(p) {
@@ -150,7 +154,7 @@ function dotplot(sequence, table, pname) {
             var roww = {};
             roww[keys[0]]=a;
             roww[keys[1]]=b;
-            roww[keys[2]]=c;
+            roww[keys[2]]=Math.max(c, 0.000001);
             bpp.push(roww);
             mlp.push(roww);
         }
@@ -265,27 +269,47 @@ function dotplot(sequence, table, pname) {
             .enter().append("g")
             .attr("class", "dp_cell");
         
-        cell.append("rect")
-            .attr("x", function(d) { return x(d.x); })
-            .attr("width", x.rangeBand())
-            .attr("height", x.rangeBand())
-            .attr("border", "2px solid red")
-            .style("stroke", "rgb(0, 165, 255)")
+        cell.append("circle")
+            .attr("cx", function(d) { return x(d.x) + 26 ; })
+            .attr("cy", 26)
+            //.attr("width", function(d) {return x.rangeBand() * Math.pow(z(d.z), 0.5);})
+            //.attr("height", function(d) {return x.rangeBand() * Math.pow(z(d.z), 0.5);})
+            .attr("r", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.2)/2;})
+            //.attr("ry", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.5);})
+            //.attr("border", "1px solid red")
+            //.style("stroke", "rgb(0, 165, 255)")
             .style("stroke-width", 2)
             //.style("fill-opacity", function(d) { return z(d.z); })
             .style("fill-opacity", function(d) { return Math.pow(z(d.z), 0.5); })
+            //.on("mouseover", mouseover)
+            //.on("mouseout", mouseout);
+        cell.append("rect")
+            .attr("x", function(d) { return x(d.x) ; })
+            //.attr("cy", 26)
+            .attr("width", x.rangeBand())
+            .attr("height",x.rangeBand())
+            //.attr("r", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.2)/2;})
+            //.attr("ry", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.5);})
+            .attr("border", "1px solid")
+            .style("stroke", "lightgrey")
+            .style("stroke-width", 1)
+            .style("fill-opacity", 0 )
+            //.style("fill-opacity", function(d) { return Math.pow(z(d.z), 0.5); })
             .on("mouseover", mouseover)
             .on("mouseout", mouseout);
         cell.append("text")
-            .attr("x", function(d) { return x(d.x)+15; })
+            .attr("x", function(d) { return x(d.x)+10; })
             .attr("y", x.rangeBand()/2)
             .attr("dy", ".32em")
             .attr("text-anchor", "start")
             .attr("display", "none")
-            .attr("color", "blue")
+            .attr("fill", "red")
             //.text("hello");
-            .text(function(d) { return d.z; })
+            .text(function(d) { return (d.z).toFixed(4); })
     }
     return dev;
 }
 
+/*
+ #######################--- END DotPlots ---############################
+ */
