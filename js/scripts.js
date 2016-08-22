@@ -44,22 +44,24 @@ function validate(evt) {
 /*
 #######################--- Scripts for Downloading Tables ---############################
  */
+var csv = [];
 
-function generate_params() {
+function generate_tables() {
     //var seen = findVars(data);
-    var result={};
 
     var zip = new JSZip();
     var file = [];
     var utc = new Date().toJSON().slice(0,16);
     utc = utc.replace('T', '--');
-    file.push(JSON.stringify(result));
-    zip.file('hp.json', JSON.stringify(result, null, '\t'));
+    file.push(JSON.stringify(csv));
+    zip.file('hp.json', JSON.stringify(csv, null, '\t'));
 
     zip.generateAsync({type:"application/javascript"})
         .then(function(content) {
-            saveAs(content, 'hp_' + utc + '.json.zip');
+            saveAs(content, 'nussinov_' + utc + '.zip');
         });
+
+    console.log(csv);
 }
 
 // Convert Matrix to CSV
@@ -87,8 +89,8 @@ function matrixToCSV(sequence, matrix) {
         }
         res += "\n";
     }
-
-    return res;
+    csv.push(res);
+    //return res;
 }
 
 /*
