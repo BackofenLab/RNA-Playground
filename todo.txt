@@ -27,5 +27,3 @@ After meeting on 24-Juli:
     - rna-up: add page and impl algo using 4d matrix
 
     - rna-hyb: add page and impl algo using 4d matrix
-
-
