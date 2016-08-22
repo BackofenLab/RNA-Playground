@@ -39,9 +39,9 @@
                 }).appendTo(ranges_div);
                 -->
         <div class="row">
-            <div class="colW200" style="font-size: 120%">Energy weight of base pair: $E_{bp}/RT$</div>
+            <div class="colW200" style="font-size: 120%">Energy weight of base pair: $\exp(-E_{bp}/RT)$</div>
             <div class="colW400">
-                <input data-bind="value: input.energy" id="energy" type="range" max="5" min="-1" step="(max - min) / 100">
+                <input data-bind="value: input.energy" id="energy" type="range" max="5" min="1" step="(max - min) / 100">
 
                 <p data-bind="text: input.energy" style="display: inline;"></p>
             </div>

@@ -9,7 +9,6 @@ After meeting on 24-Juli:
     - mccaskill: slider 1 = Ebp (default -1)
     - mccaskill: slider 2 = RT (default 1 and range 1-5)
 
-<<<<<<< HEAD
     - MEA: fix getSubstructures
     - MEA: show all three tables in diff rows
     - MEA: replace +1 in traceback by p^u or p^bp
@@ -18,20 +17,6 @@ After meeting on 24-Juli:
     - MEA: show PU array instead of PU table
     - MEA: update PU recursion information to "1-sum..."
     - MEA: add 2 sliders for mccaskill computation
-=======
-	- MEA: fix getSubstructures
-	- MEA: show all three tables in diff rows
-	- MEA: replace +1 in traceback by p^u or p^bp
-
-	+ co-fold: rename nussiFold to co-fold
-	+ co-fold: change linker length to ll+1
-	+ co-fold: represent bps across linker with [] (for full structue)
-	- co-fold: represent bps across linker with [] (for single cell click)
-
-	- rna-up: add page and impl algo using 4d matrix
-
-	- rna-hyb: add page and impl algo using 4d matrix
->>>>>>> update todo
 
     + co-fold: rename nussiFold to co-fold
     + co-fold: change linker length to ll+1
@@ -42,3 +27,4 @@ After meeting on 24-Juli:
     - rna-up: add page and impl algo using 4d matrix
 
     - rna-hyb: add page and impl algo using 4d matrix
+
