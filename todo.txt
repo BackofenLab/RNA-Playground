@@ -13,7 +13,7 @@ After meeting on 24-Juli:
     - MEA: show all three tables in diff rows
     - MEA: replace +1 in traceback by p^u or p^bp
     - MEA : LIMITED traceback (up to 10 structures)
-    - mEA: bug: sequence AU : should be 2*0.731
+    - MEA: bug: sequence AU : should be 2*0.731
     - MEA: show PU array instead of PU table
     - MEA: update PU recursion information to "1-sum..."
     - MEA: add 2 sliders for mccaskill computation

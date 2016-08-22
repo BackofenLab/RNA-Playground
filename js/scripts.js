@@ -41,6 +41,60 @@ function validate(evt) {
     }
 }
 
+/*
+#######################--- Scripts for Downloading Tables ---############################
+ */
+
+function generate_params() {
+    //var seen = findVars(data);
+    var result={};
+
+    var zip = new JSZip();
+    var file = [];
+    var utc = new Date().toJSON().slice(0,16);
+    utc = utc.replace('T', '--');
+    file.push(JSON.stringify(result));
+    zip.file('hp.json', JSON.stringify(result, null, '\t'));
+
+    zip.generateAsync({type:"application/javascript"})
+        .then(function(content) {
+            saveAs(content, 'hp_' + utc + '.json.zip');
+        });
+}
+
+// Convert Matrix to CSV
+function matrixToCSV(sequence, matrix) {
+    var sequence_column = true;
+    var res = "";
+
+    if (sequence_column)
+        res += ",";
+    // add first row: sequence
+    for (var j in sequence) {
+        res += "," + sequence[j];
+    }
+    res += "\n";
+    for (var i = 1; i < matrix.length; ++i) {
+        if (sequence_column && i > 0)
+            res += sequence[i - 1];
+
+        // adding row
+        for (var j in matrix[i]) {
+            if (sequence_column || j > 0)
+                res += ",";
+            if (!isNaN(matrix[i][j].value))
+                res += matrix[i][j].value;
+        }
+        res += "\n";
+    }
+
+    return res;
+}
+
+/*
+ #######################--- END ---############################
+ */
+
 function mouseover(p) {
     var par = "#" + this.parentElement.parentElement.parentElement.parentElement.id; // get svg name
     var rowText = par + ' .rowtext';
@@ -235,31 +289,3 @@ function dotplot(sequence, table, pname) {
     return dev;
 }
 
-// Convert Matrix to CSV
-function matrixToCSV(sequence, matrix) {
-    var sequence_column = true;
-    var res = "";
-
-    if (sequence_column)
-        res += ",";
-    // add first row: sequence
-    for (var j in sequence) {
-        res += "," + sequence[j];
-    }
-    res += "\n";
-    for (var i = 1; i < matrix.length; ++i) {
-        if (sequence_column && i > 0)
-            res += sequence[i - 1];
-        
-        // adding row
-        for (var j in matrix[i]) {
-            if (sequence_column || j > 0)
-                res += ",";
-            if (!isNaN(matrix[i][j].value))
-                res += matrix[i][j].value;
-        }
-        res += "\n";
-    }
-
-    return res;
-}
