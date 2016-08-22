@@ -44,24 +44,22 @@ function validate(evt) {
 /*
 #######################--- Scripts for Downloading Tables ---############################
  */
-var csv = [];
+var csv = "";
 
 function generate_tables() {
     //var seen = findVars(data);
-
     var zip = new JSZip();
     var file = [];
     var utc = new Date().toJSON().slice(0,16);
     utc = utc.replace('T', '--');
-    file.push(JSON.stringify(csv));
-    zip.file('hp.json', JSON.stringify(csv, null, '\t'));
+    console.log(csv, null, '\t');
+    zip.file('table.csv', csv);
 
-    zip.generateAsync({type:"application/javascript"})
+    zip.generateAsync({type:"blob"})
         .then(function(content) {
             saveAs(content, 'nussinov_' + utc + '.zip');
         });
 
-    console.log(csv);
 }
 
 // Convert Matrix to CSV
@@ -70,7 +68,7 @@ function matrixToCSV(sequence, matrix) {
     var res = "";
 
     if (sequence_column)
-        res += ",";
+        res += " , ";
     // add first row: sequence
     for (var j in sequence) {
         res += "," + sequence[j];
@@ -89,7 +87,7 @@ function matrixToCSV(sequence, matrix) {
         }
         res += "\n";
     }
-    csv.push(res);
+    csv = res;
     //return res;
 }
 
