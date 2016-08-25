@@ -19,7 +19,7 @@ function showRecursion() {
 }
 
 function getFormula_structCount(){
-    document.getElementById("recursion").innerHTML = availableAlgorithms[$(rec_select).text()].getRecursionInLatex();
+    document.getElementById("recursion").innerHTML = availableAlgorithms[$(rec_select).text()].Tables[$(rec_id).text()].getRecursionInLatex();//.getRecursionInLatex();
     //document.getElementById("recursion_qb").innerHTML = availableAlgorithms[$(rec_select_qb).text()].getRecursionInLatex();
 
     rerendermath();
@@ -80,7 +80,7 @@ function matrixToCSV(sequence, matrices) {
             for (var j in matrix.cells[i]) {
                 if (sequence_column || j > 0)
                     res += ",";
-                if (!isNaN(matrix.cells[i][j].value))
+                if (!isNaN(matrix.cells[i][j].value) && matrix.cells[i][j].value != null)
                     res += matrix.cells[i][j].value;
             }
             res += "\n";

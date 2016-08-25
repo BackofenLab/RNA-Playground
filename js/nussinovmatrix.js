@@ -381,7 +381,7 @@ var NussinovMatrix = {
          */
         getRecursionInLatex: function () {
             console.log("WARNING: getRecursionInLatex() not implemented in NussinovMatrix superclass; overwrite in subclass!");
-            return "";
+            return "$$" + this.latex_representation + "$$";
         }
         ,
 
@@ -454,7 +454,7 @@ var NussinovMatrix = {
             for (var l = 0; l < length; l++) {
                 str += ".";
             }
-            var linked = this.sequence.indexOf("-");
+            var linked = this.sequence.indexOf("X");
             if(linked == -1){
                 for (var i in x) {
                     str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length - 1);
@@ -1381,8 +1381,11 @@ DPAlgorithm_MEA.Tables[2].computeValue = function(i, j) {
     }
     var ret = 1.0;
 
-    for (var k = j - 1; k >= 0; --k) {
-        ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j);
+    for (var k = this.getDim(); k >= 0; --k) {
+        if (k != j) {
+            ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j);
+            ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(j, k);
+        }
     }
     return ret;
 };
@@ -1669,6 +1672,9 @@ var wuchty = function (xmat) {
         if (sigma.length == 0 || sigma_remaining == 0) {
             var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
             SOS.push(temp_sos);
+            if (SOS.length > 10) {
+                break;
+            }
         }
 
         else {

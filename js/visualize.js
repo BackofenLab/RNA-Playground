@@ -20,6 +20,7 @@ function NussinovMatrixViewModel() {
         j: null
     };
     self.currTrace = 0;
+    self.fired = false;
 
     self.rawSeq = ko.observable("GCACGA");
     self.rawSeq2 = ko.observable("GCACGA");
@@ -195,6 +196,17 @@ function NussinovMatrixViewModel() {
         matrixToCSV(self.input.sequence(), self.matrix());
         return tables;
 
+    }, this);
+    
+    self.latex = ko.computed(function() {
+            var formulas = [];
+            for (var i in self.matrix()) {
+                formulas.push(self.matrix()[i].getRecursionInLatex());
+            }
+            console.log(formulas);
+           // self.fired = true;
+            return formulas;
+        //subscription.dispose();
     }, this);
 
     // functions for visualization and interaction

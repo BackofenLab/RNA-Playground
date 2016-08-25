@@ -16,7 +16,7 @@
     <!-- <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> -->
 </head>
 
-<body onload="getFormula_structCount();">
+<body>
 
 <!-- #########  PAGE MENU  ############## -->
 
@@ -74,12 +74,14 @@
 
         <div class="row">
             <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">coFold</div>
-            <div style="height: 60px;" id="recursion" class="colW400"></div>
+            <!--div style="height: 60px;" id="recursion" class="colW400"></div-->
         </div>
 
     </div>
+    <div class="colW300" id="rec_id" data-bind="text: latex()[0]" style="margin-left:50px;"></div>
 
     <div id="matrix" class="row" id="output" >
+
         <div style="display: inline-block; float: left">
             <canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
             <table  class="colw150" style="display: inline-block; float: left">
@@ -120,7 +122,7 @@
             </tbody>
         </table>
 
-        <button class="" type="button" onclick="generate_tables()">Download Table!</button>
+        <button class="" type="button" onclick="generate_tables()" style="margin-left: 15px">Download Table!</button>
 
 
 
