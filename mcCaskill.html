@@ -69,21 +69,21 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="colW400" style="font-size: 120%; white-space: nowrap;">Recursion of McCaskill:</div>
-        </div>
+
         <div class="row">
             <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">mcCaskill</div>
-            <!--div class="colW300" id="rec_id" style="margin-left:50px; display: none;">0</div-->
-            <!--div class="colW300" id="recursion" style="margin-left:50px;"></div-->
-
         </div>
 
     </div>
 
     <div class="row" id="output">
 
-        <div class="colW300" id="rec_id" data-bind="text: latex()[0]" style="margin-left:50px;"></div>
+        <div class="row">
+            <div class="colW400" style="font-size: 120%; white-space: nowrap;">Recursion of McCaskill:</div>
+        </div>
+
+        <div class="colW300" id="rec_id" data-bind="text: latex()[0]" style="margin-left:50px;display: block;"></div>
+        <div class="colW300" id="rec_id" data-bind="text: latex()[1]" style="margin-left:80px;"></div>
 
         <table id="matrix" class="colw150">
             <thead>
@@ -107,7 +107,6 @@
         </table>
 
 
-        <div class="colW300" id="rec_id" data-bind="text: latex()[1]" style="margin-left:50px;"></div>
 
         <table id="matrix" class="colw150">
             <thead>
@@ -124,7 +123,7 @@
             <tr>
                 <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
                 <!-- ko foreach: { data: cell, as: 'v' } -->
-                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td>
+                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '' "></td>
                 <!-- /ko -->
             </tr>
             </tbody>

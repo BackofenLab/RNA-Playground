@@ -1,6 +1,7 @@
 After meeting on 24-Juli:
     ? All: add download tables button
-    - All: don't reload latex formulas
+    ? All: don't reload latex formulas
+    ? All: remove output container if empty sequence
 
     ? mccaskill: try to put recursion b4 tables
     + macaskill: p^U to p^u
@@ -8,10 +9,11 @@ After meeting on 24-Juli:
     ? mccaskill: dotplots: draw a dot within each cell with radius == sqrt(probability) scaled to cell width
     ? mccaskill: slider 1 = Ebp (default -1)
     ? mccaskill: slider 2 = RT (default 1 and range 1-5)
+    ? mccaskill: make dot plot size dynamic
 
+    - MEA: replace +1 in traceback by p^u or p^bp
     - MEA: fix getSubstructures
     ? MEA: show all three tables in diff rows
-    - MEA: replace +1 in traceback by p^u or p^bp
     ? MEA : LIMITED traceback (up to 10 structures)
     ? MEA: bug: sequence AU : should be 2*0.731
     ? MEA: show PU array instead of PU table

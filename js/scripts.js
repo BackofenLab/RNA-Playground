@@ -165,10 +165,10 @@ function dotplot(sequence, table, pname) {
     maindic["optimal-structure"] = mlp;
 
     var bpm=maindic;
-
+    var cell_length = 50;
     var margin = {top: 20, right: 80, bottom: 10, left: 80},
-        width = 300,
-        height = 300;
+        width = cell_length * sequence.length,
+        height = cell_length * sequence.length;
     var x = d3.scale.ordinal().rangeBands([0, width]),
         z = d3.scale.linear().domain([0, 1]).clamp(true),
         c = d3.scale.category10().domain(d3.range(10));

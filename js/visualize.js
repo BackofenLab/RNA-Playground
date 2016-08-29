@@ -15,6 +15,8 @@ function NussinovMatrixViewModel() {
     //var colors = ['red', 'blue', 'green', 'orange', 'purple', 'brown', 'grey', 'red', 'blue'];
     var colors2 = ['red', 'blue', 'green', 'orange', 'purple', 'brown', 'grey', 'red', 'blue'];
     var color = 0;
+
+    var formulas = [];
     self.currCell = {
         i: null,
         j: null
@@ -136,10 +138,12 @@ function NussinovMatrixViewModel() {
         //var ll = parseInt(self.input.loopLength());
         console.log("seq len:", self.input.sequence().length);
         if(self.input.sequence().length==0){
-            $("#matrix").hide();
+            $("#output").hide();
+
             return false;
         }
-        $("#matrix").show();
+        $("#output").show();
+
         if (self.input.allowTraceback) {
             $('th.cell_th, td.cell').css({
                 'width': cellWidth + 'px',
@@ -163,6 +167,13 @@ function NussinovMatrixViewModel() {
         }
         for(var i = 0; i < tables.length; ++i){
             tables[i] = self.renderer(tables[i]);
+        }
+
+        // add latex formulas to array
+        if(!self.fired) {
+            for (var i in tables) {
+                formulas.push(tables[i].getRecursionInLatex());
+            }
         }
 
         return tables;
@@ -199,14 +210,12 @@ function NussinovMatrixViewModel() {
     }, this);
     
     self.latex = ko.computed(function() {
-            var formulas = [];
-            for (var i in self.matrix()) {
-                formulas.push(self.matrix()[i].getRecursionInLatex());
-            }
-            console.log(formulas);
-           // self.fired = true;
-            return formulas;
-        //subscription.dispose();
+        //    var formulas = [];
+        //    for (var i in self.matrix()) {
+        //        formulas.push(self.matrix()[i].getRecursionInLatex());
+        //    }
+        return formulas;
+
     }, this);
 
     // functions for visualization and interaction

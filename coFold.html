@@ -80,7 +80,7 @@
     </div>
     <div class="colW300" id="rec_id" data-bind="text: latex()[0]" style="margin-left:50px;"></div>
 
-    <div id="matrix" class="row" id="output" >
+    <div id="matrix" class="row" >
 
         <div style="display: inline-block; float: left">
             <canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
@@ -112,6 +112,7 @@
                 </table>
             </div>
         </div>
+
         <table id="structures" class="colw200" style="float: left; margin-top:30px">
             <thead>
             <th id="structTableHeading">Possible Structures</th>
@@ -121,12 +122,11 @@
             <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"></td></tr>
             </tbody>
         </table>
-
+        <div>
         <button class="" type="button" onclick="generate_tables()" style="margin-left: 15px">Download Table!</button>
-
-
-
+</div>
     </div>
+
 
     <div class="footer">
         <a href="http://rna.informatik.uni-freiburg.de/About.jsp">About this web server</a>
