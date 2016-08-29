@@ -1,27 +1,28 @@
 After meeting on 24-Juli:
     ? All: add download tables button
+    - All: don't reload latex formulas
 
-    - mccaskill: try to put recursion b4 tables
+    ? mccaskill: try to put recursion b4 tables
     + macaskill: p^U to p^u
-    - mccaskill: bp-dotplot : add "0" cells including frame for all cells
-    - mccaskill: dotplots: draw a dot within each cell with radius == sqrt(probability) scaled to cell width
+    ? mccaskill: bp-dotplot : add "0" cells including frame for all cells
+    ? mccaskill: dotplots: draw a dot within each cell with radius == sqrt(probability) scaled to cell width
     ? mccaskill: slider 1 = Ebp (default -1)
     ? mccaskill: slider 2 = RT (default 1 and range 1-5)
 
     - MEA: fix getSubstructures
-    - MEA: show all three tables in diff rows
+    ? MEA: show all three tables in diff rows
     - MEA: replace +1 in traceback by p^u or p^bp
-    - MEA : LIMITED traceback (up to 10 structures)
-    - MEA: bug: sequence AU : should be 2*0.731
-    - MEA: show PU array instead of PU table
-    - MEA: update PU recursion information to "1-sum..."
-    - MEA: add 2 sliders for mccaskill computation
+    ? MEA : LIMITED traceback (up to 10 structures)
+    ? MEA: bug: sequence AU : should be 2*0.731
+    ? MEA: show PU array instead of PU table
+    ? MEA: update PU recursion information to "1-sum..."
+    ? MEA: add 2 sliders for mccaskill computation
 
     + co-fold: rename nussiFold to co-fold
     + co-fold: change linker length to ll+1
     + co-fold: represent bps across linker with [] (for full structue)
     + co-fold: represent bps across linker with [] (for single cell click)
-    - co-fold: use "x" for linker positions in dot-bracket-string
+    ? co-fold: use "x" for linker positions in dot-bracket-string
 
     - rna-up: add page and impl algo using 4d matrix
 

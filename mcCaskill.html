@@ -12,7 +12,8 @@
 
 </head>
 
-<body onload="getFormula_structCount();">
+<!--body onload="getFormula_structCount();"-->
+<body>
 
 <!-- #########  PAGE MENU  ############## -->
 
@@ -39,11 +40,19 @@
                 }).appendTo(ranges_div);
                 -->
         <div class="row">
-            <div class="colW200" style="font-size: 120%">Energy weight of base pair: $E_{bp}/RT$</div>
+            <div class="colW200" style="font-size: 120%">Energy weight of base pair: $E_{bp}$</div>
             <div class="colW400">
                 <input data-bind="value: input.energy" id="energy" type="range" max="5" min="-1" step="(max - min) / 100">
 
                 <p data-bind="text: input.energy" style="display: inline;"></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="colW200" style="font-size: 120%">Energy normalizer of base pair: $RT$</div>
+            <div class="colW400">
+                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="1" step="(max - min) / 100">
+
+                <p data-bind="text: input.energy_normal" style="display: inline;"></p>
             </div>
         </div>
         <div class="row">
@@ -65,12 +74,17 @@
         </div>
         <div class="row">
             <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">mcCaskill</div>
-            <div class="colW300" id="recursion" style="margin-left:50px"></div>
+            <!--div class="colW300" id="rec_id" style="margin-left:50px; display: none;">0</div-->
+            <!--div class="colW300" id="recursion" style="margin-left:50px;"></div-->
+
         </div>
 
     </div>
 
     <div class="row" id="output">
+
+        <div class="colW300" id="rec_id" data-bind="text: latex()[0]" style="margin-left:50px;"></div>
+
         <table id="matrix" class="colw150">
             <thead>
             <tr>
@@ -92,10 +106,8 @@
             </tbody>
         </table>
 
-        <div class="row">
-            <div class="colW300" id="rec_select_qb" style="margin-left:50px; display: none;">mcCaskill</div>
-            <div class="colW300" id="recursion_qb" style="margin-left:50px"></div>
-        </div>
+
+        <div class="colW300" id="rec_id" data-bind="text: latex()[1]" style="margin-left:50px;"></div>
 
         <table id="matrix" class="colw150">
             <thead>
@@ -118,6 +130,9 @@
             </tbody>
         </table>
 
+
+        <div class="colW300" id="rec_id" data-bind="text: latex()[2]" style="margin-left:50px;"></div>
+
         <table id="matrix" class="colw150">
             <thead>
             <tr>
@@ -133,11 +148,14 @@
             <tr>
                 <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
                 <!-- ko foreach: { data: cell, as: 'v' } -->
-                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td>
+                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : ''"></td>
                 <!-- /ko -->
             </tr>
             </tbody>
         </table>
+
+
+        <div class="colW300" id="rec_id" data-bind="text: latex()[3]" style="margin-left:50px;"></div>
 
         <table id="matrix" class="colw150">
             <thead>
@@ -154,7 +172,7 @@
             <tr>
                 <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
                 <!-- ko foreach: { data: cell, as: 'v' } -->
-                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td>
+                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : ''"></td>
                 <!-- /ko -->
             </tr>
             </tbody>

@@ -16,7 +16,7 @@
     <!-- <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> -->
 </head>
 
-<body onload="getFormula_structCount();">
+<body>
 
 <!-- #########  PAGE MENU  ############## -->
 
@@ -74,12 +74,15 @@
 
         <div class="row">
             <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">hybrid</div>
-            <div style="height: 60px;" id="recursion" class="colW400"></div>
+            <!--<div style="height: 60px;" id="recursion" class="colW400"></div>-->
         </div>
 
     </div>
 
     <div id="matrix" class="row" id="output" >
+
+        <div class="colW300" id="rec_id" data-bind="text: latex()[0]" style="margin-left:50px;"></div>
+
         <div style="display: inline-block; float: left">
             <canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
             <table  class="colw150" style="display: inline-block; float: left">
@@ -144,8 +147,8 @@
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script src="js/libs/jquery.min.js"></script>
 <script src="js/nussinovmatrix4d.js"></script>
-<script src="js/visualize.js"></script>
 <script src="js/scripts.js"></script>
+<script src="js/visualize.js"></script>
 <!--<script type="text/javascript">-->
 <!--showRecursion();-->
 <!--</script>-->

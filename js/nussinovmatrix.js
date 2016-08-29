@@ -381,7 +381,7 @@ var NussinovMatrix = {
          */
         getRecursionInLatex: function () {
             console.log("WARNING: getRecursionInLatex() not implemented in NussinovMatrix superclass; overwrite in subclass!");
-            return "";
+            return "$$" + this.latex_representation + "$$";
         }
         ,
 
@@ -454,7 +454,7 @@ var NussinovMatrix = {
             for (var l = 0; l < length; l++) {
                 str += ".";
             }
-            var linked = this.sequence.indexOf("-");
+            var linked = this.sequence.indexOf("X");
             if(linked == -1){
                 for (var i in x) {
                     str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length - 1);
@@ -1052,6 +1052,80 @@ NussinovDPAlgorithm_Ambiguous2.Tables[0].getSubstructures = function (sigma, P, 
 }
 ;
 
+/**
+ * WUCHTY(2nd version) enumerating up to 10 structures
+ */
+function wuchty_2nd(xmat, delta, formula) {
+    console.log("entering wuchty");
+    // get maximal number of structures to report
+    var maxSOS = 10;
+    // call subroutine
+    return wuchty_2nd_limited(xmat, delta, formula, maxSOS);
+}
+
+/**
+ * WUCHTY(2nd version)
+ */
+function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
+    //if (xmat == undefined)return;
+    if (xmat.sequence == undefined)return;
+    var seq_length = xmat.sequence.length;
+    var Nmax = xmat.getValue(1, seq_length);
+    console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
+
+    var S = {sigma: [[1, seq_length]], P: [], traces: []};
+    var R = [S];
+    var SOS = [];
+    var loop = 0;
+
+    while (R.length != 0) {
+        //console.log("\nloop:", ++loop);
+        //console.log("R length:" + R.length);
+
+        // Pop R
+        var pop_R = R.pop();
+        var sigma = pop_R.sigma;
+        var P = pop_R.P;
+        var t_traces = JSON.stringify(pop_R.traces);
+        var traces = JSON.parse(t_traces);
+        //console.log("poped R:", JSON.stringify(pop_R));
+        //console.log("R_remaining:", JSON.stringify(R));
+
+        var sigma_remaining = 0;
+        for (var s in sigma) {//console.log("var s:", sigma[s]);
+            if ((sigma[s][0]) <= (sigma[s][1] - xmat.minLoopLength)) sigma_remaining++;
+        }
+
+        if (sigma.length == 0 || sigma_remaining == 0) {
+            //console.log("no more structs in poped R");
+            var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
+            SOS.push(temp_sos);
+
+            //console.log("pushed SOS:", JSON.stringify(SOS));
+        }
+
+        else {
+            //console.log(formula);
+            // compute maximal number of structures still to compute
+            var maxLengthR = maxSOS - SOS.length;
+            if (maxLengthR < 0) maxLengthR = 0;
+            var R_prime = formula.getSubstructures(sigma, P, traces, delta, maxLengthR);
+            for (var r in R_prime) {
+                R.push(R_prime[r]);
+            }
+        }
+        // check if enough structures found so far
+        if (SOS.length >= maxSOS)
+            break;
+        //console.log("R:", JSON.stringify(R));
+
+    }
+    //console.log("SOS:", JSON.stringify(SOS));
+    //console.log("\nwuchty end");
+    //console.log(SOS);
+    return SOS;
+}
+;
 
 
 /** Nussinov Structures Count*/
@@ -1151,7 +1225,7 @@ NussinovDPAlgorithm_McCaskill.Tables[1].computeValue = function (i, j) {
         return 0;
     }
     if (RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
-        return NussinovDPAlgorithm_McCaskill.Tables[0].getValue(i + 1, j - 1) * Math.exp(-this.energy_basepair);
+        return NussinovDPAlgorithm_McCaskill.Tables[0].getValue(i + 1, j - 1) * Math.exp(this.energy_basepair);
     } else {
         return 0;
     }
@@ -1207,7 +1281,7 @@ NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
     var minLL = parseInt(input.loopLength());
     this.Tables[0].minLoopLength = minLL;
 
-    this.Tables[1].energy_basepair = input.energy();
+    this.Tables[1].energy_basepair = -input.energy() / input.energy_normal();
 
     for (var i = 0; i <= this.Tables[0].getDim(); i++) {
         for (var j = 0; j <= this.Tables[0].getDim(); ++j) {
@@ -1257,7 +1331,9 @@ DPAlgorithm_MEA.Tables = new Array();
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
-DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + P^{U}_{j} & \\text{j unpaired} \\\\ M_{i + 1, j - 1} + P^{bp}_{i,j} & \\text{j paired with i} \\end{cases}";
+DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + P^{u}_{j} & \\text{j unpaired} \\\\ M_{i + 1, j - 1} + P^{bp}_{i,j} & \\text{j paired with i} \\end{cases}";
+DPAlgorithm_MEA.Tables[2].latex_representation = "P_{i}^{u} = 1 - \\sum_{k \\neq j}{P^{bp}_{k, i}}";
+
 //DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
 //DPAlgorithm_MEA.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 &  S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
 DPAlgorithm_MEA.Tables[0].updateCell = function (i, j, curVal, curAncestor) {
@@ -1284,11 +1360,8 @@ DPAlgorithm_MEA.Tables[0].computeValue = function(i, j) {
     if (i > j || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
         return 0;
     }
-    var unpaired_j = 1.0;
-    for (var k = j - 1; k >= 0; --k) {
-        unpaired_j -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j);
-    }
-    this.updateCell(i, j, this.getValue(i, j - 1) + unpaired_j, Object.create(NussinovCellTrace).init([[i, j - 1]], []));
+
+    this.updateCell(i, j, this.getValue(i, j - 1) + DPAlgorithm_MEA.Tables[2].getValue(j, j), Object.create(NussinovCellTrace).init([[i, j - 1]], []));
 
     if (RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
         this.updateCell(i, j, this.getValue(i + 1, j - 1) + NussinovDPAlgorithm_McCaskill.Tables[2].getValue(i, j), Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [i, j]));
@@ -1301,14 +1374,33 @@ DPAlgorithm_MEA.Tables[0].computeValue = function(i, j) {
     return this.getValue(i, j);
 };
 
+DPAlgorithm_MEA.Tables[2].computeValue = function(i, j) {
+
+    if (i != j || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
+        return 0;
+    }
+    var ret = 1.0;
+
+    for (var k = this.getDim(); k >= 0; --k) {
+        if (k != j) {
+            ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j);
+            ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(j, k);
+        }
+    }
+    return ret;
+};
+
+
 DPAlgorithm_MEA.computeMatrix = function(input) {
     
     NussinovDPAlgorithm_McCaskill.computeMatrix(input);
 
     this.Tables[1] = NussinovDPAlgorithm_McCaskill.Tables[2];
-    this.Tables[2] = NussinovDPAlgorithm_McCaskill.Tables[3];
+    //this.Tables[2] = NussinovDPAlgorithm_McCaskill.Tables[3];
 
     this.Tables[0].init(input.sequence(), "Maximum Expected Accuracy");
+
+    this.Tables[2].init(input.sequence(), "Unpaired probabilities");
     // store minimal loop length
     var minLL = parseInt(input.loopLength());
     this.Tables[0].minLoopLength = minLL;
@@ -1321,6 +1413,10 @@ DPAlgorithm_MEA.computeMatrix = function(input) {
         ;
     }
     ;
+
+    for (var i = 0; i < this.Tables[2].getDim(); ++i) {
+        this.Tables[2].getValue(i, i);
+    }
 
     return this.Tables;
 };
@@ -1576,6 +1672,9 @@ var wuchty = function (xmat) {
         if (sigma.length == 0 || sigma_remaining == 0) {
             var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
             SOS.push(temp_sos);
+            if (SOS.length > 10) {
+                break;
+            }
         }
 
         else {
