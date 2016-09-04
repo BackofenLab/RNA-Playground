@@ -90,7 +90,7 @@
         </div -->
 
         <div class="row">
-            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">hybrid</div>
+            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">rnaup</div>
             <!--<div style="height: 60px;" id="recursion" class="colW400"></div>-->
         </div>
 
@@ -98,7 +98,66 @@
 
     </div>
 
+
+
     <div id="matrix" class="row" id="output" >
+
+
+
+        <div class="row">
+            <div class="colW400" style="font-size: 120%; white-space: nowrap;">Recursion of McCaskill:</div>
+        </div>
+
+        <div class="colW300" id="rec_id" data-bind="text: latex()[2]" style="margin-left:50px;"></div>
+
+        <table id="matrix" class="colw150">
+            <thead>
+            <tr>
+                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^{bp}$</th>
+                <th class="cell_count"></th>
+                <!-- ko foreach: { data: rawSequence, as: 'base' } -->
+                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
+                <!-- /ko -->
+            </tr>
+            </thead>
+
+            <tbody id='matrix_data' data-bind="foreach: { data: cells()[1], as: 'cell' }">
+            <tr>
+                <th class="cell_count" data-bind="writeSeq: [$root.rawSequence()[$index()], $index()+1]"></th>
+                <!-- ko foreach: { data: cell, as: 'v' } -->
+                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? parseFloat(v.value).toFixed(3) : ''"></td>
+                <!-- /ko -->
+            </tr>
+            </tbody>
+        </table>
+
+
+        <div class="colW300" id="rec_id" data-bind="text: latex()[2]" style="margin-left:50px;"></div>
+
+        <table id="matrix" class="colw150">
+            <thead>
+            <tr>
+                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^u$</th>
+                <th class="cell_count"></th>
+                <!-- ko foreach: { data: rawSequence2, as: 'base' } -->
+                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
+                <!-- /ko -->
+            </tr>
+            </thead>
+
+            <tbody id='matrix_data' data-bind="foreach: { data: cells()[2], as: 'cell' }">
+            <tr>
+                <th class="cell_count" data-bind="writeSeq: [$root.rawSequence2()[$index()], $index()+1]"></th>
+                <!-- ko foreach: { data: cell, as: 'v' } -->
+                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? parseFloat(v.value).toFixed(3): ''"></td>
+                <!-- /ko -->
+            </tr>
+            </tbody>
+        </table>
+
+        <button class="" type="button" onclick="generate_tables()">Download Table!</button>
+
+
 
         <div style="display: inline-block; float: left">
             <canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
@@ -163,6 +222,7 @@
 <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script src="js/libs/jquery.min.js"></script>
+<script src="js/nussinovmatrix.js"></script>
 <script src="js/nussinovmatrix4d.js"></script>
 <script src="js/scripts.js"></script>
 <script src="js/visualize.js"></script>
