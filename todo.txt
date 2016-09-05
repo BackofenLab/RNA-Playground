@@ -4,7 +4,7 @@ After meeting on 24-Juli:
     ? All: remove output container if empty sequence
 
     ? mccaskill: try to put recursion b4 tables
-    + macaskill: p^U to p^u
+    ? macaskill: p^U to p^u
     ? mccaskill: bp-dotplot : add "0" cells including frame for all cells
     ? mccaskill: dotplots: draw a dot within each cell with radius == sqrt(probability) scaled to cell width
     ? mccaskill: slider 1 = Ebp (default -1)
@@ -20,10 +20,10 @@ After meeting on 24-Juli:
     ? MEA: update PU recursion information to "1-sum..."
     ? MEA: add 2 sliders for mccaskill computation
 
-    + co-fold: rename nussiFold to co-fold
-    + co-fold: change linker length to ll+1
-    + co-fold: represent bps across linker with [] (for full structue)
-    + co-fold: represent bps across linker with [] (for single cell click)
+    ? co-fold: rename nussiFold to co-fold
+    ? co-fold: change linker length to ll+1
+    ? co-fold: represent bps across linker with [] (for full structue)
+    ? co-fold: represent bps across linker with [] (for single cell click)
     ? co-fold: use "x" for linker positions in dot-bracket-string
 
     - rna-up: add page and impl algo using 4d matrix

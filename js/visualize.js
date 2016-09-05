@@ -35,13 +35,13 @@ function NussinovMatrixViewModel() {
         delta: ko.observable(0),
         recursion: ko.observable("nussinovUnique"),
         allowTraceback: true,
-        energy: ko.observable(1),
+        energy: ko.observable(-1),
         energy_normal: ko.observable(1),
         sequence: ko.computed(function(){
             var ll = self.loopLength();
             if (self.rawSeq()==undefined)
                 return;
-            if($(rec_select).text()=="coFold" || $(rec_select).text()=="hybrid") {
+            if($(rec_select).text()=="coFold" || $(rec_select).text()=="hybrid" || $(rec_select).text()=="rnaup") {
                 if (self.rawSeq2()==undefined)
                     return;
                 var linker = '';
@@ -53,6 +53,12 @@ function NussinovMatrixViewModel() {
 
     };
 
+    self.rawSequence = ko.computed(function() {
+        return self.rawSeq().toUpperCase().split("");
+    })
+    self.rawSequence2 = ko.computed(function() {
+        return self.rawSeq2().toUpperCase().split("");
+    })
 
     self.mcCaskillRecursion = ko.computed(function(){
         //console.log($(rec_select).text());
@@ -98,6 +104,16 @@ function NussinovMatrixViewModel() {
         if($(rec_select).text()=="hybrid") {
             console.log("hybrid");
             self.input.recursion("hybrid");
+            self.input.allowTraceback = false;
+            //cellWidth = 48;
+            //cellHeight = 28;
+        }
+    });
+    self.rnaup = ko.computed(function(){
+        //console.log($(rec_select).text());
+        if($(rec_select).text()=="rnaup") {
+            console.log("rnaup");
+            self.input.recursion("rnaup");
             self.input.allowTraceback = false;
             //cellWidth = 48;
             //cellHeight = 28;
@@ -165,6 +181,8 @@ function NussinovMatrixViewModel() {
             $("#unpaired_dotplot").html(dotplot(self.input.sequence(), tables[3].cells, 'ud'));
 
         }
+
+        console.log("hallo\n", tables);
         for(var i = 0; i < tables.length; ++i){
             tables[i] = self.renderer(tables[i]);
         }
@@ -202,7 +220,7 @@ function NussinovMatrixViewModel() {
             if(self.matrix()[i].cells == undefined)return;
             tables.push(self.matrix()[i].cells.slice(1));        // slice is hack to skip first row(investigate later)
         }
-        console.log(tables);
+        //console.log(tables.simpleRepresentation());
         matrixToCSV(self.input.sequence(), self.matrix());
         return tables;
 
