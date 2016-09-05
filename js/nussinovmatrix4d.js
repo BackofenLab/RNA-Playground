@@ -222,7 +222,7 @@ var NussinovMatrix4d = {
          */
         getValue: function (i, k, j, l) {
             // access cell at location (i,j) in the matrix
-            console.log(i, k, j, l);
+            //console.log(i, k, j, l);
             var cell = this.getCell(i, k, j, l);
             if (cell === null) {
                 return null;
@@ -309,10 +309,31 @@ var NussinovMatrix4d = {
          * @returns {string} latex encoding of the recursion
          */
         getRecursionInLatex: function () {
-            console.log("WARNING: getRecursionInLatex() not implemented in NussinovMatrix superclass; overwrite in subclass!");
-            return "";
+            console.log("WARNING: getRecursionInLatex() not implemented in NussinovMatrix4d superclass; overwrite in subclass!");
+            return "$$" + this.latex_representation + "$$";
+
         }
         ,
+    
+        simpleRepresentation: function() {
+
+            var n1 = this.sequence1.length;
+            var n2 = this.sequence2.length;
+
+            console.log(n1, n2);
+            console.log(this.sequence1, this.sequence2);
+            var res = "";
+            for (var i = 0; i <= n1; ++i)
+                for (var k = i; k <= n1; ++k)
+                    for (var j = 0; j <= n2; ++j)
+                        for (var l = j; l <= n2; ++l)
+                            if (this.getValue(i, k, j, l) != null) {
+                                res += JSON.stringify(this.getCell(i, k, j, l)) + "\n";
+                            }
+            
+            return res; 
+
+        }
 
     }
     ;
@@ -347,7 +368,7 @@ var DPAlgorithm_hybrid = Object.create(DPAlgorithm);
 DPAlgorithm_hybrid.Description = "RNA to RNA matching";
 DPAlgorithm_hybrid.Tables = new Array();
 DPAlgorithm_hybrid.Tables.push(Object.create(NussinovMatrix4d));
-DPAlgorithm_hybrid.Tables[0].latex_representation = "D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) \\\\ \\min_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & R^1_i, R^2_j \\\\ 0 & otherwise \\end{cases}";
+DPAlgorithm_hybrid.Tables[0].latex_representation = "D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  pairs, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  pairs, i < k, j < l\\\\ 0 & otherwise \\end{cases}";
 
 DPAlgorithm_hybrid.Tables[0].computeValue = function(i, k, j, l) {
     if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j || i >= this.getDim() || j >= this.getDim() || k >= this.getDim() || l >= this.getDim()) {
@@ -357,11 +378,13 @@ DPAlgorithm_hybrid.Tables[0].computeValue = function(i, k, j, l) {
 
     if (RnaUtil.areComplementary(this.sequence1[i - 1], this.sequence2[j - 1])) {
         if (i === k && j === l) {
+            // Energy init instead of 1
             ret = Math.max(ret, 1);
         }
 
         for (var p = i + 1; p <= k; ++p) {
             for (var q = j + 1; q <= l; ++q) {
+                // Energy loop instead of 1
                 if (i < k && j < l)
                 ret = Math.max(ret, 1 + this.getValue(p, k, q, l));
             }
@@ -374,10 +397,11 @@ DPAlgorithm_hybrid.Tables[0].computeValue = function(i, k, j, l) {
 
 
 DPAlgorithm_hybrid.computeMatrix = function(input) {
-    var splitSeq = input.sequence().indexOf('-');
+    var splitSeq = input.sequence().indexOf('X');
     var sequence1 = input.sequence().substr(0,splitSeq);
-    var sequence2 = input.sequence().substr(input.loopLength()+splitSeq + 1);
+    var sequence2 = input.sequence().substr(parseInt(input.loopLength())+splitSeq + 1);
 
+    console.log(sequence1, sequence2);
     this.Tables[0].init(sequence1, sequence2, "RNAHybrid");
 
     var n1 = sequence1.length;
@@ -386,8 +410,78 @@ DPAlgorithm_hybrid.computeMatrix = function(input) {
         for (var k = i; k <= n1; ++k)
             for (var j = 0; j <= n2; ++j)
                 for (var l = j; l <= n2; ++l)
-                    DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l);
+                    this.Tables[0].getValue(i, k, j, l);
 
+    console.log(this.Tables[0].simpleRepresentation());
+    return this.Tables;
+
+};
+
+
+
+
+var DPAlgorithm_rnaup = Object.create(DPAlgorithm);
+
+DPAlgorithm_rnaup.Description = "RNA to RNA matching";
+DPAlgorithm_rnaup.Tables = new Array();
+DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix4d));
+DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
+DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
+
+DPAlgorithm_rnaup.Tables[0].latex_representation = "D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  pairs, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  pairs, i < k, j < l\\\\ 0 & otherwise \\end{cases}";
+
+
+
+DPAlgorithm_rnaup.Tables[0].computeValue = function(i, k, j, l) {
+    if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j || i >= this.getDim() || j >= this.getDim() || k >= this.getDim() || l >= this.getDim()) {
+        return 0;
+    }
+    // I[i1,j1,i2,j2] = Ebp*H[i1,j1,i2,j2] -RT*ln(P^u_1) -RT*ln(P^u_2)
+
+    var logP = Math.log(DPAlgorithm_rnaup.Tables[1].getValue(i, k)) + Math.log(DPAlgorithm_rnaup.Tables[2].getValue(j, l));
+    return this.energy * DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) - this.energy_normal * logP;
+};
+
+
+
+DPAlgorithm_rnaup.computeMatrix = function(input) {
+
+    DPAlgorithm_hybrid.computeMatrix(input);
+
+    var splitSeq = input.sequence().indexOf('X');
+    var sequence1 = input.sequence().substr(0,splitSeq);
+    var sequence2 = input.sequence().substr(parseInt(input.loopLength())+splitSeq + 1);
+
+    NussinovDPAlgorithm_McCaskill.computeMatrix({sequence: function(){return sequence1;}, loopLength: input.loopLength, energy: input.energy, energy_normal: input.energy_normal});
+    this.Tables[1] = JSON.parse(JSON.stringify(NussinovDPAlgorithm_McCaskill.Tables[3]));
+    this.Tables[1].getRecursionInLatex = NussinovDPAlgorithm_McCaskill.Tables[3].getRecursionInLatex;
+    this.Tables[1].getDim = NussinovDPAlgorithm_McCaskill.Tables[3].getDim;
+    this.Tables[1].getCell = NussinovDPAlgorithm_McCaskill.Tables[3].getCell;
+    this.Tables[1].getValue = NussinovDPAlgorithm_McCaskill.Tables[3].getValue;
+
+
+    NussinovDPAlgorithm_McCaskill.computeMatrix({sequence: function(){return sequence2;}, loopLength: input.loopLength, energy: input.energy, energy_normal: input.energy_normal});
+    this.Tables[2] = JSON.parse(JSON.stringify(NussinovDPAlgorithm_McCaskill.Tables[3]));
+    this.Tables[2].getRecursionInLatex = NussinovDPAlgorithm_McCaskill.Tables[3].getRecursionInLatex;
+    this.Tables[2].getDim = NussinovDPAlgorithm_McCaskill.Tables[3].getDim;
+    this.Tables[2].getCell = NussinovDPAlgorithm_McCaskill.Tables[3].getCell;
+    this.Tables[2].getValue = NussinovDPAlgorithm_McCaskill.Tables[3].getValue;
+
+
+    console.log(sequence1, sequence2);
+    this.Tables[0].init(sequence1, sequence2, "RNAHybrid");
+    this.Tables[0].energy = input.energy();
+    this.Tables[0].energy_normal = input.energy_normal();
+
+    var n1 = sequence1.length;
+    var n2 = sequence2.length;
+    for (var i = 0; i <= n1; ++i)
+        for (var k = i; k <= n1; ++k)
+            for (var j = 0; j <= n2; ++j)
+                for (var l = j; l <= n2; ++l)
+                    this.Tables[0].getValue(i, k, j, l);
+
+    console.log(this.Tables[0].simpleRepresentation());
     return this.Tables;
 
 };
@@ -398,7 +492,7 @@ var availableAlgorithms = {
     /** ambiguous recursion */
     hybrid: DPAlgorithm_hybrid,//NussinovMatrix_ambiguous,
 
-
+    rnaup: DPAlgorithm_rnaup,
 
 };
 
