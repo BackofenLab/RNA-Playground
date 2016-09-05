@@ -1396,7 +1396,6 @@ DPAlgorithm_MEA.computeMatrix = function(input) {
     NussinovDPAlgorithm_McCaskill.computeMatrix(input);
 
     this.Tables[1] = NussinovDPAlgorithm_McCaskill.Tables[2];
-    //this.Tables[2] = NussinovDPAlgorithm_McCaskill.Tables[3];
 
     this.Tables[0].init(input.sequence(), "Maximum Expected Accuracy");
 

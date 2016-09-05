@@ -186,9 +186,8 @@ function NussinovMatrixViewModel() {
         console.log("in traceback:", self.input.allowTraceback);
         if (self.input.allowTraceback) {// exclusive case for nussinov recursions
             console.log("tb allowed");
-            if($(rec_select).text()=="MaxExpAcc")
-                return wuchty(self.matrix()[0]);
-                //return wuchty(self.matrix()[0]).slice(0,9);
+            //if($(rec_select).text()=="MaxExpAcc")
+            //    return wuchty(self.matrix()[0]);
 
             return wuchty_2nd(self.matrix()[0], del, self.formula().Tables[0]);
         }

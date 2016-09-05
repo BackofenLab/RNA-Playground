@@ -27,7 +27,16 @@ After meeting on 24-Juli:
     ? co-fold: use "x" for linker positions in dot-bracket-string
 
     - rna-up: add page and impl algo using 4d matrix
+    + setup mccaskill like page for 2 sequences
+    + compute mccaskill pU for both sequences
+    + compute final 4d table with martins recursion (to come)
+    + compute all optimal tracebacks and list
 
     - rna-hyb: add page and impl algo using 4d matrix
+     + compute matrix
+     + compute all optimal tracebacks and list
+
+   test: (CCC, GGG) 3 no variant
+          (CCUU, GG= 2 and has 6 variants
 
 

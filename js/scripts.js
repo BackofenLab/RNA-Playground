@@ -274,7 +274,7 @@ function dotplot(sequence, table, pname) {
             .attr("cy", 26)
             //.attr("width", function(d) {return x.rangeBand() * Math.pow(z(d.z), 0.5);})
             //.attr("height", function(d) {return x.rangeBand() * Math.pow(z(d.z), 0.5);})
-            .attr("r", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.2)/2;})
+            .attr("r", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.5)/2;})
             //.attr("ry", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.5);})
             //.attr("border", "1px solid red")
             //.style("stroke", "rgb(0, 165, 255)")
