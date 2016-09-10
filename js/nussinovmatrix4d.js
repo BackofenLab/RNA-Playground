@@ -368,7 +368,7 @@ var DPAlgorithm_hybrid = Object.create(DPAlgorithm);
 DPAlgorithm_hybrid.Description = "RNA to RNA matching";
 DPAlgorithm_hybrid.Tables = new Array();
 DPAlgorithm_hybrid.Tables.push(Object.create(NussinovMatrix4d));
-DPAlgorithm_hybrid.Tables[0].latex_representation = "D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  pairs, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  pairs, i < k, j < l\\\\ 0 & otherwise \\end{cases}";
+DPAlgorithm_hybrid.Tables[0].latex_representation = "D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases}";
 
 DPAlgorithm_hybrid.Tables[0].computeValue = function(i, k, j, l) {
     if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j || i >= this.getDim() || j >= this.getDim() || k >= this.getDim() || l >= this.getDim()) {
@@ -385,7 +385,7 @@ DPAlgorithm_hybrid.Tables[0].computeValue = function(i, k, j, l) {
         for (var p = i + 1; p <= k; ++p) {
             for (var q = j + 1; q <= l; ++q) {
                 // Energy loop instead of 1
-                if (i < k && j < l)
+                // if (i < k && j < l)
                 ret = Math.max(ret, 1 + this.getValue(p, k, q, l));
             }
         }
@@ -428,7 +428,7 @@ DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix4d));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 
-DPAlgorithm_rnaup.Tables[0].latex_representation = "D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  pairs, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  pairs, i < k, j < l\\\\ 0 & otherwise \\end{cases}";
+DPAlgorithm_rnaup.Tables[0].latex_representation = "I_{i, k}^{j, l} = E_{bp} \\cdot D_{i, k}^{j, l} - RT \\cdot (\\log(P^{u_1}_{i,k}) + \\log(P^{u_2}_{j, l}))";//"D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  pairs, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  pairs, i < k, j < l\\\\ 0 & otherwise \\end{cases}";
 
 
 
