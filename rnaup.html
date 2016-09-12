@@ -4,7 +4,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>RNA algorithms for teaching</title>
+    <title>RNA UP</title>
 
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' type='text/css'>
     <link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css">
@@ -28,7 +28,7 @@
         <div class="row">
             <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence 1:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq" class="userInput" maxlength="6"
+                <input data-bind="value: rawSeq" class="userInput" maxlength="15"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
@@ -37,7 +37,7 @@
         <div class="row">
             <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence 2:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq2" class="userInput" maxlength="6"
+                <input data-bind="value: rawSeq2" class="userInput" maxlength="15"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
@@ -47,15 +47,13 @@
             <div class="colW200" style="font-size: 120%">Energy weight of base pair: $E_{bp}$</div>
             <div class="colW400">
                 <input data-bind="value: input.energy" id="energy" type="range" max="2" min="-2" step="(max - min) / 100">
-
-                <p data-bind="text: input.energy" style="display: inline;"></p>
+                <p data-bind="text: input.energy" style="display: inline-block;"></p>
             </div>
         </div>
         <div class="row">
             <div class="colW200" style="font-size: 120%">Energy normalizer of base pair: $RT$</div>
             <div class="colW400">
                 <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="1" step="(max - min) / 100">
-
                 <p data-bind="text: input.energy_normal" style="display: inline;"></p>
             </div>
         </div>
@@ -110,50 +108,53 @@
 
         <div class="colW300" id="rec_id" data-bind="text: latex()[2]" style="margin-left:50px;"></div>
 
-        <table id="matrix" class="colw150">
-            <thead>
-            <tr>
-                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^{u}$</th>
-                <th class="cell_count"></th>
-                <!-- ko foreach: { data: rawSequence, as: 'base' } -->
-                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
-                <!-- /ko -->
-            </tr>
-            </thead>
+        <!--<table id="matrix" class="colw150">-->
+            <!--<thead>-->
+            <!--<tr>-->
+                <!--<th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^{u}$</th>-->
+                <!--<th class="cell_count"></th>-->
+                <!--&lt;!&ndash; ko foreach: { data: rawSequence, as: 'base' } &ndash;&gt;-->
+                <!--<th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>-->
+                <!--&lt;!&ndash; /ko &ndash;&gt;-->
+            <!--</tr>-->
+            <!--</thead>-->
 
-            <tbody id='matrix_data' data-bind="foreach: { data: cells()[1], as: 'cell' }">
-            <tr>
-                <th class="cell_count" data-bind="writeSeq: [$root.rawSequence()[$index()], $index()+1]"></th>
-                <!-- ko foreach: { data: cell, as: 'v' } -->
-                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? parseFloat(v.value).toFixed(3) : ''"></td>
-                <!-- /ko -->
-            </tr>
-            </tbody>
-        </table>
+            <!--<tbody id='matrix_data' data-bind="foreach: { data: cells()[1], as: 'cell' }">-->
+            <!--<tr>-->
+                <!--<th class="cell_count" data-bind="writeSeq: [$root.rawSequence()[$index()], $index()+1]"></th>-->
+                <!--&lt;!&ndash; ko foreach: { data: cell, as: 'v' } &ndash;&gt;-->
+                <!--<td class="cell_count"  data-bind="text: v.i < v.j+2 ? parseFloat(v.value).toFixed(3) : ''"></td>-->
+                <!--&lt;!&ndash; /ko &ndash;&gt;-->
+            <!--</tr>-->
+            <!--</tbody>-->
+        <!--</table>-->
 
 
-        <div class="colW300" id="rec_id" data-bind="text: latex()[2]" style="margin-left:50px;"></div>
+        <!--<div class="colW300" id="rec_id" data-bind="text: latex()[2]" style="margin-left:50px;"></div>-->
 
-        <table id="matrix" class="colw150">
-            <thead>
-            <tr>
-                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^u$</th>
-                <th class="cell_count"></th>
-                <!-- ko foreach: { data: rawSequence2, as: 'base' } -->
-                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
-                <!-- /ko -->
-            </tr>
-            </thead>
+        <!--<table id="matrix" class="colw150">-->
+            <!--<thead>-->
+            <!--<tr>-->
+                <!--<th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^u$</th>-->
+                <!--<th class="cell_count"></th>-->
+                <!--&lt;!&ndash; ko foreach: { data: rawSequence2, as: 'base' } &ndash;&gt;-->
+                <!--<th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>-->
+                <!--&lt;!&ndash; /ko &ndash;&gt;-->
+            <!--</tr>-->
+            <!--</thead>-->
 
-            <tbody id='matrix_data' data-bind="foreach: { data: cells()[2], as: 'cell' }">
-            <tr>
-                <th class="cell_count" data-bind="writeSeq: [$root.rawSequence2()[$index()], $index()+1]"></th>
-                <!-- ko foreach: { data: cell, as: 'v' } -->
-                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? parseFloat(v.value).toFixed(3): ''"></td>
-                <!-- /ko -->
-            </tr>
-            </tbody>
-        </table>
+            <!--<tbody id='matrix_data' data-bind="foreach: { data: cells()[2], as: 'cell' }">-->
+            <!--<tr>-->
+                <!--<th class="cell_count" data-bind="writeSeq: [$root.rawSequence2()[$index()], $index()+1]"></th>-->
+                <!--&lt;!&ndash; ko foreach: { data: cell, as: 'v' } &ndash;&gt;-->
+                <!--<td class="cell_count"  data-bind="text: v.i < v.j+2 ? parseFloat(v.value).toFixed(3): ''"></td>-->
+                <!--&lt;!&ndash; /ko &ndash;&gt;-->
+            <!--</tr>-->
+            <!--</tbody>-->
+        <!--</table>-->
+
+        <div id="dotplot_seq1"></div>
+        <div id="dotplot_seq2"></div>
 
         <button class="" type="button" onclick="generate_tables()">Download Table!</button>
 
@@ -217,6 +218,7 @@
 </div>
 <!-- content -->
 
+<script src="js/libs/d3.min.js"></script>
 <script src="js/libs/knockout-3.4.0.js"></script>
 <script src="js/libs/FileSaver.min.js"></script>
 <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>

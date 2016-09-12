@@ -181,6 +181,11 @@ function NussinovMatrixViewModel() {
             $("#unpaired_dotplot").html(dotplot(self.input.sequence(), tables[3].cells, 'ud'));
 
         }
+        if (self.input.recursion() === "rnaup") {
+            $("#dotplot_seq1").html(dotplot(self.rawSeq(), tables[1].cells, 'up1'));
+            $("#dotplot_seq2").html(dotplot(self.rawSeq2(), tables[2].cells, 'up2'));
+
+        }
 
         console.log("hallo\n", tables);
         for(var i = 0; i < tables.length; ++i){

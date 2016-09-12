@@ -27,26 +27,26 @@ After meeting on 24-Juli:
     ? co-fold: use "x" for linker positions in dot-bracket-string
 
     - rna-up: add page and impl algo using 4d matrix
-    ? setup mccaskill like page for 2 sequences
-    ? compute mccaskill pU for both sequences
-    + compute final 4d table with martins recursion (to come)
-    + compute all optimal tracebacks and list
-    ? wrong recursion shown
-    ? wrong latex label of first table
-    - same output stuff as for hybrid 
+     ? setup mccaskill like page for 2 sequences
+     ? compute mccaskill pU for both sequences
+     + compute final 4d table with martins recursion (to come)
+     + compute all optimal tracebacks and list
+     ? wrong recursion shown
+     ? wrong latex label of first table
+     - same output stuff as for hybrid
 
     - rna-hyb: add page and impl algo using 4d matrix
      + compute matrix
      + compute all optimal tracebacks and list
-     - cannot TAB to next input field
-     - increase possible sequence lengths to 15 (if too slow go down to 10)
+     ? cannot TAB to next input field
+     ? increase possible sequence lengths to 15 (if too slow go down to 10)
      ? label for sliders not visible
      - check if Wuchty subopt enumeration possible with current implementation
      - list structure with "energy" (=bp number)
-     ? dont show Pu tables
+     ? dont show Pu tables (try dotplots)
      - show all helper recursions at page end below result list (hybrid + pu + q/qb)
      
-   - change page titles according to algorithms
+   + change page titles according to algorithms
    
    - write documentation for each generic function etc... (check if present)
 

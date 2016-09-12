@@ -33,7 +33,7 @@ function validate(evt) {
 
     key = String.fromCharCode( key );
     var regex = /[^gcauGCAU]|\./;
-    if( regex.test(key) && buKey != 8 && buKey != 13 && buKey != 37 && buKey != 39 ) {
+    if( regex.test(key) && buKey != 8 && buKey != 13 && buKey != 37 && buKey != 39 && buKey != 9) {
         console.log(regex.test(key));
         theEvent.returnValue = false;
         if(theEvent.preventDefault) theEvent.preventDefault();
@@ -136,7 +136,7 @@ function hidetext() {
 }
 
 function dotplot(sequence, table, pname) {
-    console.log('hi');
+    console.log('hi', sequence, table, pname);
     var maindic = {};
 
 
@@ -188,6 +188,13 @@ function dotplot(sequence, table, pname) {
     } else
     if (pname === "ud") {
         desc.text("Dotplot for unpaired base pair probabilities.");
+    }
+
+    if (pname === "up1") {
+        desc.text("Dotplot for unpaired base pair probabilities of sequence 1.");
+    } else
+    if (pname === "up2") {
+        desc.text("Dotplot for unpaired base pair probabilities of sequence 2.");
     }
     var svg = d3.select(dev).append("svg")
         .attr("id", pname)
