@@ -44,7 +44,7 @@ After meeting on 24-Juli:
      - check if Wuchty subopt enumeration possible with current implementation
      - list structure with "energy" (=bp number)
      ? dont show Pu tables (try dotplots)
-     - show all helper recursions at page end below result list (hybrid + pu + q/qb)
+     ? show all helper recursions at page end below result list (hybrid + pu + q/qb)
      
    + change page titles according to algorithms
    
@@ -52,7 +52,6 @@ After meeting on 24-Juli:
 
    - write generic JS function to generate interaction visualization equal to 
      http://rna.informatik.uni-freiburg.de/trunk/IntaRNA/Result.jsp?toolName=IntaRNA&jobID=9457371
-   
 
    test: (CCC, GGG) 3 no variant
-          (CCUU, GG= 2 and has 6 variants
+         (CCUU, GG) 2 and has 6 variants

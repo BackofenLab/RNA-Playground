@@ -1198,8 +1198,8 @@ NussinovDPAlgorithm_McCaskill.Tables.push(Object.create(NussinovMatrix)); // Pu
 NussinovDPAlgorithm_McCaskill.Tables[0].latex_representation = "Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} \\cdot Q^{b}_{k,j}";
 NussinovDPAlgorithm_McCaskill.Tables[1].latex_representation = "Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} \\cdot \\exp(-E_{bp}/RT) & \\text{ if }i,j \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}";
 
-NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i,j} = (Q_{1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,n})/Q_{1,n} + \\sum_{p<i,j<q} P^{bp}_{p,q} (Q_{p+1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,q-1}) / Q_{p,q}";
-NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i,j} = (Q_{1,i-1} \\cdot 1 \\cdot Q_{j+1,n})/Q_{1,n} + \\sum_{p<i,j<q} P^{bp}_{p,q} (Q_{p+1,i-1} \\cdot 1 \\cdot Q_{j+1,q-1}) / Q_{p,q}";
+NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i,j} = \\frac{Q_{1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\exp(-E_{bp} / RT) \\cdot \\frac{Q_{p+1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,q-1}}{Q^b_{p,q}}";
+NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i,j} = \\frac{Q_{1,i-1} \\cdot 1 \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\exp(-E_{bp} / RT) \\cdot \\frac{Q_{p+1,i-1} \\cdot 1 \\cdot Q_{j+1,q-1}}{Q^b_{p,q}}";
 
 //NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot Q^{b}_{i, j} \\cdot Q_{j + 1, n})";
 //NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot 1 \\cdot Q_{j + 1, n})";
@@ -1237,8 +1237,12 @@ NussinovDPAlgorithm_McCaskill.Tables[1].computeValue = function (i, j) {
 
 // Probability that i, j is a base pair.
 // Pe(i, j) = Q(1, i - 1) * Qb(i, j) * Q(j + 1, n) / Q(1, n)
+//            + sum[p,q]{Pe(p,q) * Qb(i,j) * Q(p+1,i-1)*Q(j+1,q-1)*exp(-e/RT)/Qb(p,q)}
 NussinovDPAlgorithm_McCaskill.Tables[2].computeValue = function(i, j) {
     if (i < 0 || j < 0) {//} || i >= this.getDim() || j >= this.getDim()) {
+        return 0;
+    }
+    if (!RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
         return 0;
     }
     var n = this.getDim() - 1;
@@ -1252,17 +1256,22 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeValue = function(i, j) {
     }
     ret /= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(1, n);
 
-    for (var p = 0; p < i; ++p) {
+    for (var p = 1; p < i; ++p) {
         for (var q = j + 1; q <= n; ++q) {
-            var v = this.getValue(p, q) * NussinovDPAlgorithm_McCaskill.Tables[1].getValue(i, j);
-            if (i > 1) {
-                v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(p + 1, i - 1)
+            if (RnaUtil.areComplementary(this.sequence[p - 1], this.sequence[q - 1])) {
+
+                var v = this.getValue(p, q) * NussinovDPAlgorithm_McCaskill.Tables[1].getValue(i, j);
+                if (p + 1 < i) {
+                    v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(p + 1, i - 1)
+                }
+                if (j + 1 < q) {
+                    v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(j + 1, q - 1)
+                }
+                // weight of base pair p, q
+                v *= Math.exp(this.energy_basepair);
+                v /= NussinovDPAlgorithm_McCaskill.Tables[1].getValue(p, q);
+                ret += v;
             }
-            if (j < n) {
-                v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(j + 1, q - 1)
-            }
-            v /= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(p, q);
-            ret += v;
         }
     }
     return ret;
@@ -1270,7 +1279,7 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeValue = function(i, j) {
 
 
 // Probability that i, j is unpaired.
-// Pu(i, j) = Q(1, i - 1) * Q(j + 1, n) / Q(1, n)
+// Pu(i, j) = Q(1, i - 1) * 1 * Q(j + 1, n) / Q(1, n) + sum[p,q]{Pbn[p,q] * Q[p+1,i-1]*Q[j+1,q-1]*exp(-e)/Qb[p,q]}
 NussinovDPAlgorithm_McCaskill.Tables[3].computeValue = function(i, j) {
     if (i < 0 || j < 0 || i > j) {//} || i >= this.getDim() || j >= this.getDim() || i > j) {
         return 0;
@@ -1286,18 +1295,22 @@ NussinovDPAlgorithm_McCaskill.Tables[3].computeValue = function(i, j) {
     }
     ret /= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(1, n);
 
-    for (var p = 0; p < i; ++p) {
+    for (var p = 1; p < i; ++p) {
         for (var q = j + 1; q <= n; ++q) {
-            var v =  NussinovDPAlgorithm_McCaskill.Tables[2].getValue(p, q);
-            if (i > 1) {
-                v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(p + 1, i - 1);
-            }
-            if (j < n) {
-                v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(j + 1, q - 1);
-            }
-            v /= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(p, q);
+            if (RnaUtil.areComplementary(this.sequence[p - 1], this.sequence[q - 1])) {
+                var v = NussinovDPAlgorithm_McCaskill.Tables[2].getValue(p, q);
+                if (p + 1 < i) {
+                    v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(p + 1, i - 1);
+                }
+                if (j + 1 < q) {
+                    v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(j + 1, q - 1);
+                }
+                // weight of base pair p,q
+                v *= Math.exp(this.energy_basepair);
+                v /= NussinovDPAlgorithm_McCaskill.Tables[1].getValue(p, q);
 
-            ret += v;
+                ret += v;
+            }
         }
     }
     return ret;
@@ -1314,6 +1327,8 @@ NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
     this.Tables[0].minLoopLength = minLL;
 
     this.Tables[1].energy_basepair = -input.energy() / input.energy_normal();
+    this.Tables[2].energy_basepair = -input.energy() / input.energy_normal();
+    this.Tables[3].energy_basepair = -input.energy() / input.energy_normal();
 
     for (var i = 0; i <= this.Tables[0].getDim(); i++) {
         for (var j = 0; j <= this.Tables[0].getDim(); ++j) {

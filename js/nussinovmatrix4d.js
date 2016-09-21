@@ -184,7 +184,9 @@ var NussinovMatrix4d = {
          */
         getCell: function (i, k, j, l) {
             // check border cases
-            if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j || k >= this.getDim() || l >= this.getDim() || i >= this.getDim() || j >= this.getDim()) {
+            if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j ||
+                k >= this.sequence1.length || l >= this.sequence2.length ||
+                i >= this.sequence1.length || j >= this.sequence2.length) {
                 return null;
             }
             if (this.cells[i][k][j][l] === null) {
@@ -222,11 +224,13 @@ var NussinovMatrix4d = {
          */
         getValue: function (i, k, j, l) {
             // access cell at location (i,j) in the matrix
-            //console.log(i, k, j, l);
+            console.log("get", i, k, j, l);
             var cell = this.getCell(i, k, j, l);
             if (cell === null) {
                 return null;
             }
+
+            console.log("getting", i, k, j, l);
             // check if invalid cell
             if (cell.value === null) {
                 cell.value = this.computeValue(i, k, j, l);
@@ -371,11 +375,16 @@ DPAlgorithm_hybrid.Tables.push(Object.create(NussinovMatrix4d));
 DPAlgorithm_hybrid.Tables[0].latex_representation = "D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases}";
 
 DPAlgorithm_hybrid.Tables[0].computeValue = function(i, k, j, l) {
-    if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j || i >= this.getDim() || j >= this.getDim() || k >= this.getDim() || l >= this.getDim()) {
+
+    console.log(i, k, j, l);
+    if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j ||
+        i > this.sequence1.length || j > this.sequence2.length ||
+        k > this.sequence1.length || l > this.sequence2.length) {
         return 0;
     }
     var ret = 0;
-
+    console.log(i, k, j, l);
+    // TODO: Check the indices of this condition
     if (RnaUtil.areComplementary(this.sequence1[i - 1], this.sequence2[j - 1])) {
         if (i === k && j === l) {
             // Energy init instead of 1
@@ -391,6 +400,7 @@ DPAlgorithm_hybrid.Tables[0].computeValue = function(i, k, j, l) {
         }
     }
 
+    console.log(i, k, j, l, ret);
     return ret;
 };
 
@@ -406,11 +416,14 @@ DPAlgorithm_hybrid.computeMatrix = function(input) {
 
     var n1 = sequence1.length;
     var n2 = sequence2.length;
+    console.log(sequence1, sequence2, n1, n2);
     for (var i = 0; i <= n1; ++i)
         for (var k = i; k <= n1; ++k)
             for (var j = 0; j <= n2; ++j)
-                for (var l = j; l <= n2; ++l)
+                for (var l = j; l <= n2; ++l) {
+                    console.log(i, k, j, l);
                     this.Tables[0].getValue(i, k, j, l);
+                }
 
     console.log(this.Tables[0].simpleRepresentation());
     return this.Tables;
