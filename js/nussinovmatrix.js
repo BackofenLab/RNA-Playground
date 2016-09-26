@@ -816,6 +816,8 @@ NussinovDPAlgorithm_Unique.Tables[0].getSubstructures = function (sigma, P, trac
         return R;
     }
 
+    // [<[(i, l - 1], (l + 1, j - 1), -1,>, <>, ....]
+
     // if (i,j) == (i,l-1) + (l+1, j-1) + 1
     for (var l = ij[0]; l <= ij[1] - 1; l++) {
         if (ij[1] - l > this.minLoopLength) {
