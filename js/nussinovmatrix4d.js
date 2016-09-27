@@ -185,8 +185,8 @@ var NussinovMatrix4d = {
         getCell: function (i, k, j, l) {
             // check border cases
             if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j ||
-                k >= this.sequence1.length || l >= this.sequence2.length ||
-                i >= this.sequence1.length || j >= this.sequence2.length) {
+                k > this.sequence1.length || l > this.sequence2.length ||
+                i > this.sequence1.length || j > this.sequence2.length) {
                 return null;
             }
             if (this.cells[i][k][j][l] === null) {
@@ -331,7 +331,7 @@ var NussinovMatrix4d = {
                 for (var k = i; k <= n1; ++k)
                     for (var j = 0; j <= n2; ++j)
                         for (var l = j; l <= n2; ++l)
-                            if (this.getValue(i, k, j, l) != null) {
+                            if (this.getValue(i, k, j, l) != null && Math.abs(this.getValue(i, k, j, l)) > 1e-5 ) {
                                 res += JSON.stringify(this.getCell(i, k, j, l)) + "\n";
                             }
             
@@ -377,7 +377,7 @@ DPAlgorithm_hybrid.Tables[0].latex_representation = "D_{i, k}^{j, l} = \\max \\b
 DPAlgorithm_hybrid.Tables[0].computeValue = function(i, k, j, l) {
 
     console.log(i, k, j, l);
-    if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j ||
+    if (i <= 0 || j <= 0 || k < 0 || l < 0 || k < i || l < j ||
         i > this.sequence1.length || j > this.sequence2.length ||
         k > this.sequence1.length || l > this.sequence2.length) {
         return 0;
@@ -395,6 +395,7 @@ DPAlgorithm_hybrid.Tables[0].computeValue = function(i, k, j, l) {
             for (var q = j + 1; q <= l; ++q) {
                 // Energy loop instead of 1
                 // if (i < k && j < l)
+                if (this.getValue(p, k, q, l) > 0)
                 ret = Math.max(ret, 1 + this.getValue(p, k, q, l));
             }
         }
@@ -446,12 +447,17 @@ DPAlgorithm_rnaup.Tables[0].latex_representation = "I_{i, k}^{j, l} = E_{bp} \\c
 
 
 DPAlgorithm_rnaup.Tables[0].computeValue = function(i, k, j, l) {
-    if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j || i >= this.getDim() || j >= this.getDim() || k >= this.getDim() || l >= this.getDim()) {
+    if (i <= 0 || j <= 0 || k < 0 || l < 0 || k < i || l < j ||
+        i > this.sequence1.length || j > this.sequence2.length ||
+        k > this.sequence1.length || l > this.sequence2.length) {
         return 0;
     }
     // I[i1,j1,i2,j2] = Ebp*H[i1,j1,i2,j2] -RT*ln(P^u_1) -RT*ln(P^u_2)
-
+    if (DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) == 0) {
+        return 0;
+    }
     var logP = Math.log(DPAlgorithm_rnaup.Tables[1].getValue(i, k)) + Math.log(DPAlgorithm_rnaup.Tables[2].getValue(j, l));
+
     return this.energy * DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) - this.energy_normal * logP;
 };
 

@@ -108,6 +108,7 @@ function repres(res) {
             ret += res[i][j];
         }
         ret += "\n";
+        //ret += "<br>"
     }
     return ret;
 }
@@ -165,6 +166,7 @@ function visualize4d(str1, str2, ps) {
         for (var j = 0; j < portion + gapBegin + gapEnd + portionOffset; ++j) {
             //res[i] += '.';
             res[i][j] = ' ';
+            //res[i][j] = '_';//'&nbsp;';
         }
     };
     // Fill portion
@@ -228,7 +230,7 @@ function visualize4d(str1, str2, ps) {
     }
 
 
-    return res;
+    return (res);
 }
 
 
