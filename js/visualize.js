@@ -17,6 +17,8 @@ function NussinovMatrixViewModel() {
     var color = 0;
 
     var formulas = [];
+    
+    var maxStructures = 14;
     self.currCell = {
         i: null,
         j: null
@@ -212,7 +214,8 @@ function NussinovMatrixViewModel() {
             //if($(rec_select).text()=="MaxExpAcc")
             //    return wuchty(self.matrix()[0]);
 
-            return wuchty_2nd(self.matrix()[0], del, self.formula().Tables[0]);
+            //return wuchty_2nd(self.matrix()[0], del, self.formula().Tables[0]);
+            return wuchty_2nd_limited(self.matrix()[0], del, self.formula().Tables[0], maxStructures);
         }
         return false;
     }, this);
