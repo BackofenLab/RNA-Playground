@@ -5,6 +5,7 @@
  * Utility class that covers RNA specific functions.
  *
  */
+/*
 var RnaUtil = {
 
     /**
@@ -12,7 +13,7 @@ var RnaUtil = {
      * @param {string} nt1 first nucleotide
      * @param {string} nt2 second nucleotide
      * @returns {boolean} true if complementary; false otherwise
-     */
+     * /
     areComplementary: function (nt1, nt2) {
         //console.log("areComp:", nt1, nt2);
         var complementary =
@@ -25,7 +26,7 @@ var RnaUtil = {
     /**
      * checks whether or not the sequence is a valid RNA sequence
      * @param sequence
-     */
+     * /
     isRnaSequence: function (sequence) {
         var isValid =
             // check if sequence given
@@ -37,6 +38,7 @@ var RnaUtil = {
 
 
 };
+*/
 
 
 var NussinovCell4d = {
@@ -80,6 +82,40 @@ var NussinovCell4d = {
 
 
 
+/**
+ * Ancestor information for a certain traceback
+ */
+var NussinovCell4dTrace = {
+
+// list of parent cells
+    parents: null,
+
+// list of base pairs added
+    bps: null,
+
+    /**
+     * initializes the object
+     * @param {object} parents the parents to set
+     * @param {object} bps the base pairs to set
+     * @returns {NussinovCellTrace} this for call chaining
+     */
+    init: function (parents, bps) {
+        this.parents = null;
+        this.bps = null;
+        // input check
+        if ((parents !== null && bps === null) || (parents === null && bps !== null)) {
+            console.log("ERROR : NussinovCellTrace.init : only one value null");
+            return this;
+        }
+        // store sane data
+        this.parents = parents;
+        this.bps = bps;
+        return this;
+    }
+
+
+};
+
 var NussinovMatrix4d = {
 
         /**
@@ -90,6 +126,10 @@ var NussinovMatrix4d = {
          * Access to the sequence for this matrix
          */
         sequence2: null,
+    
+        seq1_length: 0,
+    
+        seq2_length: 0,
 
         /**
          * Access name of recursion used
@@ -147,19 +187,20 @@ var NussinovMatrix4d = {
             this.sequence1 = sequence1;
             this.sequence2 = sequence2;
             this.name = name;
+            this.seq1_length = this.sequence1.length;
+            this.seq2_length = this.sequence2.length;
 
             // create matrix cells
-            var n1 = this.sequence1.length;
-            var n2 = this.sequence2.length;
 
-            for (var i = 0; i <= n1; i++) {
+            for (var i = 0; i <= this.seq1_length; i++) {
                 this.cells[i] = [];
-                for (var k = 0; k <= n1; ++k) {
+                for (var k = 0; k <= this.seq1_length; ++k) {
                     this.cells[i][k] = [];
-                    for (var j = 0; j <= n2; j++) {
+                    for (var j = 0; j <= this.seq2_length; j++) {
                         // create new cell and initialize
                         this.cells[i][k][j] = [];
-                        for (var r = 0; r <= n2; ++r) {
+                        for (var r = 0; r <= this.seq2_length; ++r) {
+                            //console.log(i, k, j, r, "init");
                             this.cells[i][k][j][r] = Object.create(NussinovCell4d).init(i, k, j, r, null);
                         }
                     }
@@ -171,7 +212,14 @@ var NussinovMatrix4d = {
             return this;
         },
 
-
+        isBaseCase: function(i, k, j, l) {
+            if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j ||
+                k > this.sequence1.length || l > this.sequence2.length) {
+                return true;
+            } else {
+                return false;
+            }
+        },
 
         computeCell: function(i, k, j, l) {
             // updateCell(i, j);
@@ -184,13 +232,12 @@ var NussinovMatrix4d = {
          */
         getCell: function (i, k, j, l) {
             // check border cases
-            if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j ||
-                k > this.sequence1.length || l > this.sequence2.length ||
-                i > this.sequence1.length || j > this.sequence2.length) {
+            if (this.isBaseCase(i, k, j, l)) {
                 return null;
             }
-            if (this.cells[i][k][j][l] === null) {
-                //this.cells[i][k][j][l] = computeCell(i, k, j, l);
+            //console.log(i, k, j, l, this.cells[i][k][j][l]);
+            if (this.cells[i][k][j][l] === null || this.cells[i][k][j][l].value === null) {
+                this.cells[i][k][j][l] = this.computeCell(i, k, j, l);
             }
             return this.cells[i][k][j][l];
         },
@@ -207,7 +254,7 @@ var NussinovMatrix4d = {
         }
         ,
 
-
+        /*
         computeValue: function (i, k, j, l) {
             // Computes the M[i, j] by accessing cells using getValue function for memoization.
 
@@ -216,6 +263,7 @@ var NussinovMatrix4d = {
 
             // computation
         },
+        */
         /**
          * access value of cell at location (i,j) in matrix, and compute it if it's not computed.
          * @param {int} i row #.
@@ -224,17 +272,17 @@ var NussinovMatrix4d = {
          */
         getValue: function (i, k, j, l) {
             // access cell at location (i,j) in the matrix
-            console.log("get", i, k, j, l);
+            //console.log("get", i, k, j, l);
             var cell = this.getCell(i, k, j, l);
             if (cell === null) {
                 return null;
             }
 
-            console.log("getting", i, k, j, l);
+            //console.log("getting", i, k, j, l);
             // check if invalid cell
-            if (cell.value === null) {
-                cell.value = this.computeValue(i, k, j, l);
-            }
+            ///if (cell.value === null) {
+            //    cell.value = this.computeValue(i, k, j, l);
+            //}
             // get cell value
             return parseFloat(cell.value);
         }
@@ -250,19 +298,22 @@ var NussinovMatrix4d = {
          * @param j the column of the cell to update
          * @param curAncestor
          */
-        updateCell: function (i, j, curAncestor) {
+        updateCell: function (curCell, curAncestor) {
             // get cell to update
-            var curCell = this.getCell(i, j);
             // check if something to update
             if (curCell === null) {
                 return;
             }
 
             // init value with number of additional base pairs
-            var curVal = curAncestor.bps.length;
+            var curVal = 1;//curAncestor.bps.length;
             // add scores of ancestor cells
             for (var x = 0; x < curAncestor.parents.length; x++) {
-                curVal += this.getValue(curAncestor.parents[x][0], curAncestor.parents[x][1]);
+                var i = curAncestor.parents[x][0];
+                var k = curAncestor.parents[x][1];
+                var j = curAncestor.parents[x][2];
+                var l = curAncestor.parents[x][3];
+                curVal += this.getValue(i, k, j, l);
             }
             // check if we have to update
             if (curCell.value <= curVal) {
@@ -273,14 +324,27 @@ var NussinovMatrix4d = {
                     // store new maximum
                     curCell.value = curVal;
                 }
-                ;
                 // store this ancestor
                 curCell.traces.push(curAncestor);
             }
-            ;
 
-        }
-        ,
+        },
+
+        /**
+         * Compute all the cells of the matrix.
+         */
+        computeAllCells: function() {
+            for (var i = 0; i <= this.seq1_length; ++i) {
+                for (var k = 0; k<= this.seq1_length; ++k) {
+                    for (var j = 0; j <= this.seq2_length; ++j) {
+                        for (var l = 0; l <= this.seq2_length; ++l) {
+                            //console.log(this.cells[i][k][j][l]);
+                            //console.log(this.getCell(i, k, j, l));
+                        }
+                    }
+                }
+            }
+        },
 
         /**
          * Fills the matrix according to the recursion.
@@ -295,11 +359,16 @@ var NussinovMatrix4d = {
         computeMatrix: function (input) {
             console.log("WARNING: computeMatrix() not implemented in NussinovMatrix superclass; overwrite in subclass!");
 
+            var splitSeq = input.sequence().indexOf('X');
+            var sequence1 = input.sequence().substr(0,splitSeq);
+            var sequence2 = input.sequence().substr(parseInt(input.loopLength())+splitSeq + 1);
             // resize and init matrix
-            this.init(sequence);
+            this.init(sequence1, sequence2, "Default name");
 
             // set minimal loop length
-            this.minLoopLength = input.loopLength;
+            this.minLoopLength = parseInt(input.loopLength());
+
+            this.computeAllCells();
 
             return this;
         }
@@ -321,8 +390,8 @@ var NussinovMatrix4d = {
     
         simpleRepresentation: function() {
 
-            var n1 = this.sequence1.length;
-            var n2 = this.sequence2.length;
+            var n1 = this.seq1_length;
+            var n2 = this.seq2_length;
 
             console.log(n1, n2);
             console.log(this.sequence1, this.sequence2);
@@ -374,35 +443,41 @@ DPAlgorithm_hybrid.Tables = new Array();
 DPAlgorithm_hybrid.Tables.push(Object.create(NussinovMatrix4d));
 DPAlgorithm_hybrid.Tables[0].latex_representation = "D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases}";
 
-DPAlgorithm_hybrid.Tables[0].computeValue = function(i, k, j, l) {
+DPAlgorithm_hybrid.Tables[0].computeCell  = function(i, k, j, l) {
 
-    console.log(i, k, j, l);
-    if (i <= 0 || j <= 0 || k < 0 || l < 0 || k < i || l < j ||
-        i > this.sequence1.length || j > this.sequence2.length ||
-        k > this.sequence1.length || l > this.sequence2.length) {
-        return 0;
+    var curCell = Object.create(NussinovCell4d).init(i, k, j, l, 0);
+
+    // TODO: Check i,j <= 0 or i,j < 0
+    if (i <= 0 || j <= 0 || this.isBaseCase(i, k, j, l)) {
+    //if (this.isBaseCase(i, k, j, l)) {
+        return curCell;
     }
     var ret = 0;
-    console.log(i, k, j, l);
+    //console.log(i, k, j, l);
     // TODO: Check the indices of this condition
     if (RnaUtil.areComplementary(this.sequence1[i - 1], this.sequence2[j - 1])) {
         if (i === k && j === l) {
             // Energy init instead of 1
             ret = Math.max(ret, 1);
+
+            this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([], [[i,k,j,l]]));
         }
 
         for (var p = i + 1; p <= k; ++p) {
             for (var q = j + 1; q <= l; ++q) {
                 // Energy loop instead of 1
                 // if (i < k && j < l)
-                if (this.getValue(p, k, q, l) > 0)
-                ret = Math.max(ret, 1 + this.getValue(p, k, q, l));
+                if (this.getValue(p, k, q, l) > 0) {
+                    ret = Math.max(ret, 1 + this.getValue(p, k, q, l));
+                    this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([[p, k, q, l]], [[p, k, q, l]]));
+                }
             }
         }
     }
 
-    console.log(i, k, j, l, ret);
-    return ret;
+    //console.log(i, k, j, l, ret, curCell.value);
+    //assert curCell.value = ret;
+    return curCell;
 };
 
 
@@ -414,17 +489,9 @@ DPAlgorithm_hybrid.computeMatrix = function(input) {
 
     console.log(sequence1, sequence2);
     this.Tables[0].init(sequence1, sequence2, "RNAHybrid");
+    //console.log(this.Tables[0].cells);
 
-    var n1 = sequence1.length;
-    var n2 = sequence2.length;
-    console.log(sequence1, sequence2, n1, n2);
-    for (var i = 0; i <= n1; ++i)
-        for (var k = i; k <= n1; ++k)
-            for (var j = 0; j <= n2; ++j)
-                for (var l = j; l <= n2; ++l) {
-                    console.log(i, k, j, l);
-                    this.Tables[0].getValue(i, k, j, l);
-                }
+    this.Tables[0].computeAllCells();
 
     console.log(this.Tables[0].simpleRepresentation());
     return this.Tables;
@@ -446,19 +513,21 @@ DPAlgorithm_rnaup.Tables[0].latex_representation = "I_{i, k}^{j, l} = E_{bp} \\c
 
 
 
-DPAlgorithm_rnaup.Tables[0].computeValue = function(i, k, j, l) {
-    if (i <= 0 || j <= 0 || k < 0 || l < 0 || k < i || l < j ||
-        i > this.sequence1.length || j > this.sequence2.length ||
-        k > this.sequence1.length || l > this.sequence2.length) {
-        return 0;
+DPAlgorithm_rnaup.Tables[0].computeCell = function(i, k, j, l) {
+
+    var curCell = Object.create(NussinovCell4d).init(i, k, j, l, 0);
+
+    if (this.isBaseCase(i, k, j, l)) {
+        return curCell;
     }
     // I[i1,j1,i2,j2] = Ebp*H[i1,j1,i2,j2] -RT*ln(P^u_1) -RT*ln(P^u_2)
     if (DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) == 0) {
-        return 0;
+        return curCell;
     }
     var logP = Math.log(DPAlgorithm_rnaup.Tables[1].getValue(i, k)) + Math.log(DPAlgorithm_rnaup.Tables[2].getValue(j, l));
 
-    return this.energy * DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) - this.energy_normal * logP;
+    curCell.value = this.energy * DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) - this.energy_normal * logP;
+    return curCell;
 };
 
 
@@ -477,6 +546,7 @@ DPAlgorithm_rnaup.computeMatrix = function(input) {
     this.Tables[1].getDim = NussinovDPAlgorithm_McCaskill.Tables[3].getDim;
     this.Tables[1].getCell = NussinovDPAlgorithm_McCaskill.Tables[3].getCell;
     this.Tables[1].getValue = NussinovDPAlgorithm_McCaskill.Tables[3].getValue;
+    this.Tables[1].isBaseCase = NussinovDPAlgorithm_McCaskill.Tables[3].isBaseCase;
 
 
     NussinovDPAlgorithm_McCaskill.computeMatrix({sequence: function(){return sequence2;}, loopLength: input.loopLength, energy: input.energy, energy_normal: input.energy_normal});
@@ -485,6 +555,7 @@ DPAlgorithm_rnaup.computeMatrix = function(input) {
     this.Tables[2].getDim = NussinovDPAlgorithm_McCaskill.Tables[3].getDim;
     this.Tables[2].getCell = NussinovDPAlgorithm_McCaskill.Tables[3].getCell;
     this.Tables[2].getValue = NussinovDPAlgorithm_McCaskill.Tables[3].getValue;
+    this.Tables[2].isBaseCase = NussinovDPAlgorithm_McCaskill.Tables[3].isBaseCase;
 
 
     console.log(sequence1, sequence2);
@@ -492,13 +563,7 @@ DPAlgorithm_rnaup.computeMatrix = function(input) {
     this.Tables[0].energy = input.energy();
     this.Tables[0].energy_normal = input.energy_normal();
 
-    var n1 = sequence1.length;
-    var n2 = sequence2.length;
-    for (var i = 0; i <= n1; ++i)
-        for (var k = i; k <= n1; ++k)
-            for (var j = 0; j <= n2; ++j)
-                for (var l = j; l <= n2; ++l)
-                    this.Tables[0].getValue(i, k, j, l);
+    this.Tables[0].computeAllCells();
 
     console.log(this.Tables[0].simpleRepresentation());
     return this.Tables;
