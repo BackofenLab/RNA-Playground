@@ -564,7 +564,7 @@ NussinovDPAlgorithm_Ambiguous.Tables[0].computeCell = function(i, j) {
         return curCell;
     }
     // i unpaired
-    this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i - 1, j]], []));
+    this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i + 1, j]], []));
 
 
     // j unpaired
@@ -925,6 +925,8 @@ NussinovDPAlgorithm_Ambiguous2.Tables[0].computeCell = function(i, j) {
     var curCell = Object.create(NussinovCell).init(i, j, 0);
 
     if (this.isBaseCase(i, j)) {
+        console.log("base ", i, j);
+
         return curCell;
     }
 
