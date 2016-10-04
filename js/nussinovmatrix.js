@@ -1398,7 +1398,7 @@ DPAlgorithm_MEA.Tables[0].updateCell = function (curCell, curVal, curAncestor) {
 DPAlgorithm_MEA.Tables[0].computeCell = function(i, j) {
 
     var curCell = Object.create(NussinovCell).init(i, j, 0);
-    if (this.isBaseCase(i, j)) {
+    if (this.isBaseCase(i, j) || i > j) {
         return curCell;
     }
 
@@ -1420,7 +1420,7 @@ DPAlgorithm_MEA.Tables[0].computeCell = function(i, j) {
 DPAlgorithm_MEA.Tables[2].computeCell = function(i, j) {
 
     var curCell = Object.create(NussinovCell).init(i, j, 0);
-    if (i != j || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
+    if (i != j || i < 0 || j < 0 || i > this.seq_length || j > this.seq_length) {
         return curCell;
     }
     var ret = 1.0;
