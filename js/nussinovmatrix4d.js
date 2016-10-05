@@ -69,8 +69,8 @@ var NussinovCell4d = {
     init: function (i, k, j, l, value) {
         // init data
         this.i = i;
-        this.j = j;
         this.k = k;
+        this.j = j;
         this.l = l;
         this.value = value;
         this.traces = [];
@@ -306,7 +306,7 @@ var NussinovMatrix4d = {
             }
 
             // init value with number of additional base pairs
-            var curVal = 1;//curAncestor.bps.length;
+            var curVal = curAncestor.bps.length;
             // add scores of ancestor cells
             for (var x = 0; x < curAncestor.parents.length; x++) {
                 var i = curAncestor.parents[x][0];
@@ -387,6 +387,10 @@ var NussinovMatrix4d = {
 
         }
         ,
+
+        conv_str: function(P, SL) {
+            return "";
+        },
     
         simpleRepresentation: function() {
 
@@ -485,7 +489,7 @@ DPAlgorithm_hybrid.Tables[0].computeCell  = function(i, k, j, l) {
 DPAlgorithm_hybrid.computeMatrix = function(input) {
     var splitSeq = input.sequence().indexOf('X');
     var sequence1 = input.sequence().substr(0,splitSeq);
-    var sequence2 = input.sequence().substr(parseInt(input.loopLength())+splitSeq + 1);
+    var sequence2 = input.sequence().substr(parseInt(input.loopLength())+splitSeq + 1).split("").reverse().join("");
 
     console.log(sequence1, sequence2);
     this.Tables[0].init(sequence1, sequence2, "RNAHybrid");
@@ -527,6 +531,7 @@ DPAlgorithm_rnaup.Tables[0].computeCell = function(i, k, j, l) {
     var logP = Math.log(DPAlgorithm_rnaup.Tables[1].getValue(i, k)) + Math.log(DPAlgorithm_rnaup.Tables[2].getValue(j, l));
 
     curCell.value = this.energy * DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) - this.energy_normal * logP;
+    curCell.traces = DPAlgorithm_hybrid.Tables[0].getCell(i, k, j, l).traces;
     return curCell;
 };
 
@@ -570,6 +575,127 @@ DPAlgorithm_rnaup.computeMatrix = function(input) {
 
 };
 
+
+/**
+ * WUCHTY (generic doesnt give subomtimal structures)
+ */
+var wuchty4d = function (xmat) {
+    console.log("wuchty4d");
+    // TODO: compute NMax
+    var sigma_0 = [];
+    var NMax = 0;
+    for (var i = 0; i < xmat.seq1_length; ++i) {
+        for (var k = i; k < xmat.seq1_length; ++k) {
+            for (var j = 0; j < xmat.seq2_length; ++j) {
+                for (var r = j; r < xmat.seq2_length; ++r) {
+                    if (xmat.getValue(i, k, j, r) >= NMax) {
+                        if (xmat.getValue(i, k, j, r) > NMax) {
+                            sigma_0 = [];
+                        }
+                        sigma_0.push([[i, k, j, r]]);
+                        NMax = xmat.getValue(i, k, j, r);
+                    }
+                }
+            }
+        }
+    }
+    var SOS = [];
+    var loop = 0;
+    for (var sig = 0; sig < sigma_0.length; ++sig) {
+        var S = {sigma: sigma_0[sig], P: [], traces: []};
+        var R = [S];
+
+        console.log("initial: ", R, S);
+        while (R.length != 0) {
+            console.log("xx");
+            // Pop R
+            var pop_R = R.pop();
+            var sigma = pop_R.sigma;
+            var P = pop_R.P;
+            var t_traces = JSON.stringify(pop_R.traces);
+            var traces = JSON.parse(t_traces);
+
+            var sigma_remaining = 0;
+            for (var s in sigma) {//console.log("var s:", sigma[s]);
+                if (!xmat.isBaseCase(sigma[s][0], sigma[s][1], sigma[s][2], sigma[s][3])) sigma_remaining++;
+            }
+            if (sigma.length == 0 || sigma_remaining == 0) {
+                //var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
+                // TODO(mohsin): xmat.conv_str(P), pass it scripts.visualize4d
+                
+                var temp_sos = {structure: JSON.stringify(P) + JSON.stringify(traces), traces: traces};
+                console.log('pushing: ', temp_sos);
+                SOS.push(temp_sos);
+
+                console.log('SOS: ', SOS);
+                if (SOS.length > 10) {
+                    break;
+                }
+            }
+
+            else {
+                var idx = sigma.pop();
+                //console.log("idx: ", idx);
+                if (xmat.isBaseCase(idx[0], idx[1], idx[2], idx[3])) {
+                    pop_R.traces = traces;
+                    R.push(pop_R);
+                    continue;
+                }
+
+                var json_ij_traces = JSON.stringify(xmat.getCell(idx[0], idx[1], idx[2], idx[3]).traces);
+                var ij_traces = JSON.parse(json_ij_traces);
+
+                var S_prime = {};
+
+                for (var t in ij_traces) {
+                    var S_prime = {};
+                    var t_trace = JSON.stringify(ij_traces[t]);
+                    var trace = JSON.parse(t_trace);
+                    var trace_p = JSON.parse(t_trace);
+
+                    // add sigma info in S_prime
+                    S_prime.sigma = [];
+                    if (sigma.length > 0) {
+                        for (var s in sigma)
+                            trace.parents.unshift(sigma[s]);
+                        S_prime.sigma = trace.parents;
+                    }
+                    else S_prime.sigma = trace.parents;
+
+                    // add P(bps) info in S_prime
+                    S_prime.P = [];
+                    if (P[0] != undefined) {
+                        for (var p in P) {
+                            S_prime.P.push(P[p]);
+                        }
+                    }
+                    if (trace.bps[0] != undefined) {
+                        S_prime.P.push(trace.bps[0]);
+                    }
+
+                    // add traces info in S_prime
+                    var temp_trace = idx;
+                    temp_trace.push(trace_p.parents);
+                    if (traces.length == 0) {
+                        S_prime.traces = [temp_trace];
+                    }
+                    else {
+                        var clone_traces = JSON.stringify(traces);
+                        var parse_clone_traces = JSON.parse(clone_traces);
+                        parse_clone_traces.unshift(temp_trace);
+                        S_prime.traces = parse_clone_traces;
+                    }
+                    R.push(S_prime);
+                }
+            }
+            ;
+
+        }
+    }
+    console.log('final: ', JSON.stringify(SOS));
+
+    return SOS;
+}
 
 var availableAlgorithms = {
 

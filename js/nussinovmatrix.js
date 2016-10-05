@@ -1109,7 +1109,9 @@ function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
 
         var sigma_remaining = 0;
         for (var s in sigma) {//console.log("var s:", sigma[s]);
+            // TODO(mostafa): Check the base case condition
             if ((sigma[s][0]) <= (sigma[s][1] - xmat.minLoopLength)) sigma_remaining++;
+            //if (!xmat.isBaseCase(sigma[s][0], sigma[s][1])) sigma_remaining++;
         }
 
         if (sigma.length == 0 || sigma_remaining == 0) {

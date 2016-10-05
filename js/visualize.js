@@ -106,7 +106,8 @@ function NussinovMatrixViewModel() {
         if($(rec_select).text()=="hybrid") {
             console.log("hybrid");
             self.input.recursion("hybrid");
-            self.input.allowTraceback = false;
+            //self.input.allowTraceback = false;
+            console.log("setttt");
             //cellWidth = 48;
             //cellHeight = 28;
         }
@@ -116,7 +117,7 @@ function NussinovMatrixViewModel() {
         if($(rec_select).text()=="rnaup") {
             console.log("rnaup");
             self.input.recursion("rnaup");
-            self.input.allowTraceback = false;
+            //self.input.allowTraceback = false;
             //cellWidth = 48;
             //cellHeight = 28;
         }
@@ -162,7 +163,8 @@ function NussinovMatrixViewModel() {
         }
         $("#output").show();
 
-        if (self.input.allowTraceback) {
+        if (self.input.allowTraceback && (self.input.recursion() != "hybrid" && self.input.recursion() != "rnaup")) {
+
             $('th.cell_th, td.cell').css({
                 'width': cellWidth + 'px',
                 'height': cellHeight + 'px',
@@ -172,12 +174,13 @@ function NussinovMatrixViewModel() {
             ctx.clearRect(0, 0, $('#CanvasLayer')[0].width, $('#CanvasLayer')[0].height);
             //ctx.stroke();
         }
+
         console.log($("#rec_select").html());
-        console.log("HELLO", self.formula());
 
         console.log('input:', self.input.sequence(), self.input.loopLength(), self.input.delta(), self.input.recursion());
 
         var tables = self.formula().computeMatrix(self.input);
+        console.log("matrix compute");
         if (self.input.recursion() === "mcCaskill") {
             $("#paired_dotplot").html(dotplot(self.input.sequence(), tables[2].cells, 'pd'));
             $("#unpaired_dotplot").html(dotplot(self.input.sequence(), tables[3].cells, 'ud'));
@@ -211,8 +214,9 @@ function NussinovMatrixViewModel() {
         console.log("in traceback:", self.input.allowTraceback);
         if (self.input.allowTraceback) {// exclusive case for nussinov recursions
             console.log("tb allowed");
-            //if($(rec_select).text()=="MaxExpAcc")
-            //    return wuchty(self.matrix()[0]);
+
+            if($(rec_select).text()=="hybrid" || $(rec_select).text()=="rnaup")
+                return wuchty4d(self.matrix()[0]);
 
             //return wuchty_2nd(self.matrix()[0], del, self.formula().Tables[0]);
             return wuchty_2nd_limited(self.matrix()[0], del, self.formula().Tables[0], maxStructures);
