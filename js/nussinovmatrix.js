@@ -140,6 +140,11 @@ var NussinovMatrix = {
         sequence: null,
 
         /**
+         * Sequence length
+         * */
+        seq_length: 0,
+
+        /**
          * Access name of recursion used
          */
         name: null,
@@ -169,6 +174,9 @@ var NussinovMatrix = {
          */
         allowTraceBack: true,
 
+        /**
+         * The dimensions of the matrix.
+         * */
         tablesDimension: 2,
 
         /**
@@ -177,8 +185,7 @@ var NussinovMatrix = {
          * @param {string} sequence the RNA sequence (not null or empty)
          * @returns {NussinovMatrix} this
          */
-        init: function
-            (sequence, name) { //initialize matrix
+        init: function(sequence, name) { //initialize matrix
 
             // reset data
             this.sequence = null;
@@ -194,18 +201,19 @@ var NussinovMatrix = {
             // store sequence
             this.sequence = sequence;
             this.name = name;
+            this.seq_length = sequence.length;
 
             // create matrix cells
-            var n = this.sequence.length;
-            for (var i = 0; i <= n; i++) {
+            for (var i = 0; i <= this.seq_length; i++) {
                 this.cells[i] = [];
-                for (var j = 0; j <= n; j++) {
+                for (var j = 0; j <= this.seq_length; j++) {
                     // create new cell and initialize
                     if (this.name === "RNAHybrid") {
+                        // TODO: This case should be deleted.
                         this.cells[i][j] = [];
-                        for (var k = 0; k <= n; ++k) {
+                        for (var k = 0; k <= this.seq_length; ++k) {
                             this.cells[i][j][k] = [];
-                            for (var r = 0; r <= n; ++r) {
+                            for (var r = 0; r <= this.seq_length; ++r) {
                                 this.cells[i][k][j][l] = Object.create(NussinovCell).init(i, j, null);
                             }
                         }
@@ -213,7 +221,7 @@ var NussinovMatrix = {
                     console.log("initializing matrix", this.name, this.sequence);
                     if (this.name === "unique" || this.name === "ambiguous" || this.name === "Ambiguous2" || this.name === "coFold") {
 
-                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, 0);
+                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
                     }
                     else {
                         this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
@@ -227,10 +235,24 @@ var NussinovMatrix = {
         }
         ,
 
+        /**
+         * Is base case.
+         * */
+        isBaseCase: function(i, j) {
+            //if (i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim() || i > j + 1)
+            if (i < 0 || j < 0 || i > this.seq_length || j > this.seq_length || i > j + 1) {
+                return true;
+            } else {
+                return false;
+            }
+
+        },
+
 
         computeCell: function(i, j) {
            // updateCell(i, j);
         },
+
         /**
          * access whole object at cell location (i,j) in matrix
          * @param {int} i row #.
@@ -238,12 +260,12 @@ var NussinovMatrix = {
          * @returns {NussinovCell} cell object or null if not available
          */
         getCell: function (i, j) {
-            // check border cases
-            if (i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim() || i > j + 1) {
+            // check border cases {
+            if (this.isBaseCase(i, j)) {
                 return null;
             }
-            if (this.cells[i][j] === null) {
-                //this.cells[i][j] = computeCell(i, j);
+            if (this.cells[i][j] === null || this.cells[i][j].value == null) {
+                this.cells[i][j] = this.computeCell(i, j);
             }
             return this.cells[i][j];
         }
@@ -275,17 +297,8 @@ var NussinovMatrix = {
                 return null;
             }
             return cell.traces;
-        }
-        ,
-
-        computeValue: function (i, j) {
-            // Computes the M[i, j] by accessing cells using getValue function for memoization.
-            
-            // base case
-            return 0;
-            
-            // computation
         },
+
         /**
          * access value of cell at location (i,j) in matrix, and compute it if it's not computed.
          * @param {int} i row #.
@@ -299,9 +312,11 @@ var NussinovMatrix = {
                 return null;
             }
             // check if invalid cell
+            /*
             if (cell.value === null) {
                 cell.value = this.computeValue(i, j);
             }
+            */
             // get cell value
             return parseFloat(cell.value);
         }
@@ -317,9 +332,9 @@ var NussinovMatrix = {
          * @param j the column of the cell to update
          * @param curAncestor
          */
-        updateCell: function (i, j, curAncestor) {
+        updateCell: function (curCell, curAncestor) {
             // get cell to update
-            var curCell = this.getCell(i, j);
+            //var curCell = this.getCell(i, j);
             // check if something to update
             if (curCell === null) {
                 return;
@@ -340,14 +355,21 @@ var NussinovMatrix = {
                     // store new maximum
                     curCell.value = curVal;
                 }
-                ;
                 // store this ancestor
                 curCell.traces.push(curAncestor);
             }
-            ;
+        },
 
-        }
-        ,
+        /**
+         * Compute all the cells of the matrix.
+         */
+        computeAllCells: function() {
+            for (var i = 0; i <= this.seq_length; ++i) {
+                for (var j = 0; j <= this.seq_length; ++j) {
+                    this.getCell(i, j);
+                }
+            }
+        },
 
         /**
          * Fills the matrix according to the recursion.
@@ -363,10 +385,12 @@ var NussinovMatrix = {
             console.log("WARNING: computeMatrix() not implemented in NussinovMatrix superclass; overwrite in subclass!");
 
             // resize and init matrix
-            this.init(sequence);
+            this.init(input.sequence(), "Default name");
 
             // set minimal loop length
-            this.minLoopLength = input.loopLength;
+            this.minLoopLength = parseInt(input.loopLength());
+
+            this.computeAllCells();
 
             return this;
         }
@@ -404,7 +428,7 @@ var NussinovMatrix = {
          */
         toString: function () {
             var str = this.minLoopLength + "    ";
-            for (var i = 0; i + 1 < this.getDim(); i++) {
+            for (var i = 0; i < this.seq_length; i++) {
                 str += this.sequence[i] + "  ";
             }
             str += "\n";
@@ -446,9 +470,6 @@ var NussinovMatrix = {
             return NSprime;
         },
 
-
-
-
         conv_str: function (x, length) {
             var str = "";
             for (var l = 0; l < length; l++) {
@@ -480,8 +501,7 @@ var NussinovMatrix = {
 
         },
 
-    }
-    ;
+};
 
 /**
  * Dynamic programming algorithm.
@@ -536,47 +556,45 @@ NussinovDPAlgorithm_Ambiguous.Tables = new Array();
 NussinovDPAlgorithm_Ambiguous.Tables.push(Object.create(NussinovMatrix));
 NussinovDPAlgorithm_Ambiguous.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 &  S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
 
+NussinovDPAlgorithm_Ambiguous.Tables[0].computeCell = function(i, j) {
+
+    var curCell = Object.create(NussinovCell).init(i, j, 0);
+
+    if (this.isBaseCase(i, j)) {
+        return curCell;
+    }
+    // i unpaired
+    this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i + 1, j]], []));
+
+
+    // j unpaired
+    this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i, j - 1]], []));
+
+    // check (i,j) base pair
+    if ((j - i > this.minLoopLength) && RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
+        // get value for base pair
+        this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [[i, j]]));
+    }
+
+    // check decomposition into substructures (minLength==2)
+    for (var k = i + 1; k < (j - 1); k++) {
+        // get decomposition value
+        this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i, k], [k + 1, j]], []));
+    }
+
+    return curCell;
+};
 
 NussinovDPAlgorithm_Ambiguous.computeMatrix = function (input) {
 // resize and initialize matrix
     this.Tables[0].init(input.sequence(), "ambiguous");
 // store minimal loop length
-    var minLL = parseInt(input.loopLength());
-    this.Tables[0].minLoopLength = minLL;
-    //console.log("computing ambiguos matrix");
-// fill matrix by diagonals
-// iterate over all substructure spans that can have a base pair
-    for (var span = this.Tables[0].minLoopLength; span < this.Tables[0].getDim(); span++) {
-        // iterate over all rows
-        for (var i = 1; i < this.Tables[0].getDim() - this.Tables[0].minLoopLength; i++) {
-            // get column for current span
-            var j = i + span;
+    this.Tables[0].minLoopLength = parseInt(input.loopLength());
 
-            // i unpaired
-            this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i + 1, j]], []));
-
-            // j unpaired
-            this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i, j - 1]], []));
-
-            // check (i,j) base pair
-            if ((j - i > input.loopLength()) && RnaUtil.areComplementary(input.sequence()[i - 1], input.sequence()[j - 1])) {
-                // get value for base pair
-                this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [[i, j]]));
-            }
-            ;
-
-            // check decomposition into substructures (minLength==2)
-            for (var k = i + 1; k < (j - 1); k++) {
-                // get decomposition value
-                this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i, k], [k + 1, j]], []));
-            }
-            ;
-         }
-        ;
-    }
-    ;
+    this.Tables[0].computeAllCells();
 
     return this.Tables;
+
 };
 
 NussinovDPAlgorithm_Ambiguous.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
@@ -761,39 +779,35 @@ NussinovDPAlgorithm_Unique.Tables = new Array();
 NussinovDPAlgorithm_Unique.Tables.push(Object.create(NussinovMatrix));
 NussinovDPAlgorithm_Unique.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D(i,k-1)+D(k+1,j-1)+1 & S_k,S_j \\text{ compl. base pair} \\end{cases}";
 
+NussinovDPAlgorithm_Unique.Tables[0].computeCell = function(i, j) {
+
+    var curCell = Object.create(NussinovCell).init(i, j, 0);
+
+    if (this.isBaseCase(i, j)) {
+        return curCell;
+    }
+    // j unpaired
+    this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i, j - 1]], []));
+
+    // check base pair based decomposition : (k,j) base pair
+    for (var k = i; k + this.minLoopLength < j; k++) {
+        // check if sequence positions are compatible
+        if (RnaUtil.areComplementary(this.sequence[k - 1], this.sequence[j - 1])) {
+            this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i, k - 1], [k + 1, j - 1]], [[k, j]]));
+        }
+    }
+
+    return curCell;
+};
+
 NussinovDPAlgorithm_Unique.computeMatrix = function (input) {
 
-    console.log('nussiUnique', input.sequence());
 // resize and initialize matrix
     this.Tables[0].init(input.sequence(), "unique");
 // store minimal loop length
-    var minLL = parseInt(input.loopLength());
-    this.Tables[0].minLoopLength = minLL;
+    this.Tables[0].minLoopLength = parseInt(input.loopLength());
 
-// fill matrix by diagonals
-// iterate over all substructure spans that can have a base pair
-    for (var span = this.Tables[0].minLoopLength; span < this.Tables[0].getDim(); span++) {
-        // iterate over all rows
-        for (var i = 0; i < this.Tables[0].getDim() - this.Tables[0].minLoopLength ; i++) {
-            // get column for current span
-            var j = i + span;
-
-            // j unpaired
-            this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i, j - 1]], []));
-
-            // check base pair based decomposition : (k,j) base pair
-            for (var k = i; k + this.Tables[0].minLoopLength < j; k++) {
-                // check if sequence positions are compatible
-                if (RnaUtil.areComplementary(input.sequence()[k - 1], input.sequence()[j - 1])) {
-                    this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i, k - 1], [k + 1, j - 1]], [[k, j]]));
-                }
-                ;
-            }
-            ;
-        }
-        ;
-    }
-    ;
+    this.Tables[0].computeAllCells();
 
     return this.Tables;
 };
@@ -905,40 +919,40 @@ NussinovDPAlgorithm_Ambiguous2.Description = "Recursion by Nussinov et al. (1978
 NussinovDPAlgorithm_Ambiguous2.Tables = new Array();
 NussinovDPAlgorithm_Ambiguous2.Tables.push(Object.create(NussinovMatrix));
 NussinovDPAlgorithm_Ambiguous2.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j-1)+1 & S_i,S_j \\text{ compl. base pair} \\\\ \\max_{i\\leq k< j} D(i,k)+D(k+1,j) \\end{cases}";
-//NussinovDPAlgorithm_Ambiguous2.Tables[0].latex_representation = "$D(i,j) = \\max(0, D(i+1,j-1)+1 if bp(i,j), \\max_{i<=k<j} : D(i,k)+N(k+1,j))$";
+
+NussinovDPAlgorithm_Ambiguous2.Tables[0].computeCell = function(i, j) {
+
+    var curCell = Object.create(NussinovCell).init(i, j, 0);
+
+    if (this.isBaseCase(i, j)) {
+        console.log("base ", i, j);
+
+        return curCell;
+    }
+
+    // check (i,j) base pair
+    if ((j - i > this.minLoopLength) && RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
+        // get value for base pair
+        this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [[i, j]]));
+    }
+
+    // check decomposition into substructures (minLength==2)
+    for (var k = i; k < j; k++) {
+        // get decomposition value
+        this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i, k], [k + 1, j]], []));
+    }
+
+    return curCell;
+};
+
 NussinovDPAlgorithm_Ambiguous2.computeMatrix = function (input) {
 
 // resize and initialize matrix
     this.Tables[0].init(input.sequence(), "Ambiguous2");
 // store minimal loop length
-    var minLL = parseInt(input.loopLength());
-    this.Tables[0].minLoopLength = minLL;
+    this.Tables[0].minLoopLength = parseInt(input.loopLength());
 
-// fill matrix by diagonals
-// iterate over all substructure spans that can have a base pair
-    for (var span = this.Tables[0].minLoopLength; span < this.Tables[0].getDim(); span++) {
-        // iterate over all rows
-        for (var i = 1; i < this.Tables[0].getDim() - this.Tables[0].minLoopLength; i++) {
-            // get column for current span
-            var j = i + span;
-
-            // check (i,j) base pair
-            if ((j - i > input.loopLength()) && RnaUtil.areComplementary(input.sequence()[i - 1], input.sequence()[j - 1])) {
-                // get value for base pair
-                this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [[i, j]]));
-            }
-            ;
-
-            // check decomposition into substructures (minLength==2)
-            for (var k = i; k < j; k++) {
-                // get decomposition value
-                this.Tables[0].updateCell(i, j, Object.create(NussinovCellTrace).init([[i, k], [k + 1, j]], []));
-            }
-            ;
-        }
-        ;
-    }
-    ;
+    this.Tables[0].computeAllCells();
 
     return this.Tables;
 };
@@ -1095,7 +1109,9 @@ function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
 
         var sigma_remaining = 0;
         for (var s in sigma) {//console.log("var s:", sigma[s]);
+            // TODO(mostafa): Check the base case condition
             if ((sigma[s][0]) <= (sigma[s][1] - xmat.minLoopLength)) sigma_remaining++;
+            //if (!xmat.isBaseCase(sigma[s][0], sigma[s][1])) sigma_remaining++;
         }
 
         if (sigma.length == 0 || sigma_remaining == 0) {
@@ -1142,15 +1158,18 @@ NussinovDPAlgorithm_structuresCount.Tables.push(Object.create(NussinovMatrix));
 NussinovDPAlgorithm_structuresCount.Tables[0].latex_representation = "C_{i,j} = C_{i,j-1} + \\sum_{i\\leq k <(j-l) \\atop S_k,S_j \\text{ pair}} C_{i,k-1} \\cdot C_{k+1,j-1} \\cdot 1";
 
 // C(i, j) = C(i, j - 1) + sum[k: [i <= k < j - l] && k,j pairs] C(i, k - 1) * C(k + 1, j - 1)
-NussinovDPAlgorithm_structuresCount.Tables[0].computeValue = function (i, j) {
-    if (i > j + 1 || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
-        return 0;
+NussinovDPAlgorithm_structuresCount.Tables[0].computeCell = function (i, j) {
+
+    var curCell = Object.create(NussinovCell).init(i, j, 0);
+
+    if (this.isBaseCase(i, j)) {
+        return curCell;
     }
     if (i >= j) {
-        return 1;
+        curCell.value = 1;
+        return curCell;
     }
     var res = 0;
-
     //console.log(i, j);
     // unpaired
     res += this.getValue(i, j - 1);
@@ -1160,7 +1179,8 @@ NussinovDPAlgorithm_structuresCount.Tables[0].computeValue = function (i, j) {
         }
     }
 
-    return res;
+    curCell.value = res;
+    return curCell;
 };
 
 
@@ -1170,18 +1190,9 @@ NussinovDPAlgorithm_structuresCount.computeMatrix = function (input) {
 console.log("in struct count");
     this.Tables[0].init(input.sequence(), "structuresCount");
     // store minimal loop length
-    var minLL = parseInt(input.loopLength());
-    this.Tables[0].minLoopLength = minLL;
+    this.Tables[0].minLoopLength = parseInt(input.loopLength());
 
-    for (var i = 0; i < this.Tables[0].getDim(); i++) {
-        for (var j = 0; j < this.Tables[0].getDim(); ++j) {
-            // get column for current span
-            this.Tables[0].getValue(i, j);
-        }
-        ;
-    }
-    ;
-
+    this.Tables[0].computeAllCells();
     return this.Tables;
 };
 
@@ -1207,12 +1218,17 @@ NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i,j} = \\
 //NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot 1 \\cdot Q_{j + 1, n})";
 
 // Q(i,j) = sum[k : [i <= j < j - l] && k,j can pair] Q(i, k - 1) * Qb(k, j)
-NussinovDPAlgorithm_McCaskill.Tables[0].computeValue = function (i, j) {
-    if (i > j + 1 || i < 0 || j < 0 || i > this.getDim() || j > this.getDim()) {
-        return 0;
+
+// TODO: Check the base case in algorithms;
+NussinovDPAlgorithm_McCaskill.Tables[0].computeCell = function (i, j) {
+
+    var curCell = Object.create(NussinovCell).init(i, j, 0);
+    if (i > j + 1 || i < 0 || j < 0 || i > this.seq_length + 1 || j > this.seq_length + 1) {
+        return curCell;
     }
     if (i >= j) {
-        return 1;
+        curCell.value = 1;
+        return curCell;
     }
     var res = 0;
     res += this.getValue(i, j - 1);
@@ -1221,33 +1237,36 @@ NussinovDPAlgorithm_McCaskill.Tables[0].computeValue = function (i, j) {
             res += this.getValue(i, k - 1) * NussinovDPAlgorithm_McCaskill.Tables[1].getValue(k, j);
         }
     }
-
-    return res;
+    curCell.value = res;
+    return curCell;
 };
 
 // Qb(i, j) = Q(i + 1, j - 1) * exp(-Eb / RT)
-NussinovDPAlgorithm_McCaskill.Tables[1].computeValue = function (i, j) {
-    if (i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim() || i >= j - this.minLoopLength) {
-        return 0;
+NussinovDPAlgorithm_McCaskill.Tables[1].computeCell = function (i, j) {
+
+    var curCell = Object.create(NussinovCell).init(i, j, 0);
+    if (i < 0 || j < 0 || i > this.seq_length || j > this.seq_length || i >= j - this.minLoopLength) {
+        return curCell;
     }
     if (RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
-        return NussinovDPAlgorithm_McCaskill.Tables[0].getValue(i + 1, j - 1) * Math.exp(this.energy_basepair);
-    } else {
-        return 0;
+        curCell.value = NussinovDPAlgorithm_McCaskill.Tables[0].getValue(i + 1, j - 1) * Math.exp(this.energy_basepair);
     }
+    return curCell;
 };
 
 // Probability that i, j is a base pair.
 // Pe(i, j) = Q(1, i - 1) * Qb(i, j) * Q(j + 1, n) / Q(1, n)
 //            + sum[p,q]{Pe(p,q) * Qb(i,j) * Q(p+1,i-1)*Q(j+1,q-1)*exp(-e/RT)/Qb(p,q)}
-NussinovDPAlgorithm_McCaskill.Tables[2].computeValue = function(i, j) {
-    if (i < 0 || j < 0) {//} || i >= this.getDim() || j >= this.getDim()) {
-        return 0;
+NussinovDPAlgorithm_McCaskill.Tables[2].computeCell = function(i, j) {
+
+    var curCell = Object.create(NussinovCell).init(i, j, 0);
+    if (i < 0 || j < 0) {//} || i > this.seq_length || j > this.seq_length) {
+        return curCell;
     }
     if (!RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
-        return 0;
+        return curCell;
     }
-    var n = this.getDim() - 1;
+    var n = this.seq_length;
 
     var ret = NussinovDPAlgorithm_McCaskill.Tables[1].getValue(i, j);
     if (i > 1) {
@@ -1276,17 +1295,20 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeValue = function(i, j) {
             }
         }
     }
-    return ret;
+    curCell.value = ret;
+    return curCell;
 };
 
 
 // Probability that i, j is unpaired.
 // Pu(i, j) = Q(1, i - 1) * 1 * Q(j + 1, n) / Q(1, n) + sum[p,q]{Pbn[p,q] * Q[p+1,i-1]*Q[j+1,q-1]*exp(-e)/Qb[p,q]}
-NussinovDPAlgorithm_McCaskill.Tables[3].computeValue = function(i, j) {
-    if (i < 0 || j < 0 || i > j) {//} || i >= this.getDim() || j >= this.getDim() || i > j) {
-        return 0;
+NussinovDPAlgorithm_McCaskill.Tables[3].computeCell = function(i, j) {
+
+    var curCell = Object.create(NussinovCell).init(i, j, 0);
+    if (i < 0 || j < 0 || i > j) {//} || i > this.seq_length || j > this.seq_length || i > j) {
+        return curCell;
     }
-    var n = this.getDim() - 1;
+    var n = this.seq_length;
 
     var ret = 1.0;
     if (i > 1) {
@@ -1315,7 +1337,8 @@ NussinovDPAlgorithm_McCaskill.Tables[3].computeValue = function(i, j) {
             }
         }
     }
-    return ret;
+    curCell.value = ret;
+    return curCell;
 };
 
 // Invoking getValue for all tables, so that the Dynamic Programming computes all the tables and memoizes them.
@@ -1325,49 +1348,20 @@ NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
     this.Tables[2].init(input.sequence(), "McCaskill External Base");
     this.Tables[3].init(input.sequence(), "McCaskill Unpaired");
     // store minimal loop length
-    var minLL = parseInt(input.loopLength());
-    this.Tables[0].minLoopLength = minLL;
+    this.Tables[0].minLoopLength = parseInt(input.loopLength());
 
-    this.Tables[1].energy_basepair = -input.energy() / input.energy_normal();
-    this.Tables[2].energy_basepair = -input.energy() / input.energy_normal();
-    this.Tables[3].energy_basepair = -input.energy() / input.energy_normal();
+    //this.Tables[1].energy_basepair = -input.energy() / input.energy_normal();
+    //this.Tables[2].energy_basepair = -input.energy() / input.energy_normal();
+    //this.Tables[3].energy_basepair = -input.energy() / input.energy_normal();
 
-    for (var i = 0; i <= this.Tables[0].getDim(); i++) {
-        for (var j = 0; j <= this.Tables[0].getDim(); ++j) {
-            // get column for current span
-            this.Tables[0].getValue(i, j);
-        }
-        ;
+    for (var i = 1; i < 4; ++i) {
+        this.Tables[i].energy_basepair = -input.energy() / input.energy_normal();
     }
-    ;
 
-    for (var i = 0; i <= this.Tables[1].getDim(); i++) {
-        for (var j = 0; j <= this.Tables[1].getDim(); ++j) {
-            // get column for current span
-            this.Tables[1].getValue(i, j);
-        }
-        ;
+    for (var i = 0; i < 4; ++i) {
+        this.Tables[i].computeAllCells();
     }
-    ;
-
-    for (var i = 0; i <= this.Tables[2].getDim(); i++) {
-        for (var j = 0; j <= this.Tables[2].getDim(); ++j) {
-            // get column for current span
-            this.Tables[2].getValue(i, j);
-        }
-        ;
-    }
-    ;
-
-    for (var i = 0; i <= this.Tables[3].getDim(); i++) {
-        for (var j = 0; j <= this.Tables[3].getDim(); ++j) {
-            // get column for current span
-            this.Tables[3].getValue(i, j);
-        }
-        ;
-    }
-    ;
-
+    
     return this.Tables;
 };
 
@@ -1385,9 +1379,8 @@ DPAlgorithm_MEA.Tables[2].latex_representation = "P_{i}^{u} = 1 - \\sum_{k \\neq
 
 //DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
 //DPAlgorithm_MEA.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 &  S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
-DPAlgorithm_MEA.Tables[0].updateCell = function (i, j, curVal, curAncestor) {
+DPAlgorithm_MEA.Tables[0].updateCell = function (curCell, curVal, curAncestor) {
 
-    var curCell = this.getCell(i, j);
     if (curCell === null || curCell.value <= curVal) {
         // check for new maximal value
         if (curCell === null || curCell.value < curVal) {
@@ -1404,39 +1397,44 @@ DPAlgorithm_MEA.Tables[0].updateCell = function (i, j, curVal, curAncestor) {
 
 }
 // "{"parents":[[2,1]],"bps":[[1,2]]}"
-DPAlgorithm_MEA.Tables[0].computeValue = function(i, j) {
+DPAlgorithm_MEA.Tables[0].computeCell = function(i, j) {
 
-    if (i > j || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
-        return 0;
+    var curCell = Object.create(NussinovCell).init(i, j, 0);
+    if (this.isBaseCase(i, j) || i > j) {
+        return curCell;
     }
 
-    this.updateCell(i, j, this.getValue(i, j - 1) + DPAlgorithm_MEA.Tables[2].getValue(j, j), Object.create(NussinovCellTrace).init([[i, j - 1]], []));
+    this.updateCell(curCell, this.getValue(i, j - 1) + DPAlgorithm_MEA.Tables[2].getValue(j, j), Object.create(NussinovCellTrace).init([[i, j - 1]], []));
 
     if (RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
-        this.updateCell(i, j, this.getValue(i + 1, j - 1) + NussinovDPAlgorithm_McCaskill.Tables[2].getValue(i, j), Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [i, j]));
+        this.updateCell(curCell, this.getValue(i + 1, j - 1) + NussinovDPAlgorithm_McCaskill.Tables[2].getValue(i, j), Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [i, j]));
     }
 
     for (var k = i; k < j - this.minLoopLength; ++k) {
-        this.updateCell(i, j, this.getValue(i, k) + this.getValue(k + 1, j), Object.create(NussinovCellTrace).init([[i, k], [k + 1, j]], []));
+        this.updateCell(curCell, this.getValue(i, k) + this.getValue(k + 1, j), Object.create(NussinovCellTrace).init([[i, k], [k + 1, j]], []));
     }
 
-    return this.getValue(i, j);
+    return curCell;
 };
 
-DPAlgorithm_MEA.Tables[2].computeValue = function(i, j) {
 
-    if (i != j || i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim()) {
-        return 0;
+// TODO: Check base case
+DPAlgorithm_MEA.Tables[2].computeCell = function(i, j) {
+
+    var curCell = Object.create(NussinovCell).init(i, j, 0);
+    if (i != j || i < 0 || j < 0 || i > this.seq_length || j > this.seq_length) {
+        return curCell;
     }
     var ret = 1.0;
 
-    for (var k = this.getDim(); k >= 0; --k) {
+    for (var k = this.seq_length + 1; k >= 0; --k) {
         if (k != j) {
             ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j);
             ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(j, k);
         }
     }
-    return ret;
+    curCell.value = ret;
+    return curCell;
 };
 
 
@@ -1447,22 +1445,12 @@ DPAlgorithm_MEA.computeMatrix = function(input) {
     this.Tables[1] = NussinovDPAlgorithm_McCaskill.Tables[2];
 
     this.Tables[0].init(input.sequence(), "Maximum Expected Accuracy");
-
     this.Tables[2].init(input.sequence(), "Unpaired probabilities");
     // store minimal loop length
-    var minLL = parseInt(input.loopLength());
-    this.Tables[0].minLoopLength = minLL;
+    this.Tables[0].minLoopLength = parseInt(input.loopLength());
 
-    for (var i = 0; i < this.Tables[0].getDim(); i++) {
-        for (var j = 0; j < this.Tables[0].getDim(); ++j) {
-            // get column for current span
-            this.Tables[0].getValue(i, j);
-        }
-        ;
-    }
-    ;
-
-    for (var i = 0; i < this.Tables[2].getDim(); ++i) {
+    this.Tables[0].computeAllCells();
+    for (var i = 0; i <= this.Tables[2].seq_length; ++i) {
         this.Tables[2].getValue(i, i);
     }
 
@@ -1572,6 +1560,7 @@ DPAlgorithm_coFold.Tables.push(Object.create(NussinovMatrix));
 
 DPAlgorithm_coFold.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D(i,k-1)+D(k+1,j-1)+1 & S_k,S_j \\text{ compl. base pair} \\end{cases}";
 
+// TODO: Check if we need to add minLoopLength.
 DPAlgorithm_coFold.computeMatrix = function(input) {
 
     NussinovDPAlgorithm_Unique.computeMatrix(input);
