@@ -127,6 +127,14 @@ function repres(res) {
 
 function visualize4d(str1, str2, ps) {
 
+    return JSON.stringify(ps) + "\n" +
+    "axx...xexx        x     xx" + "\n" +
+    "          f    x   g" + "\n" +
+    "          |    |   |" + "\n" +
+    "          l    y   h" + "\n" +
+    "yyoyymyy   yyky jyy   yydyyc";
+
+
     var marked1 = new Array(str1.length + 1);
     var marked2 = new Array(str2.length + 1);
 

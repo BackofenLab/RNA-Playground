@@ -104,17 +104,17 @@
         </thead>
 
         <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
-        <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"></td></tr>
+        <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure4d}"></td></tr>
         </tbody>
     </table>
 
     <div id="matrix" class="row" id="output" >
             <pre id="4dVisual">
-axx...xexx        x     xx
-            f    x   g
-            |    |   |
-            l    y   h
-  yyoyymyy   yyky jyy   yydyyc
+<!--axx...xexx        x     xx-->
+            <!--f    x   g-->
+            <!--|    |   |-->
+            <!--l    y   h-->
+  <!--yyoyymyy   yyky jyy   yydyyc-->
             </pre>
         <!--<div style="display: inline-block; float: left">-->
             <!--<canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>-->
@@ -179,9 +179,9 @@ axx...xexx        x     xx
 <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script src="js/libs/jquery.min.js"></script>
+<script src="js/scripts.js"></script>
 <script src="js/nussinovmatrix.js"></script>
 <script src="js/nussinovmatrix4d.js"></script>
-<script src="js/scripts.js"></script>
 <script src="js/visualize.js"></script>
 <!--<script type="text/javascript">-->
 <!--showRecursion();-->

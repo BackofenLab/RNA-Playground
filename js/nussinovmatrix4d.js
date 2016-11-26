@@ -388,8 +388,22 @@ var NussinovMatrix4d = {
         }
         ,
 
-        conv_str: function(P, SL) {
-            return "";
+        conv_str: function(P) {
+            var str = "";
+            for (var l = 0; l < this.seq1_length + this.seq2_length + 1; l++) {
+                str += ".";
+            }
+            str = str.substr(0, this.seq1_length) + "X" + str.substr(this.seq1_length + 1);
+            //str[this.seq1_length] = 'X';
+            for (var indx in P) {
+                var i = P[indx][0], j = P[indx][1];
+                //str[i - 1] = '(';
+                //str[str.length - j] = ')';
+                str = str.substr(0, i - 1) + "(" + str.substr(i);
+                str = str.substr(0, str.length - j) + ")" + str.substr(str.length - j + 1);
+            }
+
+            return str;
         },
     
         simpleRepresentation: function() {
@@ -464,7 +478,7 @@ DPAlgorithm_hybrid.Tables[0].computeCell  = function(i, k, j, l) {
             // Energy init instead of 1
             ret = Math.max(ret, 1);
 
-            this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([], [[i,k,j,l]]));
+            this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([], [[i, j]]));
         }
 
         for (var p = i + 1; p <= k; ++p) {
@@ -473,7 +487,7 @@ DPAlgorithm_hybrid.Tables[0].computeCell  = function(i, k, j, l) {
                 // if (i < k && j < l)
                 if (this.getValue(p, k, q, l) > 0) {
                     ret = Math.max(ret, 1 + this.getValue(p, k, q, l));
-                    this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([[p, k, q, l]], [[p, k, q, l]]));
+                    this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([[p, k, q, l]], [[i, j]]));
                 }
             }
         }
@@ -489,7 +503,7 @@ DPAlgorithm_hybrid.Tables[0].computeCell  = function(i, k, j, l) {
 DPAlgorithm_hybrid.computeMatrix = function(input) {
     var splitSeq = input.sequence().indexOf('X');
     var sequence1 = input.sequence().substr(0,splitSeq);
-    var sequence2 = input.sequence().substr(parseInt(input.loopLength())+splitSeq + 1).split("").reverse().join("");
+    var sequence2 = input.sequence().substr(parseInt(input.loopLength())+splitSeq + 1).split("");//.reverse().join("");
 
     console.log(sequence1, sequence2);
     this.Tables[0].init(sequence1, sequence2, "RNAHybrid");
@@ -584,11 +598,13 @@ var wuchty4d = function (xmat) {
     // TODO: compute NMax
     var sigma_0 = [];
     var NMax = 0;
-    for (var i = 0; i < xmat.seq1_length; ++i) {
-        for (var k = i; k < xmat.seq1_length; ++k) {
-            for (var j = 0; j < xmat.seq2_length; ++j) {
-                for (var r = j; r < xmat.seq2_length; ++r) {
+    for (var i = 1; i <= xmat.seq1_length; ++i) {
+        for (var k = i; k <= xmat.seq1_length; ++k) {
+            for (var j = 1; j <= xmat.seq2_length; ++j) {
+                for (var r = j; r <= xmat.seq2_length; ++r) {
+                    console.log("val: ", i, k, j, r, xmat.getValue(i, k, j, r));
                     if (xmat.getValue(i, k, j, r) >= NMax) {
+                        console.log("true");
                         if (xmat.getValue(i, k, j, r) > NMax) {
                             sigma_0 = [];
                         }
@@ -599,6 +615,7 @@ var wuchty4d = function (xmat) {
             }
         }
     }
+    console.log("Sigma0: ", JSON.stringify(sigma_0), NMax);
     var SOS = [];
     var loop = 0;
     for (var sig = 0; sig < sigma_0.length; ++sig) {
@@ -622,8 +639,10 @@ var wuchty4d = function (xmat) {
             if (sigma.length == 0 || sigma_remaining == 0) {
                 //var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
                 // TODO(mohsin): xmat.conv_str(P), pass it scripts.visualize4d
-                
-                var temp_sos = {structure: JSON.stringify(P) + JSON.stringify(traces), traces: traces};
+                console.log('visualize4d', visualize4d(xmat.sequence1, xmat.sequence2, P));
+                var temp_sos = {structure: xmat.conv_str(P), traces: traces, rep4d: visualize4d(xmat.sequence1, xmat.sequence2, P)};
+                console.log("structures:", P);
+                console.log("structures parsed:", xmat.conv_str(P));
                 console.log('pushing: ', temp_sos);
                 SOS.push(temp_sos);
 
@@ -669,22 +688,29 @@ var wuchty4d = function (xmat) {
                             S_prime.P.push(P[p]);
                         }
                     }
+                    console.log("trace", trace.bps);
                     if (trace.bps[0] != undefined) {
                         S_prime.P.push(trace.bps[0]);
                     }
 
                     // add traces info in S_prime
-                    var temp_trace = idx;
+                    var temp_trace = [idx];
                     temp_trace.push(trace_p.parents);
                     if (traces.length == 0) {
+                        console.log('before2 ', S_prime.traces);
                         S_prime.traces = [temp_trace];
+                        console.log('after2 ', S_prime.traces);
                     }
                     else {
+
                         var clone_traces = JSON.stringify(traces);
                         var parse_clone_traces = JSON.parse(clone_traces);
+                        console.log('before', parse_clone_traces);
                         parse_clone_traces.unshift(temp_trace);
+                        console.log('after', parse_clone_traces);
                         S_prime.traces = parse_clone_traces;
                     }
+                    console.log('my ij', JSON.stringify(ij_traces));
                     R.push(S_prime);
                 }
             }

@@ -215,8 +215,11 @@ function NussinovMatrixViewModel() {
         if (self.input.allowTraceback) {// exclusive case for nussinov recursions
             console.log("tb allowed");
 
-            if($(rec_select).text()=="hybrid" || $(rec_select).text()=="rnaup")
-                return wuchty4d(self.matrix()[0]);
+            if($(rec_select).text()=="hybrid" || $(rec_select).text()=="rnaup") {
+                var res = wuchty4d(self.matrix()[0]);
+                console.log('wuchty out', res);
+                return res;
+            }
 
             //return wuchty_2nd(self.matrix()[0], del, self.formula().Tables[0]);
             return wuchty_2nd_limited(self.matrix()[0], del, self.formula().Tables[0], maxStructures);
@@ -246,6 +249,23 @@ function NussinovMatrixViewModel() {
         return formulas;
 
     }, this);
+
+    // functions for visualization and interaction
+    self.clickStructure4d = function(clicked_cell, dom) {
+        var offset =  $("#matrix_body").position();
+        color +=1;
+        if(color >= colors.length-1) color = 0;
+        console.log(clicked_cell);
+        $('td#structTableCells').css({'background': '#FFF'});
+        $("#4dVisual").text(clicked_cell.rep4d);
+        $(dom.target).css({'background': colors[color]});
+
+        var cell = JSON.stringify(clicked_cell);
+        cell = JSON.parse(cell);
+
+        $('td.cell').css("background", "white");
+        drawFullTrace(offset , cell);
+    };
 
     // functions for visualization and interaction
     self.clickStructure = function(clicked_cell, dom) {
