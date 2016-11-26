@@ -104,6 +104,7 @@ function allor3dots(str) {
 function repres(res) {
     ret = "";
     for (var i = 0; i < res.length; ++i) {
+        ret += "\t";
         for (var j in res[i]) {
             ret += res[i][j];
         }
@@ -126,14 +127,17 @@ function repres(res) {
  */
 
 function visualize4d(str1, str2, ps) {
-
+/*
     return JSON.stringify(ps) + "\n" +
+        JSON.stringify(str1) + "\n" +
+        JSON.stringify(str2) + "\n" +
     "axx...xexx        x     xx" + "\n" +
     "          f    x   g" + "\n" +
     "          |    |   |" + "\n" +
     "          l    y   h" + "\n" +
     "yyoyymyy   yyky jyy   yydyyc";
 
+*/
 
     var marked1 = new Array(str1.length + 1);
     var marked2 = new Array(str2.length + 1);
@@ -238,7 +242,7 @@ function visualize4d(str1, str2, ps) {
     }
 
 
-    return (res);
+    return res;
 }
 
 

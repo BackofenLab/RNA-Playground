@@ -503,7 +503,7 @@ DPAlgorithm_hybrid.Tables[0].computeCell  = function(i, k, j, l) {
 DPAlgorithm_hybrid.computeMatrix = function(input) {
     var splitSeq = input.sequence().indexOf('X');
     var sequence1 = input.sequence().substr(0,splitSeq);
-    var sequence2 = input.sequence().substr(parseInt(input.loopLength())+splitSeq + 1).split("");//.reverse().join("");
+    var sequence2 = input.sequence().substr(parseInt(input.loopLength())+splitSeq + 1);//.reverse().join("");
 
     console.log(sequence1, sequence2);
     this.Tables[0].init(sequence1, sequence2, "RNAHybrid");
@@ -640,7 +640,7 @@ var wuchty4d = function (xmat) {
                 //var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
                 // TODO(mohsin): xmat.conv_str(P), pass it scripts.visualize4d
                 console.log('visualize4d', visualize4d(xmat.sequence1, xmat.sequence2, P));
-                var temp_sos = {structure: xmat.conv_str(P), traces: traces, rep4d: visualize4d(xmat.sequence1, xmat.sequence2, P)};
+                var temp_sos = {structure: xmat.conv_str(P), traces: traces, rep4d: repres(visualize4d(xmat.sequence1, xmat.sequence2, P))};
                 console.log("structures:", P);
                 console.log("structures parsed:", xmat.conv_str(P));
                 console.log('pushing: ', temp_sos);
