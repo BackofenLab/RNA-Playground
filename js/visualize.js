@@ -180,6 +180,8 @@ function NussinovMatrixViewModel() {
         console.log('input:', self.input.sequence(), self.input.loopLength(), self.input.delta(), self.input.recursion());
 
         var tables = self.formula().computeMatrix(self.input);
+
+        $("#4dVisual").text("");
         console.log("matrix compute");
         if (self.input.recursion() === "mcCaskill") {
             $("#paired_dotplot").html(dotplot(self.input.sequence(), tables[2].cells, 'pd'));
@@ -257,6 +259,7 @@ function NussinovMatrixViewModel() {
         if(color >= colors.length-1) color = 0;
         console.log(clicked_cell);
         $('td#structTableCells').css({'background': '#FFF'});
+        $("#4dVisual").text("");
         $("#4dVisual").text(clicked_cell.rep4d);
         $(dom.target).css({'background': colors[color]});
 
