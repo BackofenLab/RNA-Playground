@@ -56,14 +56,13 @@ function matrixToCSV(sequence, matrices) {
 
     var sequence_column = true;
     var res = "";
-    console.log((matrices));
+    //console.log((matrices));
     for (var idx in matrices)
     {
         if (res.length != 0) {
             res += "\n\n";
         }
         var matrix = matrices[idx];
-        console.log(matrix);
 
         if (sequence_column)
             res += ",";
@@ -86,9 +85,9 @@ function matrixToCSV(sequence, matrices) {
             res += "\n";
         }
     }
-    console.log(csv);
+    //console.log(csv);
     csv = res;
-    //return res;
+    return res;
 }
 
 
