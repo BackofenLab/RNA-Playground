@@ -181,7 +181,7 @@ var NussinovMatrix4d = {
      * @param l the end index of string2
      * @returns {boolean}
      */
-    isBaseCase: function(i, k, j, l) {
+    isInvalidState: function(i, k, j, l) {
         if (i < 0 || j < 0 || k < 0 || l < 0 || k < i || l < j ||
             k > this.sequence1.length || l > this.sequence2.length) {
             return true;
@@ -218,7 +218,7 @@ var NussinovMatrix4d = {
      */
     getCell: function (i, k, j, l) {
         // check border cases
-        if (this.isBaseCase(i, k, j, l)) {
+        if (this.isInvalidState(i, k, j, l)) {
             return null;
         }
         if (this.cells[i][k][j][l] === null || this.cells[i][k][j][l].value === null) {
@@ -388,8 +388,8 @@ DPAlgorithm_hybrid.Tables[0].computeCell = function(i, k, j, l) {
     var curCell = Object.create(NussinovCell4d).init(i, k, j, l, 0);
 
     // TODO(mostafa): Check i,j <= 0 or i,j < 0
-    if (i <= 0 || j <= 0 || this.isBaseCase(i, k, j, l)) {
-    //if (this.isBaseCase(i, k, j, l)) {
+    if (i <= 0 || j <= 0 || this.isInvalidState(i, k, j, l)) {
+    //if (this.isInvalidState(i, k, j, l)) {
         return curCell;
     }
     // TODO(mostafa): Check the indices of this condition
@@ -446,7 +446,7 @@ DPAlgorithm_rnaup.Tables[0].computeCell = function(i, k, j, l) {
 
     var curCell = Object.create(NussinovCell4d).init(i, k, j, l, 0);
 
-    if (this.isBaseCase(i, k, j, l)) {
+    if (this.isInvalidState(i, k, j, l)) {
         return curCell;
     }
     // I[i1,j1,i2,j2] = Ebp*H[i1,j1,i2,j2] -RT*ln(P^u_1) -RT*ln(P^u_2)
@@ -473,14 +473,14 @@ DPAlgorithm_rnaup.computeMatrix = function(input) {
     this.Tables[1].getRecursionInLatex = NussinovDPAlgorithm_McCaskill.Tables[3].getRecursionInLatex;
     this.Tables[1].getCell = NussinovDPAlgorithm_McCaskill.Tables[3].getCell;
     this.Tables[1].getValue = NussinovDPAlgorithm_McCaskill.Tables[3].getValue;
-    this.Tables[1].isBaseCase = NussinovDPAlgorithm_McCaskill.Tables[3].isBaseCase;
+    this.Tables[1].isInvalidState = NussinovDPAlgorithm_McCaskill.Tables[3].isInvalidState;
     
     NussinovDPAlgorithm_McCaskill.computeMatrix({sequence: function(){return sequence2;}, loopLength: input.loopLength, energy: input.energy, energy_normal: input.energy_normal});
     this.Tables[2] = JSON.parse(JSON.stringify(NussinovDPAlgorithm_McCaskill.Tables[3]));
     this.Tables[2].getRecursionInLatex = NussinovDPAlgorithm_McCaskill.Tables[3].getRecursionInLatex;
     this.Tables[2].getCell = NussinovDPAlgorithm_McCaskill.Tables[3].getCell;
     this.Tables[2].getValue = NussinovDPAlgorithm_McCaskill.Tables[3].getValue;
-    this.Tables[2].isBaseCase = NussinovDPAlgorithm_McCaskill.Tables[3].isBaseCase;
+    this.Tables[2].isInvalidState = NussinovDPAlgorithm_McCaskill.Tables[3].isInvalidState;
     
     
     this.Tables[0].init(sequence1, sequence2, "RNAup");
@@ -533,7 +533,7 @@ var wuchty4d = function (xmat, maxSOS) {
 
             var sigma_remaining = 0;
             for (var s in sigma) {
-                if (!xmat.isBaseCase(sigma[s][0], sigma[s][1], sigma[s][2], sigma[s][3])) sigma_remaining++;
+                if (!xmat.isInvalidState(sigma[s][0], sigma[s][1], sigma[s][2], sigma[s][3])) sigma_remaining++;
             }
             if (sigma.length == 0 || sigma_remaining == 0) {
                 var temp_sos = {structure: xmat.conv_str(P), traces: traces, rep4d: repres(visualize4d(xmat.sequence1, xmat.sequence2, P))};
@@ -544,7 +544,7 @@ var wuchty4d = function (xmat, maxSOS) {
                 }
             } else {
                 var idx = sigma.pop();
-                if (xmat.isBaseCase(idx[0], idx[1], idx[2], idx[3])) {
+                if (xmat.isInvalidState(idx[0], idx[1], idx[2], idx[3])) {
                     pop_R.traces = traces;
                     R.push(pop_R);
                     continue;

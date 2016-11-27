@@ -192,7 +192,7 @@ var NussinovMatrix = {
      * @param j column #
      * @returns {boolean}
      * */
-    isBaseCase: function(i, j) {
+    isInvalidState: function(i, j) {
         if (i < 0 || j < 0 || i > this.seq_length || j > this.seq_length || i > j + 1) {
             return true;
         } else {
@@ -224,7 +224,7 @@ var NussinovMatrix = {
      */
     getCell: function (i, j) {
         // check border cases {
-        if (this.isBaseCase(i, j)) {
+        if (this.isInvalidState(i, j)) {
             return null;
         }
         if (this.cells[i][j] === null || this.cells[i][j].value == null) {
@@ -439,9 +439,9 @@ var NussinovMatrix = {
  *  * Create the DPAlgorithm instance
  *  * Create new Tables Array, and push the needed tables(NussinovMatrix/NussinovMatrix4d)
  *  * Override latex_representation for each table.
- *  * Override computeCell for each table, and/or isBaseCase, and/or updateCell (In case of storing traceback)
+ *  * Override computeCell for each table, and/or isInvalidState, and/or updateCell (In case of storing traceback)
  *      * Remember to use getCell/getValue instead of accessing the cell directly, to preserve the memoization.
- *      * If a given state satisfies isBaseCase, then it should return an invalid default value. Like INF in
+ *      * If a given state satisfies isInvalidState, then it should return an invalid default value. Like INF in
  *        minimization algorithms, 0 in counting algorithms, and -INF in maximization algorithms.
  *  * Override getSubstructures (In case of computing tracebacks)
  *  * Override ComputeMatrix, which is the main interface for computing all the tables.
@@ -498,7 +498,7 @@ NussinovDPAlgorithm_Ambiguous.Tables[0].computeCell = function(i, j) {
 
     var curCell = Object.create(NussinovCell).init(i, j, 0);
 
-    if (this.isBaseCase(i, j)) {
+    if (this.isInvalidState(i, j)) {
         return curCell;
     }
     // i unpaired
@@ -719,7 +719,7 @@ NussinovDPAlgorithm_Unique.Tables[0].computeCell = function(i, j) {
 
     var curCell = Object.create(NussinovCell).init(i, j, 0);
 
-    if (this.isBaseCase(i, j)) {
+    if (this.isInvalidState(i, j)) {
         return curCell;
     }
     // j unpaired
@@ -860,7 +860,7 @@ NussinovDPAlgorithm_Ambiguous2.Tables[0].computeCell = function(i, j) {
 
     var curCell = Object.create(NussinovCell).init(i, j, 0);
 
-    if (this.isBaseCase(i, j)) {
+    if (this.isInvalidState(i, j)) {
         console.log("base ", i, j);
 
         return curCell;
@@ -1069,7 +1069,7 @@ NussinovDPAlgorithm_structuresCount.Tables[0].computeCell = function (i, j) {
 
     var curCell = Object.create(NussinovCell).init(i, j, 0);
 
-    if (this.isBaseCase(i, j)) {
+    if (this.isInvalidState(i, j)) {
         return curCell;
     }
     if (i >= j) {
@@ -1301,7 +1301,7 @@ DPAlgorithm_MEA.Tables[0].updateCell = function (curCell, curVal, curAncestor) {
 DPAlgorithm_MEA.Tables[0].computeCell = function(i, j) {
 
     var curCell = Object.create(NussinovCell).init(i, j, 0);
-    if (this.isBaseCase(i, j) || i > j) {
+    if (this.isInvalidState(i, j) || i > j) {
         return curCell;
     }
 
