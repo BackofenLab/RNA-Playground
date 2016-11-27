@@ -4,13 +4,12 @@
  -Matrix class
  -Nussinov algorithms
  -Traceback algorithms
- * @authors "Martin Mann", "Syed Mohsin Ali".
+ * @authors "Mostafa Mahmoud Mohamed", "Syed Mohsin Ali", "Martin Mann"
  */
 "use strict";
 
 /**
  * Utility class that covers RNA specific functions.
- *
  */
 var RnaUtil = {
 
@@ -41,8 +40,42 @@ var RnaUtil = {
             && sequence.match("^[ACGU]+$");
         return isValid;
     }
+};
 
 
+/**
+ * data stored within a cell of a nussinov matrix
+ */
+var NussinovCell = {
+
+// row
+    i: -1,
+
+// column
+    j: -1,
+
+// value
+    value: null,
+
+// traces for the current value
+    traces: null,
+
+    /**
+     * Initialize a cell with the given data and sets traces to an empty list
+     * @param i the row of the cell
+     * @param j the column of the cell
+     * @param value the value of the cell
+     * @return this : cell access for chaining
+     */
+    init: function (i, j, value) {
+        // init data
+        this.i = i;
+        this.j = j;
+        this.value = value;
+        this.traces = [];
+        // this access for chaining
+        return this;
+    }
 };
 
 
@@ -76,473 +109,378 @@ var NussinovCellTrace = {
         this.bps = bps;
         return this;
     }
-
-
 };
 
-/**
- * data stored within a cell of a nussinov matrix
- */
-var NussinovCell = {
-
-// row
-    i: -1,
-
-// column
-    j: -1,
-
-// value
-    value: null,
-
-// traces for the current value
-    traces: null,
-
-    /**
-     * inits a cell with the given data and sets traces to an empty list
-     * @param i the row of the cell
-     * @param j the column of the cell
-     * @param value the value of the cell
-     * @return this : cell access for chaining
-     */
-    init: function (i, j, value) {
-        // init data
-        this.i = i;
-        this.j = j;
-        this.value = value;
-        this.traces = [];
-        // this access for chaining
-        return this;
-    }
-
-};
 
 /**
- * Encodes a full/partial traceback for a given cell
- */
-var Traceback = {
-
-    /** structure in dot-bracket-notation */
-    structure: "",
-    /** list of cell traces of the form [source, parent1, parent2, ...] */
-    traces: [],
-    //partialStructure: [],
-
-};
-
-/**
- * Nussinov matrix object
+ * Nussinov matrix object, stores Sequence and Table. Contains all the utility functionalities for the tables.
  */
 var NussinovMatrix = {
 
-        /**
-         * Access to the sequence for this matrix
-         */
-        sequence: null,
+    /**
+     * Access to the sequence for this matrix
+     */
+    sequence: null,
 
-        /**
-         * Sequence length
-         * */
-        seq_length: 0,
+    /**
+     * Sequence length
+     * */
+    seq_length: 0,
 
-        /**
-         * Access name of recursion used
-         */
-        name: null,
+    /**
+     * Access name of recursion used
+     */
+    name: null,
 
-        /**
-         * Minimal loop length within computation
-         */
-        minLoopLength: 0,
+    /**
+     * Minimal loop length within computation
+     */
+    minLoopLength: 0,
 
-        /**
-         * cells of the matrix
-         */
-        cells: [],
+    /**
+     * cells of the matrix
+     */
+    cells: [],
 
-        /**
-         * The latex representation of the formula computing the matrix.
-         */
-        latex_representation: "$$",
+    /**
+     * The latex representation of the formula computing the matrix.
+     */
+    latex_representation: "$$",
 
-        /**
-         * The table description
-         */
-        descripion: "default description",
+    /**
+     * The dimensions of the matrix.
+     * */
+    tablesDimension: 2,
 
-        /**
-         * Tracebacks allowance
-         */
-        allowTraceBack: true,
+    /**
+     * initialize a matrix of dim = (n + 1) x n, where n is the length of the provided sequence
+     * @param {string} sequence the RNA sequence (not null or empty)
+     * @returns {NussinovMatrix} this
+     */
+    init: function(sequence, name) {
+        // reset data
+        this.sequence = null;
+        this.name = null;
+        this.cells = [];
 
-        /**
-         * The dimensions of the matrix.
-         * */
-        tablesDimension: 2,
-
-        /**
-         * initialize a matrix of dim = n+1 with indices 0..n, where n is the
-         * length of the provided sequence
-         * @param {string} sequence the RNA sequence (not null or empty)
-         * @returns {NussinovMatrix} this
-         */
-        init: function(sequence, name) { //initialize matrix
-
-            // reset data
-            this.sequence = null;
-            this.name = null;
-            this.cells = [];
-
-            // check input
-            if (sequence == null || sequence === "" || name == null) {
-                console.log("Matrix init failed for sequence (", sequence, ")");
-                return this;
-            }
-
-            // store sequence
-            this.sequence = sequence;
-            this.name = name;
-            this.seq_length = sequence.length;
-
-            // create matrix cells
-            for (var i = 0; i <= this.seq_length; i++) {
-                this.cells[i] = [];
-                for (var j = 0; j <= this.seq_length; j++) {
-                    // create new cell and initialize
-                    if (this.name === "RNAHybrid") {
-                        // TODO: This case should be deleted.
-                        this.cells[i][j] = [];
-                        for (var k = 0; k <= this.seq_length; ++k) {
-                            this.cells[i][j][k] = [];
-                            for (var r = 0; r <= this.seq_length; ++r) {
-                                this.cells[i][k][j][l] = Object.create(NussinovCell).init(i, j, null);
-                            }
-                        }
-                    }
-                    console.log("initializing matrix", this.name, this.sequence);
-                    if (this.name === "unique" || this.name === "ambiguous" || this.name === "Ambiguous2" || this.name === "coFold") {
-
-                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
-                    }
-                    else {
-                        this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
-                    }
-                }
-                ;
-            }
-            ;
-
+        // check input
+        if (sequence == null || sequence === "" || name == null) {
+            console.log("Matrix init failed for sequence (", sequence, ")");
             return this;
         }
-        ,
 
-        /**
-         * Is base case.
-         * */
-        isBaseCase: function(i, j) {
-            //if (i < 0 || j < 0 || i >= this.getDim() || j >= this.getDim() || i > j + 1)
-            if (i < 0 || j < 0 || i > this.seq_length || j > this.seq_length || i > j + 1) {
-                return true;
-            } else {
-                return false;
+        // store sequence
+        this.sequence = sequence;
+        this.name = name;
+        this.seq_length = sequence.length;
+
+        // create matrix cells
+        for (var i = 0; i <= this.seq_length; i++) {
+            this.cells[i] = [];
+            for (var j = 0; j <= this.seq_length; j++) {
+                // create new cell and initialize
+                this.cells[i][j] = Object.create(NussinovCell).init(i, j, null);
             }
-
-        },
-
-
-        computeCell: function(i, j) {
-           // updateCell(i, j);
-        },
-
-        /**
-         * access whole object at cell location (i,j) in matrix
-         * @param {int} i row #.
-         * @param {int} j column #.
-         * @returns {NussinovCell} cell object or null if not available
-         */
-        getCell: function (i, j) {
-            // check border cases {
-            if (this.isBaseCase(i, j)) {
-                return null;
-            }
-            if (this.cells[i][j] === null || this.cells[i][j].value == null) {
-                this.cells[i][j] = this.computeCell(i, j);
-            }
-            return this.cells[i][j];
         }
-        ,
 
-        /**
-         * Gives the dimension of the quadratic matrix
-         * @returns {int} the dimension (#rows and columns)
-         */
-        getDim: function () {
-            if (this.cells === null) {
-                return 0;
-            }
-            return this.cells.length;
+        return this;
+    },
+
+    /**
+     * Check if a given tuple is an invalid state or not
+     * @param i row #
+     * @param j column #
+     * @returns {boolean}
+     * */
+    isBaseCase: function(i, j) {
+        if (i < 0 || j < 0 || i > this.seq_length || j > this.seq_length || i > j + 1) {
+            return true;
+        } else {
+            return false;
         }
-        ,
+    },
 
-        /**
-         * returns traces of cell (i,j), i.e. ancestor cells and the basepairs they form
-         * @param {int} i row #.
-         * @param {int} j column #.
-         * @returns {object} ancestor's object Eg. {parents:[],bPs:[]} or null if not available
-         */
-        getTraces: function (i, j) { //get traceback info for each cell
-            // access cell at location (i,j) in the matrix
-            var cell = this.getCell(i, j);
-            // check if valid cell
-            if (cell === null) {
-                return null;
-            }
-            return cell.traces;
-        },
+    /**
+     * Compute the cell at a given state in the matrix.
+     * It's recommended to make the implementation use the method "updateCell",
+     * if it's computing the tracebacks in an optimization problem.
+     * TODO: this function has to be overwritten by the instances, before calling computeMatrix/computeAllCells
+     * @param i row #
+     * @param j column #
+     * @returns {NussinovCell}  The computed cell.
+     */
+    computeCell: function(i, j) {
+       // updateCell(i, j);
+        return Object.create(NussinovCell).init(i, j, null);
+    },
 
-        /**
-         * access value of cell at location (i,j) in matrix, and compute it if it's not computed.
-         * @param {int} i row #.
-         * @param {int} j column #.
-         * @returns {int} cell value or 0 if invalid cell
-         */
-        getValue: function (i, j) {
-            // access cell at location (i,j) in the matrix
-            var cell = this.getCell(i, j);
-            if (cell === null) {
-                return null;
-            }
-            // check if invalid cell
-            /*
-            if (cell.value === null) {
-                cell.value = this.computeValue(i, j);
-            }
-            */
-            // get cell value
-            return parseFloat(cell.value);
+    /**
+     * Access a cell at a given state in the matrix. If the cell is null or has no value,
+     * then it will be computed using the "computeCell" method.
+     * TODO: Implement computeCell
+     * @param i row #
+     * @param j column #
+     * @returns {NussinovCell}  The cell or null if it's an invalid state
+     */
+    getCell: function (i, j) {
+        // check border cases {
+        if (this.isBaseCase(i, j)) {
+            return null;
         }
-        ,
+        if (this.cells[i][j] === null || this.cells[i][j].value == null) {
+            this.cells[i][j] = this.computeCell(i, j);
+        }
+        return this.cells[i][j];
+    },
 
-        /**
-         * Updates the ancestor list of a given cell if the curVal is higher or
-         * equal to the current value within the cell.
-         * If the value is equal, curAncestor is added to the list.
-         * If the value is smaller than curVal, curAncestor will be set to be the
-         * only list entry.
-         * @param i the row of the cell to update
-         * @param j the column of the cell to update
-         * @param curAncestor
-         */
-        updateCell: function (curCell, curAncestor) {
-            // get cell to update
-            //var curCell = this.getCell(i, j);
-            // check if something to update
-            if (curCell === null) {
-                return;
-            }
+    /**
+     * returns traces of cell (i,j), i.e. ancestor cells and the basepairs they form
+     * @param {int} i row #.
+     * @param {int} j column #.
+     * @returns {object} ancestor's object Eg. {parents:[],bPs:[]} or null if not available
+     */
+    getTraces: function (i, j) { //get traceback info for each cell
+        // access cell at location (i,j) in the matrix
+        var cell = this.getCell(i, j);
+        // check if valid cell
+        if (cell === null) {
+            return null;
+        }
+        return cell.traces;
+    },
 
-            // init value with number of additional base pairs
-            var curVal = curAncestor.bps.length;
-            // add scores of ancestor cells
-            for (var x = 0; x < curAncestor.parents.length; x++) {
-                curVal += this.getValue(curAncestor.parents[x][0], curAncestor.parents[x][1]);
+    /**
+     * Access the value at a given state in the matrix. If the cell is null or has no value,
+     * then the cell will be computed using the "computeCell" method.
+     * TODO: Implement computeCell
+     * @param i row #
+     * @param j column #
+     * @returns {float} Cell value or null if invalid cell
+     */
+    getValue: function (i, j) {
+        var cell = this.getCell(i, j);
+        if (cell === null) {
+            return null;
+        }
+        return parseFloat(cell.value);
+    },
+
+    /**
+     * Updates the ancestor list of a given cell if the curVal is higher or
+     * equal to the current value within the cell.
+     * If the value is equal, curAncestor is added to the list.
+     * If the value is smaller than curVal, curAncestor will be set to be the
+     * only list entry.
+     * TODO: this function can be overwritten by the instances
+     * @param curCell The current cell to be updated.
+     * @param curAncestor A list of the 4dTraces of the tracebacks at this state.
+     */
+    updateCell: function (curCell, curAncestor) {
+        // check if something to update
+        if (curCell === null) {
+            return;
+        }
+
+        // init value with number of additional base pairs
+        var curVal = curAncestor.bps.length;
+        // add scores of ancestor cells
+        for (var x = 0; x < curAncestor.parents.length; x++) {
+            curVal += this.getValue(curAncestor.parents[x][0], curAncestor.parents[x][1]);
+        }
+        // check if we have to update
+        if (curCell.value <= curVal) {
+            // check for new maximal value
+            if (curCell.value < curVal) {
+                // reset ancestor list
+                curCell.traces = [];
+                // store new maximum
+                curCell.value = curVal;
             }
-            // check if we have to update
-            if (curCell.value <= curVal) {
-                // check for new maximal value
-                if (curCell.value < curVal) {
-                    // reset ancestor list
-                    curCell.traces = [];
-                    // store new maximum
-                    curCell.value = curVal;
+            // store this ancestor
+            curCell.traces.push(curAncestor);
+        }
+    },
+
+    /**
+     * Compute all the cells of the matrix.
+     * TODO: Implement computeCell
+     */
+    computeAllCells: function() {
+        for (var i = 0; i <= this.seq_length; ++i) {
+            for (var j = 0; j <= this.seq_length; ++j) {
+                this.getCell(i, j);
+            }
+        }
+    },
+
+
+    /**
+     * Fills the matrix according to the recursion.
+     * TODO: Implement computeCell
+     * TODO: this function has to be overwritten by the instances.
+     *
+     * @param {input} A Dictionary of the input for the matrix. Should contain all the arguments
+     *                needed for initalizing the matrix input properly. Minimally this will be the sequence.
+     * @returns {NussinovMatrix} this for call chaining
+     */
+    computeMatrix: function (input) {
+        console.log("WARNING: computeMatrix() not implemented in NussinovMatrix superclass; overwrite in subclass!");
+
+        // resize and init matrix
+        this.init(input.sequence(), "Default name");
+
+        // set minimal loop length
+        this.minLoopLength = parseInt(input.loopLength());
+
+        this.computeAllCells();
+
+        return this;
+    },
+
+    /**
+     * Access to the recursion's representation in LaTeX, that is used in by this matrix.
+     * @returns {string} latex encoding of the recursion
+     */
+    getRecursionInLatex: function () {
+        return "$$" + this.latex_representation + "$$";
+    },
+
+    /**
+     * creates a string representation of the matrix
+     * @returns {string} matrix as string
+     */
+    toString: function () {
+        var str = this.minLoopLength + "    ";
+        for (var i = 0; i < this.seq_length; i++) {
+            str += this.sequence[i] + "  ";
+        }
+        str += "\n";
+        for (var i = 1; i <= this.seq_length; i++) {
+            // print sequence
+            str += this.sequence[i - 1] + " ";
+            // print values
+            for (var j = 0; j <= this.seq_length; j++) {
+                if (j !== 0) {
+                    str += ", ";
                 }
-                // store this ancestor
-                curCell.traces.push(curAncestor);
-            }
-        },
-
-        /**
-         * Compute all the cells of the matrix.
-         */
-        computeAllCells: function() {
-            for (var i = 0; i <= this.seq_length; ++i) {
-                for (var j = 0; j <= this.seq_length; ++j) {
-                    this.getCell(i, j);
-                }
-            }
-        },
-
-        /**
-         * Fills the matrix according to the recursion.
-         *
-         * NOTE: this function has to be overwritten by subclasses
-         *
-         * @param {string} sequence the RNA sequence to compute the matrix for
-         * @param {int} minLoopLength the minimal loop length to be used for computation
-         *
-         * @returns {NussinovMatrix} this for call chaining
-         */
-        computeMatrix: function (input) {
-            console.log("WARNING: computeMatrix() not implemented in NussinovMatrix superclass; overwrite in subclass!");
-
-            // resize and init matrix
-            this.init(input.sequence(), "Default name");
-
-            // set minimal loop length
-            this.minLoopLength = parseInt(input.loopLength());
-
-            this.computeAllCells();
-
-            return this;
-        }
-        ,
-
-        /**
-         * Access to the recursion in LaTeX encoding that is used in the computeMatrix implementation
-         *
-         * NOTE: this function has to be overwritten by subclasses
-         *
-         * @returns {string} latex encoding of the recursion
-         */
-        getRecursionInLatex: function () {
-            console.log("WARNING: getRecursionInLatex() not implemented in NussinovMatrix superclass; overwrite in subclass!");
-            return "$$" + this.latex_representation + "$$";
-        }
-        ,
-
-        /**
-         * Returns a description for the implemented recursion
-         *
-         * NOTE: this function has to be overwritten by subclasses
-         *
-         * @returns {string} description of the recursion
-         */
-        getRecursionDescription: function () {
-            console.log("WARNING: getRecursionDescription() not implemented in NussinovMatrix superclass; overwrite in subclass!");
-            return "";
-        }
-        ,
-
-        /**
-         * creates a string representation of the matrix
-         * @returns {string} matrix as string
-         */
-        toString: function () {
-            var str = this.minLoopLength + "    ";
-            for (var i = 0; i < this.seq_length; i++) {
-                str += this.sequence[i] + "  ";
+                str += this.getValue(i, j);
             }
             str += "\n";
-            for (var i = 1; i < this.getDim(); i++) {
-                // print sequence
-                if (i === 0) {
-                    str += "  ";
-                } else {
-                    str += this.sequence[i - 1] + " ";
-                }
-                // print values
-                for (var j = 0; j < this.getDim(); j++) {
-                    if (j !== 0) {
-                        str += ", ";
-                    }
-                    // get value
-                    str += this.getValue(i, j);
-                }
-                ;
-                str += "\n";
-            }
-            ;
-            return str;
         }
-        ,
+        return str;
+    },
 
 
-        /**
-         * countBasepairs(for wuchty)
-         */
-        countBasepairs: function (bps, sigma) {
-            var NSprime = bps.length;
-            for (var s in sigma) {
-                var i = sigma[s][0];
-                var j = sigma[s][1];
+    /**
+     * countBasepairs(for wuchty)
+     */
+    countBasepairs: function (bps, sigma) {
+        var NSprime = bps.length;
+        for (var s in sigma) {
+            var i = sigma[s][0];
+            var j = sigma[s][1];
 
-                NSprime += this.getValue(i, j);
+            NSprime += this.getValue(i, j);
+        }
+        return NSprime;
+    },
+
+    /**
+     * Construct a one string representing the matching base pairs in the sequence.
+     * @param x A list of pairs of indices, that represent the matching base pairs.
+     * @returns {string} A representation of the matching base pairs in the matching.
+     */
+    conv_str: function (x, length) {
+        var str = "";
+        for (var l = 0; l < length; l++) {
+            str += ".";
+        }
+        var linked = this.sequence.indexOf("X");
+        if(linked == -1){
+            for (var i in x) {
+                str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length - 1);
+                str = str.substr(0, x[i][1] - 1) + ")" + str.substr(x[i][1], str.length - 1);
             }
-            return NSprime;
-        },
-
-        conv_str: function (x, length) {
-            var str = "";
-            for (var l = 0; l < length; l++) {
-                str += ".";
-            }
-            var linked = this.sequence.indexOf("X");
-            if(linked == -1){
-                for (var i in x) {
+            return str;
+        } else {
+            for (var i in x) {
+                if(x[i][0] <= linked && x[i][1] > linked) {
+                    str = str.substr(0, x[i][0] - 1) + "[" + str.substr(x[i][0], str.length - 1);
+                    str = str.substr(0, x[i][1] - 1) + "]" + str.substr(x[i][1], str.length - 1);
+                }
+                else{
                     str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length - 1);
                     str = str.substr(0, x[i][1] - 1) + ")" + str.substr(x[i][1], str.length - 1);
+
                 }
-                return str;
             }
-            else{
-                for (var i in x) {
-                    if(x[i][0] <= linked && x[i][1] > linked) {
-                        str = str.substr(0, x[i][0] - 1) + "[" + str.substr(x[i][0], str.length - 1);
-                        str = str.substr(0, x[i][1] - 1) + "]" + str.substr(x[i][1], str.length - 1);
-                    }
-                    else{
-                        str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length - 1);
-                        str = str.substr(0, x[i][1] - 1) + ")" + str.substr(x[i][1], str.length - 1);
-
-                    }
-                }
-                return str;
-
-            }
-
-        },
+            return str;
+        }
+    },
 
 };
 
 /**
  * Dynamic programming algorithm.
  *
- * DP Algorithms will work by memoization usually. If so, there's a function getValue for each of the tables, that
+ * DP Algorithms will work by memoization usually. If so, there's a function getCell/getValue for each of the tables,
  * that computes a value and memoize it if it's not computed(default null cells), and returns the memoized value.
  *
- * The computation is done through the computeValue in each of the tables, this function should be overriden for each
+ * The computation is done through the computeCell in each of the tables, this function should be overriden for each
  * table depending on how an entry in the table is computed. The function should include the base case, and should use
  * the other tables by the getValue function and not by accessing the tables directly, in order to ensure the
  * correctness of the memoization.
  *
  * The tables should be usable after invoking the computeMatrix method, this method should be overriden to set the tables
- * parameters  and compute all the dynamic programming. Unless there's a special way need to do this, it can usually 
- * (with memoization) be done by invoking getValue for all the entries of all the tables.
+ * parameters and compute all the dynamic programming. Unless there's a special way to do this, it can usually
+ * (with memoization) be done by invoking getCell for all the entries of all the tables (or computeAllCells for each table).
+ *
+ * TODO: How To Use:
+ *  * Create the DPAlgorithm instance
+ *  * Create new Tables Array, and push the needed tables(NussinovMatrix/NussinovMatrix4d)
+ *  * Override latex_representation for each table.
+ *  * Override computeCell for each table, and/or isBaseCase, and/or updateCell (In case of storing traceback)
+ *      * Remember to use getCell/getValue instead of accessing the cell directly, to preserve the memoization.
+ *      * If a given state satisfies isBaseCase, then it should return an invalid default value. Like INF in
+ *        minimization algorithms, 0 in counting algorithms, and -INF in maximization algorithms.
+ *  * Override getSubstructures (In case of computing tracebacks)
+ *  * Override ComputeMatrix, which is the main interface for computing all the tables.
+ *      * Can use the instance of other algorithms and clone their tables. (Clone also the needed methods like getCell)
+ *      * Calling computeAllCells for each Table should be sufficient most of the time.
  *
  *
  * @type {{Description: Algorithm description,
  *        Tables: Array of tables for all the recursive formulas,
- *        defaultPars: {}, Parameters that can be fed to the algorithm, when needed. // To Be Removed
  *        computeMatrix: Compute All the Tables
  *        getRecursionInLatex: Get Latex String describing the recursive equations for all the tables.}}
  */
 var DPAlgorithm = {
+    /**
+     * Algorithm description.
+     */
     Description: "Algorithm",
 
+    /**
+     * A list of the Tables NussinovMatrix (or NussinovMatrix4d) for each table used by the DP algorithms.
+     * Note: Create a new array for each instance.
+     */
     Tables: [], // create new array
 
-    defaultPars: {},
+    /**
+     * TODO: Has to be overriden by the instances.
+     * @param input A dictionary of the input arguments.
+     */
+    computeMatrix: function (input) { },
 
-    computeMatrix: function (args_dict) {
-    },
-
-    // Return an aligned latex array that contains the latex formula of each table, (seperated with empty lines).
+    /**
+     * @returns {string} An aligned latex array that contains the latex formula of each table(seperated with empty lines).
+     */
     getRecursionInLatex: function () {
         var formula = " \\begin{array} ";
         for (var i = 0; i < this.Tables.length; ++i) {
             formula += " \\\\ \\\\ " + this.Tables[i].latex_representation;
         }
         formula += " \\end{array} ";
-        //console.log(formula);
         return formula;
     },
 
@@ -565,7 +503,6 @@ NussinovDPAlgorithm_Ambiguous.Tables[0].computeCell = function(i, j) {
     }
     // i unpaired
     this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i + 1, j]], []));
-
 
     // j unpaired
     this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i, j - 1]], []));
@@ -594,7 +531,6 @@ NussinovDPAlgorithm_Ambiguous.computeMatrix = function (input) {
     this.Tables[0].computeAllCells();
 
     return this.Tables;
-
 };
 
 NussinovDPAlgorithm_Ambiguous.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
@@ -1062,22 +998,9 @@ NussinovDPAlgorithm_Ambiguous2.Tables[0].getSubstructures = function (sigma, P, 
         }
 
     }
-
     console.log("returning R:", JSON.stringify(R));
     return R;
-}
-;
-
-/**
- * WUCHTY(2nd version) enumerating up to 10 structures
- */
-function wuchty_2nd(xmat, delta, formula) {
-    console.log("entering wuchty");
-    // get maximal number of structures to report
-    var maxSOS = 10;
-    // call subroutine
-    return wuchty_2nd_limited(xmat, delta, formula, maxSOS);
-}
+};
 
 /**
  * WUCHTY(2nd version)
@@ -1095,34 +1018,23 @@ function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
     var loop = 0;
 
     while (R.length != 0) {
-        //console.log("\nloop:", ++loop);
-        //console.log("R length:" + R.length);
-
         // Pop R
         var pop_R = R.pop();
         var sigma = pop_R.sigma;
         var P = pop_R.P;
         var t_traces = JSON.stringify(pop_R.traces);
         var traces = JSON.parse(t_traces);
-        //console.log("poped R:", JSON.stringify(pop_R));
-        //console.log("R_remaining:", JSON.stringify(R));
 
         var sigma_remaining = 0;
-        for (var s in sigma) {//console.log("var s:", sigma[s]);
+        for (var s in sigma) {
             // TODO(mostafa): Check the base case condition
             if ((sigma[s][0]) <= (sigma[s][1] - xmat.minLoopLength)) sigma_remaining++;
-            //if (!xmat.isBaseCase(sigma[s][0], sigma[s][1])) sigma_remaining++;
         }
 
         if (sigma.length == 0 || sigma_remaining == 0) {
-            //console.log("no more structs in poped R");
             var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
             SOS.push(temp_sos);
-
-            //console.log("pushed SOS:", JSON.stringify(SOS));
-        }
-
-        else {
+        } else {
             //console.log(formula);
             // compute maximal number of structures still to compute
             var maxLengthR = maxSOS - SOS.length;
@@ -1135,15 +1047,10 @@ function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
         // check if enough structures found so far
         if (SOS.length >= maxSOS)
             break;
-        //console.log("R:", JSON.stringify(R));
 
     }
-    //console.log("SOS:", JSON.stringify(SOS));
-    //console.log("\nwuchty end");
-    //console.log(SOS);
     return SOS;
-}
-;
+};
 
 
 /** Nussinov Structures Count*/
@@ -1283,10 +1190,10 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeCell = function(i, j) {
 
                 var v = this.getValue(p, q) * NussinovDPAlgorithm_McCaskill.Tables[1].getValue(i, j);
                 if (p + 1 < i) {
-                    v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(p + 1, i - 1)
+                    v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(p + 1, i - 1);
                 }
                 if (j + 1 < q) {
-                    v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(j + 1, q - 1)
+                    v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(j + 1, q - 1);
                 }
                 // weight of base pair p, q
                 v *= Math.exp(this.energy_basepair);
@@ -1298,7 +1205,6 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeCell = function(i, j) {
     curCell.value = ret;
     return curCell;
 };
-
 
 // Probability that i, j is unpaired.
 // Pu(i, j) = Q(1, i - 1) * 1 * Q(j + 1, n) / Q(1, n) + sum[p,q]{Pbn[p,q] * Q[p+1,i-1]*Q[j+1,q-1]*exp(-e)/Qb[p,q]}
@@ -1341,7 +1247,6 @@ NussinovDPAlgorithm_McCaskill.Tables[3].computeCell = function(i, j) {
     return curCell;
 };
 
-// Invoking getValue for all tables, so that the Dynamic Programming computes all the tables and memoizes them.
 NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
     this.Tables[0].init(input.sequence(), "McCaskill");
     this.Tables[1].init(input.sequence(), "McCaskill Base");
@@ -1366,7 +1271,6 @@ NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
 };
 
 
-
 var DPAlgorithm_MEA = Object.create(DPAlgorithm);
 
 DPAlgorithm_MEA.Description = "Maximum Expected Accuracy";
@@ -1389,14 +1293,11 @@ DPAlgorithm_MEA.Tables[0].updateCell = function (curCell, curVal, curAncestor) {
             // store new maximum
             curCell.value = curVal;
         }
-        ;
         // store this ancestor
         curCell.traces.push(curAncestor);
     }
-    ;
-
 }
-// "{"parents":[[2,1]],"bps":[[1,2]]}"
+
 DPAlgorithm_MEA.Tables[0].computeCell = function(i, j) {
 
     var curCell = Object.create(NussinovCell).init(i, j, 0);
@@ -1417,7 +1318,6 @@ DPAlgorithm_MEA.Tables[0].computeCell = function(i, j) {
     return curCell;
 };
 
-
 // TODO: Check base case
 DPAlgorithm_MEA.Tables[2].computeCell = function(i, j) {
 
@@ -1437,7 +1337,6 @@ DPAlgorithm_MEA.Tables[2].computeCell = function(i, j) {
     return curCell;
 };
 
-
 DPAlgorithm_MEA.computeMatrix = function(input) {
     
     NussinovDPAlgorithm_McCaskill.computeMatrix(input);
@@ -1456,7 +1355,6 @@ DPAlgorithm_MEA.computeMatrix = function(input) {
 
     return this.Tables;
 };
-
 
 DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
     var Nmax = this.getValue(1, this.sequence.length);
@@ -1549,8 +1447,9 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
 
     //console.log("returning R:", JSON.stringify(R));
     return R;
-}
-;
+};
+
+
 
 var DPAlgorithm_coFold = Object.create(DPAlgorithm);
 
@@ -1560,7 +1459,7 @@ DPAlgorithm_coFold.Tables.push(Object.create(NussinovMatrix));
 
 DPAlgorithm_coFold.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D(i,k-1)+D(k+1,j-1)+1 & S_k,S_j \\text{ compl. base pair} \\end{cases}";
 
-// TODO: Check if we need to add minLoopLength.
+// TODO(mostafa): Check if we need to add minLoopLength.
 DPAlgorithm_coFold.computeMatrix = function(input) {
 
     NussinovDPAlgorithm_Unique.computeMatrix(input);
@@ -1573,112 +1472,6 @@ DPAlgorithm_coFold.computeMatrix = function(input) {
 DPAlgorithm_coFold.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
     return NussinovDPAlgorithm_Unique.Tables[0].getSubstructures(sigma, P, traces, delta, maxLengthR);
 };
-
-/**
- * global list of available Nussinov algorithm implementations
- */
-var availableAlgorithms = {
-
-    /** ambiguous recursion */
-    nussinovOriginal: NussinovDPAlgorithm_Ambiguous,//NussinovMatrix_ambiguous,
-
-    /** original unique recursion */
-    nussinovUnique: NussinovDPAlgorithm_Unique,//NussinovMatrix_unique,
-
-    /** nussinov neo recursion */
-    nussinovAmbiguous2: NussinovDPAlgorithm_Ambiguous2,
-
-    /** McCaskill */
-    mcCaskill: NussinovDPAlgorithm_McCaskill,
-
-    /** structure counting */
-    nussinovCounting: NussinovDPAlgorithm_structuresCount,
-
-    /** Maximum Expected Accuracy*/
-    MaxExpAcc: DPAlgorithm_MEA,
-
-    /** Co-fold*/
-    coFold: DPAlgorithm_coFold,
-
-};
-
-
-/**
- * WUCHTY(2nd version) enumerating up to 10 structures
- */
-function wuchty_2nd(xmat, delta, formula) {
-    console.log("entering wuchty");
-    // get maximal number of structures to report
-    var maxSOS = 10;
-    // call subroutine
-    return wuchty_2nd_limited(xmat, delta, formula, maxSOS);
-}
-
-/**
- * WUCHTY(2nd version)
- */
-function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
-    //if (xmat == undefined)return;
-    if (xmat.sequence == undefined)return;
-    var seq_length = xmat.sequence.length;
-    var Nmax = xmat.getValue(1, seq_length);
-    console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
-
-    var S = {sigma: [[1, seq_length]], P: [], traces: []};
-    var R = [S];
-    var SOS = [];
-    var loop = 0;
-
-    while (R.length != 0) {
-        //console.log("\nloop:", ++loop);
-        //console.log("R length:" + R.length);
-
-        // Pop R
-        var pop_R = R.pop();
-        var sigma = pop_R.sigma;
-        var P = pop_R.P;
-        var t_traces = JSON.stringify(pop_R.traces);
-        var traces = JSON.parse(t_traces);
-        //console.log("poped R:", JSON.stringify(pop_R));
-        //console.log("R_remaining:", JSON.stringify(R));
-
-        var sigma_remaining = 0;
-        for (var s in sigma) {//console.log("var s:", sigma[s]);
-            if ((sigma[s][0]) <= (sigma[s][1] - xmat.minLoopLength)) sigma_remaining++;
-        }
-
-        if (sigma.length == 0 || sigma_remaining == 0) {
-            //console.log("no more structs in poped R");
-            var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
-            SOS.push(temp_sos);
-
-            //console.log("pushed SOS:", JSON.stringify(SOS));
-        }
-
-        else {
-            //console.log(formula);
-            // compute maximal number of structures still to compute
-            var maxLengthR = maxSOS - SOS.length;
-            if (maxLengthR < 0) maxLengthR = 0;
-            var R_prime = formula.getSubstructures(sigma, P, traces, delta, maxLengthR);
-            for (var r in R_prime) {
-                R.push(R_prime[r]);
-            }
-        }
-        // check if enough structures found so far
-        if (SOS.length >= maxSOS)
-            break;
-        //console.log("R:", JSON.stringify(R));
-
-    }
-    //console.log("SOS:", JSON.stringify(SOS));
-    //console.log("\nwuchty end");
-    //console.log(SOS);
-    return SOS;
-}
-;
-
-
 
 /**
  * WUCHTY (generic doesnt give subomtimal structures)
@@ -1774,3 +1567,31 @@ var wuchty = function (xmat) {
     }
     return SOS;
 }
+
+/**
+ * global list of available Nussinov algorithm implementations
+ */
+var availableAlgorithms = {
+
+    /** ambiguous recursion */
+    nussinovOriginal: NussinovDPAlgorithm_Ambiguous,//NussinovMatrix_ambiguous,
+
+    /** original unique recursion */
+    nussinovUnique: NussinovDPAlgorithm_Unique,//NussinovMatrix_unique,
+
+    /** nussinov neo recursion */
+    nussinovAmbiguous2: NussinovDPAlgorithm_Ambiguous2,
+
+    /** McCaskill */
+    mcCaskill: NussinovDPAlgorithm_McCaskill,
+
+    /** structure counting */
+    nussinovCounting: NussinovDPAlgorithm_structuresCount,
+
+    /** Maximum Expected Accuracy*/
+    MaxExpAcc: DPAlgorithm_MEA,
+
+    /** Co-fold*/
+    coFold: DPAlgorithm_coFold,
+
+};

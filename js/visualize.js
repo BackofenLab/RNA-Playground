@@ -218,7 +218,7 @@ function NussinovMatrixViewModel() {
             console.log("tb allowed");
 
             if($(rec_select).text()=="hybrid" || $(rec_select).text()=="rnaup") {
-                var res = wuchty4d(self.matrix()[0]);
+                var res = wuchty4d(self.matrix()[0], maxStructures);
                 console.log('wuchty out', res);
                 return res;
             }
