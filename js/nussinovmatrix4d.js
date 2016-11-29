@@ -387,17 +387,14 @@ DPAlgorithm_hybrid.Tables[0].latex_representation = "\\begin{array} \\ D_{i, k}^
 DPAlgorithm_hybrid.Tables[0].computeCell = function(i, k, j, l) {
     var curCell = Object.create(NussinovCell4d).init(i, k, j, l, 0);
 
-    // TODO(mostafa): Check i,j <= 0 or i,j < 0
-    if (i <= 0 || j <= 0 || this.isInvalidState(i, k, j, l)) {
-    //if (this.isInvalidState(i, k, j, l)) {
+    if (this.isInvalidState(i, k, j, l)) {
         return curCell;
     }
-    // TODO(mostafa): Check the indices of this condition
-    if (RnaUtil.areComplementary(this.sequence1[i - 1], this.sequence2[j - 1])) {
+
+    if (RnaUtil.areComplementary(this.sequence1[i - 1], this.sequence2[this.seq2_length - j])) {
         if (i === k && j === l) {
             // Energy init instead of 1
-            //ret = Math.max(ret, 1);
-            this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([], [[i, j]]));
+            this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([], [[i, this.seq2_length + 1 - j]]));
         }
 
         for (var p = i + 1; p <= k; ++p) {
@@ -405,8 +402,7 @@ DPAlgorithm_hybrid.Tables[0].computeCell = function(i, k, j, l) {
                 // Energy loop instead of 1
                 if (this.getValue(p, k, q, l) > 0) {
                     // This basepair can be added only if it encloses a structure.
-                    //ret = Math.max(ret, 1 + this.getValue(p, k, q, l));
-                    this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([[p, k, q, l]], [[i, j]]));
+                    this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([[p, k, q, l]], [[i, this.seq2_length + 1 - j]]));
                 }
             }
         }
