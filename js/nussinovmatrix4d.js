@@ -353,7 +353,7 @@ var NussinovMatrix4d = {
             //str[i - 1] = '(';
             str = str.substr(0, i - 1) + "(" + str.substr(i);
             //str[str.length - j] = ')';
-            str = str.substr(0, str.length - j) + ")" + str.substr(str.length - j + 1);
+            str = str.substr(0, this.seq1_length + 1 + j) + ")" + str.substr(this.seq1_length + 1 + j + 1);
         }
         return str;
     },
@@ -382,22 +382,19 @@ var DPAlgorithm_hybrid = Object.create(DPAlgorithm);
 DPAlgorithm_hybrid.Description = "RNA to RNA matching";
 DPAlgorithm_hybrid.Tables = new Array();
 DPAlgorithm_hybrid.Tables.push(Object.create(NussinovMatrix4d));
-DPAlgorithm_hybrid.Tables[0].latex_representation = "D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases}";
+DPAlgorithm_hybrid.Tables[0].latex_representation = "\\begin{array} \\ D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ E^{init} = 1 \\\\ \\\\ E^{loop}_{i, j, p, q} =  \\begin{cases} 1 & \\text{if }\\mathcal{R}^1_p, \\mathcal{R}^2_q  \\text{  pairs} \\\\ 0 & \\text{otherwise} \\end{cases} \\end{array}";
 
 DPAlgorithm_hybrid.Tables[0].computeCell = function(i, k, j, l) {
     var curCell = Object.create(NussinovCell4d).init(i, k, j, l, 0);
 
-    // TODO(mostafa): Check i,j <= 0 or i,j < 0
-    if (i <= 0 || j <= 0 || this.isInvalidState(i, k, j, l)) {
-    //if (this.isInvalidState(i, k, j, l)) {
+    if (this.isInvalidState(i, k, j, l)) {
         return curCell;
     }
-    // TODO(mostafa): Check the indices of this condition
-    if (RnaUtil.areComplementary(this.sequence1[i - 1], this.sequence2[j - 1])) {
+
+    if (RnaUtil.areComplementary(this.sequence1[i - 1], this.sequence2[this.seq2_length - j])) {
         if (i === k && j === l) {
             // Energy init instead of 1
-            //ret = Math.max(ret, 1);
-            this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([], [[i, j]]));
+            this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([], [[i, this.seq2_length + 1 - j]]));
         }
 
         for (var p = i + 1; p <= k; ++p) {
@@ -405,8 +402,7 @@ DPAlgorithm_hybrid.Tables[0].computeCell = function(i, k, j, l) {
                 // Energy loop instead of 1
                 if (this.getValue(p, k, q, l) > 0) {
                     // This basepair can be added only if it encloses a structure.
-                    //ret = Math.max(ret, 1 + this.getValue(p, k, q, l));
-                    this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([[p, k, q, l]], [[i, j]]));
+                    this.updateCell(curCell, Object.create(NussinovCell4dTrace).init([[p, k, q, l]], [[i, this.seq2_length + 1 - j]]));
                 }
             }
         }
