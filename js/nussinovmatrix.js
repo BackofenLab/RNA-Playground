@@ -398,23 +398,27 @@ var NussinovMatrix = {
         var linked = this.sequence.indexOf("X");
         if(linked == -1){
             for (var i in x) {
-                str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length - 1);
-                str = str.substr(0, x[i][1] - 1) + ")" + str.substr(x[i][1], str.length - 1);
+                str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length);
+                str = str.substr(0, x[i][1] - 1) + ")" + str.substr(x[i][1], str.length);
             }
             return str;
         } else {
             for (var i in x) {
-                if(x[i][0] <= linked && x[i][1] > linked) {
-                    str = str.substr(0, x[i][0] - 1) + "[" + str.substr(x[i][0], str.length - 1);
-                    str = str.substr(0, x[i][1] - 1) + "]" + str.substr(x[i][1], str.length - 1);
+                if(x[i][0]  <= linked && x[i][1] >= linked + 1 + this.minLoopLength) {
+                    str = str.substr(0, x[i][0] - 1) + "[" + str.substr(x[i][0], str.length);
+                    str = str.substr(0, x[i][1] - 1) + "]" + str.substr(x[i][1], str.length);
                 }
                 else{
-                    str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length - 1);
-                    str = str.substr(0, x[i][1] - 1) + ")" + str.substr(x[i][1], str.length - 1);
+                    str = str.substr(0, x[i][0] - 1) + "(" + str.substr(x[i][0], str.length);
+                    str = str.substr(0, x[i][1] - 1) + ")" + str.substr(x[i][1], str.length);
 
                 }
             }
-            str = str.substr(0, linked) + "X" + str.substr(linked + 1, str.length - 1);
+            var st = "";
+            for (var l = 0; l < this.minLoopLength + 1; ++l) {
+                st += "X";
+            }
+            str = str.substr(0, linked) + st + str.substr(linked + this.minLoopLength + 1, str.length);
             return str;
         }
     },
@@ -1460,10 +1464,10 @@ DPAlgorithm_coFold.Tables.push(Object.create(NussinovMatrix));
 
 DPAlgorithm_coFold.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D(i,k-1)+D(k+1,j-1)+1 & S_k,S_j \\text{ compl. base pair} \\end{cases}";
 
-// TODO(mostafa): Check if we need to add minLoopLength.
 DPAlgorithm_coFold.computeMatrix = function(input) {
 
     NussinovDPAlgorithm_Unique.computeMatrix(input);
+    this.Tables[0].minLoopLength = parseInt(input.loopLength());
 
     this.Tables[0].init(input.sequence(), "coFold");
     this.Tables[0].cells = NussinovDPAlgorithm_Unique.Tables[0].cells;
