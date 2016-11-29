@@ -353,7 +353,7 @@ var NussinovMatrix4d = {
             //str[i - 1] = '(';
             str = str.substr(0, i - 1) + "(" + str.substr(i);
             //str[str.length - j] = ')';
-            str = str.substr(0, str.length - j) + ")" + str.substr(str.length - j + 1);
+            str = str.substr(0, this.seq1_length + 1 + j) + ")" + str.substr(this.seq1_length + 1 + j + 1);
         }
         return str;
     },
@@ -382,7 +382,7 @@ var DPAlgorithm_hybrid = Object.create(DPAlgorithm);
 DPAlgorithm_hybrid.Description = "RNA to RNA matching";
 DPAlgorithm_hybrid.Tables = new Array();
 DPAlgorithm_hybrid.Tables.push(Object.create(NussinovMatrix4d));
-DPAlgorithm_hybrid.Tables[0].latex_representation = "D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases}";
+DPAlgorithm_hybrid.Tables[0].latex_representation = "\\begin{array} \\ D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ E^{init} = 1 \\\\ \\\\ E^{loop}_{i, j, p, q} =  \\begin{cases} 1 & \\text{if }\\mathcal{R}^1_p, \\mathcal{R}^2_q  \\text{  pairs} \\\\ 0 & \\text{otherwise} \\end{cases} \\end{array}";
 
 DPAlgorithm_hybrid.Tables[0].computeCell = function(i, k, j, l) {
     var curCell = Object.create(NussinovCell4d).init(i, k, j, l, 0);
