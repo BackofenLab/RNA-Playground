@@ -414,6 +414,7 @@ var NussinovMatrix = {
 
                 }
             }
+            str = str.substr(0, linked) + "X" + str.substr(linked + 1, str.length - 1);
             return str;
         }
     },

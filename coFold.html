@@ -119,10 +119,18 @@
             </thead>
 
             <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
-            <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"></td></tr>
+            <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure4d}"></td></tr>
             </tbody>
         </table>
 
+        <div class="row" id="output" >
+            <pre id="4dVisual">
+<!--axx...xexx        x     xx-->
+                <!--f    x   g-->
+                <!--|    |   |-->
+                <!--l    y   h-->
+                <!--yyoyymyy   yyky jyy   yydyyc-->
+            </pre>
     </div>
     <div class="row">
         <button class="" type="button" onclick="generate_tables()" style="margin-left: 15px">Download Table!</button>

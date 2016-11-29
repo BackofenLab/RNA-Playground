@@ -341,14 +341,14 @@ function dotplot(sequence, table, pname) {
         desc.text("Dotplot for paired base pair probabilities.");
     } else
     if (pname === "ud") {
-        desc.text("Dotplot for unpaired base pair probabilities.");
+        desc.text("Dotplot for unpaired probabilities.");
     }
 
     if (pname === "up1") {
-        desc.text("Dotplot for unpaired base pair probabilities of sequence 1.");
+        desc.text("Dotplot for unpaired probabilities of sequence 1.");
     } else
     if (pname === "up2") {
-        desc.text("Dotplot for unpaired base pair probabilities of sequence 2.");
+        desc.text("Dotplot for unpaired probabilities of sequence 2.");
     }
     var svg = d3.select(dev).append("svg")
         .attr("id", pname)

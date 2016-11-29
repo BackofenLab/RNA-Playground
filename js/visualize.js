@@ -257,7 +257,7 @@ function NussinovMatrixViewModel() {
         var offset =  $("#matrix_body").position();
         color +=1;
         if(color >= colors.length-1) color = 0;
-        console.log(clicked_cell);
+        console.log("CC", clicked_cell);
         $('td#structTableCells').css({'background': '#FFF'});
         $("#4dVisual").text("");
         $("#4dVisual").text(clicked_cell.rep4d);

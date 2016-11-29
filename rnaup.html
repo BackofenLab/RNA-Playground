@@ -108,50 +108,8 @@
 
         <div class="colW300" id="rec_id" data-bind="text: latex()[2]" style="margin-left:50px;"></div>
 
-        <!--<table id="matrix" class="colw150">-->
-            <!--<thead>-->
-            <!--<tr>-->
-                <!--<th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^{u}$</th>-->
-                <!--<th class="cell_count"></th>-->
-                <!--&lt;!&ndash; ko foreach: { data: rawSequence, as: 'base' } &ndash;&gt;-->
-                <!--<th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>-->
-                <!--&lt;!&ndash; /ko &ndash;&gt;-->
-            <!--</tr>-->
-            <!--</thead>-->
-
-            <!--<tbody id='matrix_data' data-bind="foreach: { data: cells()[1], as: 'cell' }">-->
-            <!--<tr>-->
-                <!--<th class="cell_count" data-bind="writeSeq: [$root.rawSequence()[$index()], $index()+1]"></th>-->
-                <!--&lt;!&ndash; ko foreach: { data: cell, as: 'v' } &ndash;&gt;-->
-                <!--<td class="cell_count"  data-bind="text: v.i < v.j+2 ? parseFloat(v.value).toFixed(3) : ''"></td>-->
-                <!--&lt;!&ndash; /ko &ndash;&gt;-->
-            <!--</tr>-->
-            <!--</tbody>-->
-        <!--</table>-->
 
 
-        <!--<div class="colW300" id="rec_id" data-bind="text: latex()[2]" style="margin-left:50px;"></div>-->
-
-        <!--<table id="matrix" class="colw150">-->
-            <!--<thead>-->
-            <!--<tr>-->
-                <!--<th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^u$</th>-->
-                <!--<th class="cell_count"></th>-->
-                <!--&lt;!&ndash; ko foreach: { data: rawSequence2, as: 'base' } &ndash;&gt;-->
-                <!--<th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>-->
-                <!--&lt;!&ndash; /ko &ndash;&gt;-->
-            <!--</tr>-->
-            <!--</thead>-->
-
-            <!--<tbody id='matrix_data' data-bind="foreach: { data: cells()[2], as: 'cell' }">-->
-            <!--<tr>-->
-                <!--<th class="cell_count" data-bind="writeSeq: [$root.rawSequence2()[$index()], $index()+1]"></th>-->
-                <!--&lt;!&ndash; ko foreach: { data: cell, as: 'v' } &ndash;&gt;-->
-                <!--<td class="cell_count"  data-bind="text: v.i < v.j+2 ? parseFloat(v.value).toFixed(3): ''"></td>-->
-                <!--&lt;!&ndash; /ko &ndash;&gt;-->
-            <!--</tr>-->
-            <!--</tbody>-->
-        <!--</table>-->
 
         <div id="dotplot_seq1"></div>
         <div id="dotplot_seq2"></div>
@@ -159,48 +117,24 @@
         <button class="" type="button" onclick="generate_tables()">Download Table!</button>
 
 
-
-        <!--<div style="display: inline-block; float: left">-->
-            <!--<canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>-->
-            <!--<table  class="colw150" style="display: inline-block; float: left">-->
-                <!--<thead>-->
-                <!--<tr>-->
-                    <!--<th class="cell_th">$D$</th>-->
-                    <!--<th class="cell_th"></th>-->
-                    <!--&lt;!&ndash; ko foreach: { data: seqList, as: 'base' } &ndash;&gt;-->
-                    <!--<th class="cell_th" data-bind="writeSeq: [base, $index()+1]"></th>-->
-                    <!--&lt;!&ndash; /ko &ndash;&gt;-->
-                <!--</tr>-->
-                <!--</thead>-->
-
-                <!--<tbody id="matrix_body" data-bind="foreach: { data: cells()[0], as: 'cell' }">-->
-                <!--<tr>-->
-                    <!--<th class="cell_th" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>-->
-                    <!--&lt;!&ndash; ko foreach: { data: cell, as: 'v' } &ndash;&gt;-->
-                    <!--<td class="cell" data-bind="text: v.i < v.j+2 ? v.value : '', event: { mousedown: $root.clickCell.bind(this) }"></td>-->
-                    <!--&lt;!&ndash; /ko &ndash;&gt;-->
-                <!--</tr>-->
-
-                <!--</tbody>-->
-            <!--</table>-->
-            <!--<div>-->
-                <!--<table  style="margin: initial;">-->
-                    <!--<td id="info"-->
-                        <!--style="display: none; border: 1px solid grey; padding: 6px 14px;letter-spacing: 2px; background: #fff;"></td>-->
-                <!--</table>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--table id="structures" class="colw200" style="float: left; margin-top:30px">
+        <table id="structures" class="colw200" style="float: left; margin-top:30px">
             <thead>
             <th id="structTableHeading">Possible Structures</th>
             </thead>
 
             <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
-            <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"></td></tr>
+            <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure4d}"></td></tr>
             </tbody>
-        </table-->
+        </table>
 
-
+        <div class="row" id="output" >
+            <pre id="4dVisual">
+<!--axx...xexx        x     xx-->
+                <!--f    x   g-->
+                <!--|    |   |-->
+                <!--l    y   h-->
+                <!--yyoyymyy   yyky jyy   yydyyc-->
+            </pre>
 
     </div>
 
