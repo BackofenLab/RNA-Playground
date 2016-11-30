@@ -1010,6 +1010,61 @@ NussinovDPAlgorithm_Ambiguous2.Tables[0].getSubstructures = function (sigma, P, 
 /**
  * WUCHTY(2nd version)
  */
+function wuchty_unlimited(xmat, delta, formula, maxSOS) {
+    //if (xmat == undefined)return;
+    if (xmat.sequence == undefined)return;
+    var seq_length = xmat.sequence.length;
+    var Nmax = xmat.getValue(1, seq_length);
+    console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
+
+    var S = {sigma: [[1, seq_length]], P: [], traces: [], potential: delta + 0.01};
+    var R = [S];
+    var SOS = [];
+    var Ps = new Set();
+    var loop = 0;
+
+    while (R.length != 0) {
+        // Pop R
+        var pop_R = R.pop();
+        var sigma = pop_R.sigma;
+        var P = pop_R.P;
+        var t_traces = JSON.stringify(pop_R.traces);
+        var traces = JSON.parse(t_traces);
+        var remaining_potential = pop_R.potential;
+        var sigma_remaining = 0;
+        for (var s in sigma) {
+            // TODO(mostafa): Check the base case condition
+            if ((sigma[s][0]) <= (sigma[s][1] - xmat.minLoopLength)) sigma_remaining++;
+        }
+        if (sigma.length == 0 || sigma_remaining == 0) {
+            if (!Ps.has(JSON.stringify(P))) {
+                Ps.add(JSON.stringify(P));
+                console.log(Ps);
+                var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
+                SOS.push(temp_sos);
+            }
+        } else {
+            //console.log(formula);
+            // compute maximal number of structures still to compute
+            var maxLengthR = maxSOS - SOS.length;
+            if (maxLengthR < 0) maxLengthR = 0;
+            var R_prime = formula.getSubstructures(sigma, P, traces, remaining_potential, maxLengthR);
+            for (var r in R_prime) {
+                R.push(R_prime[r]);
+            }
+        }
+        // check if enough structures found so far
+        if (SOS.length >= maxSOS)
+            break;
+
+    }
+    return SOS;
+};
+
+
+/**
+ * WUCHTY(2nd version)
+ */
 function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
     //if (xmat == undefined)return;
     if (xmat.sequence == undefined)return;
@@ -1362,60 +1417,92 @@ DPAlgorithm_MEA.computeMatrix = function(input) {
 };
 
 DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
-    var Nmax = this.getValue(1, this.sequence.length);
     var R = [];
     var ij = sigma.pop();
+    var Nmax = this.getValue(ij[0], ij[1]);
 
     // if i>j dont countinue
-    if (ij[0] > ij[1]) {
+    if (this.isInvalidState(ij[0], ij[1]) || ij[0] > ij[1]) {//ij[0] > ij[1) {
         //console.log("ij[0] > ij[1]", ij[0], ij[1]);
         var S_prime = {};
         S_prime.sigma = sigma;
         S_prime.P = P;
         S_prime.traces = traces;
+        S_prime.potential = delta;
         R.push(S_prime);
         //console.log("returning R:", JSON.stringify(R));
         return R;
     }
 
-    // if (i,j) == (i,l-1) + (l+1, j-1) + 1
-    for (var l = ij[0]; l <= ij[1] - 1; l++) {
-        if (ij[1] - l > this.minLoopLength) {
-            if (RnaUtil.areComplementary(this.sequence[l - 1], this.sequence[ij[1] - 1])) {
-                var sigma_prime = JSON.stringify(sigma);
-                sigma_prime = JSON.parse(sigma_prime);
-                sigma_prime.push([ij[0], l - 1]);
-                sigma_prime.push([l + 1, ij[1] - 1]);
+    // if (i,j) == (i,k) + (k+1, j)
+    for (var k = ij[0]; k < ij[1] - this.minLoopLength; ++k) {
+        var sigma_prime = JSON.stringify(sigma);
+        sigma_prime = JSON.parse(sigma_prime);
+        sigma_prime.push([ij[0], k]);
+        sigma_prime.push([k + 1, ij[1]]);
 
-                var tmp_P = JSON.stringify(P);
-                tmp_P = JSON.parse(tmp_P);
-                tmp_P.push([l, ij[1]]);
+        var tmp_P = JSON.stringify(P);
+        tmp_P = JSON.parse(tmp_P);
 
-                var tmp_traces = JSON.stringify(traces);
-                tmp_traces = JSON.parse(tmp_traces);
+        var tmp_traces = JSON.stringify(traces);
+        tmp_traces = JSON.parse(tmp_traces);
 
-                var NSprime = this.countBasepairs(tmp_P, sigma_prime);
+        var NSprime =  this.getValue(ij[0], k) + this.getValue(k + 1, ij[1]);//this.countBasepairs(tmp_P, sigma_prime);
 
-                if (NSprime >= Nmax - delta) {
+        if (NSprime >= Nmax - delta) {
 
-                    var S_prime = {};
-                    S_prime.sigma = sigma_prime;
-                    S_prime.P = tmp_P;
-                    tmp_traces.unshift([ij, [[ij[0], l - 1], [l + 1, ij[1] - 1]]]);
-                    S_prime.traces = tmp_traces;
-                    //console.log("ilj:", JSON.stringify(S_prime));
-                    // push to the back to keep base pair most prominent to refine
-                    R.push(S_prime);
-                }
-
-                // check if enough structures found so far
-                if (R.length >= maxLengthR) {
-                    //console.log("returning R:", JSON.stringify(R));
-                    return R;
-                }
-
-            }
+            var S_prime = {};
+            S_prime.sigma = sigma_prime;
+            S_prime.P = tmp_P;
+            tmp_traces.unshift([ij, [[ij[0], k], [k + 1, ij[1]]]]);
+            S_prime.traces = tmp_traces;
+            S_prime.potential = delta - (Nmax - NSprime);
+            //console.log("ilj:", JSON.stringify(S_prime));
+            // push to the back to keep base pair most prominent to refine
+            R.push(S_prime);
         }
+
+        // check if enough structures found so far
+        if (R.length >= maxLengthR) {
+            //console.log("returning R:", JSON.stringify(R));
+            return R;
+        }
+    }
+
+    // if (i,j) == (i + 1, j - 1) + pij
+    if (RnaUtil.areComplementary(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1])) {
+        var sigma_prime = JSON.stringify(sigma);
+        sigma_prime = JSON.parse(sigma_prime);
+        sigma_prime.push([ij[0] + 1, ij[1] - 1]);
+
+        var tmp_P = JSON.stringify(P);
+        tmp_P = JSON.parse(tmp_P);
+        tmp_P.push([ij[0], ij[1]]);
+
+        var tmp_traces = JSON.stringify(traces);
+        tmp_traces = JSON.parse(tmp_traces);
+
+        var NSprime = this.getValue(ij[0] + 1, ij[1] - 1) + NussinovDPAlgorithm_McCaskill.Tables[2].getValue(ij[0], ij[1]);
+
+        if (NSprime >= Nmax - delta) {
+
+            var S_prime = {};
+            S_prime.sigma = sigma_prime;
+            S_prime.P = tmp_P;
+            tmp_traces.unshift([ij, [[ij[0] + 1, ij[1] - 1]]]);
+            S_prime.traces = tmp_traces;
+            S_prime.potential = delta - (Nmax - NSprime);
+            //console.log("ilj:", JSON.stringify(S_prime));
+            // push to the back to keep base pair most prominent to refine
+            R.push(S_prime);
+        }
+
+        // check if enough structures found so far
+        if (R.length >= maxLengthR) {
+            //console.log("returning R:", JSON.stringify(R));
+            return R;
+        }
+
     }
 
     // if (i,j) == (i,j-1)
@@ -1430,7 +1517,7 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
         var tmp_traces = JSON.stringify(traces);
         tmp_traces = JSON.parse(tmp_traces);
 
-        var NSprime = this.countBasepairs(P, sigma_prime);
+        var NSprime = this.getValue(ij[0], ij[1] - 1) + DPAlgorithm_MEA.Tables[2].getValue(ij[1], ij[1]);
 
         if (NSprime >= Nmax - delta) {
             var S_prime = {};
@@ -1438,6 +1525,7 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
             S_prime.P = tmp_P;
             tmp_traces.unshift([ij, [[ij[0], ij[1] - 1]]]);
             S_prime.traces = tmp_traces;
+            S_prime.potential = delta - (Nmax - NSprime);
             //console.log("ij-1:", JSON.stringify(S_prime));
             // push to the front to keep base pair most prominent to refine
             R.unshift(S_prime);
@@ -1449,11 +1537,9 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
             return R;
         }
     }
-
     //console.log("returning R:", JSON.stringify(R));
     return R;
 };
-
 
 
 var DPAlgorithm_coFold = Object.create(DPAlgorithm);

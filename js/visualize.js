@@ -222,7 +222,9 @@ function NussinovMatrixViewModel() {
                 console.log('wuchty out', res);
                 return res;
             }
-
+            if($(rec_select).text()=="MaxExpAcc") {
+                return wuchty_unlimited(self.matrix()[0], del, self.formula().Tables[0], maxStructures);
+            }
             //return wuchty_2nd(self.matrix()[0], del, self.formula().Tables[0]);
             return wuchty_2nd_limited(self.matrix()[0], del, self.formula().Tables[0], maxStructures);
         }
