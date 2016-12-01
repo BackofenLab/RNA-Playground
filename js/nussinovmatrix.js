@@ -1230,7 +1230,7 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeCell = function(i, j) {
     if (i < 0 || j < 0) {//} || i > this.seq_length || j > this.seq_length) {
         return curCell;
     }
-    if (!RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
+    if (!RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1]) || i >= j - this.minLoopLength) {
         return curCell;
     }
     var n = this.seq_length;
@@ -1246,7 +1246,8 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeCell = function(i, j) {
 
     for (var p = 1; p < i; ++p) {
         for (var q = j + 1; q <= n; ++q) {
-            if (RnaUtil.areComplementary(this.sequence[p - 1], this.sequence[q - 1])) {
+            if (i < j - this.minLoopLength && p < q - this.minLoopLength &&
+                RnaUtil.areComplementary(this.sequence[p - 1], this.sequence[q - 1])) {
 
                 var v = this.getValue(p, q) * NussinovDPAlgorithm_McCaskill.Tables[1].getValue(i, j);
                 if (p + 1 < i) {
@@ -1287,7 +1288,8 @@ NussinovDPAlgorithm_McCaskill.Tables[3].computeCell = function(i, j) {
 
     for (var p = 1; p < i; ++p) {
         for (var q = j + 1; q <= n; ++q) {
-            if (RnaUtil.areComplementary(this.sequence[p - 1], this.sequence[q - 1])) {
+            if (p < q - this.minLoopLength &&
+                RnaUtil.areComplementary(this.sequence[p - 1], this.sequence[q - 1])) {
                 var v = NussinovDPAlgorithm_McCaskill.Tables[2].getValue(p, q);
                 if (p + 1 < i) {
                     v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(p + 1, i - 1);
@@ -1314,6 +1316,9 @@ NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
     this.Tables[3].init(input.sequence(), "McCaskill Unpaired");
     // store minimal loop length
     this.Tables[0].minLoopLength = parseInt(input.loopLength());
+    this.Tables[1].minLoopLength = parseInt(input.loopLength());
+    this.Tables[2].minLoopLength = parseInt(input.loopLength());
+    this.Tables[3].minLoopLength = parseInt(input.loopLength());
 
     //this.Tables[1].energy_basepair = -input.energy() / input.energy_normal();
     //this.Tables[2].energy_basepair = -input.energy() / input.energy_normal();
@@ -1338,8 +1343,8 @@ DPAlgorithm_MEA.Tables = new Array();
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
-DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + P^{u}_{j} & \\text{j unpaired} \\\\ M_{i + 1, j - 1} + P^{bp}_{i,j} & \\text{j paired with i} \\end{cases}";
-DPAlgorithm_MEA.Tables[2].latex_representation = "P_{i}^{u} = 1 - \\sum_{k \\neq j}{P^{bp}_{k, i}}";
+DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + P^{u}_{j} & \\text{j unpaired} \\\\ M_{i + 1, j - 1} + P^{bp}_{i,j} & \\text{j paired with i} \\\\ M_{i, k} + M_{k + 1, j} & i \\leq k < j \\end{cases}";
+DPAlgorithm_MEA.Tables[2].latex_representation = "P_{i}^{u} = 1 - \\sum_{k < i}{P^{bp}_{k, i}} - \\sum_{i < k}{P^{bp}_{i, k}}";
 
 //DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
 //DPAlgorithm_MEA.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 &  S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
@@ -1367,11 +1372,11 @@ DPAlgorithm_MEA.Tables[0].computeCell = function(i, j) {
 
     this.updateCell(curCell, this.getValue(i, j - 1) + DPAlgorithm_MEA.Tables[2].getValue(j, j), Object.create(NussinovCellTrace).init([[i, j - 1]], []));
 
-    if (RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
-        this.updateCell(curCell, this.getValue(i + 1, j - 1) + NussinovDPAlgorithm_McCaskill.Tables[2].getValue(i, j), Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [i, j]));
+    if (i < j - this.minLoopLength && RnaUtil.areComplementary(this.sequence[i - 1], this.sequence[j - 1])) {
+        this.updateCell(curCell, this.getValue(i + 1, j - 1) + DPAlgorithm_MEA.Tables[1].getValue(i, j), Object.create(NussinovCellTrace).init([[i + 1, j - 1]], [i, j]));
     }
 
-    for (var k = i; k < j - this.minLoopLength; ++k) {
+    for (var k = i; k < j; ++k) {
         this.updateCell(curCell, this.getValue(i, k) + this.getValue(k + 1, j), Object.create(NussinovCellTrace).init([[i, k], [k + 1, j]], []));
     }
 
@@ -1387,12 +1392,12 @@ DPAlgorithm_MEA.Tables[2].computeCell = function(i, j) {
     }
     var ret = 1.0;
 
-    for (var k = this.seq_length + 1; k >= 0; --k) {
-        if (k != j) {
-            ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j);
-            ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(j, k);
-        }
-    }
+    for (var k = 1; k < i; ++k)
+        ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, i);
+    for (var k = j + 1; k <= this.seq_length; ++k)
+        ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(j, k);
+
+
     curCell.value = ret;
     return curCell;
 };
@@ -1407,6 +1412,7 @@ DPAlgorithm_MEA.computeMatrix = function(input) {
     this.Tables[2].init(input.sequence(), "Unpaired probabilities");
     // store minimal loop length
     this.Tables[0].minLoopLength = parseInt(input.loopLength());
+    this.Tables[2].minLoopLength = parseInt(input.loopLength());
 
     this.Tables[0].computeAllCells();
     for (var i = 0; i <= this.Tables[2].seq_length; ++i) {
@@ -1435,7 +1441,7 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
     }
 
     // if (i,j) == (i,k) + (k+1, j)
-    for (var k = ij[0]; k < ij[1] - this.minLoopLength; ++k) {
+    for (var k = ij[0]; k < ij[1]; ++k) {
         var sigma_prime = JSON.stringify(sigma);
         sigma_prime = JSON.parse(sigma_prime);
         sigma_prime.push([ij[0], k]);
@@ -1470,7 +1476,7 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
     }
 
     // if (i,j) == (i + 1, j - 1) + pij
-    if (RnaUtil.areComplementary(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1])) {
+    if (ij[0] < ij[1] - this.minLoopLength && RnaUtil.areComplementary(this.sequence[ij[0] - 1], this.sequence[ij[1] - 1])) {
         var sigma_prime = JSON.stringify(sigma);
         sigma_prime = JSON.parse(sigma_prime);
         sigma_prime.push([ij[0] + 1, ij[1] - 1]);
@@ -1482,7 +1488,7 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
         var tmp_traces = JSON.stringify(traces);
         tmp_traces = JSON.parse(tmp_traces);
 
-        var NSprime = this.getValue(ij[0] + 1, ij[1] - 1) + NussinovDPAlgorithm_McCaskill.Tables[2].getValue(ij[0], ij[1]);
+        var NSprime = this.getValue(ij[0] + 1, ij[1] - 1) + DPAlgorithm_MEA.Tables[1].getValue(ij[0], ij[1]);
 
         if (NSprime >= Nmax - delta) {
 
