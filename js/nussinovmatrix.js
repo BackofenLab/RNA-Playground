@@ -370,6 +370,49 @@ var NussinovMatrix = {
         return str;
     },
 
+    /**
+     * Compute an Sprime instance that can be used wuchty.
+     * Given a trace of a cell @cell and the value of the trace at this cell @NSprime and the optimal value at this
+     * cell @Nmax. and returns the SPrime for this trace.
+     * It assumes that  NSprime >= Nmax - delta (The error in this trace is less than the remaining potential error)
+     * @NSprime: The value of this trace.
+     * @NMax: The optimal value at this cell.
+     * @cell: The current cell
+     * @trace: The current trace being considered
+     * @sigma: Old sigma to be cloned
+     * @delta: The remaining error potential
+     * @P: The basepair structure so far.
+     * @traces: A list of pairs of cells and their parents.
+     * @returns S_prime for this trace.
+     * */
+    getSPrime: function(NSprime, Nmax, cell, trace, sigma, delta, P, traces) {
+        var sigma_prime = JSON.stringify(sigma);
+        sigma_prime = JSON.parse(sigma_prime);
+        console.log(trace);
+        for (var i = 0; i < trace.parents.length; ++i) {
+            sigma_prime.push(trace.parents[i]);
+        }
+
+        var tmp_P = JSON.stringify(P);
+        tmp_P = JSON.parse(tmp_P);
+        for (var i = 0; i < trace.bps.length; ++i) {
+            tmp_P.push(trace.bps[i]);
+        }
+
+        var tmp_traces = JSON.stringify(traces);
+        tmp_traces = JSON.parse(tmp_traces);
+        tmp_traces.unshift([cell, trace.parents]);
+
+
+        var S_prime = {};
+        S_prime.sigma = sigma_prime;
+        S_prime.P = tmp_P;
+        S_prime.traces = tmp_traces;
+        S_prime.potential = delta - (Nmax - NSprime);
+        
+        return S_prime;
+    },
+
 
     /**
      * countBasepairs(for wuchty)
@@ -1244,9 +1287,7 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeCell = function(i, j) {
 
     for (var p = 1; p < i; ++p) {
         for (var q = j + 1; q <= n; ++q) {
-            if (i < j - this.minLoopLength && p < q - this.minLoopLength &&
-                RnaUtil.areComplementary(this.sequence[p - 1], this.sequence[q - 1])) {
-
+            if (RnaUtil.areComplementary(this.sequence[p - 1], this.sequence[q - 1])) {
                 var v = this.getValue(p, q) * NussinovDPAlgorithm_McCaskill.Tables[1].getValue(i, j);
                 if (p + 1 < i) {
                     v *= NussinovDPAlgorithm_McCaskill.Tables[0].getValue(p + 1, i - 1);
@@ -1378,18 +1419,15 @@ DPAlgorithm_MEA.Tables[0].computeCell = function(i, j) {
 };
 
 DPAlgorithm_MEA.Tables[2].computeCell = function(i, j) {
-
     var curCell = Object.create(NussinovCell).init(i, j, 0);
     if (i != j || i < 0 || j < 0 || i > this.seq_length || j > this.seq_length) {
         return curCell;
     }
     var ret = 1.0;
-
     for (var k = 1; k < i; ++k)
         ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, i);
     for (var k = j + 1; k <= this.seq_length; ++k)
         ret -= NussinovDPAlgorithm_McCaskill.Tables[2].getValue(j, k);
-
 
     curCell.value = ret;
     return curCell;
@@ -1415,52 +1453,29 @@ DPAlgorithm_MEA.computeMatrix = function(input) {
     return this.Tables;
 };
 
+
 DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
     var R = [];
     var ij = sigma.pop();
-    var Nmax = this.getValue(ij[0], ij[1]);
-    // if i>j dont countinue
+
     if (this.isInvalidState(ij[0], ij[1]) || ij[0] > ij[1]) {//ij[0] > ij[1) {
-        //console.log("ij[0] > ij[1]", ij[0], ij[1]);
         var S_prime = {};
         S_prime.sigma = sigma;
         S_prime.P = P;
         S_prime.traces = traces;
         S_prime.potential = delta;
         R.push(S_prime);
-        //console.log("returning R:", JSON.stringify(R));
         return R;
     }
 
-    // if (i,j) == (i,j-1)
+    var Nmax = this.getValue(ij[0], ij[1]);
     {
-        var sigma_prime = JSON.stringify(sigma);
-        sigma_prime = JSON.parse(sigma_prime);
-        sigma_prime.unshift([ij[0], ij[1] - 1]);
-
-        var tmp_P = JSON.stringify(P);
-        tmp_P = JSON.parse(tmp_P);
-
-        var tmp_traces = JSON.stringify(traces);
-        tmp_traces = JSON.parse(tmp_traces);
-
         var NSprime = this.getValue(ij[0], ij[1] - 1) + DPAlgorithm_MEA.Tables[2].getValue(ij[1], ij[1]);
-
         if (NSprime >= Nmax - delta) {
-            var S_prime = {};
-            S_prime.sigma = sigma_prime;
-            S_prime.P = tmp_P;
-            tmp_traces.unshift([ij, [[ij[0], ij[1] - 1]]]);
-            S_prime.traces = tmp_traces;
-            S_prime.potential = delta - (Nmax - NSprime);
-            //console.log("ij-1:", JSON.stringify(S_prime));
-            // push to the front to keep base pair most prominent to refine
-            R.unshift(S_prime);
+            var trace = Object.create(NussinovCellTrace).init([[ij[0], ij[1] - 1]], []);
+            R.unshift(this.getSPrime(NSprime, Nmax, ij, trace, sigma, delta, P, traces));
         }
-
-        // check if enough structures found so far
         if (R.length >= maxLengthR) {
-            //console.log("returning R:", JSON.stringify(R));
             return R;
         }
     }
@@ -1468,42 +1483,17 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
     // if (i,j) == (i,k -1) + (k+1, j - 1) || (k,j)
     for (var k = ij[0]; k < ij[1] - this.minLoopLength; ++k) {
         if (RnaUtil.areComplementary(this.sequence[k - 1], this.sequence[ij[1] - 1])) {
-            var sigma_prime = JSON.stringify(sigma);
-            sigma_prime = JSON.parse(sigma_prime);
-            sigma_prime.push([ij[0], k - 1]);
-            sigma_prime.push([k + 1, ij[1] - 1]);
-
-            var tmp_P = JSON.stringify(P);
-            tmp_P = JSON.parse(tmp_P);
-            tmp_P.push([k, ij[1]]);
-
-            var tmp_traces = JSON.stringify(traces);
-            tmp_traces = JSON.parse(tmp_traces);
-
             var NSprime = this.getValue(ij[0], k - 1) + this.getValue(k + 1, ij[1] - 1) + 2 * NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, ij[1]);//this.countBasepairs(tmp_P, sigma_prime);
-
             if (NSprime >= Nmax - delta) {
-
-                var S_prime = {};
-                S_prime.sigma = sigma_prime;
-                S_prime.P = tmp_P;
-                tmp_traces.unshift([ij, [[ij[0], k - 1], [k + 1, ij[1] - 1]]]);
-                S_prime.traces = tmp_traces;
-                S_prime.potential = delta - (Nmax - NSprime);
-                //console.log("ilj:", JSON.stringify(S_prime));
-                // push to the back to keep base pair most prominent to refine
-                R.push(S_prime);
+                var trace = Object.create(NussinovCellTrace).init([[ij[0], k - 1], [k + 1, ij[1] - 1]], [[k, ij[1]]]);
+                R.push(this.getSPrime(NSprime, Nmax, ij, trace, sigma, delta, P, traces));
             }
-
-            // check if enough structures found so far
             if (R.length >= maxLengthR) {
-                //console.log("returning R:", JSON.stringify(R));
                 return R;
             }
         }
     }
 
-    //console.log("returning R:", JSON.stringify(R));
     return R;
 };
 
