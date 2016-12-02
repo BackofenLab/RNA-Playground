@@ -1341,7 +1341,7 @@ DPAlgorithm_MEA.Tables = new Array();
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
-DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + P^{u}_{j} & \\text{j unpaired} \\\\ M_{i, k - 1} + M_{k + 1, j - 1} + P^{bp}_{k, j} & \\text{k paired with j, } i \\leq k < j \\end{cases}";
+DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + P^{u}_{j} & \\text{j unpaired} \\\\ M_{i, k - 1} + M_{k + 1, j - 1} + 2 \\cdot P^{bp}_{k, j} & \\text{k paired with j, } i \\leq k < j \\end{cases}";
 DPAlgorithm_MEA.Tables[2].latex_representation = "P_{i}^{u} = 1 - \\sum_{k < i}{P^{bp}_{k, i}} - \\sum_{i < k}{P^{bp}_{i, k}}";
 
 //DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
@@ -1371,7 +1371,7 @@ DPAlgorithm_MEA.Tables[0].computeCell = function(i, j) {
     this.updateCell(curCell, this.getValue(i, j - 1) + DPAlgorithm_MEA.Tables[2].getValue(j, j), Object.create(NussinovCellTrace).init([[i, j - 1]], []));
     for (var k = i; k < j - this.minLoopLength; ++k) {
         if (RnaUtil.areComplementary(this.sequence[k - 1], this.sequence[j - 1])) {
-            this.updateCell(curCell, this.getValue(i, k - 1) + this.getValue(k + 1, j - 1) + NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j), Object.create(NussinovCellTrace).init([[i, k - 1], [k + 1, j - 1]], [k, j]));
+            this.updateCell(curCell, this.getValue(i, k - 1) + this.getValue(k + 1, j - 1) + 2 * NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j), Object.create(NussinovCellTrace).init([[i, k - 1], [k + 1, j - 1]], [k, j]));
         }
     }
     return curCell;
@@ -1480,7 +1480,7 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
             var tmp_traces = JSON.stringify(traces);
             tmp_traces = JSON.parse(tmp_traces);
 
-            var NSprime = this.getValue(ij[0], k - 1) + this.getValue(k + 1, ij[1] - 1) + NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, ij[1]);//this.countBasepairs(tmp_P, sigma_prime);
+            var NSprime = this.getValue(ij[0], k - 1) + this.getValue(k + 1, ij[1] - 1) + 2 * NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, ij[1]);//this.countBasepairs(tmp_P, sigma_prime);
 
             if (NSprime >= Nmax - delta) {
 
