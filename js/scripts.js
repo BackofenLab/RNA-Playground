@@ -137,7 +137,9 @@ function visualize4d(str1, str2, ps) {
     "yyoyymyy   yyky jyy   yydyyc";
 
 */
-
+    if (ps.length == 0) {
+        return [""];
+    }
     var marked1 = new Array(str1.length + 1);
     var marked2 = new Array(str2.length + 1);
 

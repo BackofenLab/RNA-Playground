@@ -1140,11 +1140,20 @@ function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
                 var seq1 = xmat.sequence.substr(0, index_link);
                 var seq2 = xmat.sequence.substr(index_endlink, xmat.sequence.length);
                 //console.log(index_link, index_endlink, xmat.sequence, seq1, seq2);
-                console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P, seq_length)));
+                var bps = [];
+                if(index_link != -1) {
+                    for (var i in P) {
+                        if (P[i][0] <= index_link && P[i][1] >= index_link + 1 + xmat.minLoopLength) {
+                            console.log("push", [P[i][0], P[i][1] - index_endlink]);
+                            bps.push([P[i][0], P[i][1] - index_endlink]);
+                        }
+                    }
+                }
+                console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P, seq_length)), "bps:", bps);
                 var temp_sos = {
                     structure: xmat.conv_str(P, seq_length),
                     traces: traces,
-                    rep4d: repres(visualize4d(seq1, seq2, P))
+                    rep4d: repres(visualize4d(seq1, seq2, bps))
                 };
             }
             else {
