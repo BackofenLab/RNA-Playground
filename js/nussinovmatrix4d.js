@@ -533,6 +533,7 @@ var wuchty4d = function (xmat, maxSOS) {
             }
             if (sigma.length == 0 || sigma_remaining == 0) {
                 var temp_sos = {structure: xmat.conv_str(P), traces: traces, rep4d: repres(visualize4d(xmat.sequence1, xmat.sequence2, P))};
+                console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P)));
                 SOS.push(temp_sos);
 
                 if (SOS.length >= maxSOS) {

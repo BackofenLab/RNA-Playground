@@ -1133,7 +1133,26 @@ function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
         }
 
         if (sigma.length == 0 || sigma_remaining == 0) {
-            var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
+            console.log("formula used", formula.name);
+            if(formula.name == "coFold"){
+                var index_link = xmat.sequence.indexOf("X");
+                var index_endlink = index_link + xmat.minLoopLength + 1;
+                var seq1 = xmat.sequence.substr(0, index_link);
+                var seq2 = xmat.sequence.substr(index_endlink, xmat.sequence.length);
+                //console.log(index_link, index_endlink, xmat.sequence, seq1, seq2);
+                console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P, seq_length)));
+                var temp_sos = {
+                    structure: xmat.conv_str(P, seq_length),
+                    traces: traces,
+                    rep4d: repres(visualize4d(seq1, seq2, P))
+                };
+            }
+            else {
+                var temp_sos = {
+                    structure: xmat.conv_str(P, seq_length),
+                    traces: traces
+                };
+            }
             SOS.push(temp_sos);
         } else {
             //console.log(formula);
