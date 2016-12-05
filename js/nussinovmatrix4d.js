@@ -343,7 +343,7 @@ var NussinovMatrix4d = {
      */
     conv_str: function(P) {
         var str = "";
-        for (var l = 0; l < this.seq1_length + this.seq2_length + 1; l++) {
+        for (var l = 0; l < this.seq1_length + this.seq2_length + 1 + this.minLoopLength; l++) {
             str += ".";
         }
         //str[this.seq1_length] = 'X';
@@ -353,7 +353,8 @@ var NussinovMatrix4d = {
             //str[i - 1] = '(';
             str = str.substr(0, i - 1) + "(" + str.substr(i);
             //str[str.length - j] = ')';
-            str = str.substr(0, this.seq1_length + 1 + j) + ")" + str.substr(this.seq1_length + 1 + j + 1);
+            //str[this.seq1_length + 1 + j - 1] = ')';
+            str = str.substr(0, this.seq1_length + this.minLoopLength + j) + ")" + str.substr(this.seq1_length + this.minLoopLength + j + 1);
         }
         return str;
     },
@@ -417,7 +418,8 @@ DPAlgorithm_hybrid.computeMatrix = function(input) {
     var sequence2 = input.sequence().substr(parseInt(input.loopLength()) + splitSeq + 1);//split("").reverse().join("");
 
     this.Tables[0].init(sequence1, sequence2, "RNAHybrid");
-
+    this.Tables[0].minLoopLength = parseInt(input.loopLength());
+    
     this.Tables[0].computeAllCells();
 
     console.log(this.Tables[0].simpleRepresentation());
@@ -480,6 +482,7 @@ DPAlgorithm_rnaup.computeMatrix = function(input) {
     
     
     this.Tables[0].init(sequence1, sequence2, "RNAup");
+    this.Tables[0].minLoopLength = parseInt(input.loopLength());
     this.Tables[0].energy = input.energy();
     this.Tables[0].energy_normal = input.energy_normal();
 
@@ -533,6 +536,7 @@ var wuchty4d = function (xmat, maxSOS) {
             }
             if (sigma.length == 0 || sigma_remaining == 0) {
                 var temp_sos = {structure: xmat.conv_str(P), traces: traces, rep4d: repres(visualize4d(xmat.sequence1, xmat.sequence2, P))};
+                console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P)));
                 SOS.push(temp_sos);
 
                 if (SOS.length >= maxSOS) {
