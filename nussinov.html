@@ -1,6 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <!-- Last updated 23rd August (02:00 PM) -->
-<html>
+<!--<html>
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -12,16 +12,17 @@
     <link rel="stylesheet" href="css/corporate-design.css"/>
 
 
-    <!-- RNA tools webserver styles -->
-    <!-- <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> -->
+    &lt;!&ndash; RNA tools webserver styles &ndash;&gt;
+    &lt;!&ndash; <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> &ndash;&gt;
 </head>
 
-<body>
+<body>-->
 
 <!-- #########  PAGE MENU  ############## -->
 
-<!-- central content DIV of the RNA tools webserver -->
+<!-- central content DIV of the RNA tools webserver &ndash;&gt;-->
 <div class="content">
+
     <h1>JavaScript Implementation and Visualization of RNA algorithms</h1>
 
     <div id="inputContainer">
@@ -66,9 +67,9 @@
             <div class="colW200" style="font-size: 120%">Nussinov Recursion:</div>
             <div class="colW400">
                 <select onchange="showRecursion()" id= "formula" data-bind="value: input.recursion" style="width:150px;">
-                    <option value="nussinovOriginal" selected="selected">Ambiguous variant</option>
-                    <option value="nussinovUnique">Nussinov original</option>
-                    <option value="nussinovAmbiguous2">Ambiguous2</option>
+                    <option value="nussinovUnique">Nussinov Original</option>
+                    <option value="nussinovOriginal" selected="selected">Ambiguous Variant</option>
+                    <option value="nussinovAmbiguous2">Ambiguous Variant 2</option>
                 </select>
                 <label for="formula" style="margin-left:10px;">used for matrix calculating</label>
             </div>
@@ -138,10 +139,22 @@
         <a href="http://www.bioinf.uni-freiburg.de/impressum.html">Disclaimer</a>
     </div>
 
+    <script src="js/visualize.js"></script>
+    <script>
+        function showRecursion() {
+            console.log("val:", $("#formula").val());
+            setTimeout(function () {      //introduces a little delay, so that the thing will close slowly and neatly
+                document.getElementById("recursion").innerHTML =  availableAlgorithms[$("#formula").val()].getRecursionInLatex();
+                rerendermath();
+                $(".animate1").empty();
+            }, 450);
 
+        };
+    </script>
 </div>
 <!-- content -->
 
+<!--
 <script src="js/libs/knockout-3.4.0.js"></script>
 <script src="js/libs/FileSaver.min.js"></script>
 <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
@@ -150,10 +163,9 @@
 <script src="js/nussinovmatrix.js"></script>
 <script src="js/scripts.js"></script>
 <script src="js/visualize.js"></script>
-<!--<script src="js/scripts.js"></script>-->
-<script type="text/javascript">
-    showRecursion();
-</script>
+&lt;!&ndash;<script src="js/scripts.js"></script>&ndash;&gt;
+
 </body>
 
 </html>
+-->

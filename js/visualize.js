@@ -17,8 +17,39 @@ function NussinovMatrixViewModel() {
     var color = 0;
 
     var formulas = [];
-    
+
     var maxStructures = 14;
+
+    var Algo = function (name, html_page) {
+        this.algoName = name;
+        this.algoPage = html_page;
+    };
+
+    self.Algorithms = ko.observableArray([
+        new Algo("Nussinov", "nussinov.html"),
+        new Algo("Structure Counting", "countStructs.html"),
+        new Algo("Co-Fold", "coFold.html")
+    ]);
+
+    self.selectedAlgorithm = ko.observable(); // Nothing selected by default
+
+    self.loadPage = ko.computed(function () {
+        //console.log($(rec_select).text());
+
+        console.log("loading page", self.selectedAlgorithm());
+
+        if(self.selectedAlgorithm() != undefined){
+            $(algopage).html("");
+            $(rec_select).remove();
+
+            console.log("algo selected", self.selectedAlgorithm().algoPage);
+            $(algopage).load(self.selectedAlgorithm().algoPage);
+        }
+
+
+
+    });
+
     self.currCell = {
         i: null,
         j: null
@@ -31,7 +62,7 @@ function NussinovMatrixViewModel() {
     self.loopLength = ko.observable(0);
 
     self.input = {
-        loopLength: ko.computed(function(){
+        loopLength: ko.computed(function () {
             return self.loopLength();
         }),
         delta: ko.observable(0),
@@ -39,15 +70,15 @@ function NussinovMatrixViewModel() {
         allowTraceback: true,
         energy: ko.observable(-1),
         energy_normal: ko.observable(1),
-        sequence: ko.computed(function(){
+        sequence: ko.computed(function () {
             var ll = self.loopLength();
-            if (self.rawSeq()==undefined)
+            if (self.rawSeq() == undefined)
                 return;
-            if($(rec_select).text()=="coFold" || $(rec_select).text()=="hybrid" || $(rec_select).text()=="rnaup") {
-                if (self.rawSeq2()==undefined)
+            if ($(rec_select).text() == "coFold" || $(rec_select).text() == "hybrid" || $(rec_select).text() == "rnaup") {
+                if (self.rawSeq2() == undefined)
                     return;
                 var linker = '';
-                for(var i=0; i<=ll; i++)linker += 'X';
+                for (var i = 0; i <= ll; i++)linker += 'X';
                 return self.rawSeq().toUpperCase() + linker + self.rawSeq2().toUpperCase();//looplength +1
             }
             return self.rawSeq().toUpperCase();
@@ -55,34 +86,34 @@ function NussinovMatrixViewModel() {
 
     };
 
-    self.rawSequence = ko.computed(function() {
+    self.rawSequence = ko.computed(function () {
         return self.rawSeq().toUpperCase().split("");
-    })
-    self.rawSequence2 = ko.computed(function() {
+    });
+    self.rawSequence2 = ko.computed(function () {
         return self.rawSeq2().toUpperCase().split("");
-    })
+    });
 
-    self.mcCaskillRecursion = ko.computed(function(){
+    self.mcCaskillRecursion = ko.computed(function () {
         //console.log($(rec_select).text());
-        if($(rec_select).text() === "mcCaskill") {
+        if ($(rec_select).text() === "mcCaskill") {
             console.log("mcCaskill");
             self.input.recursion("mcCaskill");
             self.input.allowTraceback = false;
         }
     });
 
-    self.countingRecursion = ko.computed(function(){
+    self.countingRecursion = ko.computed(function () {
         //console.log($(rec_select).text());
-        if($(rec_select).text()=="nussinovCounting") {
+        if ($(rec_select).text() == "nussinovCounting") {
             console.log("nussinovCounting");
             self.input.recursion("nussinovCounting");
             self.input.allowTraceback = false;
         }
     });
 
-    self.maxExpAcc = ko.computed(function(){
+    self.maxExpAcc = ko.computed(function () {
         //console.log($(rec_select).text());
-        if($(rec_select).text()=="MaxExpAcc") {
+        if ($(rec_select).text() == "MaxExpAcc") {
             console.log("MaxExpAcc");
             self.input.recursion("MaxExpAcc");
             self.input.allowTraceback = true;
@@ -91,9 +122,9 @@ function NussinovMatrixViewModel() {
         }
     });
 
-    self.coFold = ko.computed(function(){
+    self.coFold = ko.computed(function () {
         //console.log($(rec_select).text());
-        if($(rec_select).text()=="coFold") {
+        if ($(rec_select).text() == "coFold") {
             console.log("coFold");
             self.input.recursion("coFold");
             self.input.allowTraceback = true;
@@ -101,9 +132,9 @@ function NussinovMatrixViewModel() {
             //cellHeight = 28;
         }
     });
-    self.hybrid = ko.computed(function(){
+    self.hybrid = ko.computed(function () {
         //console.log($(rec_select).text());
-        if($(rec_select).text()=="hybrid") {
+        if ($(rec_select).text() == "hybrid") {
             console.log("hybrid");
             self.input.recursion("hybrid");
             //self.input.allowTraceback = false;
@@ -112,9 +143,9 @@ function NussinovMatrixViewModel() {
             //cellHeight = 28;
         }
     });
-    self.rnaup = ko.computed(function(){
+    self.rnaup = ko.computed(function () {
         //console.log($(rec_select).text());
-        if($(rec_select).text()=="rnaup") {
+        if ($(rec_select).text() == "rnaup") {
             console.log("rnaup");
             self.input.recursion("rnaup");
             //self.input.allowTraceback = false;
@@ -124,16 +155,16 @@ function NussinovMatrixViewModel() {
     });
 
 
-    self.seqList = ko.computed(function(){
+    self.seqList = ko.computed(function () {
         return self.input.sequence().toUpperCase().split("");
     }, this);
 
-    self.formula = ko.computed(function(){
+    self.formula = ko.computed(function () {
         console.log("recur", self.input.recursion());
         return availableAlgorithms[self.input.recursion()];
     }, this);
 
-    self.renderer = function(matrix){
+    self.renderer = function (matrix) {
         //var res = JSON.parse(JSON.stringify(matrix));
         //console.log(matrix);
         if (self.input.recursion() === "mcCaskill" || self.input.recursion() === "MaxExpAcc") {
@@ -152,11 +183,11 @@ function NussinovMatrixViewModel() {
         return matrix;
     };
 
-    self.matrix = ko.computed(function(){
+    self.matrix = ko.computed(function () {
         //var seq = self.input.sequence().toUpperCase();
         //var ll = parseInt(self.input.loopLength());
         console.log("seq len:", self.input.sequence().length);
-        if(self.input.sequence().length==0){
+        if (self.input.sequence().length == 0) {
             $("#output").hide();
 
             return false;
@@ -195,12 +226,12 @@ function NussinovMatrixViewModel() {
         }
 
         console.log("hallo\n", tables);
-        for(var i = 0; i < tables.length; ++i){
+        for (var i = 0; i < tables.length; ++i) {
             tables[i] = self.renderer(tables[i]);
         }
 
         // add latex formulas to array
-        if(!self.fired) {
+        if (!self.fired) {
             for (var i in tables) {
                 formulas.push(tables[i].getRecursionInLatex());
             }
@@ -210,19 +241,18 @@ function NussinovMatrixViewModel() {
     }, this);
 
 
-
-    self.tracebacks = ko.computed(function(){
+    self.tracebacks = ko.computed(function () {
         var del = parseInt(self.input.delta());
         console.log("in traceback:", self.input.allowTraceback);
         if (self.input.allowTraceback) {// exclusive case for nussinov recursions
             console.log("tb allowed");
 
-            if($(rec_select).text()=="hybrid" || $(rec_select).text()=="rnaup") {
+            if ($(rec_select).text() == "hybrid" || $(rec_select).text() == "rnaup") {
                 var res = wuchty4d(self.matrix()[0], maxStructures);
                 console.log('wuchty out', res);
                 return res;
             }
-            if($(rec_select).text()=="MaxExpAcc") {
+            if ($(rec_select).text() == "MaxExpAcc") {
                 return wuchty_unlimited(self.matrix()[0], del, self.formula().Tables[0], maxStructures);
             }
             //return wuchty_2nd(self.matrix()[0], del, self.formula().Tables[0]);
@@ -231,12 +261,12 @@ function NussinovMatrixViewModel() {
         return false;
     }, this);
 
-    self.cells = ko.computed(function() {
+    self.cells = ko.computed(function () {
         var tables = [];
 
-        for(var i in self.matrix()){
+        for (var i in self.matrix()) {
             //matrixToCSV(self.input.sequence(), self.matrix()[i].cells);
-            if(self.matrix()[i].cells == undefined)return;
+            if (self.matrix()[i].cells == undefined)return;
             tables.push(self.matrix()[i].cells.slice(1));        // slice is hack to skip first row(investigate later)
         }
         //console.log(tables.simpleRepresentation());
@@ -244,8 +274,8 @@ function NussinovMatrixViewModel() {
         return tables;
 
     }, this);
-    
-    self.latex = ko.computed(function() {
+
+    self.latex = ko.computed(function () {
         //    var formulas = [];
         //    for (var i in self.matrix()) {
         //        formulas.push(self.matrix()[i].getRecursionInLatex());
@@ -255,10 +285,10 @@ function NussinovMatrixViewModel() {
     }, this);
 
     // functions for visualization and interaction
-    self.clickStructure4d = function(clicked_cell, dom) {
-        var offset =  $("#matrix_body").position();
-        color +=1;
-        if(color >= colors.length-1) color = 0;
+    self.clickStructure4d = function (clicked_cell, dom) {
+        var offset = $("#matrix_body").position();
+        color += 1;
+        if (color >= colors.length - 1) color = 0;
         console.log("CC", clicked_cell);
         $('td#structTableCells').css({'background': '#FFF'});
         $("#4dVisual").text("");
@@ -269,14 +299,14 @@ function NussinovMatrixViewModel() {
         cell = JSON.parse(cell);
 
         $('td.cell').css("background", "white");
-        drawFullTrace(offset , cell);
+        drawFullTrace(offset, cell);
     };
 
     // functions for visualization and interaction
-    self.clickStructure = function(clicked_cell, dom) {
-        var offset =  $("#matrix_body").position();
-        color +=1;
-        if(color >= colors.length-1) color = 0;
+    self.clickStructure = function (clicked_cell, dom) {
+        var offset = $("#matrix_body").position();
+        color += 1;
+        if (color >= colors.length - 1) color = 0;
         console.log(clicked_cell, dom);
         $('td#structTableCells').css({'background': '#FFF'});
         $(dom.target).css({'background': colors[color]});
@@ -285,14 +315,14 @@ function NussinovMatrixViewModel() {
         cell = JSON.parse(cell);
 
         $('td.cell').css("background", "white");
-        drawFullTrace(offset , cell);
+        drawFullTrace(offset, cell);
     };
 
-    function drawFullTrace(location, cell){
+    function drawFullTrace(location, cell) {
         //console.log('loading canvas');
         // add one to cell dims because of borders
-        var cH = cellHeight+1;
-        var cW = cellWidth+1;
+        var cH = cellHeight + 1;
+        var cW = cellWidth + 1;
 
         var seqLen = self.seqList().length;
         var top = location.top - (2 * cH);
@@ -310,51 +340,51 @@ function NussinovMatrixViewModel() {
 
         $(info).text("");
         $(info).hide();
-        for(var i=1; i<=seqLen;i++) { // show base pairs formed at top of matrix
-            ctx.fillText(cell.structure[i-1], (i) * cW + cW / 2, cH / 2 - 2);
+        for (var i = 1; i <= seqLen; i++) { // show base pairs formed at top of matrix
+            ctx.fillText(cell.structure[i - 1], (i) * cW + cW / 2, cH / 2 - 2);
         }
 
-        for(var t in cell.traces){
+        for (var t in cell.traces) {
             var child = cell.traces[t][0];
             var parents = cell.traces[t][1];
 
-            for(var p in parents){
-                if((child[0])<parents[p][0] && (child[1]-1)==parents[p][1]){
+            for (var p in parents) {
+                if ((child[0]) < parents[p][0] && (child[1] - 1) == parents[p][1]) {
                     ctx.fillStyle = "#000";
                     ctx.font = "bold 10px arial";
-                    ctx.fillText('+1', child[1] * cW + (1*cW/4-1), (child[0]+1) * cH + (cH/4+2));
+                    ctx.fillText('+1', child[1] * cW + (1 * cW / 4 - 1), (child[0] + 1) * cH + (cH / 4 + 2));
                 }
             }
 
             self.currCell.i = child[0];
             self.currCell.j = child[1];
-            color +=1;
-            if(color >= colors.length-1)color = 0;
+            color += 1;
+            if (color >= colors.length - 1)color = 0;
 
 
             drawArrows(parents, cW, cH);
         }
     }
 
-    self.clickCell = function(clicked_cell) {
-        if(clicked_cell.i > clicked_cell.j) {
+    self.clickCell = function (clicked_cell) {
+        if (clicked_cell.i > clicked_cell.j) {
             return;
         }
 
-        var offset =  $("#matrix_body").position();
+        var offset = $("#matrix_body").position();
         var cell = JSON.stringify(clicked_cell);
         cell = JSON.parse(cell);
 
         $(structTableCells).css({'background': '#FFF'});
         $('td.cell').css("background", "white");
-        drawSingleTraceStep(offset , cell);
+        drawSingleTraceStep(offset, cell);
     };
 
     function drawSingleTraceStep(location, cell) {
         //console.log('loading canvas');
         // add one to cell dims because of borders
-        var cH = cellHeight+1;
-        var cW = cellWidth+1;
+        var cH = cellHeight + 1;
+        var cW = cellWidth + 1;
 
         var seqLen = self.seqList().length;
         var top = location.top - (2 * cH);
@@ -373,15 +403,15 @@ function NussinovMatrixViewModel() {
         // cycle through parents pairs
         var cellI = cell.i;
         var cellJ = cell.j;
-        if(self.currCell.i == cellI && self.currCell.j == cellJ ){
-            if(self.currTrace == cell.traces.length-1){
+        if (self.currCell.i == cellI && self.currCell.j == cellJ) {
+            if (self.currTrace == cell.traces.length - 1) {
                 self.currTrace = 0;
             }
-            else{
+            else {
                 self.currTrace += 1;
             }
         }
-        else{
+        else {
             self.currCell.i = cellI;
             self.currCell.j = cellJ;
             self.currTrace = 0;
@@ -391,22 +421,22 @@ function NussinovMatrixViewModel() {
         $(info).show();
         // show base pairs formed at top of matrix
 
-        for(var i=1; i<=seqLen;i++) {
+        for (var i = 1; i <= seqLen; i++) {
             if (cell.traces[self.currTrace].bps.length != 0) {
                 ctx.fillStyle = "#000";
                 ctx.font = "10px arial";
-                ctx.fillText('+1', cellJ * cW + (1*cW/4+2), (cellI+1) * cH + (cH/4+2));
+                ctx.fillText('+1', cellJ * cW + (1 * cW / 4 + 2), (cellI + 1) * cH + (cH / 4 + 2));
                 ctx.fillStyle = "#2a6ebb";
                 ctx.font = "18px sans-serif";
-                if(self.rawSeq2 == undefined) {
+                if (self.rawSeq2 == undefined) {
                     var fillText = ['(', ')'];
                 }
-                else{
-                    if(cell.traces[self.currTrace].bps[0][0] < self.rawSeq().length+1 &&
-                        cell.traces[self.currTrace].bps[0][1] > self.rawSeq().length+1){
+                else {
+                    if (cell.traces[self.currTrace].bps[0][0] < self.rawSeq().length + 1 &&
+                        cell.traces[self.currTrace].bps[0][1] > self.rawSeq().length + 1) {
                         var fillText = ['[', ']'];
                     }
-                    else{
+                    else {
                         var fillText = ['(', ')'];
                     }
 
@@ -430,80 +460,80 @@ function NussinovMatrixViewModel() {
     }
 
     // http://deepliquid.com/blog/archives/98
-    function drawArrows(ancestors, cW, cH){
+    function drawArrows(ancestors, cW, cH) {
 
-        var left_currCell = [self.currCell.j * cW, (self.currCell.i + 1) * cH + cH/2];
-        var bottom_currCell = [self.currCell.j * cW + cW/2, (self.currCell.i + 2) * cH];
+        var left_currCell = [self.currCell.j * cW, (self.currCell.i + 1) * cH + cH / 2];
+        var bottom_currCell = [self.currCell.j * cW + cW / 2, (self.currCell.i + 2) * cH];
         var corner_currCell = [self.currCell.j * cW, (self.currCell.i + 2) * cH];
 
-        for (var a in ancestors){
-            $('#matrix_body tr').eq(self.currCell.i-1).find('td').eq(self.currCell.j).css('background', colors[color]);
-            $('#matrix_body tr').eq(ancestors[a][0]-1).find('td').eq(ancestors[a][1]).css('background', colors[color+1]);
+        for (var a in ancestors) {
+            $('#matrix_body tr').eq(self.currCell.i - 1).find('td').eq(self.currCell.j).css('background', colors[color]);
+            $('#matrix_body tr').eq(ancestors[a][0] - 1).find('td').eq(ancestors[a][1]).css('background', colors[color + 1]);
             //console.log(self.currCell.i, self.currCell.j, ancestors[a]);
-            var top = [ancestors[a][1] * cW + cW/2, (ancestors[a][0] + 1) * cH];
-            var right = [(ancestors[a][1] + 1) * cW, (ancestors[a][0] + 1) * cH + cH/2];
+            var top = [ancestors[a][1] * cW + cW / 2, (ancestors[a][0] + 1) * cH];
+            var right = [(ancestors[a][1] + 1) * cW, (ancestors[a][0] + 1) * cH + cH / 2];
             var corner = [(ancestors[a][1] + 1) * cW, (ancestors[a][0] + 1) * cH];
 
-            if(self.currCell.i == ancestors[a][0]){
-                drawLineArrow(left_currCell[0]+1, left_currCell[1]+0.5, right[0], right[1]+0.5);
+            if (self.currCell.i == ancestors[a][0]) {
+                drawLineArrow(left_currCell[0] + 1, left_currCell[1] + 0.5, right[0], right[1] + 0.5);
             }
-            else if(self.currCell.j == ancestors[a][1]){
-                drawLineArrow(bottom_currCell[0]+0.5, bottom_currCell[1], top[0]+0.5, top[1]+1);
+            else if (self.currCell.j == ancestors[a][1]) {
+                drawLineArrow(bottom_currCell[0] + 0.5, bottom_currCell[1], top[0] + 0.5, top[1] + 1);
             }
-            else if(self.currCell.i+1 < ancestors[a][0]){
-                drawLineArrow(bottom_currCell[0]+0.5, bottom_currCell[1], top[0]+0.5, top[1]+1);
+            else if (self.currCell.i + 1 < ancestors[a][0]) {
+                drawLineArrow(bottom_currCell[0] + 0.5, bottom_currCell[1], top[0] + 0.5, top[1] + 1);
             }
-            else{
-                drawLineArrow(corner_currCell[0], corner_currCell[1], corner[0]-1, corner[1]+1);
+            else {
+                drawLineArrow(corner_currCell[0], corner_currCell[1], corner[0] - 1, corner[1] + 1);
             }
         }
     }
 
-    function drawLineArrow(x1,y1,x2,y2) {
+    function drawLineArrow(x1, y1, x2, y2) {
         var arrow = [
-            [ 4, 0 ],
-            [ -8, -5 ],
-            [ -8, 5]
+            [4, 0],
+            [-8, -5],
+            [-8, 5]
         ];
 
-        ctx.lineWidth=2;
+        ctx.lineWidth = 2;
         ctx.strokeStyle = colors2[color];
 
         ctx.beginPath();
-        ctx.moveTo(x1,y1);
-        ctx.lineTo(x2,y2);
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
         ctx.stroke();
-        var ang = Math.atan2(y2-y1,x2-x1);
-        drawFilledPolygon(translateShape(rotateShape(arrow,ang),x2,y2));
+        var ang = Math.atan2(y2 - y1, x2 - x1);
+        drawFilledPolygon(translateShape(rotateShape(arrow, ang), x2, y2));
     };
 
     function drawFilledPolygon(shape) {
-        ctx.fillStyle = colors2[color+1];
+        ctx.fillStyle = colors2[color + 1];
         ctx.beginPath();
-        ctx.moveTo(shape[0][0],shape[0][1]);
+        ctx.moveTo(shape[0][0], shape[0][1]);
 
-        for(var p in shape)
-            if (p > 0) ctx.lineTo(shape[p][0],shape[p][1]);
+        for (var p in shape)
+            if (p > 0) ctx.lineTo(shape[p][0], shape[p][1]);
 
-        ctx.lineTo(shape[0][0],shape[0][1]);
+        ctx.lineTo(shape[0][0], shape[0][1]);
         ctx.fill();
     };
 
-    function translateShape(shape,x,y) {
+    function translateShape(shape, x, y) {
         var rv = [];
-        for(var p in shape)
-            rv.push([ shape[p][0] + x, shape[p][1] + y ]);
+        for (var p in shape)
+            rv.push([shape[p][0] + x, shape[p][1] + y]);
         return rv;
     };
 
-    function rotateShape(shape,ang) {
+    function rotateShape(shape, ang) {
         var rv = [];
-        for(var p in shape)
-            rv.push(rotatePoint(ang,shape[p][0],shape[p][1]));
+        for (var p in shape)
+            rv.push(rotatePoint(ang, shape[p][0], shape[p][1]));
         return rv;
     };
 
-    function rotatePoint(ang,x,y) {
+    function rotatePoint(ang, x, y) {
         return [
             (x * Math.cos(ang)) - (y * Math.sin(ang)),
             (x * Math.sin(ang)) + (y * Math.cos(ang))
@@ -512,7 +542,7 @@ function NussinovMatrixViewModel() {
 
     // custom binding to get subscript
     ko.bindingHandlers.writeSeq = {
-        update: function(element, valueAccessor) {
+        update: function (element, valueAccessor) {
             var value = valueAccessor();
             var valueUnwrapped = ko.unwrap(value);
             element.innerHTML = "<b>" + valueUnwrapped[0] + "</b><sub>" + valueUnwrapped[1] + "</sub>";

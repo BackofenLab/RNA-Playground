@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- Last updated 23rd August (02:00 PM) -->
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>RNA Nussinov Recursions</title>
+
+<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' type='text/css'>
+<link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css">
+<link rel="stylesheet" href="css/index.css"/>
+<link rel="stylesheet" href="css/corporate-design.css"/>
+
+
+<!-- RNA tools webserver styles -->
+<!-- <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> -->
+</head>
+
+<body>
+
+<!-- #########  PAGE MENU  ############## -->
+
+<!-- central content DIV of the RNA tools webserver -->
+<div class="content">
+    <!--<p>-->
+        <!--Your country:-->
+        <!--<select data-bind="options: Algorithms,-->
+                       <!--optionsText: 'algoName',-->
+                       <!--value: selectedAlgorithm,-->
+                       <!--optionsCaption: 'Choose...'"></select>-->
+    <!--</p>-->
+
+    <!--<div data-bind="visible: selectedAlgorithm"> &lt;!&ndash; Appears when you select something &ndash;&gt;-->
+        <!--You have chosen a country with population-->
+        <!--<span data-bind="text: selectedAlgorithm ? selectedAlgorithm.algoPage : 'unknown'"></span>.-->
+    <!--</div>-->
+    <select id="algoSelect" onchange="loadPage(this)">
+        <option value="nussinov.html">Nussinov</option>
+        <option value="countStructs.html">Structure Counting</option>
+        <option value="mcCaskill.html">McCaskill</option>
+        <option value="maxExpAcc.html">Maximum Expected Accuracy</option>
+        <option value="coFold.html">CoFold</option>
+        <option value="hybrid.html">RNA Hybrid</option>
+        <option value="rnaup.html">RNA UP</option>
+
+    </select>
+
+    <div id="algopage">
+
+    </div>
+
+    <script type="application/javascript">
+        function loadPage(algo){
+            console.log("algo selected", algo.value);
+            ko.cleanNode($(algopage)[0]);
+            $(algopage).empty();
+            $(algopage).load(algo.value);
+        };
+
+    </script>
+
+</div>
+<script src="js/libs/d3.min.js"></script>
+<script src="js/libs/knockout-3.4.0.js"></script>
+<script src="js/libs/FileSaver.min.js"></script>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script src="js/libs/jquery.min.js"></script>
+<script src="js/nussinovmatrix.js"></script>
+<script src="js/nussinovmatrix4d.js"></script>
+<script src="js/scripts.js"></script>
+
+
+</body>
+
+</html>

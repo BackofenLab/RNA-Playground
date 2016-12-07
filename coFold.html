@@ -1,5 +1,6 @@
+<!--
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<!-- Last updated 23rd August (02:00 PM) -->
+&lt;!&ndash; Last updated 23rd August (02:00 PM) &ndash;&gt;
 <html>
 
 <head>
@@ -12,11 +13,12 @@
     <link rel="stylesheet" href="css/corporate-design.css"/>
 
 
-    <!-- RNA tools webserver styles -->
-    <!-- <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> -->
+    &lt;!&ndash; RNA tools webserver styles &ndash;&gt;
+    &lt;!&ndash; <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> &ndash;&gt;
 </head>
 
 <body>
+-->
 
 <!-- #########  PAGE MENU  ############## -->
 
@@ -60,7 +62,7 @@
         <div class="row">
             <div class="colW200" style="font-size: 120%">Delta #bp to maximum:</div>
             <div class="colW400">
-                <select id= "delta" data-bind="value: input.delta" style="width:40px;">
+                <select id="delta" data-bind="value: input.delta" style="width:40px;">
                     <option value=0 selected="selected">0</option>
                     <option value=1>1</option>
                     <option value=2>2</option>
@@ -80,11 +82,12 @@
     </div>
     <div class="colW300" id="rec_id" data-bind="text: latex()[0]" style="margin-left:50px;"></div>
 
-    <div id="matrix" class="colw600" >
+    <div id="matrix" class="colw600">
 
         <div style="display: inline-block; float: left">
-            <canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
-            <table  class="colw150" style="display: inline-block; float: left">
+            <canvas id="CanvasLayer"
+                    style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
+            <table class="colw150" style="display: inline-block; float: left">
                 <thead>
                 <tr>
                     <th class="cell_th">$D$</th>
@@ -99,14 +102,15 @@
                 <tr>
                     <th class="cell_th" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
                     <!-- ko foreach: { data: cell, as: 'v' } -->
-                    <td class="cell" data-bind="text: v.i < v.j+2 ? v.value : '', event: { mousedown: $root.clickCell.bind(this) }"></td>
+                    <td class="cell"
+                        data-bind="text: v.i < v.j+2 ? v.value : '', event: { mousedown: $root.clickCell.bind(this) }"></td>
                     <!-- /ko -->
                 </tr>
 
                 </tbody>
             </table>
             <div>
-                <table  style="margin: initial;">
+                <table style="margin: initial;">
                     <td id="info"
                         style="display: none; border: 1px solid grey; padding: 6px 14px;letter-spacing: 2px; background: #fff;"></td>
                 </table>
@@ -119,11 +123,14 @@
             </thead>
 
             <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
-            <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure4d}"></td></tr>
+            <tr>
+                <td id="structTableCells"
+                    data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure4d}"></td>
+            </tr>
             </tbody>
         </table>
 
-        <div class="row" id="output" >
+        <div class="row" id="output">
             <pre id="4dVisual">
 <!--axx...xexx        x     xx-->
                 <!--f    x   g-->
@@ -131,26 +138,29 @@
                 <!--l    y   h-->
                 <!--yyoyymyy   yyky jyy   yydyyc-->
             </pre>
+        </div>
+        <div class="row">
+            <button class="" type="button" onclick="generate_tables()" style="margin-left: 15px">Download Table!
+            </button>
+        </div>
+
+
+        <div class="footer">
+            <a href="http://rna.informatik.uni-freiburg.de/About.jsp">About this web server</a>
+            &nbsp;|&nbsp;
+            version 4.0.2
+            &nbsp;|&nbsp;
+            Copyright © 2012 - 2015 <a href="http://www.bioinf.uni-freiburg.de/">Bioinformatics Group Freiburg</a>
+            &nbsp;|&nbsp;
+            <a href="http://www.bioinf.uni-freiburg.de/impressum.html">Disclaimer</a>
+        </div>
+        <script src="js/visualize.js"></script>
+
     </div>
-    <div class="row">
-        <button class="" type="button" onclick="generate_tables()" style="margin-left: 15px">Download Table!</button>
-    </div>
-
-
-    <div class="footer">
-        <a href="http://rna.informatik.uni-freiburg.de/About.jsp">About this web server</a>
-        &nbsp;|&nbsp;
-        version 4.0.2
-        &nbsp;|&nbsp;
-        Copyright © 2012 - 2015 <a href="http://www.bioinf.uni-freiburg.de/">Bioinformatics Group Freiburg</a>
-        &nbsp;|&nbsp;
-        <a href="http://www.bioinf.uni-freiburg.de/impressum.html">Disclaimer</a>
-    </div>
-
-
 </div>
 <!-- content -->
 
+<!--
 <script src="js/libs/knockout-3.4.0.js"></script>
 <script src="js/libs/FileSaver.min.js"></script>
 <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
@@ -159,9 +169,10 @@
 <script src="js/nussinovmatrix.js"></script>
 <script src="js/scripts.js"></script>
 <script src="js/visualize.js"></script>
-<!--<script type="text/javascript">-->
-    <!--showRecursion();-->
-<!--</script>-->
+&lt;!&ndash;<script type="text/javascript">&ndash;&gt;
+    &lt;!&ndash;showRecursion();&ndash;&gt;
+&lt;!&ndash;</script>&ndash;&gt;
 </body>
 
 </html>
+-->
