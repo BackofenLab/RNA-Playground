@@ -422,7 +422,7 @@ DPAlgorithm_hybrid.computeMatrix = function(input) {
     
     this.Tables[0].computeAllCells();
 
-    console.log(this.Tables[0].simpleRepresentation());
+    //console.log(this.Tables[0].simpleRepresentation());
     return this.Tables;
 
 };
@@ -488,7 +488,7 @@ DPAlgorithm_rnaup.computeMatrix = function(input) {
 
     this.Tables[0].computeAllCells();
 
-    console.log(this.Tables[0].simpleRepresentation());
+    //console.log(this.Tables[0].simpleRepresentation());
     return this.Tables;
 };
 
@@ -498,7 +498,7 @@ DPAlgorithm_rnaup.computeMatrix = function(input) {
  * Construct the tracebacks of the optimal solutions. 
  */
 var wuchty4d = function (xmat, maxSOS) {
-    console.log("wuchty4d");
+    //console.log("wuchty4d");
     var sigma_0 = [];
     var NMax = 0;
     for (var i = 0; i <= xmat.seq1_length; ++i) {
@@ -536,7 +536,7 @@ var wuchty4d = function (xmat, maxSOS) {
             }
             if (sigma.length == 0 || sigma_remaining == 0) {
                 var temp_sos = {structure: xmat.conv_str(P), traces: traces, rep4d: repres(visualize4d(xmat.sequence1, xmat.sequence2, P))};
-                console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P)));
+                //console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P)));
                 SOS.push(temp_sos);
 
                 if (SOS.length >= maxSOS) {
@@ -602,13 +602,38 @@ var wuchty4d = function (xmat, maxSOS) {
         }
     }
     
-    console.log('final: ', JSON.stringify(SOS));
+    //console.log('final: ', JSON.stringify(SOS));
     return SOS;
 }
 
+/**
+ * global list of available Nussinov algorithm implementations
+ */
 var availableAlgorithms = {
+
+    /** ambiguous recursion */
+    nussinovOriginal: NussinovDPAlgorithm_Ambiguous,//NussinovMatrix_ambiguous,
+
+    /** original unique recursion */
+    nussinovUnique: NussinovDPAlgorithm_Unique,//NussinovMatrix_unique,
+
+    /** nussinov neo recursion */
+    nussinovAmbiguous2: NussinovDPAlgorithm_Ambiguous2,
+
+    /** McCaskill */
+    mcCaskill: NussinovDPAlgorithm_McCaskill,
+
+    /** structure counting */
+    nussinovCounting: NussinovDPAlgorithm_structuresCount,
+
+    /** Maximum Expected Accuracy*/
+    MaxExpAcc: DPAlgorithm_MEA,
+
+    /** Co-fold*/
+    coFold: DPAlgorithm_coFold,
 
     hybrid: DPAlgorithm_hybrid,
 
-    rnaup: DPAlgorithm_rnaup,
+    rnaup: DPAlgorithm_rnaup
+
 };

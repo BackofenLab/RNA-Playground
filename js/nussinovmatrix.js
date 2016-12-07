@@ -388,7 +388,7 @@ var NussinovMatrix = {
     getSPrime: function(NSprime, Nmax, cell, trace, sigma, delta, P, traces) {
         var sigma_prime = JSON.stringify(sigma);
         sigma_prime = JSON.parse(sigma_prime);
-        console.log(trace);
+        //console.log(trace);
         for (var i = 0; i < trace.parents.length; ++i) {
             sigma_prime.push(trace.parents[i]);
         }
@@ -750,7 +750,7 @@ NussinovDPAlgorithm_Ambiguous.Tables[0].getSubstructures = function (sigma, P, t
 
     }
 
-    console.log("returning R:", JSON.stringify(R));
+    //console.log("returning R:", JSON.stringify(R));
     return R;
 }
 ;
@@ -944,7 +944,7 @@ NussinovDPAlgorithm_Ambiguous2.Tables[0].getSubstructures = function (sigma, P, 
     var Nmax = this.getValue(1, this.sequence.length);
     var R = [];
     var ij = sigma.pop();
-    console.log(ij);
+    //console.log(ij);
 
     // check for sane interval
     // if i>j dont continue
@@ -1011,7 +1011,7 @@ NussinovDPAlgorithm_Ambiguous2.Tables[0].getSubstructures = function (sigma, P, 
 
     // if (i,j) == (i,l) + (l+1, j)
     for (var l = ij[0]; l < ij[1]; l++) {
-        console.log('here');
+        //console.log('here');
         var sigma_prime = JSON.stringify(sigma);
         sigma_prime = JSON.parse(sigma_prime);
         sigma_prime.push([ij[0], l]);
@@ -1044,7 +1044,7 @@ NussinovDPAlgorithm_Ambiguous2.Tables[0].getSubstructures = function (sigma, P, 
         }
 
     }
-    console.log("returning R:", JSON.stringify(R));
+    //console.log("returning R:", JSON.stringify(R));
     return R;
 };
 
@@ -1056,7 +1056,7 @@ function wuchty_unlimited(xmat, delta, formula, maxSOS) {
     if (xmat.sequence == undefined)return;
     var seq_length = xmat.sequence.length;
     var Nmax = xmat.getValue(1, seq_length);
-    console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
+    //console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
 
     var S = {sigma: [[1, seq_length]], P: [], traces: [], potential: delta + 0.01};
     var R = [S];
@@ -1080,7 +1080,7 @@ function wuchty_unlimited(xmat, delta, formula, maxSOS) {
         if (sigma.length == 0 || sigma_remaining == 0) {
             if (!Ps.has(JSON.stringify(P))) {
                 Ps.add(JSON.stringify(P));
-                console.log(Ps);
+                //console.log(Ps);
                 var temp_sos = {structure: xmat.conv_str(P, seq_length), traces: traces};
                 SOS.push(temp_sos);
             }
@@ -1111,7 +1111,7 @@ function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
     if (xmat.sequence == undefined)return;
     var seq_length = xmat.sequence.length;
     var Nmax = xmat.getValue(1, seq_length);
-    console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
+    //console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
 
     var S = {sigma: [[1, seq_length]], P: [], traces: []};
     var R = [S];
@@ -1133,7 +1133,7 @@ function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
         }
 
         if (sigma.length == 0 || sigma_remaining == 0) {
-            console.log("formula used", formula.name);
+            //console.log("formula used", formula.name);
             if(formula.name == "coFold"){
                 var index_link = xmat.sequence.indexOf("X");
                 var index_endlink = index_link + xmat.minLoopLength + 1;
@@ -1144,12 +1144,12 @@ function wuchty_2nd_limited(xmat, delta, formula, maxSOS) {
                 if(index_link != -1) {
                     for (var i in P) {
                         if (P[i][0] <= index_link && P[i][1] >= index_link + 1 + xmat.minLoopLength) {
-                            console.log("push", [P[i][0], P[i][1] - index_endlink]);
+                            //console.log("push", [P[i][0], P[i][1] - index_endlink]);
                             bps.push([P[i][0], P[i][1] - index_endlink]);
                         }
                     }
                 }
-                console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P, seq_length)), "bps:", bps);
+                //console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P, seq_length)), "bps:", bps);
                 var temp_sos = {
                     structure: xmat.conv_str(P, seq_length),
                     traces: traces,
@@ -1643,30 +1643,34 @@ var wuchty = function (xmat) {
     return SOS;
 }
 
-/**
- * global list of available Nussinov algorithm implementations
- */
-var availableAlgorithms = {
-
-    /** ambiguous recursion */
-    nussinovOriginal: NussinovDPAlgorithm_Ambiguous,//NussinovMatrix_ambiguous,
-
-    /** original unique recursion */
-    nussinovUnique: NussinovDPAlgorithm_Unique,//NussinovMatrix_unique,
-
-    /** nussinov neo recursion */
-    nussinovAmbiguous2: NussinovDPAlgorithm_Ambiguous2,
-
-    /** McCaskill */
-    mcCaskill: NussinovDPAlgorithm_McCaskill,
-
-    /** structure counting */
-    nussinovCounting: NussinovDPAlgorithm_structuresCount,
-
-    /** Maximum Expected Accuracy*/
-    MaxExpAcc: DPAlgorithm_MEA,
-
-    /** Co-fold*/
-    coFold: DPAlgorithm_coFold,
-
-};
+///**
+// * global list of available Nussinov algorithm implementations
+// */
+//var availableAlgorithms = {
+//
+//    /** ambiguous recursion */
+//    nussinovOriginal: NussinovDPAlgorithm_Ambiguous,//NussinovMatrix_ambiguous,
+//
+//    /** original unique recursion */
+//    nussinovUnique: NussinovDPAlgorithm_Unique,//NussinovMatrix_unique,
+//
+//    /** nussinov neo recursion */
+//    nussinovAmbiguous2: NussinovDPAlgorithm_Ambiguous2,
+//
+//    /** McCaskill */
+//    mcCaskill: NussinovDPAlgorithm_McCaskill,
+//
+//    /** structure counting */
+//    nussinovCounting: NussinovDPAlgorithm_structuresCount,
+//
+//    /** Maximum Expected Accuracy*/
+//    MaxExpAcc: DPAlgorithm_MEA,
+//
+//    /** Co-fold*/
+//    coFold: DPAlgorithm_coFold,
+//
+//    hybrid: DPAlgorithm_hybrid,
+//
+//    rnaup: DPAlgorithm_rnaup
+//
+//};

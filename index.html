@@ -16,12 +16,12 @@
 <!-- <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> -->
 </head>
 
-<body>
+<body onload="loadPage()">
 
 <!-- #########  PAGE MENU  ############## -->
 
 <!-- central content DIV of the RNA tools webserver -->
-<div class="content">
+<div class="">
     <!--<p>-->
         <!--Your country:-->
         <!--<select data-bind="options: Algorithms,-->
@@ -34,7 +34,8 @@
         <!--You have chosen a country with population-->
         <!--<span data-bind="text: selectedAlgorithm ? selectedAlgorithm.algoPage : 'unknown'"></span>.-->
     <!--</div>-->
-    <select id="algoSelect" onchange="loadPage(this)">
+    <select id="algoSelect" onchange="algoSel(this)">
+        <option selected="selected" disabled="disabled">Select a RNA Algorithm</option>
         <option value="nussinov.html">Nussinov</option>
         <option value="countStructs.html">Structure Counting</option>
         <option value="mcCaskill.html">McCaskill</option>
@@ -50,11 +51,27 @@
     </div>
 
     <script type="application/javascript">
-        function loadPage(algo){
-            console.log("algo selected", algo.value);
-            ko.cleanNode($(algopage)[0]);
-            $(algopage).empty();
-            $(algopage).load(algo.value);
+        function loadPage(){
+            console.log("algo selected:", document.location);
+            var $_GET = {};
+
+            document.location.search.replace(/\??(?:([^=]+)=([^&]*)&?)/g, function () {
+                function decode(s) {
+                    return decodeURIComponent(s.split("+").join(" "));
+                }
+
+                $_GET[decode(arguments[1])] = decode(arguments[2]);
+            });
+
+//            console.log($_GET['id']);
+            $(algopage).load($_GET['id']);
+//            console.log("algo loaded");
+
+        };
+
+        function algoSel(algo){
+            window.location='index.html?id=' + algo.value;
+
         };
 
     </script>

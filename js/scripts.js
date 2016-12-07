@@ -30,12 +30,12 @@ function validate(evt) {
     var theEvent = evt || window.event;
     var key = theEvent.keyCode || theEvent.which;
     var buKey = key;
-    console.log(key);
+    //console.log(key);
 
     key = String.fromCharCode( key );
     var regex = /[^gcauGCAU]|\./;
     if( regex.test(key) && buKey != 8 && buKey != 13 && buKey != 37 && buKey != 39 && buKey != 9) {
-        console.log(regex.test(key));
+        //console.log(regex.test(key));
         theEvent.returnValue = false;
         if(theEvent.preventDefault) theEvent.preventDefault();
         return;
@@ -293,7 +293,7 @@ function hidetext() {
 }
 
 function dotplot(sequence, table, pname) {
-    console.log('hi', sequence, table, pname);
+    //console.log('hi', sequence, table, pname);
     var maindic = {};
 
 

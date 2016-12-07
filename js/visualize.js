@@ -20,36 +20,6 @@ function NussinovMatrixViewModel() {
 
     var maxStructures = 14;
 
-    var Algo = function (name, html_page) {
-        this.algoName = name;
-        this.algoPage = html_page;
-    };
-
-    self.Algorithms = ko.observableArray([
-        new Algo("Nussinov", "nussinov.html"),
-        new Algo("Structure Counting", "countStructs.html"),
-        new Algo("Co-Fold", "coFold.html")
-    ]);
-
-    self.selectedAlgorithm = ko.observable(); // Nothing selected by default
-
-    self.loadPage = ko.computed(function () {
-        //console.log($(rec_select).text());
-
-        console.log("loading page", self.selectedAlgorithm());
-
-        if(self.selectedAlgorithm() != undefined){
-            $(algopage).html("");
-            $(rec_select).remove();
-
-            console.log("algo selected", self.selectedAlgorithm().algoPage);
-            $(algopage).load(self.selectedAlgorithm().algoPage);
-        }
-
-
-
-    });
-
     self.currCell = {
         i: null,
         j: null
@@ -138,7 +108,7 @@ function NussinovMatrixViewModel() {
             console.log("hybrid");
             self.input.recursion("hybrid");
             //self.input.allowTraceback = false;
-            console.log("setttt");
+            //console.log("setttt");
             //cellWidth = 48;
             //cellHeight = 28;
         }
@@ -160,7 +130,7 @@ function NussinovMatrixViewModel() {
     }, this);
 
     self.formula = ko.computed(function () {
-        console.log("recur", self.input.recursion());
+        //console.log("setting self.formula ", self.input.recursion(), availableAlgorithms);
         return availableAlgorithms[self.input.recursion()];
     }, this);
 
@@ -186,7 +156,7 @@ function NussinovMatrixViewModel() {
     self.matrix = ko.computed(function () {
         //var seq = self.input.sequence().toUpperCase();
         //var ll = parseInt(self.input.loopLength());
-        console.log("seq len:", self.input.sequence().length);
+        //console.log("seq len:", self.input.sequence().length);
         if (self.input.sequence().length == 0) {
             $("#output").hide();
 
@@ -206,14 +176,14 @@ function NussinovMatrixViewModel() {
             //ctx.stroke();
         }
 
-        console.log($("#rec_select").html());
+        //console.log($("#rec_select").html());
 
-        console.log('input:', self.input.sequence(), self.input.loopLength(), self.input.delta(), self.input.recursion());
-
+        //console.log('input:', self.input.sequence(), self.input.loopLength(), self.input.delta(), self.input.recursion());
+        //console.log('debugging', self.formula(), self.input);
         var tables = self.formula().computeMatrix(self.input);
 
         $("#4dVisual").text("");
-        console.log("matrix compute");
+        //console.log("matrix compute");
         if (self.input.recursion() === "mcCaskill") {
             $("#paired_dotplot").html(dotplot(self.input.sequence(), tables[2].cells, 'pd'));
             $("#unpaired_dotplot").html(dotplot(self.input.sequence(), tables[3].cells, 'ud'));
@@ -225,7 +195,7 @@ function NussinovMatrixViewModel() {
 
         }
 
-        console.log("hallo\n", tables);
+        //console.log("hallo\n", tables);
         for (var i = 0; i < tables.length; ++i) {
             tables[i] = self.renderer(tables[i]);
         }
@@ -243,13 +213,13 @@ function NussinovMatrixViewModel() {
 
     self.tracebacks = ko.computed(function () {
         var del = parseInt(self.input.delta());
-        console.log("in traceback:", self.input.allowTraceback);
+        //console.log("in traceback:", self.input.allowTraceback);
         if (self.input.allowTraceback) {// exclusive case for nussinov recursions
-            console.log("tb allowed");
+            //console.log("tb allowed");
 
             if ($(rec_select).text() == "hybrid" || $(rec_select).text() == "rnaup") {
                 var res = wuchty4d(self.matrix()[0], maxStructures);
-                console.log('wuchty out', res);
+                //console.log('wuchty out', res);
                 return res;
             }
             if ($(rec_select).text() == "MaxExpAcc") {
@@ -289,7 +259,7 @@ function NussinovMatrixViewModel() {
         var offset = $("#matrix_body").position();
         color += 1;
         if (color >= colors.length - 1) color = 0;
-        console.log("CC", clicked_cell);
+        //console.log("CC", clicked_cell);
         $('td#structTableCells').css({'background': '#FFF'});
         $("#4dVisual").text("");
         $("#4dVisual").text(clicked_cell.rep4d);
@@ -307,7 +277,7 @@ function NussinovMatrixViewModel() {
         var offset = $("#matrix_body").position();
         color += 1;
         if (color >= colors.length - 1) color = 0;
-        console.log(clicked_cell, dom);
+        //console.log(clicked_cell, dom);
         $('td#structTableCells').css({'background': '#FFF'});
         $(dom.target).css({'background': colors[color]});
 
