@@ -68,6 +68,15 @@
                 <p data-bind="text: input.energy_normal" style="display: inline;"></p>
             </div>
         </div>
+        <div class="row">
+            <div class="colW200" style="font-size: 120%">$\gamma$ for base-pair penalty:</div>
+            <div class="colW400">
+                <input data-bind="value: input.gamma" id="gamma" type="range" max="5" min="1"
+                       step="(max - min) / 100">
+
+                <p data-bind="text: input.gamma" style="display: inline;"></p>
+            </div>
+        </div>
 
         <div class="row">
             <div class="colW200" style="font-size: 120%">Delta MEA to maximum:</div>

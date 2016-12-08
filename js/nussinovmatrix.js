@@ -11,6 +11,9 @@
 /**
  * Utility class that covers RNA specific functions.
  */
+
+var EPS = 1e-4; // floating point precision error
+
 var RnaUtil = {
 
     /**
@@ -1058,7 +1061,7 @@ function wuchty_unlimited(xmat, delta, formula, maxSOS) {
     var Nmax = xmat.getValue(1, seq_length);
     //console.log("Wuchty beginning\nSequence:", xmat.sequence, "\nNmax:", Nmax, "\nDelta:", delta, "\n");
 
-    var S = {sigma: [[1, seq_length]], P: [], traces: [], potential: delta + 0.01};
+    var S = {sigma: [[1, seq_length]], P: [], traces: [], potential: delta + EPS};
     var R = [S];
     var SOS = [];
     var Ps = new Set();
@@ -1410,7 +1413,7 @@ DPAlgorithm_MEA.Tables = new Array();
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
-DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + P^{u}_{j} & \\text{j unpaired} \\\\ M_{i, k - 1} + M_{k + 1, j - 1} + 2 \\cdot P^{bp}_{k, j} & \\text{k paired with j, } i \\leq k < j \\end{cases}";
+DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + P^{u}_{j} & \\text{j unpaired} \\\\ M_{i, k - 1} + M_{k + 1, j - 1} + \\gamma \\cdot P^{bp}_{k, j} & \\text{k paired with j, } i \\leq k < j \\end{cases}";
 DPAlgorithm_MEA.Tables[2].latex_representation = "P_{i}^{u} = 1 - \\sum_{k < i}{P^{bp}_{k, i}} - \\sum_{i < k}{P^{bp}_{i, k}}";
 
 //DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
@@ -1440,7 +1443,7 @@ DPAlgorithm_MEA.Tables[0].computeCell = function(i, j) {
     this.updateCell(curCell, this.getValue(i, j - 1) + DPAlgorithm_MEA.Tables[2].getValue(j, j), Object.create(NussinovCellTrace).init([[i, j - 1]], []));
     for (var k = i; k < j - this.minLoopLength; ++k) {
         if (RnaUtil.areComplementary(this.sequence[k - 1], this.sequence[j - 1])) {
-            this.updateCell(curCell, this.getValue(i, k - 1) + this.getValue(k + 1, j - 1) + 2 * NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j), Object.create(NussinovCellTrace).init([[i, k - 1], [k + 1, j - 1]], [k, j]));
+            this.updateCell(curCell, this.getValue(i, k - 1) + this.getValue(k + 1, j - 1) + this.gamma * NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, j), Object.create(NussinovCellTrace).init([[i, k - 1], [k + 1, j - 1]], [k, j]));
         }
     }
     return curCell;
@@ -1472,6 +1475,7 @@ DPAlgorithm_MEA.computeMatrix = function(input) {
     // store minimal loop length
     this.Tables[0].minLoopLength = parseInt(input.loopLength());
     this.Tables[2].minLoopLength = parseInt(input.loopLength());
+    this.Tables[0].gamma = parseFloat(input.gamma());
 
     this.Tables[0].computeAllCells();
     for (var i = 0; i <= this.Tables[2].seq_length; ++i) {
@@ -1499,7 +1503,7 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
     var Nmax = this.getValue(ij[0], ij[1]);
     {
         var NSprime = this.getValue(ij[0], ij[1] - 1) + DPAlgorithm_MEA.Tables[2].getValue(ij[1], ij[1]);
-        if (NSprime >= Nmax - delta) {
+        if (NSprime >= Nmax - delta || Math.abs(NSprime - (Nmax - delta)) < EPS) {
             var trace = Object.create(NussinovCellTrace).init([[ij[0], ij[1] - 1]], []);
             R.unshift(this.getSPrime(NSprime, Nmax, ij, trace, sigma, delta, P, traces));
         }
@@ -1511,8 +1515,8 @@ DPAlgorithm_MEA.Tables[0].getSubstructures = function (sigma, P, traces, delta, 
     // if (i,j) == (i,k -1) + (k+1, j - 1) || (k,j)
     for (var k = ij[0]; k < ij[1] - this.minLoopLength; ++k) {
         if (RnaUtil.areComplementary(this.sequence[k - 1], this.sequence[ij[1] - 1])) {
-            var NSprime = this.getValue(ij[0], k - 1) + this.getValue(k + 1, ij[1] - 1) + 2 * NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, ij[1]);//this.countBasepairs(tmp_P, sigma_prime);
-            if (NSprime >= Nmax - delta) {
+            var NSprime = this.getValue(ij[0], k - 1) + this.getValue(k + 1, ij[1] - 1) + this.gamma * NussinovDPAlgorithm_McCaskill.Tables[2].getValue(k, ij[1]);//this.countBasepairs(tmp_P, sigma_prime);
+            if (NSprime >= Nmax - delta || Math.abs(NSprime - (Nmax - delta)) < EPS) {
                 var trace = Object.create(NussinovCellTrace).init([[ij[0], k - 1], [k + 1, ij[1] - 1]], [[k, ij[1]]]);
                 R.push(this.getSPrime(NSprime, Nmax, ij, trace, sigma, delta, P, traces));
             }
