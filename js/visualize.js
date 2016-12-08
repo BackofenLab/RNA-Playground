@@ -40,6 +40,7 @@ function NussinovMatrixViewModel() {
         allowTraceback: true,
         energy: ko.observable(-1),
         energy_normal: ko.observable(1),
+        gamma: ko.observable(2.0),
         sequence: ko.computed(function () {
             var ll = self.loopLength();
             if (self.rawSeq() == undefined)
@@ -134,25 +135,6 @@ function NussinovMatrixViewModel() {
         return availableAlgorithms[self.input.recursion()];
     }, this);
 
-    self.renderer = function (matrix) {
-        //var res = JSON.parse(JSON.stringify(matrix));
-        //console.log(matrix);
-        if (self.input.recursion() === "mcCaskill" || self.input.recursion() === "MaxExpAcc") {
-            for (var i = 0; i < matrix.cells.length; ++i) {
-                for (var j = 0; j < matrix.cells[i].length; ++j) {
-                    //console.log(matrix.cells[i][j].value);
-                    if (matrix.cells[i][j].value === null || isNaN(matrix.cells[i][j].value)) {
-                        matrix.cells[i][j].value = "";//0.0;
-                    } else {
-                        matrix.cells[i][j].value = parseFloat(matrix.cells[i][j].value).toFixed(3);
-                    }
-                }
-                //console.log(p);
-            }
-        }
-        return matrix;
-    };
-
     self.matrix = ko.computed(function () {
         //var seq = self.input.sequence().toUpperCase();
         //var ll = parseInt(self.input.loopLength());
@@ -195,11 +177,6 @@ function NussinovMatrixViewModel() {
 
         }
 
-        //console.log("hallo\n", tables);
-        for (var i = 0; i < tables.length; ++i) {
-            tables[i] = self.renderer(tables[i]);
-        }
-
         // add latex formulas to array
         if (!self.fired) {
             for (var i in tables) {
@@ -234,10 +211,24 @@ function NussinovMatrixViewModel() {
     self.cells = ko.computed(function () {
         var tables = [];
 
-        for (var i in self.matrix()) {
+        for (var r in self.matrix()) {
             //matrixToCSV(self.input.sequence(), self.matrix()[i].cells);
-            if (self.matrix()[i].cells == undefined)return;
-            tables.push(self.matrix()[i].cells.slice(1));        // slice is hack to skip first row(investigate later)
+            if (self.matrix()[r].cells == undefined)return;
+            var oldMatrix = self.matrix()[r].cells.slice(1);  // slice is hack to skip first row(investigate later)
+            var newMatrix = JSON.parse(JSON.stringify(oldMatrix));
+            for (var i = 0; i < newMatrix.length; ++i) {
+                for (var j = 0; j < newMatrix[i].length; ++j)
+                {
+                    if (self.input.recursion() === "mcCaskill" || self.input.recursion() === "MaxExpAcc") {
+                        if (newMatrix[i][j].value === null || isNaN(newMatrix[i][j].value)) {
+                            newMatrix[i][j].value = "";//0.0;
+                        } else {
+                            newMatrix[i][j].value = parseFloat(newMatrix[i][j].value).toFixed(3);
+                        }
+                    }
+                }
+            }
+            tables.push(newMatrix);
         }
         //console.log(tables.simpleRepresentation());
         matrixToCSV(self.input.sequence(), self.matrix());
