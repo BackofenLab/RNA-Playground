@@ -172,8 +172,8 @@ function NussinovMatrixViewModel() {
 
         }
         if (self.input.recursion() === "rnaup") {
-            $("#dotplot_seq1").html(dotplot(self.rawSeq(), tables[1].cells, 'up1'));
-            $("#dotplot_seq2").html(dotplot(self.rawSeq2(), tables[2].cells, 'up2'));
+            $("#dotplot_seq1").html(dotplot(self.rawSeq().toUpperCase(), tables[1].cells, 'up1'));
+            $("#dotplot_seq2").html(dotplot(self.rawSeq2().toUpperCase(), tables[2].cells, 'up2'));
 
         }
 
