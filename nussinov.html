@@ -24,7 +24,19 @@
 <div>
 
     <!--<h1>JavaScript Implementation and Visualization of RNA algorithms</h1>-->
+    <script>
+        function showRecursion() {
+            console.log("val:", $("#formula").val());
+            setTimeout(function () {      //introduces a little delay, so that the thing will close slowly and neatly
+                document.getElementById("recursion").innerHTML =  availableAlgorithms[$("#formula").val()].getRecursionInLatex();
+                rerendermath();
+                $(".animate1").empty();
+            }, 450);
+            rerendermath();
 
+        };
+    </script>
+    
     <div id="inputContainer">
         <div class="row">
             <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
@@ -64,6 +76,9 @@
             </div>
         </div>
         <div class="row">
+            <script type="text/javascript">
+                showRecursion();
+            </script>
             <div class="colW200" style="font-size: 120%">Nussinov Recursion:</div>
             <div class="colW400">
                 <select onchange="showRecursion()" id= "formula" data-bind="value: input.recursion" style="width:150px;">
@@ -125,17 +140,7 @@
     </div>
 
     <script src="js/visualize.js"></script>
-    <script>
-        function showRecursion() {
-            console.log("val:", $("#formula").val());
-            setTimeout(function () {      //introduces a little delay, so that the thing will close slowly and neatly
-                document.getElementById("recursion").innerHTML =  availableAlgorithms[$("#formula").val()].getRecursionInLatex();
-                rerendermath();
-                $(".animate1").empty();
-            }, 450);
 
-        };
-    </script>
 </div>
 <!-- content -->
 
