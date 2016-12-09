@@ -4,16 +4,25 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>RNA Nussinov Recursions</title>
+<title>RNA-related algorithms</title>
 
 <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' type='text/css'>
 <link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css">
 <link rel="stylesheet" href="css/index.css"/>
-<link rel="stylesheet" href="css/corporate-design.css"/>
 
+<script src="js/libs/d3.min.js"></script>
+<script src="js/libs/knockout-3.4.0.js"></script>
+<script src="js/libs/FileSaver.min.js"></script>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script src="js/libs/jquery.min.js"></script>
+<script src="js/nussinovmatrix.js"></script>
+<script src="js/nussinovmatrix4d.js"></script>
+<script src="js/scripts.js"></script>
 
 <!-- RNA tools webserver styles -->
-<!-- <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> -->
+<link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/>
+
 </head>
 
 <body onload="loadPage()">
@@ -23,7 +32,6 @@
 <!-- central content DIV of the RNA tools webserver -->
 <div class="content">
     <!--<p>-->
-        <!--Your country:-->
         <!--<select data-bind="options: Algorithms,-->
                        <!--optionsText: 'algoName',-->
                        <!--value: selectedAlgorithm,-->
@@ -36,13 +44,13 @@
     <!--</div>-->
     <select id="algoSelect" onchange="algoSel(this)">
         <option selected="selected" disabled="disabled">Select a RNA Algorithm</option>
-        <option value="nussinov.html">Nussinov</option>
-        <option value="countStructs.html">Structure Counting</option>
-        <option value="mcCaskill.html">McCaskill</option>
-        <option value="maxExpAcc.html">Maximum Expected Accuracy</option>
-        <option value="coFold.html">CoFold</option>
-        <option value="hybrid.html">RNA Hybrid</option>
-        <option value="rnaup.html">RNA UP</option>
+        <option value="Nussinov.html">Nussinov - max. #bp structure</option>
+        <option value="counting.html">Structure Counting</option>
+        <option value="McCaskill.html">McCaskill - structure probabilities</option>
+        <option value="MEA.html">MEA structure</option>
+        <option value="co-folding.html">Co-folding interactions</option>
+        <option value="hybrid-only.html">hybrid-only interactions</option>
+        <option value="accessibility.html">accessibility-based interactions</option>
 
     </select>
 
@@ -77,15 +85,6 @@
     </script>
 
 </div>
-<script src="js/libs/d3.min.js"></script>
-<script src="js/libs/knockout-3.4.0.js"></script>
-<script src="js/libs/FileSaver.min.js"></script>
-<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<script src="js/libs/jquery.min.js"></script>
-<script src="js/nussinovmatrix.js"></script>
-<script src="js/nussinovmatrix4d.js"></script>
-<script src="js/scripts.js"></script>
 
 
 </body>
