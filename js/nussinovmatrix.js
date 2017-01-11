@@ -1248,10 +1248,10 @@ NussinovDPAlgorithm_McCaskill.Tables.push(Object.create(NussinovMatrix)); // Pe
 NussinovDPAlgorithm_McCaskill.Tables.push(Object.create(NussinovMatrix)); // Pu
 
 NussinovDPAlgorithm_McCaskill.Tables[0].latex_representation = "Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} \\cdot Q^{b}_{k,j}";
-NussinovDPAlgorithm_McCaskill.Tables[1].latex_representation = "Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} \\cdot \\exp(-E_{bp}/RT) & \\text{ if }i,j \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}";
+NussinovDPAlgorithm_McCaskill.Tables[1].latex_representation = "Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} \\cdot \\exp(-E_{bp}/RT) & \\text{ if }S_{i},S_{j} \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}";
 
-NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i,j} = \\frac{Q_{1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\exp(-E_{bp} / RT) \\cdot \\frac{Q_{p+1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,q-1}}{Q^b_{p,q}}";
-NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i,j} = \\frac{Q_{1,i-1} \\cdot 1 \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\exp(-E_{bp} / RT) \\cdot \\frac{Q_{p+1,i-1} \\cdot 1 \\cdot Q_{j+1,q-1}}{Q^b_{p,q}}";
+NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i,j} = \\frac{Q_{1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\frac{\\exp(-E_{bp} / RT) \\cdot Q_{p+1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,q-1}}{Q^b_{p,q}}";
+NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i,j} = \\frac{Q_{1,i-1} \\cdot 1 \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\frac{\\exp(-E_{bp} / RT) \\cdot Q_{p+1,i-1} \\cdot 1 \\cdot Q_{j+1,q-1}}{Q^b_{p,q}}";
 
 //NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot Q^{b}_{i, j} \\cdot Q_{j + 1, n})";
 //NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot 1 \\cdot Q_{j + 1, n})";
@@ -1413,7 +1413,7 @@ DPAlgorithm_MEA.Tables = new Array();
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
-DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & \\text{i > j} \\\\ M_{i, j - 1} + P^{u}_{j} & \\text{j unpaired} \\\\ M_{i, k - 1} + M_{k + 1, j - 1} + \\gamma \\cdot P^{bp}_{k, j} & \\text{k paired with j, } i \\leq k < j \\end{cases}";
+DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases}M_{i, j - 1} + P^{u}_{j} & S_{j}\\text{ unpaired} \\\\ \\max_{i \\leq k < (j-l)} \\left( M_{i, k - 1} + M_{k + 1, j - 1} + \\gamma \\cdot P^{bp}_{k, j} \\right) & S_{k}\\text{ paired with }S_{j} \\end{cases}";
 DPAlgorithm_MEA.Tables[2].latex_representation = "P_{i}^{u} = 1 - \\sum_{k < i}{P^{bp}_{k, i}} - \\sum_{i < k}{P^{bp}_{i, k}}";
 
 //DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
@@ -1536,7 +1536,7 @@ DPAlgorithm_coFold.Description = "Co-Fold";
 DPAlgorithm_coFold.Tables = new Array();
 DPAlgorithm_coFold.Tables.push(Object.create(NussinovMatrix));
 
-DPAlgorithm_coFold.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D(i,k-1)+D(k+1,j-1)+1 & S_k,S_j \\text{ compl. base pair} \\end{cases}";
+DPAlgorithm_coFold.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} \\left( D(i,k-1)+D(k+1,j-1)+1 \\right) & S_k,S_j \\text{ compl. base pair} \\end{cases}";
 
 DPAlgorithm_coFold.computeMatrix = function(input) {
 
@@ -1652,11 +1652,11 @@ var wuchty = function (xmat) {
 // */
 //var availableAlgorithms = {
 //
-//    /** ambiguous recursion */
-//    nussinovOriginal: NussinovDPAlgorithm_Ambiguous,//NussinovMatrix_ambiguous,
-//
 //    /** original unique recursion */
 //    nussinovUnique: NussinovDPAlgorithm_Unique,//NussinovMatrix_unique,
+//
+//    /** ambiguous recursion */
+//    nussinovAmbiguous1: NussinovDPAlgorithm_Ambiguous,//NussinovMatrix_ambiguous,
 //
 //    /** nussinov neo recursion */
 //    nussinovAmbiguous2: NussinovDPAlgorithm_Ambiguous2,

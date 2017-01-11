@@ -611,11 +611,11 @@ var wuchty4d = function (xmat, maxSOS) {
  */
 var availableAlgorithms = {
 
-    /** ambiguous recursion */
-    nussinovOriginal: NussinovDPAlgorithm_Ambiguous,//NussinovMatrix_ambiguous,
-
     /** original unique recursion */
     nussinovUnique: NussinovDPAlgorithm_Unique,//NussinovMatrix_unique,
+    
+    /** ambiguous recursion */
+    nussinovAmbiguous1: NussinovDPAlgorithm_Ambiguous,//NussinovMatrix_ambiguous,
 
     /** nussinov neo recursion */
     nussinovAmbiguous2: NussinovDPAlgorithm_Ambiguous2,

@@ -1,8 +1,31 @@
-    <!--<h1>JavaScript Implementation and Visualization of RNA algorithms</h1>-->
+
+	<div class="row" id="introduction">
+		<div class="colW600">
+			The number of nested secondary structures that can be formed by an RNA sequence grows
+			exponentially with sequence length $n$ (about $\sim 1.8^{n}$, see 
+			<a href="http://dx.doi.org/10.1007/BF02459506">(Zuker and Sankoff, 1984)</a>).
+			<br />
+			<br />
+			Zuker and Sankoff presented 
+			<a href="http://dx.doi.org/10.1007/BF02459506">1984</a> a recursion to compute the
+			expected number of admissible structures for an RNA sequence of a given length.
+			The approach applies dynamic programming, i.e. tabularizes results for subproblems.
+			<br />
+			Here, we use a variant of this algorithm that populates a matrix $C$, 
+			where an entry $C_{i,j}$ 
+			provides the <em>exact number</em> of admissible structures for the subsequence from 
+			position $i$ to $j$. The overall number of admissible structures for the
+			sequences can be found in the upper right corner $C_{1,n}$, where $n$ denotes
+			the sequence's length and Watson-Crick as well as GU base pairs are considered complementary.
+		</div>
+		<div class="colW150">
+			<img alt="counting structures" src="counting-120x90.png" width=120 height=90 >
+		</div>
+	</div>
 
     <div id="inputContainer">
         <div class="row">
-            <div class="colW200" style="font-size: 120%">RNA sequence:</div>
+            <div class="colW200" style="font-size: 120%">RNA sequence $S$:</div>
             <div class="colW400">
                 <input data-bind="value: rawSeq" class="userInput" maxlength="12"
                        placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
@@ -21,22 +44,21 @@
                     <option value=4>4</option>
                     <option value=5>5</option>
                 </select>
+                <label for="ll" style="margin-left:10px;">i.e. minimal number of enclosed positions</label>
             </div>
         </div>
         <div class="row">
             <div class="colW400" style="font-size: 120%; white-space: nowrap;">Recursion for counting the number of possible structures:</div>
         </div>
-        <div class="row">
-            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">nussinovCounting</div>
-        </div>
 
+		<div class="row" id="rec_id" data-bind="text: latex()[0]"></div>
+        <div id="rec_select" style="display: none;">nussinovCounting</div>
 
     </div>
 
-    <div class="row" id="output">
-        <div class="colW300" id="rec_id" data-bind="text: latex()[0]" style="margin-left:50px;"></div>
+    <div id="output">
 
-        <table id="matrix" class="colw150">
+        <table id="matrix">
             <thead>
             <tr>
                 <th class="cell_count"  style="font-size: 16px; color: darkslategray">$C$</th>
@@ -56,9 +78,8 @@
             </tr>
             </tbody>
         </table>
-
-        <button class="" type="button" onclick="generate_tables()">Download Table!</button>
-
+        
+        <div><a href="javascript:generate_tables()">Download Table</a></div>
     </div>
 
     <script src="js/visualize.js"></script>

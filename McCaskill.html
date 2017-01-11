@@ -1,15 +1,49 @@
 
-    <!--<h1>JavaScript Implementation and Visualization of RNA algorithms</h1>-->
+	<div class="row" id="introduction">
+		<div class="colW600">
+			<a href="http://dx.doi.org/10.1002/bip.360290621">John S. McCaskill (1990)</a>
+			introduced an efficient dynamic programming algorithm to compute the 
+			partition function $Z=\sum_{P} \exp(-E(P)/RT)$ over all possible nested structures $P$
+			that can be formed by a given RNA sequence $S$ with $E(P)$ = energy of structure $P$, 
+			$R$ = gas constant, and $T$ = temperature.
+			<br />
+			<br />
+			Here, we provide a simplified version of the approach using a
+			Nussinov-like energy scoring scheme, i.e. each base pair of a structure
+			contributes a fixed energy term $E_{bp}$ independent of its context. Given this,
+			we populate two dynamic programming tables $Q$ and $Q^{b}$. $Q_{i,j}$ provides
+			the partition function for subsequence from position $i$ to $j$, while
+			$Q^{b}_{i,j}$ holds the partition function of the subsequence 
+			given the constraint that position $i$ and $j$ form a base pair 
+			(or 0 if no base pair is possible).
+			Watson-Crick as well as GU base	pairs are considered complementary.
+			The overall partition function is given by $Z = Q_{1,n}$ for a sequence
+			of length $n$.
+			<br />
+			<br />
+			Given these partition function terms, we can compute base pair 
+			probabilities $P^{bp}$ as well as probabilities that a certain subsequence is
+			unpaired $P^{u}$, i.e. its positions are not involved in any base pair.
+			Such probabilities can be visualized using a dotplot. In this matrix-like
+			representation, each value of a cell $i,j$ is represented by an 
+			according dot where its size is in relation to the value.
+		</div>
+		<div class="colW150">
+			<img alt="dotplot of base pair probabilities" src="McCaskill-120x90.png" width=120 height=90 >
+		</div>
+	</div>
 
     <div id="inputContainer">
+
         <div class="row">
-            <div class="colW200" style="font-size: 120%">RNA sequence:</div>
+            <div class="colW250" style="font-size: 120%">RNA sequence $S$:</div>
             <div class="colW400">
                 <input data-bind="value: rawSeq" class="userInput" maxlength="12"
                        placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
         </div>
+        
         <!--
                 var slider = $('<input>').attr({
                 id: curr_obj,
@@ -19,24 +53,27 @@
                 step: (max - min) / 100
                 }).appendTo(ranges_div);
                 -->
+                
         <div class="row">
-            <div class="colW200" style="font-size: 120%">Energy weight of base pair: $E_{bp}$</div>
+            <div class="colW250" style="font-size: 120%">Energy weight of base pair $E_{bp}$:</div>
             <div class="colW400">
                 <input data-bind="value: input.energy" id="energy" type="range" max="2" min="-2" step="(max - min) / 100">
 
                 <p data-bind="text: input.energy" style="display: inline;"></p>
             </div>
         </div>
+        
         <div class="row">
-            <div class="colW200" style="font-size: 120%">Energy normalizer of base pair: $RT$</div>
+            <div class="colW250" style="font-size: 120%">Energy normalizer of base pair $RT$:</div>
             <div class="colW400">
                 <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="1" step="(max - min) / 100">
 
                 <p data-bind="text: input.energy_normal" style="display: inline;"></p>
             </div>
         </div>
+        
         <div class="row">
-            <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
+            <div class="colW250" style="font-size: 120%">Minimal loop length $l$:</div>
             <div class="colW400">
                 <select data-bind="value: loopLength" id="ll" style="width:40px;">
                     <option value=0 selected="selected">0</option>
@@ -46,26 +83,28 @@
                     <option value=4>4</option>
                     <option value=5>5</option>
                 </select>
+                <label for="ll" style="margin-left:10px;">i.e. minimal number of enclosed positions</label>
             </div>
         </div>
 
 
         <div class="row">
-            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">mcCaskill</div>
+            <div class="col" id="rec_select" style="display: none;">mcCaskill</div>
         </div>
 
     </div>
 
-    <div class="row" id="output">
+    <div id="output" >
+    
+		<h2>Partition functions</h2>
 
-        <div class="row">
-            <div class="colW400" style="font-size: 120%; white-space: nowrap;">Recursion of McCaskill:</div>
-        </div>
+        <div>The following recursions are used to compute the partition functions $Q$ and $Q^{b}$.</div>
 
-        <div class="colW300" id="rec_id" data-bind="text: latex()[0]" style="margin-left:50px;display: block;"></div>
-        <div class="colW300" id="rec_id" data-bind="text: latex()[1]" style="margin-left:80px;"></div>
+        <div id="rec_id_0" data-bind="text: latex()[0]"></div>
 
-        <table id="matrix" class="colw150">
+  	    <div id="rec_id_1" data-bind="text: latex()[1]"></div>
+
+        <table id="matrixQ">
             <thead>
             <tr>
                 <th class="cell_count"  style="font-size: 16px; color: darkslategray">$Q$</th>
@@ -86,9 +125,7 @@
             </tbody>
         </table>
 
-
-
-        <table id="matrix" class="colw150">
+        <table id="matrixQb">
             <thead>
             <tr>
                 <th class="cell_count"  style="font-size: 16px; color: darkslategray">$Q^{b}$</th>
@@ -108,11 +145,23 @@
             </tr>
             </tbody>
         </table>
+        <div><a href="javascript:generate_tables()">Download Tables</a></div>
 
+		<h2>Base pair probabilities</h2>
+		
+		<div>
+			Given the partition functions $Q$ and $Q^{b}$ we can now compute the
+			probabilities of individual base pairs $(i,j)$ within the structure
+			ensemble, i.e. $P^{bp}_{i,j} = \sum_{P \ni (i,j)} \exp(-E(P)/RT) / Z$ given by 
+			the sum of the Boltzmann probabilities of all structures that contain the
+			base pair. For its computation, the following recursion is used, which 
+			covers both the case that $(i,j)$ is an external base pair as well
+			as that $(i,j)$ is directly enclosed by an outer base pair $(p,q)$.
+		</div>
 
-        <div class="colW300" id="rec_id" data-bind="text: latex()[2]" style="margin-left:50px;"></div>
+        <div id="rec_id_2" data-bind="text: latex()[2]"></div>
 
-        <table id="matrix" class="colw150">
+        <table id="matrixPbp">
             <thead>
             <tr>
                 <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^{bp}$</th>
@@ -132,11 +181,26 @@
             </tr>
             </tbody>
         </table>
+        <div><a href="javascript:generate_tables()">Download Tables</a></div>
 
+		<div>
+			The base pair probabilities can be visualized by a dotplot, where 
+			larger dots represent higher probabilities.
+		</div>
 
-        <div class="colW300" id="rec_id" data-bind="text: latex()[3]" style="margin-left:50px;"></div>
+        <div id="paired_dotplot"></div>
 
-        <table id="matrix" class="colw150">
+		<h2>Unpaired probabilities / accessibility</h2>
+		
+		<div>
+			Analogously to base pair probabilities, we can also compute
+			the probability that a given subsequence $S_{i}..S_{j}$ of an RNA sequence
+			is <em>not</em> involved in any intramolecular base pair.
+		</div>
+
+        <div id="rec_id_3" data-bind="text: latex()[3]"></div>
+
+        <table id="matrixPu">
             <thead>
             <tr>
                 <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^u$</th>
@@ -156,11 +220,16 @@
             </tr>
             </tbody>
         </table>
+        <div><a href="javascript:generate_tables()">Download Tables</a></div>
 
-        <div id="paired_dotplot"></div>
+		<div>
+			The probabilities of subsequences to be unpaired can be visualized by a dotplot, where 
+			larger dots represent higher probabilities.
+		</div>
+
         <div id="unpaired_dotplot"></div>
 
-        <button class="" type="button" onclick="generate_tables()">Download Table!</button>
+		<br />
 
     </div>
 

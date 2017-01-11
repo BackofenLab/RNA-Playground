@@ -1,5 +1,4 @@
 
-    <!--<h1>JavaScript Implementation and Visualization of RNA algorithms</h1>-->
     <script>
         function showRecursion() {
             console.log("val:", $("#formula").val());
@@ -13,9 +12,42 @@
         };
     </script>
 
+	<div class="row" id="introduction">
+		<div class="colW600">
+			The algorithm by 
+			<a href="http://dx.doi.org/10.1137/0135006">Ruth Nussinov et al. (1978)</a>
+			computes for a given 
+			RNA sequence the maximal number of base pairs of any nested structure. 
+			To this end, dynamic programming is applied, which also enables the 
+			identification of an according maximally base paired structure via traceback.
+			<br />
+			<br />
+			Here, we provide different recursions to fill the dynamic programming
+			table $D$, where an entry $D_{i,j}$ provides the maximal number of
+			base pairs of any nested structure for the subsequence from position $i$ to $j$.
+			The entry $D_{1,n}$ provides the overall maximal number of base pairs
+			for the whole sequence of length $n$. Watson-Crick as well as GU base
+			pairs are considered complementary.
+			<br />
+			Furthermore, beside the identification of an according optimal structure
+			via traceback, we provide an exhaustive enumeration of up to 15 suboptimal structures
+			using the algorithm by 
+			<a href="http://dx.doi.org/10.1002/(SICI)1097-0282(199902)49:2%3C145::AID-BIP4%3E3.0.CO;2-G">Wuchty et al. (1999)</a>.
+			<br />
+			For each structure, the according traceback is visualized. Note, for
+			recursions implementing an 
+			ambiguous decomposition different tracebacks might yield the same structure.
+			These will be listed several times, once for each traceback.
+		</div>
+		<div class="colW150">
+			<img alt="nested RNA structure" src="Nussinov-120x90.png" width=120 height=90 >
+		</div>
+	</div>
+
     <div id="inputContainer">
+    
         <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
+            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S$:</div>
             <div class="colW400">
                 <input data-bind="value: rawSeq" class="userInput" maxlength="12"
                        placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
@@ -34,6 +66,7 @@
                     <option value=4>4</option>
                     <option value=5>5</option>
                 </select>
+                <label for="ll" style="margin-left:10px;">i.e. minimal number of enclosed positions</label>
             </div>
         </div>
 
@@ -51,6 +84,7 @@
                 <label for="delta" style="margin-left:10px;">for suboptimal traceback</label>
             </div>
         </div>
+        
         <div class="row">
             <script type="text/javascript">
                 showRecursion();
@@ -58,24 +92,24 @@
             <div class="colW200" style="font-size: 120%">Nussinov Recursion:</div>
             <div class="colW400">
                 <select onchange="showRecursion()" id= "formula" data-bind="value: input.recursion" style="width:150px;">
-                    <option value="nussinovUnique">Nussinov Original</option>
-                    <option value="nussinovOriginal" selected="selected">Ambiguous Variant</option>
+                    <option value="nussinovUnique" selected="selected">Nussinov Original</option>
+                    <option value="nussinovAmbiguous1">Ambiguous Variant 1</option>
                     <option value="nussinovAmbiguous2">Ambiguous Variant 2</option>
                 </select>
                 <label for="formula" style="margin-left:10px;">used for matrix calculating</label>
             </div>
         </div>
-        <div class="row">
-            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">nussinovUnique</div>
-            <div style="height: 80px;" id="recursion" class="colW400"></div>
-        </div>
+        
+        <div class="row" id="recursion" style="height: 110px;"></div>
+        <div id="rec_select" style="display: none;">nussinovUnique</div>
 
     </div>
 
     <div class="row" id="output" >
-        <div style="display: inline-block; float: left">
+    
+        <div class="col">
             <canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
-            <table  class="colw150" style="display: inline-block; float: left">
+            <table style="margin:0;">
                 <thead>
                 <tr>
                     <th class="cell_th">$D$</th>
@@ -96,23 +130,39 @@
 
                 </tbody>
             </table>
-            <div>
-                <table  style="margin: initial;">
-                    <td id="info"
-                        style="display: none; border: 1px solid grey; padding: 6px 14px;letter-spacing: 2px; background: #fff;"></td>
-                </table>
-                <button class="" type="button" onclick="generate_tables()">Download Table!</button>
-            </div>
+	        <br />
+	        <a href="javascript:generate_tables()">Download Table</a>
+            <table style="display:none;margin:0;">
+            <tr>
+                <td id="info"
+                    style="display: none; border: 1px solid grey; padding: 6px 14px;letter-spacing: 2px; background: #fff;"></td>
+            </tr>
+            </table>
         </div>
-        <table id="structures" class="colw200" style="float: left; margin-top:30px">
-            <thead>
-            <th id="structTableHeading">Possible Structures</th>
-            </thead>
-
-            <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
-            <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"></td></tr>
-            </tbody>
-        </table>
+        
+        <div class="col">
+	        <table id="structures" style="margin:0;">
+	            <thead>
+	            <tr>
+	               <th id="structTableHeading">Possible Structures</th>
+	            </tr>
+	            </thead>
+	
+	            <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
+	            <tr><td id="structTableCells" data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"></td></tr>
+	            </tbody>
+	        </table>
+        </div>
+        
+    </div>
+    
+    <div class="row">
+    	<div class="col">
+    		Select a structure from the list or (multiple times) a cell of $D$ 
+    		to see according tracebacks. Note, the structure list is limited to
+    		the first 15 structures identified via traceback and thus depends
+    		on the recursion case order.
+   		</div>
     </div>
 
     <script src="js/visualize.js"></script>

@@ -18,7 +18,7 @@ function NussinovMatrixViewModel() {
 
     var formulas = [];
 
-    var maxStructures = 14;
+    var maxStructures = 15;
 
     self.currCell = {
         i: null,
