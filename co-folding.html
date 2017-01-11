@@ -1,9 +1,53 @@
 
-    <!--<h1>JavaScript Implementation and Visualization of RNA algorithms</h1>-->
+	<div class="row" id="introduction">
+		<div class="colW600">
+			To predict RNA-RNA interactions optimizing both intra- as well as
+			intermolecular base pairs one can use a so called co-folding approach.
+			Here, the two interacting sequences are concatenated (using a 
+			non-pairing linker sequence) to a single pseudo-sequence
+			that is then folded via single structure prediction.
+			When using a full nearest-neighbor energy model, special care has
+			to be taken for the scoring of the loop containing the linker.
+			One of the first approaches dedicated to this was introduced by
+			<a href="http://dx.doi.org/10.1016/j.jmb.2004.10.082">Mirela Andronescu and coworkers (2005)</a>.
+			<br>
+			<br>
+			Here, we extend the 
+			<a href="index.jsp?toolName=Nussinov">Nussinov</a> algorithm for
+			such a co-folding scheme. No special linker treatment is necessary, since 
+			we do a base pair maximization without taking the base pair's context
+			into account. We can directly use the Nussinov algorithm without
+			any extensions when using a linker sequence of length $l+1$
+			($L=\text{X}^{l+1}$),
+			where $l$ denotes the minimal loop length. This enables 
+			intermolecular base pairs between the concatenated sequence ends.
+			Thus, for two sequences $S_{1}$ and $S_{2}$, 
+			the hybrid sequence used for folding is given by $S=S_{1}LS_{2}$.
+			<br />
+			<br />
+			For prediction, we fill the dynamic programming
+			table $D$, where an entry $D_{i,j}$ provides the maximal number of
+			base pairs of any nested structure for the subsequence from $S_{i}$ to $S_{j}$.
+			The entry $D_{1,n}$ provides the overall maximal number of base pairs
+			for the whole hybrid sequence $S$ of length $n=|S_{1}|+l+1+|S_{2}|$. 
+			Watson-Crick as well as GU base pairs are considered complementary.
+			<br />
+			Beside the identification of an according optimal hybrid structure
+			via traceback (intra- and intermolecular base pairs are given by $()$ and $[\;]$, resp.), 
+			we provide an exhaustive enumeration of up to 15 suboptimal hybrids
+			using the algorithm by 
+			<a href="http://dx.doi.org/10.1002/(SICI)1097-0282(199902)49:2%3C145::AID-BIP4%3E3.0.CO;2-G">Wuchty et al. (1999)</a>.
+			For each structure, the according traceback is visualized on selection.
+		</div>
+		<div class="colW150">
+			<img alt="co-folded RNA-RNA interaction" src="co-folding-120x90.png" width=120 height=90 >
+		</div>
+	</div>
 
     <div id="inputContainer">
+    
         <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence 1:</div>
+            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S_{1}$:</div>
             <div class="colW400">
                 <input data-bind="value: rawSeq" class="userInput" maxlength="6"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
@@ -12,7 +56,7 @@
         </div>
 
         <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence 2:</div>
+            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S_{2}$:</div>
             <div class="colW400">
                 <input data-bind="value: rawSeq2" class="userInput" maxlength="6"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
@@ -28,9 +72,8 @@
                     <option value=1>1</option>
                     <option value=2>2</option>
                     <option value=3>3</option>
-                    <!--<option value=4>4</option>-->
-                    <!--<option value=5>5</option>-->
                 </select>
+                <label for="ll" style="margin-left:10px;">i.e. minimal number of enclosed positions</label>
             </div>
         </div>
 
@@ -57,7 +100,7 @@
     </div>
     <div class="colW300" id="rec_id" data-bind="text: latex()[0]" style="margin-left:50px;"></div>
 
-    <div id="matrix" class="colw600">
+    <div id="matrix">
 
         <div style="display: inline-block; float: left">
             <canvas id="CanvasLayer"
