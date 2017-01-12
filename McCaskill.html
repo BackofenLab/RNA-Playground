@@ -38,7 +38,7 @@
         <div class="row">
             <div class="colW250" style="font-size: 120%">RNA sequence $S$:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq" class="userInput" maxlength="12"
+                <input data-bind="value: rawSeq" class="userInput"
                        placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
@@ -157,6 +157,11 @@
 			base pair. For its computation, the following recursion is used, which 
 			covers both the case that $(i,j)$ is an external base pair as well
 			as that $(i,j)$ is directly enclosed by an outer base pair $(p,q)$.
+			<br>
+			<br>
+			Base pair probabilities can be used for structure prediction using
+			e.g. a 
+			<a href="index.jsp?toolName=MEA">maximum expected accuracy (MEA) approach</a>.
 		</div>
 
         <div id="rec_id_2" data-bind="text: latex()[2]"></div>
@@ -196,6 +201,14 @@
 			Analogously to base pair probabilities, we can also compute
 			the probability that a given subsequence $S_{i}..S_{j}$ of an RNA sequence
 			is <em>not</em> involved in any intramolecular base pair.
+			<br>
+			<br>
+			Unpaired probabilities can be interpreted as the accessibility of 
+			a given region of an RNA to further structure formation. Thus, it
+			can be used to enhance RNA-RNA interaction prediction approaches,
+			e.g. see our
+			<a href="index.jsp?toolName=accessibility">accessibility-based prediction</a>
+			implementation.
 		</div>
 
         <div id="rec_id_3" data-bind="text: latex()[3]"></div>

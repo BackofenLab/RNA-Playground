@@ -155,3 +155,14 @@ line {
 svg {
     font: 10px sans-serif;
 }
+
+.hybridVisual {
+	font-family: Courier, monospace;
+	color: Blue;
+	white-space: pre;
+	background:white;
+	height:8em;
+	border:solid;
+	border-width:1px;
+	border-color:grey;	
+}
