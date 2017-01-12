@@ -45,7 +45,7 @@
             <div class="colW250" style="font-size: 120%">Minimal loop length $l$:</div>
             <div class="colW400">
                 <select data-bind="value: loopLength" id="ll" style="width:40px;">
-                    <option value=0 selected="selected">0</option>
+                    <option value=0>0</option>
                     <option value=1>1</option>
                     <option value=2>2</option>
                     <option value=3>3</option>
@@ -57,32 +57,26 @@
         </div>
 
         <div class="row">
-            <div class="colW250" style="font-size: 120%">Energy weight of base pair: $E_{bp}$</div>
+            <div class="colW250" style="font-size: 120%">Energy weight of base pair $E_{bp}$:</div>
             <div class="colW400">
-                <input data-bind="value: input.energy" id="energy" type="range" max="2" min="-2"
-                       step="(max - min) / 100">
-
-                <p data-bind="text: input.energy" style="display: inline;"></p>
+                <input data-bind="value: input.energy" id="energy" type="range" max="2" min="-2" step="(max - min) / 100">
+                <label for="energy" data-bind="text: input.energy"></label>
             </div>
         </div>
         
         <div class="row">
-            <div class="colW250" style="font-size: 120%">Energy normalizer of base pair: $RT$</div>
+            <div class="colW250" style="font-size: 120%">'Normalized' temperature $RT$:</div>
             <div class="colW400">
-                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="1"
-                       step="(max - min) / 100">
-
-                <p data-bind="text: input.energy_normal" style="display: inline;"></p>
+                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="1" step="(max - min) / 100">
+                <label for="energy_normal" data-bind="text: input.energy_normal"></label>
             </div>
         </div>
         
         <div class="row">
             <div class="colW250" style="font-size: 120%">Base pair weighting $\gamma$:</div>
             <div class="colW400">
-                <input data-bind="value: input.gamma" id="gamma" type="range" max="5" min="1"
-                       step="(max - min) / 100">
-
-                <p data-bind="text: input.gamma" style="display: inline;"></p>
+                <input data-bind="value: input.gamma" id="gamma" type="range" max="5" min="1" step="(max - min) / 100">
+                <label for="gamma" data-bind="text: input.gamma"></label>
             </div>
         </div>
 
@@ -90,7 +84,7 @@
             <div class="colW250" style="font-size: 120%">Delta MEA to maximum:</div>
             <div class="colW400">
                 <select id="delta" data-bind="value: input.delta" style="width:40px;">
-                    <option value=0 selected="selected">0</option>
+                    <option value=0>0</option>
                     <option value=1>1</option>
                     <option value=2>2</option>
                     <option value=3>3</option>

@@ -1,62 +1,64 @@
-    <!--<h1>JavaScript Implementation and Visualization of RNA algorithms</h1>-->
+
+	<div class="row" id="introduction">
+		<div class="colW600">
+		</div>
+		<div class="colW150">
+			<img alt="accessibility-based RNA-RNA interaction" src="accessibility-120x90.png" width=120 height=90 >
+		</div>
+	</div>
 
     <div id="inputContainer">
+    
         <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence 1:</div>
+            <div class="colW250" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^1$:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq" class="userInput" maxlength="15"
+                <input data-bind="value: rawSeq" class="userInput"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
         </div>
 
         <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence 2:</div>
+            <div class="colW250" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^2$:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq2" class="userInput" maxlength="15"
+                <input data-bind="value: rawSeq2" class="userInput"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
         </div>
 
         <div class="row">
-            <div class="colW200" style="font-size: 120%">Energy weight of base pair: $E_{bp}$</div>
-            <div class="colW400">
-                <input data-bind="value: input.energy" id="energy" type="range" max="2" min="-2"
-                       step="(max - min) / 100">
-                <p data-bind="text: input.energy" style="display: inline-block;"></p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="colW200" style="font-size: 120%">Energy normalizer of base pair: $RT$</div>
-            <div class="colW400">
-                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="-2"
-                       step="(max - min) / 100">
-                <p data-bind="text: input.energy_normal" style="display: inline;"></p>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
+            <div class="colW250" style="font-size: 120%">Minimal loop length $l$:</div>
             <div class="colW400">
                 <select data-bind="value: loopLength" id="ll" style="width:40px;">
-                    <option value=0 selected="selected">0</option>
+                    <option value=0>0</option>
                     <option value=1>1</option>
                     <option value=2>2</option>
                     <option value=3>3</option>
-                    <!--<option value=4>4</option>-->
-                    <!--<option value=5>5</option>-->
                 </select>
+                <label for="ll" style="margin-left:10px;">i.e. minimal number of enclosed positions</label>
             </div>
         </div>
 
-
         <div class="row">
-            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">rnaup</div>
-            <!--<div style="height: 60px;" id="recursion" class="colW400"></div>-->
+            <div class="colW250" style="font-size: 120%">Energy weight of base pair $E_{bp}$:</div>
+            <div class="colW400">
+                <input data-bind="value: input.energy" id="energy" type="range" max="2" min="-2" step="(max - min) / 100">
+                <label for="energy" data-bind="text: input.energy"></label>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="colW250" style="font-size: 120%">'Normalized' temperature $RT$:</div>
+            <div class="colW400">
+                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="-2" step="(max - min) / 100">
+                <label for="energy_normal" data-bind="text: input.energy_normal"></label>
+            </div>
         </div>
 
-        <div class="colW300" data-bind="text: latex()[0]" style="margin-left:50px;"></div>
+        <div id="recursion" data-bind="text: latex()[0]"></div>
+        
+        <div id="rec_select" style="display: none;">rnaup</div>
 
     </div>
 
@@ -72,7 +74,7 @@
 
         <table id="structures" class="colw200" style="margin-top:30px">
             <thead>
-            <th id="structTableHeading">Possible Structures</th>
+            <tr><th id="structTableHeading">Possible Structures</th></tr>
             </thead>
 
             <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">

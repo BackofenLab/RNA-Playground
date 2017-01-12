@@ -438,7 +438,7 @@ DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix4d));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 
-DPAlgorithm_rnaup.Tables[0].latex_representation = "\\begin{array} \\ I_{i, k}^{j, l} = E_{bp} \\cdot D_{i, k}^{j, l} - RT \\cdot (\\log(P^{u_1}_{i,k}) + \\log(P^{u_2}_{j, l}))  \\\\ D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\text{if } S^1_i, S^2_j \\text{ compl. base pair}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ E^{init} = E_{bp} \\\\ \\\\ E^{loop}_{i, j, p, q} =  \\begin{cases} E_{bp} & \\text{if }S^1_p, S^2_q  \\text{ compl. base pair} \\\\ 0 & \\text{otherwise} \\end{cases} \\end{array}";
+DPAlgorithm_rnaup.Tables[0].latex_representation = "\\begin{array}\\ I^{i, k}_{j, l} &=& \\begin{cases} E_{bp} \\cdot D_{i, k}^{j, l} - RT \\cdot \\log(P^{u1}_{i,k}\\cdot P^{u2}_{j, l}) &\\text{if } D_{i, k}^{j, l} \\neq 0 \\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ D^{i, k}_{j, l} &=& \\max \\begin{cases} 1 & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i = k, j = l \\\\ \\max_{\\substack{i<p\\leq k\\\\j<q\\leq l}}\\left( 1 + D_{q, l}^{p, k} \\right) & \\text{if } S^1_i, S^2_j \\text{ compl. base pair}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ P^{u1}_{i,k} &=& P^{u}_{i,k}\\text{ of } S^1,\\quad\\quad\\quad P^{u2}_{j, l} \\;=\\; P^{u}_{j, l}\\text{ of } S^2 \\end{array}";
 
 
 DPAlgorithm_rnaup.Tables[0].computeCell = function(i, k, j, l) {
@@ -454,7 +454,7 @@ DPAlgorithm_rnaup.Tables[0].computeCell = function(i, k, j, l) {
     }
     var logP = Math.log(DPAlgorithm_rnaup.Tables[1].getValue(i, k)) + Math.log(DPAlgorithm_rnaup.Tables[2].getValue(j, l));
 
-    curCell.value = this.energy * DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) - this.energy_normal * logP;
+    curCell.value = - (this.energy * DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) - this.energy_normal * logP);
     curCell.traces = DPAlgorithm_hybrid.Tables[0].getCell(i, k, j, l).traces;
     return curCell;
 };

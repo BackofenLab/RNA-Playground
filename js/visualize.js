@@ -28,8 +28,8 @@ function NussinovMatrixViewModel() {
     self.fired = false;
 
     self.rawSeq = ko.observable("GGUCCAC");
-    self.rawSeq2 = ko.observable("CCGG");
-    self.loopLength = ko.observable(0);
+    self.rawSeq2 = ko.observable("CCGAGG");
+    self.loopLength = ko.observable(1);
 
     self.input = {
         loopLength: ko.computed(function () {
