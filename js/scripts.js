@@ -341,17 +341,17 @@ function dotplot(sequence, table, pname) {
 
 
     if (pname === "pd") {
-        desc.text("Dotplot for paired base pair probabilities.");
+        desc.text("Dotplot for paired base pair probabilities");
     } else
     if (pname === "ud") {
-        desc.text("Dotplot for unpaired probabilities.");
+        desc.text("Dotplot for unpaired probabilities");
     }
 
     if (pname === "up1") {
-        desc.text("Dotplot for unpaired probabilities of sequence 1.");
+        desc.text("Dotplot for unpaired probabilities of $S^1$");
     } else
     if (pname === "up2") {
-        desc.text("Dotplot for unpaired probabilities of sequence 2.");
+        desc.text("Dotplot for unpaired probabilities of $S^2$");
     }
     var svg = d3.select(dev).append("svg")
         .attr("id", pname)
@@ -433,32 +433,33 @@ function dotplot(sequence, table, pname) {
             .enter().append("g")
             .attr("class", "dp_cell");
         
+        cell.append("rect")
+	        .attr("x", function(d) { return x(d.x) ; })
+	        //.attr("cy", 26)
+	        .attr("width", x.rangeBand())
+	        .attr("height",x.rangeBand())
+	        //.attr("r", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.2)/2;})
+	        //.attr("ry", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.5);})
+	        .attr("border", "1px solid")
+	        .style("stroke", "lightgrey")
+	        .style("stroke-width", 1)
+	        .style("fill", "white" )
+	        .style("fill-opacity", 1 )
+	        //.style("fill-opacity", function(d) { return Math.pow(z(d.z), 0.5); })
+	        .on("mouseover", mouseover)
+	        .on("mouseout", mouseout);
         cell.append("circle")
             .attr("cx", function(d) { return x(d.x) + 26 ; })
             .attr("cy", 26)
             //.attr("width", function(d) {return x.rangeBand() * Math.pow(z(d.z), 0.5);})
             //.attr("height", function(d) {return x.rangeBand() * Math.pow(z(d.z), 0.5);})
-            .attr("r", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.5)/2;})
+            .attr("r", function(d) { return 0.9*x.rangeBand() * Math.pow(z(d.z), 0.5)/2;})
             //.attr("ry", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.5);})
             //.attr("border", "1px solid red")
             //.style("stroke", "rgb(0, 165, 255)")
             .style("stroke-width", 2)
             //.style("fill-opacity", function(d) { return z(d.z); })
             .style("fill-opacity", function(d) { return Math.pow(z(d.z), 0.5); })
-            //.on("mouseover", mouseover)
-            //.on("mouseout", mouseout);
-        cell.append("rect")
-            .attr("x", function(d) { return x(d.x) ; })
-            //.attr("cy", 26)
-            .attr("width", x.rangeBand())
-            .attr("height",x.rangeBand())
-            //.attr("r", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.2)/2;})
-            //.attr("ry", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.5);})
-            .attr("border", "1px solid")
-            .style("stroke", "lightgrey")
-            .style("stroke-width", 1)
-            .style("fill-opacity", 0 )
-            //.style("fill-opacity", function(d) { return Math.pow(z(d.z), 0.5); })
             .on("mouseover", mouseover)
             .on("mouseout", mouseout);
         cell.append("text")
