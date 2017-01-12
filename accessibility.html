@@ -62,39 +62,57 @@
 
     </div>
 
-
-    <div id="matrix" class="row" id="output">
-
-
-        <div class="row">
-            <div class="colW400" style="font-size: 120%; white-space: nowrap;">Recursion of McCaskill:</div>
+	<div id="output">
+	    <h2>Visualization of interacting base pairs (selected structure)</h2>
+	
+        <div>
+       		Due to the four-dimensionality of $I$, we only list the optimal
+       		hybrid structures (up to 15). On selection, the intermolecular base pairs are
+       		visualized.
         </div>
 
-        <div class="colW300" data-bind="text: latex()[2]" style="margin-left:50px;"></div>
+		<div class="row" style="margin:0;">
+			<div class="colW200" style="margin:0;">
+			    <table id="structures">
+			        <thead>
+			        <tr><th id="structTableHeading">Possible Structures</th></tr>
+			        </thead>
+			        <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
+			        <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure4d}"></td></tr>
+			        </tbody>
+			    </table>
+			</div>
+			<div class="colW550" style="margin:0;">
+	        	<div id="4dVisual" class="hybridVisual"></div>
+			</div>
+		</div>
+	    
+	    <div>
+    		The box provides an ASCII representation of the interacting
+    		base pairs of the selected structure with $S^{1}$ on top and $S^{2}$ 
+    		on the bottom. 
+    		Note, sequence $S^{2}$ is reversed (running from right ($5'$) to left 
+    		($3'$)) within this representation.
+    		Note further, if no interacting
+    		base pairs are present, no visualization is done. 
+	    </div>
+	</div>
 
-        <table id="structures" class="colw200" style="margin-top:30px">
-            <thead>
-            <tr><th id="structTableHeading">Possible Structures</th></tr>
-            </thead>
+    <div id="output">
 
-            <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
-            <tr>
-                <td id="structTableCells"
-                    data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure4d}"></td>
-            </tr>
-            </tbody>
-        </table>
-
-        <div class="row">
-            <pre id="4dVisual">
-            </pre>
-        </div>
-
+		<h2>Unpaired probabilities</h2>
+		
+		<div>
+			The <a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>
+			is used in order to compute the unpaired probabilities for each of
+			the two sequences. Please refer to the according page for details. 
+			In the following, the unpaired probabilities for $S^1$ and $S^2$ are 
+			visualized in dotplot format.
+		</div>
 
         <div id="dotplot_seq1"></div>
+        
         <div id="dotplot_seq2"></div>
-
-        <!--button class="" type="button" onclick="generate_tables()">Download Table!</button-->
 
     </div>
 
