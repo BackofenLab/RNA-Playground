@@ -18,18 +18,18 @@
 			we do a base pair maximization without taking the base pair's context
 			into account. We can directly use the Nussinov algorithm without
 			any extensions when using a linker sequence of length $l+1$
-			($L=\text{X}^{l+1}$),
+			($L=\text{X}_{1}..\text{X}_{l+1}$),
 			where $l$ denotes the minimal loop length. The linker's length enables 
 			intermolecular base pairs between the concatenated sequence ends.
-			Thus, for two sequences $S_{1}$ and $S_{2}$, 
-			the hybrid sequence used for folding is given by $S=S_{1}LS_{2}$.
+			Thus, for two sequences $S^{1}$ and $S^{2}$, 
+			the hybrid sequence used for folding is given by $S=S^{1}LS^{2}$.
 			<br />
 			<br />
 			For prediction, we fill the dynamic programming
 			table $D$, where an entry $D_{i,j}$ provides the maximal number of
 			base pairs of any nested structure for the subsequence from $S_{i}$ to $S_{j}$.
 			The entry $D_{1,n}$ provides the overall maximal number of base pairs
-			for the whole hybrid sequence $S$ of length $n=|S_{1}|+l+1+|S_{2}|$. 
+			for the whole hybrid sequence $S$ of length $n=|S^{1}|+l+1+|S^{2}|$. 
 			Watson-Crick as well as GU base pairs are considered complementary.
 			<br />
 			Beside the identification of an according optimal hybrid structure
@@ -47,7 +47,7 @@
     <div id="inputContainer">
     
         <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S_{1}$:</div>
+            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^{1}$:</div>
             <div class="colW400">
                 <input data-bind="value: rawSeq" class="userInput"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
@@ -56,7 +56,7 @@
         </div>
 
         <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S_{2}$:</div>
+            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^{2}$:</div>
             <div class="colW400">
                 <input data-bind="value: rawSeq2" class="userInput"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
@@ -170,9 +170,9 @@
 	    <div class="row">
 	    	<div class="col">
 	    		The box provides an ASCII representation of the interacting
-	    		base pairs of the selected structure with $S_{1}$ on top and $S_{2}$ 
+	    		base pairs of the selected structure with $S^{1}$ on top and $S^{2}$ 
 	    		on the bottom. 
-	    		Note, sequence $S_{2}$ is reversed (running from right ($5'$) to left 
+	    		Note, sequence $S^{2}$ is reversed (running from right ($5'$) to left 
 	    		($3'$)) within this representation.
 	    		Note further, if no interacting
 	    		base pairs are present, no visualization is done. 

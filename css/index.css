@@ -1,6 +1,7 @@
 
 div[id=inputContainer] {
     margin: 0;
+    text-align: justify;
 }
 
 div[id=inputContainer] div.row div {

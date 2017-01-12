@@ -543,7 +543,7 @@ var NussinovDPAlgorithm_Ambiguous = Object.create(DPAlgorithm);
 NussinovDPAlgorithm_Ambiguous.Description = "Ambiguous recursion";
 NussinovDPAlgorithm_Ambiguous.Tables = new Array();
 NussinovDPAlgorithm_Ambiguous.Tables.push(Object.create(NussinovMatrix));
-NussinovDPAlgorithm_Ambiguous.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 &  S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
+NussinovDPAlgorithm_Ambiguous.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 & \\text{if } S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
 
 NussinovDPAlgorithm_Ambiguous.Tables[0].computeCell = function(i, j) {
 
@@ -764,7 +764,7 @@ var NussinovDPAlgorithm_Unique = Object.create(DPAlgorithm);
 NussinovDPAlgorithm_Unique.Description = "Recursion by Nussinov et al. (1978) with unique decomposition";
 NussinovDPAlgorithm_Unique.Tables = new Array();
 NussinovDPAlgorithm_Unique.Tables.push(Object.create(NussinovMatrix));
-NussinovDPAlgorithm_Unique.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D(i,k-1)+D(k+1,j-1)+1 & S_k,S_j \\text{ compl. base pair} \\end{cases}";
+NussinovDPAlgorithm_Unique.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} D(i,k-1)+D(k+1,j-1)+1 & \\text{if } S_k,S_j \\text{ compl. base pair} \\end{cases}";
 
 NussinovDPAlgorithm_Unique.Tables[0].computeCell = function(i, j) {
 
@@ -905,7 +905,7 @@ var NussinovDPAlgorithm_Ambiguous2 = Object.create(DPAlgorithm);
 NussinovDPAlgorithm_Ambiguous2.Description = "Recursion by Nussinov et al. (1978) with Ambiguous2 decomposition";
 NussinovDPAlgorithm_Ambiguous2.Tables = new Array();
 NussinovDPAlgorithm_Ambiguous2.Tables.push(Object.create(NussinovMatrix));
-NussinovDPAlgorithm_Ambiguous2.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j-1)+1 & S_i,S_j \\text{ compl. base pair} \\\\ \\max_{i\\leq k< j} D(i,k)+D(k+1,j) \\end{cases}";
+NussinovDPAlgorithm_Ambiguous2.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j-1)+1 & \\text{if } S_i,S_j \\text{ compl. base pair} \\\\ \\max_{i\\leq k< j} D(i,k)+D(k+1,j) \\end{cases}";
 
 NussinovDPAlgorithm_Ambiguous2.Tables[0].computeCell = function(i, j) {
 
@@ -1417,7 +1417,7 @@ DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases
 DPAlgorithm_MEA.Tables[2].latex_representation = "P_{i}^{u} = 1 - \\sum_{k < i}{P^{bp}_{k, i}} - \\sum_{i < k}{P^{bp}_{i, k}}";
 
 //DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
-//DPAlgorithm_MEA.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 &  S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
+//DPAlgorithm_MEA.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 & \\text{if } S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
 DPAlgorithm_MEA.Tables[0].updateCell = function (curCell, curVal, curAncestor) {
 
     if (curCell === null || curCell.value <= curVal) {
@@ -1536,7 +1536,7 @@ DPAlgorithm_coFold.Description = "Co-Fold";
 DPAlgorithm_coFold.Tables = new Array();
 DPAlgorithm_coFold.Tables.push(Object.create(NussinovMatrix));
 
-DPAlgorithm_coFold.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} \\left( D(i,k-1)+D(k+1,j-1)+1 \\right) & S_k,S_j \\text{ compl. base pair} \\end{cases}";
+DPAlgorithm_coFold.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired} \\\\ \\max_{i\\leq k< (j-l)} \\left( D(i,k-1)+D(k+1,j-1)+1 \\right) & \\text{if } S_k,S_j \\text{ compl. base pair} \\end{cases}";
 
 DPAlgorithm_coFold.computeMatrix = function(input) {
 

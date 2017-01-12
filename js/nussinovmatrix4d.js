@@ -380,10 +380,11 @@ var NussinovMatrix4d = {
 
 var DPAlgorithm_hybrid = Object.create(DPAlgorithm);
 
-DPAlgorithm_hybrid.Description = "RNA to RNA matching";
+DPAlgorithm_hybrid.Description = "hybrid-only optimization";
 DPAlgorithm_hybrid.Tables = new Array();
 DPAlgorithm_hybrid.Tables.push(Object.create(NussinovMatrix4d));
-DPAlgorithm_hybrid.Tables[0].latex_representation = "\\begin{array} \\ D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ E^{init} = 1 \\\\ \\\\ E^{loop}_{i, j, p, q} =  \\begin{cases} 1 & \\text{if }\\mathcal{R}^1_p, \\mathcal{R}^2_q  \\text{  pairs} \\\\ 0 & \\text{otherwise} \\end{cases} \\end{array}";
+DPAlgorithm_hybrid.Tables[0].latex_representation = "D^{i, k}_{j, l} = \\max \\begin{cases} 1 & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i = k, j = l \\\\ \\max_{\\substack{i<p\\leq k\\\\j<q\\leq l}}\\left( 1 + D_{q, l}^{p, k} \\right) & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases}";
+//DPAlgorithm_hybrid.Tables[0].latex_representation = "\\begin{array} \\ D^{i, k}_{j, l} = \\max \\begin{cases} E^{init}(i, j) & S^1_i, S^2_j  \\text{  pairs}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & S^1_i, S^2_j  \\text{  pairs}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ E^{init} = 1 \\\\ \\\\ E^{loop}_{i, j, p, q} =  \\begin{cases} 1 & \\text{if }S^1_p, S^2_q  \\text{  pairs} \\\\ 0 & \\text{otherwise} \\end{cases} \\end{array}";
 
 DPAlgorithm_hybrid.Tables[0].computeCell = function(i, k, j, l) {
     var curCell = Object.create(NussinovCell4d).init(i, k, j, l, 0);
@@ -437,7 +438,7 @@ DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix4d));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 
-DPAlgorithm_rnaup.Tables[0].latex_representation = "\\begin{array} \\ I_{i, k}^{j, l} = E_{bp} \\cdot D_{i, k}^{j, l} - RT \\cdot (\\log(P^{u_1}_{i,k}) + \\log(P^{u_2}_{j, l}))  \\\\ D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\mathcal{R}^1_i, \\mathcal{R}^2_j  \\text{  pairs}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ E^{init} = E_{bp} \\\\ \\\\ E^{loop}_{i, j, p, q} =  \\begin{cases} E_{bp} & \\text{if }\\mathcal{R}^1_p, \\mathcal{R}^2_q  \\text{  pairs} \\\\ 0 & \\text{otherwise} \\end{cases} \\end{array}";
+DPAlgorithm_rnaup.Tables[0].latex_representation = "\\begin{array} \\ I_{i, k}^{j, l} = E_{bp} \\cdot D_{i, k}^{j, l} - RT \\cdot (\\log(P^{u_1}_{i,k}) + \\log(P^{u_2}_{j, l}))  \\\\ D_{i, k}^{j, l} = \\max \\begin{cases} E^{init}(i, j) & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & \\text{if } S^1_i, S^2_j \\text{ compl. base pair}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ E^{init} = E_{bp} \\\\ \\\\ E^{loop}_{i, j, p, q} =  \\begin{cases} E_{bp} & \\text{if }S^1_p, S^2_q  \\text{ compl. base pair} \\\\ 0 & \\text{otherwise} \\end{cases} \\end{array}";
 
 
 DPAlgorithm_rnaup.Tables[0].computeCell = function(i, k, j, l) {

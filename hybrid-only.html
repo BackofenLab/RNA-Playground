@@ -1,27 +1,60 @@
 
-    <!--<h1>JavaScript Implementation and Visualization of RNA algorithms</h1>-->
+	<div class="row" id="introduction">
+		<div class="colW600">
+			The identification of an optimal RNA-RNA interaction <em>without</em> consideration
+			of intramolecular base pairs can be done efficiently in $O(nm)$ time and space
+			for two RNA sequences $S^{1}$ and $S^{2}$ of lengths $n$ and $m$, resp.,
+			<a href="https://dx.doi.org/10.1093%2Fnar%2Fgkl356">(Brian Tjaden et al., 2006)</a>.
+			For a <a href="index.jsp?toolName=Nussinov">Nussinov</a>-like  
+			interaction prediction, a dynamic programming table $H$ is filled via the
+			<em>prefix-based</em> recursion
+			<div style="padding-left:45px;">$H_{i,j}=\max\begin{cases} H_{i-1,j-1}+1 & \text{if }S^{1}_{i},S^{2}_{j}\text{ compl. base pair}\\ H_{i-1,j} \\ H_{i,j-1}\end{cases}$,</div>
+			where an entry $H_{i,j}$ provides the maximal number of intermolecular
+			base pairs for the prefixes $S^{1}_{1..i}$ and $S^{2}_{1..j}$. 
+			Watson-Crick as well as GU base pairs are considered complementary.
+			A traceback from the entry $H_{i,j}$ with the highest value provides
+			an according optimal interaction.
+			<br>
+			<br>
+       		Here, in order to prepare the computation of 
+       		<a href="index.jsp?toolName=accessibility">accessibility-based interaction prediction</a>, 
+       		the following <em>interval-based</em> recursion is used to identify the RNA-RNA interaction
+       		with the maximal number of intermolecular base pairs. To this end,
+       		the four-dimensional table $D$ is filled, where an entry $D^{i,k}_{j,l}$ 
+       		represents the maximal number of base pairs for the sequence 
+       		intervals $S^{1}_{i..k}$ and $S^{2}_{j..l}$ under the condition
+       		that both interval ends are forming the intermolecular base
+       		pairs $(S^{1}_{i},S^{2}_{j})$ and $(S^{1}_{k},S^{2}_{l})$.
+	        <div id="rec_id" data-bind="text: latex()[0]"></div>
+	        A list of up to 15 maximal base pair RNA-RNA interactions is provided
+	        via exhaustive traceback.
+		</div>
+		<div class="colW150">
+			<img alt="hybrid-only RNA-RNA interaction" src="hybrid-only-120x90.png" width=120 height=90 >
+		</div>
+	</div>
 
     <div id="inputContainer">
         <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence 1:</div>
+            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^{1}$:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq" class="userInput" maxlength="15"
+                <input data-bind="value: rawSeq" class="userInput"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
         </div>
 
         <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence 2:</div>
+            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^{2}$:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq2" class="userInput" maxlength="15"
+                <input data-bind="value: rawSeq2" class="userInput"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
         </div>
 
 
-        <div class="row">
+        <div class="row" style="display:none;">
             <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
             <div class="colW400">
                 <select data-bind="value: loopLength" id="ll" style="width:40px;">
@@ -29,40 +62,50 @@
                     <option value=1>1</option>
                     <option value=2>2</option>
                     <option value=3>3</option>
-
                 </select>
+                <label for="ll" style="margin-left:10px;">i.e. minimal number of enclosed positions</label>
             </div>
         </div>
 
+        <div id="rec_select" style="display: none;">hybrid</div>
+
+    </div>
 
 
-        <div class="row">
-            <div class="colW300" id="rec_select" style="margin-left:50px; display: none;">hybrid</div>
-            <!--<div style="height: 60px;" id="recursion" class="colW400"></div>-->
+	<div id="output">
+	    <h2>Visualization of interacting base pairs (selected structure)</h2>
+	
+        <div>
+       		Due to the four-dimensionality of $D$, we only list the optimal
+       		hybrid structures (up to 15). On selection, the intermolecular base pairs are
+       		visualized.
         </div>
 
-        <div class="colW300" id="rec_id" data-bind="text: latex()[0]" style="margin-left:50px;"></div>
-
-    </div>
-
-    <table id="structures" class="colw200" style="float: left; margin-top:30px">
-        <thead>
-        <th id="structTableHeading">Possible Structures</th>
-        </thead>
-
-        <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
-        <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure4d}"></td></tr>
-        </tbody>
-    </table>
-
-    <div id="matrix" class="row" id="output" >
-            <pre id="4dVisual">
-
-            </pre>
-
-
-
-
-    </div>
+		<div class="row" style="margin:0;">
+			<div class="colW200" style="margin:0;">
+			    <table id="structures">
+			        <thead>
+			        <tr><th id="structTableHeading">Possible Structures</th></tr>
+			        </thead>
+			        <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
+			        <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure4d}"></td></tr>
+			        </tbody>
+			    </table>
+			</div>
+			<div class="colW550" style="margin:0;">
+	        	<div id="4dVisual" class="hybridVisual"></div>
+			</div>
+		</div>
+	    
+	    <div>
+    		The box provides an ASCII representation of the interacting
+    		base pairs of the selected structure with $S^{1}$ on top and $S^{2}$ 
+    		on the bottom. 
+    		Note, sequence $S^{2}$ is reversed (running from right ($5'$) to left 
+    		($3'$)) within this representation.
+    		Note further, if no interacting
+    		base pairs are present, no visualization is done. 
+	    </div>
+	</div>
 
     <script src="js/visualize.js"></script>
