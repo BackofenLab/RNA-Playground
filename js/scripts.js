@@ -172,7 +172,7 @@ function visualize4d(str1, str2, ps) {
     var gapBegin = Math.max(Math.min(10, st1i - 1), Math.min(10, str2.length - st2f));
     var gapEnd = Math.max(Math.min(10, str1.length - st1f), Math.min(10, st2i - 1));
     var portion = Math.max(3, Math.max(st1f - st1i, st2f - st2i) + 1);
-    var portionOffset = 2;
+    var portionOffset = 0;
 
     var res = new Array(6);
     for (var i = 0; i < res.length; ++i) {
