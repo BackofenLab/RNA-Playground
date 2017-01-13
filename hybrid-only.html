@@ -11,7 +11,10 @@
 			<div style="padding-left:45px;">$H_{i,j}=\max\begin{cases} H_{i-1,j-1}+1 & \text{if }S^{1}_{i},S^{2}_{j}\text{ compl. base pair}\\ H_{i-1,j} \\ H_{i,j-1}\end{cases}$,</div>
 			where an entry $H_{i,j}$ provides the maximal number of intermolecular
 			base pairs for the prefixes $S^{1}_{1..i}$ and $S^{2}_{1..j}$. 
-			Watson-Crick as well as GU base pairs are considered complementary.
+			Note, this recursion is a variant of a global
+			<a href="http://dx.doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a> 
+			sequence alignment with special scoring, where only
+			Watson-Crick as well as GU base pairs are considered complementary and thus similiar.
 			A traceback from the entry $H_{i,j}$ with the highest value provides
 			an according optimal interaction.
 			<br>
