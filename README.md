@@ -9,3 +9,5 @@ all algorithms use a simple Nussinov-like energy scoring scheme, i.e.
 the energy of an RNA structure is directly related to its number 
 of base pairs without further distinction.
 
+For local usage, just download or clone the repository content and open the
+`index.html` in a recent browser.
