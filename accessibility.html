@@ -1,6 +1,25 @@
 
 	<div class="row" id="introduction">
 		<div class="colW600">
+			State-of-the-art RNA-RNA interaction prediction algorithms take
+			the accessibility of the interacting regions into account. That is,
+			a penalty is added to the interaction scoring that represents how
+			much the interaction sites are involved in intramolecular base pairs.
+			This can be expressed by reverting unpaired probabilities $P^{u}_{i,j}$ into
+			pseudo energy scores via $-RT\log(P^{u}_{i,j})$ that represent the amount
+			of energy (within the structure ensemble) to unfold a region $i..j$ 
+			in order to make it accessible for intermolecular RNA-RNA interactions
+			<a href="https://dx.doi.org/10.1093/bioinformatics/btl024">(Ulrike M&uuml;ckstein et al., 2006)</a>.
+			<br>
+			<br>
+			Here, we extend the 
+			<a href="index.jsp?toolName=hybrid-only">hybrid-only approach</a>
+			towards the integration of an accessibility scoring. To this end, the
+			<a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>
+			is used to compute unpaired probabilities $P^{u}$. The penalties are
+			added as a post-processing step to the hybridization energies in 
+			order to identify the interaction that optimizes the combination of
+			hybridization and accessibility scoring.
 		</div>
 		<div class="colW150">
 			<img alt="accessibility-based RNA-RNA interaction" src="accessibility-120x90.png" width=120 height=90 >
@@ -55,6 +74,23 @@
                 <label for="energy_normal" data-bind="text: input.energy_normal"></label>
             </div>
         </div>
+        
+        <div>
+        	The following recursions are used to compute the interactions that
+        	show an optimal combination of hybridization and accessibility.
+        	To this end, first the maximal number of base pairs $D^{i,k}_{j,l}$ for all 
+        	interaction sites are computed using the 
+        	<a href="index.jsp?toolName=hybrid-only">hybrid-only approach</a>.
+        	Furthermore, the unpaired probabilities $P^{u1}$ and $P^{u2}$ are 
+        	tabularized for both sequences $S^1$ and $S^2$, resp., using the 
+        	<a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>.
+        	<br>
+        	Given these values, the accessibility-incorporating interaction energies
+       		are computed and stored in table $I$. A non-zero entry $I^{i,k}_{j,l}$
+       		represents the combined minimum energy score of an interaction of
+       		$S^1_{i..k}$ with $S^2_{j..l}$ with 
+       		left/right most base pairs $(S^1_i,S^2_j)$/$(S^1_k,S^2_l)$, respectively.
+        </div>
 
         <div id="recursion" data-bind="text: latex()[0]"></div>
         
@@ -68,7 +104,11 @@
         <div>
        		Due to the four-dimensionality of $I$, we only list the optimal
        		hybrid structures (up to 15). On selection, the intermolecular base pairs are
-       		visualized.
+       		visualized. If all entries $I^{i,k}_{j,l}$ show positive energy scores,
+       		no favorable interaction is possible since intramolecular base pairs
+       		dominate the individual structures (too low accessibility values of 
+       		possible interaction sites). Therefore, the structure list might be
+       		empty.
         </div>
 
 		<div class="row" style="margin:0;">
