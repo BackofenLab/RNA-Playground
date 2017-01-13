@@ -162,7 +162,6 @@
 		            	onclick="fornaRendering( document.getElementById('rawSeq').value, this)"></td></tr>
 		            </tbody>
 		        </table>
-		        <script type="text/javascript">/* <![CDATA[ */$("#structures").bind("DOMSubtreeModified", fornaClear);/* ]]> */</script>
 	        </div>
 	
 	    </div>
@@ -266,3 +265,5 @@
 
     <script src="js/visualize.js"></script>
 
+	<!-- ensure structure list changes clear the forna rendering -->
+    <script type="text/javascript">/* <![CDATA[ */$("#structures").bind("DOMSubtreeModified", fornaClear);/* ]]> */</script>

@@ -43,7 +43,7 @@
 		};
 
     	// ensure container is set up
-		fornaClear()
+		fornaClear();
     	// add current structure
     	fornaStructureContainer.addRNA(options.structure, options);
     }
