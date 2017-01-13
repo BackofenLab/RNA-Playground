@@ -35,7 +35,7 @@
         <div class="row">
             <div class="colW250" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
             <div class="colW400">
-                <input data-bind="value: rawSeq" class="userInput"
+                <input id="rawSeq" data-bind="value: rawSeq" class="userInput"
                        placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
                        style="text-transform:uppercase">
             </div>
@@ -158,9 +158,11 @@
 		            </thead>
 		
 		            <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
-		            <tr><td id="structTableCells" data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"></td></tr>
+		            <tr><td id="structTableCells" data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"
+		            	onclick="fornaRendering( document.getElementById('rawSeq').value, this)"></td></tr>
 		            </tbody>
 		        </table>
+		        <script type="text/javascript">/* <![CDATA[ */$("#structures").bind("DOMSubtreeModified", fornaClear);/* ]]> */</script>
 	        </div>
 	
 	    </div>
@@ -169,7 +171,20 @@
     		Select a structure from the list or a cell of $M$ 
     		to see according tracebacks. Note, the structure list is limited to
     		the first 15 structures identified via traceback.
+    		<br>
+    		Below, we provide a graphical depiction of the selected structure.
+    		Note, the rendering does not support a minimal loop length of 0.
    		</div>
+   		
+		<div id="structureVisualization" style="margin:0;">
+			<div id="fornaInputStructure" style="height: 300px; background:white;"></div>
+			<span style="padding-left:15px;font-size:80%;">
+				Visualization done with 
+				<a href="http://rna.tbi.univie.ac.at/forna">forna</a>.
+				Base pairs are given by red edges, the sequence backbone is given by
+				gray edges. 
+			</span>
+		</div>
 	    
 	    <h2>Probabilities used</h2>
 

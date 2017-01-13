@@ -476,6 +476,21 @@ function dotplot(sequence, table, pname) {
     return dev;
 }
 
+
+
+function getHybridSequence( seq1, seq2, minLoopLength ) {
+	// add first sequence
+	var hybrid = seq1;
+	// add minLoopLength+1 spacers
+	for (var i=minLoopLength; i>-1; i--) {
+		hybrid += 'X';
+	}
+	// add second sequence
+	hybrid += seq2;
+	return hybrid;
+}
+
+
 /*
  #######################--- END DotPlots ---############################
  */
