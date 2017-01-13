@@ -495,7 +495,7 @@ DPAlgorithm_rnaup.computeMatrix = function(input) {
 
 
 /**
- * WUCHTY (generic doesnt give subomtimal structures)
+ * WUCHTY (generic doesnt give suboptimal structures)
  * Construct the tracebacks of the optimal solutions. 
  */
 var wuchty4d = function (xmat, maxSOS) {
@@ -601,6 +601,12 @@ var wuchty4d = function (xmat, maxSOS) {
         if (SOS.length >= maxSOS) {
             break;
         }
+    }
+    
+    // check if no interaction stored so far
+    if (SOS.length == 0) {
+    	// push empty interaction without trace
+    	SOS.push( {structure: xmat.conv_str([]), traces: [], rep4d: " "} );
     }
     
     //console.log('final: ', JSON.stringify(SOS));
