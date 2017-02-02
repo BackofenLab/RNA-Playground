@@ -1,0 +1,159 @@
+
+	<div class="row" id="introduction">
+		<div class="colW600">
+			State-of-the-art RNA-RNA interaction prediction algorithms take
+			the accessibility of the interacting regions into account. That is,
+			a penalty is added to the interaction scoring that represents how
+			much the interaction sites are involved in intramolecular base pairs.
+			This can be expressed by reverting unpaired probabilities $P^{u}_{i,j}$ into
+			pseudo energy scores via $-RT\log(P^{u}_{i,j})$ that represent the amount
+			of energy (within the structure ensemble) to unfold a region $i..j$ 
+			in order to make it accessible for intermolecular RNA-RNA interactions
+			<a href="https://dx.doi.org/10.1093/bioinformatics/btl024">(Ulrike M&uuml;ckstein et al., 2006)</a>.
+			<br>
+			<br>
+			Here, we extend the 
+			<a href="index.jsp?toolName=hybrid-only">hybrid-only approach</a>
+			towards the integration of an accessibility scoring. To this end, the
+			<a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>
+			is used to compute unpaired probabilities $P^{u}$. The penalties are
+			added as a post-processing step to the hybridization energies in 
+			order to identify the interaction that optimizes the combination of
+			hybridization and accessibility scoring.
+		</div>
+		<div class="colW150">
+			<img alt="accessibility-based RNA-RNA interaction" src="accessibility-120x90.png" width=120 height=90 >
+		</div>
+	</div>
+
+    <div id="inputContainer">
+    
+        <div class="row">
+            <div class="colW250" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^1$:</div>
+            <div class="colW400">
+                <input data-bind="value: rawSeq" class="userInput"
+                       placeholder="Example 'GCACG'" onkeydown="validate(event)"
+                       style="text-transform:uppercase">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="colW250" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^2$:</div>
+            <div class="colW400">
+                <input data-bind="value: rawSeq2" class="userInput"
+                       placeholder="Example 'GCACG'" onkeydown="validate(event)"
+                       style="text-transform:uppercase">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="colW250" style="font-size: 120%">Minimal loop length $l$:</div>
+            <div class="colW400">
+                <select data-bind="value: loopLength" id="ll" style="width:40px;">
+                    <option value=0>0</option>
+                    <option value=1>1</option>
+                    <option value=2>2</option>
+                    <option value=3>3</option>
+                </select>
+                <label for="ll" style="margin-left:10px;">i.e. minimal number of enclosed positions</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="colW250" style="font-size: 120%">Energy weight of base pair $E_{bp}$:</div>
+            <div class="colW400">
+                <input data-bind="value: input.energy" id="energy" type="range" max="2" min="-2" step="(max - min) / 100">
+                <label for="energy" data-bind="text: input.energy"></label>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="colW250" style="font-size: 120%">'Normalized' temperature $RT$:</div>
+            <div class="colW400">
+                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="-2" step="(max - min) / 100">
+                <label for="energy_normal" data-bind="text: input.energy_normal"></label>
+            </div>
+        </div>
+        
+        <div>
+        	The following recursions are used to compute the interactions that
+        	show an optimal combination of hybridization and accessibility.
+        	To this end, first the maximal number of base pairs $D^{i,k}_{j,l}$ for all 
+        	interaction sites are computed using the 
+        	<a href="index.jsp?toolName=hybrid-only">hybrid-only approach</a>.
+        	Furthermore, the unpaired probabilities $P^{u1}$ and $P^{u2}$ are 
+        	tabularized for both sequences $S^1$ and $S^2$, resp., using the 
+        	<a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>.
+        	<br>
+        	Given these values, the accessibility-incorporating interaction energies
+       		are computed and stored in table $I$. A non-zero entry $I^{i,k}_{j,l}$
+       		represents the combined minimum energy score of an interaction of
+       		$S^1_{i..k}$ with $S^2_{j..l}$ with 
+       		left/right most base pairs $(S^1_i,S^2_j)$/$(S^1_k,S^2_l)$, respectively.
+        </div>
+
+        <div id="recursion" data-bind="text: latex()[0]"></div>
+        
+        <div id="rec_select" style="display: none;">rnaup</div>
+
+    </div>
+
+	<div id="output">
+	    <h2>Visualization of interacting base pairs (selected structure)</h2>
+	
+        <div>
+       		Due to the four-dimensionality of $I$, we only list the optimal
+       		hybrid structures (up to 15). On selection, the intermolecular base pairs are
+       		visualized. If all entries $I^{i,k}_{j,l}$ show positive energy scores,
+       		no favorable interaction is possible since intramolecular base pairs
+       		dominate the individual structures (too low accessibility values of 
+       		possible interaction sites). Therefore, the structure list might be
+       		empty.
+        </div>
+
+		<div class="row" style="margin:0;">
+			<div class="colW200" style="margin:0;">
+			    <table id="structures">
+			        <thead>
+			        <tr><th id="structTableHeading">Possible Structures</th></tr>
+			        </thead>
+			        <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
+			        <tr><td id="structTableCells"  data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure4d}"></td></tr>
+			        </tbody>
+			    </table>
+			</div>
+			<div class="colW550" style="margin:0;">
+	        	<div id="4dVisual" class="hybridVisual"></div>
+			</div>
+		</div>
+	    
+	    <div>
+    		The box provides an ASCII representation of the interacting
+    		base pairs of the selected structure with $S^{1}$ on top and $S^{2}$ 
+    		on the bottom. 
+    		Note, sequence $S^{2}$ is reversed (running from right ($5'$) to left 
+    		($3'$)) within this representation.
+    		Note further, if no interacting
+    		base pairs are present, no visualization is done. 
+	    </div>
+	</div>
+
+    <div id="output">
+
+		<h2>Unpaired probabilities</h2>
+		
+		<div>
+			The <a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>
+			is used in order to compute the unpaired probabilities for each of
+			the two sequences. Please refer to the according page for details. 
+			In the following, the unpaired probabilities for $S^1$ and $S^2$ are 
+			visualized in dotplot format.
+		</div>
+
+        <div id="dotplot_seq1"></div>
+        
+        <div id="dotplot_seq2"></div>
+
+    </div>
+
+    <script src="js/visualize.js"></script>

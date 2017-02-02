@@ -18,7 +18,7 @@ function NussinovMatrixViewModel() {
 
     var formulas = [];
 
-    var maxStructures = 14;
+    var maxStructures = 15;
 
     self.currCell = {
         i: null,
@@ -28,8 +28,8 @@ function NussinovMatrixViewModel() {
     self.fired = false;
 
     self.rawSeq = ko.observable("GGUCCAC");
-    self.rawSeq2 = ko.observable("AA");
-    self.loopLength = ko.observable(0);
+    self.rawSeq2 = ko.observable("CCGAGG");
+    self.loopLength = ko.observable(1);
 
     self.input = {
         loopLength: ko.computed(function () {
