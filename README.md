@@ -3,7 +3,7 @@
 This repository contains the Javascript and Html sources for various
 algorithms related to RNA structure and RNA-RNA interaction prediction.
 
-###We are currently supporting:
+### We are currently supporting:
 
 - nested RNA structure prediction
   - nested structure counting
