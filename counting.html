@@ -6,13 +6,11 @@
 			<a href="http://dx.doi.org/10.1007/BF02459506">(Zuker and Sankoff, 1984)</a>).
 			<br />
 			<br />
-			Zuker and Sankoff presented 
-			<a href="http://dx.doi.org/10.1007/BF02459506">1984</a> a recursion to compute the
-			expected number of admissible structures for an RNA sequence of a given length.
+			Here, we use a variant of the algorithm by Waterman and Smith
+			(<a href="http://dx.doi.org/10.1016/0025-5564(78)90099-8">1970</a>)
+			to compute the exact number of nested structures a sequence can form.
 			The approach applies dynamic programming, i.e. tabularizes results for subproblems.
-			<br />
-			Here, we use a variant of this algorithm that populates a matrix $C$, 
-			where an entry $C_{i,j}$ 
+			To this end, it populates a matrix $C$, where an entry $C_{i,j}$ 
 			provides the <em>exact number</em> of admissible structures for the subsequence from 
 			position $i$ to $j$. The overall number of admissible structures for the
 			sequences can be found in the upper right corner $C_{1,n}$, where $n$ denotes
