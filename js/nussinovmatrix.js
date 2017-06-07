@@ -1194,7 +1194,7 @@ NussinovDPAlgorithm_structuresCount.Description = "Nussinov counting";
 NussinovDPAlgorithm_structuresCount.Tables = new Array();
 NussinovDPAlgorithm_structuresCount.Tables.push(Object.create(NussinovMatrix));
 
-NussinovDPAlgorithm_structuresCount.Tables[0].latex_representation = "C_{i,j} = C_{i,j-1} + \\sum_{i\\leq k <(j-l) \\atop S_k,S_j \\text{ pair}} C_{i,k-1} \\cdot C_{k+1,j-1} \\cdot 1";
+NussinovDPAlgorithm_structuresCount.Tables[0].latex_representation = "C_{i,j} = C_{i,j-1} + \\sum_{i\\leq k <(j-l) \\atop S_k,S_j \\text{ pair}} C_{i,k-1} \\cdot C_{k+1,j-1}";
 
 // C(i, j) = C(i, j - 1) + sum[k: [i <= k < j - l] && k,j pairs] C(i, k - 1) * C(k + 1, j - 1)
 NussinovDPAlgorithm_structuresCount.Tables[0].computeCell = function (i, j) {
