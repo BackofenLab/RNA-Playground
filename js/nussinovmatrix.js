@@ -1247,11 +1247,11 @@ NussinovDPAlgorithm_McCaskill.Tables.push(Object.create(NussinovMatrix)); // Qb
 NussinovDPAlgorithm_McCaskill.Tables.push(Object.create(NussinovMatrix)); // Pe
 NussinovDPAlgorithm_McCaskill.Tables.push(Object.create(NussinovMatrix)); // Pu
 
-NussinovDPAlgorithm_McCaskill.Tables[0].latex_representation = "Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} \\cdot Q^{b}_{k,j}";
-NussinovDPAlgorithm_McCaskill.Tables[1].latex_representation = "Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} \\cdot \\exp(-E_{bp}/RT) & \\text{ if }S_{i},S_{j} \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}";
+NussinovDPAlgorithm_McCaskill.Tables[0].latex_representation = "Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} \\cdot Q^{bp}_{k,j}";
+NussinovDPAlgorithm_McCaskill.Tables[1].latex_representation = "Q_{i,j}^{bp} = \\begin{cases} Q_{i + 1, j - 1} \\cdot \\exp(-E_{bp}/RT) & \\text{ if }S_{i},S_{j} \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}";
 
-NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i,j} = \\frac{Q_{1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\frac{\\exp(-E_{bp} / RT) \\cdot Q_{p+1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,q-1}}{Q^b_{p,q}}";
-NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i,j} = \\frac{Q_{1,i-1} \\cdot 1 \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\frac{\\exp(-E_{bp} / RT) \\cdot Q_{p+1,i-1} \\cdot 1 \\cdot Q_{j+1,q-1}}{Q^b_{p,q}}";
+NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i,j} = \\frac{Q_{1,i-1} \\cdot Q^{bp}_{i,j} \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\frac{\\exp(-E_{bp} / RT) \\cdot Q_{p+1,i-1} \\cdot Q^{bp}_{i,j} \\cdot Q_{j+1,q-1}}{Q^{bp}_{p,q}}";
+NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i,j} = \\frac{Q_{1,i-1} \\cdot 1 \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\frac{\\exp(-E_{bp} / RT) \\cdot Q_{p+1,i-1} \\cdot 1 \\cdot Q_{j+1,q-1}}{Q^{bp}_{p,q}}";
 
 //NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot Q^{b}_{i, j} \\cdot Q_{j + 1, n})";
 //NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot 1 \\cdot Q_{j + 1, n})";
