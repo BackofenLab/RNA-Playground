@@ -438,7 +438,7 @@ DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix4d));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 
-DPAlgorithm_rnaup.Tables[0].latex_representation = "\\begin{array}\\ I^{i, k}_{j, l} &=& \\min \\begin{cases} E_{bp} \\cdot D_{i, k}^{j, l} - RT \\cdot \\log(P^{u1}_{i,k}\\cdot P^{u2}_{j, l}) &\\text{if } D_{i, k}^{j, l} \\neq 0 \\\\ 0 \\end{cases} \\\\ \\\\ D^{i, k}_{j, l} &=& \\max \\begin{cases} 1 & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i = k, j = l \\\\ \\max_{\\substack{i<p\\leq k\\\\j<q\\leq l}}\\left( 1 + D_{q, l}^{p, k} \\right) & \\text{if } S^1_i, S^2_j \\text{ compl. base pair}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ P^{u1}_{i,k} &=& P^{u}_{i,k}\\text{ of } S^1,\\quad\\quad\\quad P^{u2}_{j, l} \\;=\\; P^{u}_{j, l}\\text{ of } S^2 \\end{array}";
+DPAlgorithm_rnaup.Tables[0].latex_representation = "\\begin{array}\\ I^{i, k}_{j, l} &=& \\min \\begin{cases} E_{bp} \\cdot D^{i, k}_{j, l} - RT \\cdot \\log(P^{u1}_{i,k}\\cdot P^{u2}_{j, l}) &\\text{if } D^{i, k}_{j, l} \\neq 0 \\\\ 0 \\end{cases} \\\\ \\\\ D^{i, k}_{j, l} &=& \\max \\begin{cases} 1 & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i = k, j = l \\\\ \\max_{\\substack{i<p\\leq k\\\\j<q\\leq l}}\\left( 1 + D_{q, l}^{p, k} \\right) & \\text{if } S^1_i, S^2_j \\text{ compl. base pair}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ P^{u1}_{i,k} &=& P^{u}_{i,k}\\text{ of } S^1,\\quad\\quad\\quad P^{u2}_{j, l} \\;=\\; P^{u}_{j, l}\\text{ of } S^2 \\end{array}";
 
 
 DPAlgorithm_rnaup.Tables[0].computeCell = function(i, k, j, l) {
