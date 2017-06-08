@@ -8,7 +8,7 @@
 			For a <a href="index.jsp?toolName=Nussinov">Nussinov</a>-like  
 			interaction prediction, a dynamic programming table $H$ is filled via the
 			<em>prefix-based</em> recursion
-			<div style="padding-left:45px;">$H_{i,j}=\max\begin{cases} H_{i-1,j-1}+1 & \text{if }S^{1}_{i},S^{2}_{j}\text{ compl. base pair}\\ H_{i-1,j} \\ H_{i,j-1}\end{cases}$,</div>
+			<div style="padding-left:45px;">$H_{i,j}=\max\begin{cases} H_{i-1,j-1}+1 & \text{if }S^{1}_{i},S^{2}_{j}\text{ compl. base pair}\\ H_{i-1,j} \\ H_{i,j-1} \\ 0 \end{cases}$,</div>
 			where an entry $H_{i,j}$ provides the maximal number of intermolecular
 			base pairs for the prefixes $S^{1}_{1..i}$ and $S^{2}_{1..j}$. 
 			Note, this recursion is a variant of a local
