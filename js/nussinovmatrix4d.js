@@ -438,7 +438,7 @@ DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix4d));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 
-DPAlgorithm_rnaup.Tables[0].latex_representation = "\\begin{array}\\ I^{i, k}_{j, l} &=& \\min \\begin{cases} E_{bp} \\cdot D^{i, k}_{j, l} - RT \\cdot \\log(P^{u1}_{i,k}\\cdot P^{u2}_{j, l}) &\\text{if } D^{i, k}_{j, l} \\neq 0 \\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ D^{i, k}_{j, l} &=& \\max \\begin{cases} 1 & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i = k, j = l \\\\ \\max_{\\substack{i<p\\leq k\\\\j<q\\leq l}}\\left( 1 + D_{q, l}^{p, k} \\right) & \\text{if } S^1_i, S^2_j \\text{ compl. base pair}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ P^{u1}_{i,k} &=& P^{u}_{i,k}\\text{ of } S^1,\\quad\\quad\\quad P^{u2}_{j, l} \\;=\\; P^{u}_{j, l}\\text{ of } S^2 \\end{array}";
+DPAlgorithm_rnaup.Tables[0].latex_representation = "\\begin{array}\\ I^{i, k}_{j, l} &=& \\min \\begin{cases} E_{bp} \\cdot D^{i, k}_{j, l} - RT \\cdot \\log(P^{u1}_{i,k}\\cdot P^{u2}_{j, l}) &\\text{if } D^{i, k}_{j, l} \\neq 0 \\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ D^{i, k}_{j, l} &=& \\max \\begin{cases} 1 & \\text{if } S^1_i, \\overleftarrow{S_j^2}  \\text{ compl. base pair}, i = k, j = l \\\\ \\max_{\\substack{i<p\\leq k\\\\j<q\\leq l}}\\left( 1 + D_{q, l}^{p, k} \\right) & \\text{if } S^1_i, \\overleftarrow{S^2_j} \\text{ compl. base pair}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ P^{u1}_{i,k} &=& P^{u}_{i,k}\\text{ of } S^1,\\quad\\quad\\quad P^{u2}_{j, l} \\;=\\; P^{u}_{j, l}\\text{ of } \\overleftarrow{S^2} \\end{array}";
 
 
 DPAlgorithm_rnaup.Tables[0].computeCell = function(i, k, j, l) {
@@ -448,12 +448,13 @@ DPAlgorithm_rnaup.Tables[0].computeCell = function(i, k, j, l) {
     if (this.isInvalidState(i, k, j, l)) {
         return curCell;
     }
-    // I[i1,j1,i2,j2] = Ebp*H[i1,j1,i2,j2] -RT*ln(P^u_1) -RT*ln(P^u_2)
     if (DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) == 0) {
         return curCell;
     }
     var logP = Math.log(DPAlgorithm_rnaup.Tables[1].getValue(i, k)) + Math.log(DPAlgorithm_rnaup.Tables[2].getValue(j, l));
 
+    // I[i,k,j,l] = Ebp*H[i,k,j,l] -RT*ln(P^u_1[i,k]) -RT*ln(reverseP^u_2[j,l])
+    // negate value for generic maximization optimization
     curCell.value = - (this.energy * DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) - this.energy_normal * logP);
     curCell.traces = DPAlgorithm_hybrid.Tables[0].getCell(i, k, j, l).traces;
     return curCell;
