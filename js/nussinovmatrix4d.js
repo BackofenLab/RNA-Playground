@@ -380,7 +380,7 @@ var NussinovMatrix4d = {
 
 var DPAlgorithm_hybrid = Object.create(DPAlgorithm);
 
-DPAlgorithm_hybrid.Description = "hybrid-only optimization";
+DPAlgorithm_hybrid.Description = "hybrid-only interaction prediction";
 DPAlgorithm_hybrid.Tables = new Array();
 DPAlgorithm_hybrid.Tables.push(Object.create(NussinovMatrix4d));
 DPAlgorithm_hybrid.Tables[0].latex_representation = "D^{i, k}_{j, l} = \\max \\begin{cases} 1 & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i = k, j = l \\\\ \\max_{\\substack{i<p\\leq k\\\\j<q\\leq l}}\\left( 1 + D_{q, l}^{p, k} \\right) & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases}";
@@ -432,7 +432,7 @@ DPAlgorithm_hybrid.computeMatrix = function(input) {
 
 var DPAlgorithm_rnaup = Object.create(DPAlgorithm);
 
-DPAlgorithm_rnaup.Description = "RNA to RNA matching";
+DPAlgorithm_rnaup.Description = "accessibility-based RNA-RNA interaction prediction";
 DPAlgorithm_rnaup.Tables = new Array();
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix4d));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
