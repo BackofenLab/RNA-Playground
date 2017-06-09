@@ -349,10 +349,10 @@ function dotplot(sequence, table, pname) {
     }
 
     if (pname === "up1") {
-        desc.text("Dotplot for unpaired probabilities of $S^1$");
+        desc.text("Dotplot for unpaired probabilities $P^{u1}$ of $S^1$");
     } else
     if (pname === "up2") {
-        desc.text("Dotplot for unpaired probabilities of $S^2$");
+        desc.text("Dotplot for unpaired probabilities $P^{u2}$ of $\\overleftarrow{S^2}$");
     }
     var svg = d3.select(dev).append("svg")
         .attr("id", pname)

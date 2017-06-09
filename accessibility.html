@@ -38,7 +38,9 @@
         </div>
 
         <div class="row">
-            <div class="colW250" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^2$:</div>
+            <div class="colW250" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^2$:<br>
+            <span style="font-size:70%;">(Computation uses reversed sequence $\overleftarrow{S^2}$)</span>
+            </div>
             <div class="colW400">
                 <input data-bind="value: rawSeq2" class="userInput"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
@@ -82,14 +84,14 @@
         	interaction sites are computed using the 
         	<a href="index.jsp?toolName=hybrid-only">hybrid-only approach</a>.
         	Furthermore, the unpaired probabilities $P^{u1}$ and $P^{u2}$ are 
-        	tabularized for both sequences $S^1$ and $S^2$, resp., using the 
+        	tabularized for both sequences $S^1$ and $\overleftarrow{S^2}$, resp., using the 
         	<a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>.
         	<br>
         	Given these values, the accessibility-incorporating interaction energies
        		are computed and stored in table $I$. A non-zero entry $I^{i,k}_{j,l}$
        		represents the combined minimum energy score of an interaction of
-       		$S^1_{i..k}$ with $S^2_{j..l}$ with 
-       		left/right most base pairs $(S^1_i,S^2_j)$/$(S^1_k,S^2_l)$, respectively.
+       		$S^1_{i..k}$ with $\overleftarrow{S^2_{j..l}}$ with 
+       		left/right most base pairs $(S^1_i,\overleftarrow{S^2_j})$/$(S^1_k,\overleftarrow{S^2_l})$, respectively.
         </div>
 
         <div id="recursion" data-bind="text: latex()[0]"></div>
@@ -146,7 +148,7 @@
 			The <a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>
 			is used in order to compute the unpaired probabilities for each of
 			the two sequences. Please refer to the according page for details. 
-			In the following, the unpaired probabilities for $S^1$ and $S^2$ are 
+			In the following, the unpaired probabilities for $S^1$ and $\overleftarrow{S^2}$ are 
 			visualized in dotplot format.
 		</div>
 
