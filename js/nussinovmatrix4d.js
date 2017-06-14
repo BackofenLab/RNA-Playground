@@ -343,13 +343,13 @@ var NussinovMatrix4d = {
      */
     conv_str: function(P) {
         var str = "";
-        for (var l = 0; l < this.seq1_length + this.seq2_length + 1 + this.minLoopLength; l++) {
+        for (var l = 0; l < this.seq1_length + this.seq2_length + this.minLoopLength; l++) {
             str += ".";
         }
         //str[this.seq1_length] = 'X';
         str = str.substr(0, this.seq1_length) + "X" + str.substr(this.seq1_length + 1);
         for (var indx in P) {
-            var i = P[indx][0], j = P[indx][1];
+            var i = P[indx][0], j = P[indx][1] - 1;
             //str[i - 1] = '(';
             str = str.substr(0, i - 1) + "(" + str.substr(i);
             //str[str.length - j] = ')';
