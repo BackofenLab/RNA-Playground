@@ -29,7 +29,7 @@ function NussinovMatrixViewModel() {
 
     self.rawSeq = ko.observable("GGUCCAC");
     self.rawSeq2 = ko.observable("CCGAGG");
-    self.loopLength = ko.observable(1);
+    self.loopLength = ko.observable($(rec_select).text() == "hybrid" ? 0 : 1);
 
     self.input = {
         loopLength: ko.computed(function () {
