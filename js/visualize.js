@@ -31,6 +31,17 @@ function NussinovMatrixViewModel() {
     self.rawSeq2 = ko.observable("CCGAGG");
     self.loopLength = ko.observable($(rec_select).text() == "hybrid" ? 0 : 1);
 
+    self.rawSequence = ko.computed(function () {
+        return self.rawSeq().toUpperCase();
+    });
+    self.rawSequence2 = ko.computed(function () {
+        var res = self.rawSeq2().toUpperCase();
+        if ($(rec_select).text() == "rnaup") {
+            res = res.split("").reverse().join("");
+        }
+        return res;
+    });
+
     self.input = {
         loopLength: ko.computed(function () {
             return self.loopLength();
@@ -49,20 +60,15 @@ function NussinovMatrixViewModel() {
                 if (self.rawSeq2() == undefined)
                     return;
                 var linker = '';
-                for (var i = 0; i <= ll; i++)linker += 'X';
-                return self.rawSeq().toUpperCase() + linker + self.rawSeq2().toUpperCase();//looplength +1
+                for (var i = 0; i <= ll; i++) linker += 'X';
+                return self.rawSequence() + linker + self.rawSequence2();
             }
+
             return self.rawSeq().toUpperCase();
         }),
 
     };
 
-    self.rawSequence = ko.computed(function () {
-        return self.rawSeq().toUpperCase().split("");
-    });
-    self.rawSequence2 = ko.computed(function () {
-        return self.rawSeq2().toUpperCase().split("");
-    });
 
     self.mcCaskillRecursion = ko.computed(function () {
         //console.log($(rec_select).text());
@@ -108,6 +114,7 @@ function NussinovMatrixViewModel() {
         if ($(rec_select).text() == "hybrid") {
             console.log("hybrid");
             self.input.recursion("hybrid");
+            self.input.allowTraceback = true;
             //self.input.allowTraceback = false;
             //console.log("setttt");
             //cellWidth = 48;
@@ -119,6 +126,7 @@ function NussinovMatrixViewModel() {
         if ($(rec_select).text() == "rnaup") {
             console.log("rnaup");
             self.input.recursion("rnaup");
+            self.input.allowTraceback = true;
             //self.input.allowTraceback = false;
             //cellWidth = 48;
             //cellHeight = 28;
@@ -172,8 +180,8 @@ function NussinovMatrixViewModel() {
 
         }
         if (self.input.recursion() === "rnaup") {
-            $("#dotplot_seq1").html(dotplot(self.rawSeq().toUpperCase(), tables[1].cells, 'up1'));
-            $("#dotplot_seq2").html(dotplot(self.rawSeq2().toUpperCase(), tables[2].cells, 'up2'));
+            $("#dotplot_seq1").html(dotplot(self.rawSequence(), tables[1].cells, 'up1'));
+            $("#dotplot_seq2").html(dotplot(self.rawSequence2(), tables[2].cells, 'up2'));
 
         }
 
@@ -260,7 +268,7 @@ function NussinovMatrixViewModel() {
         cell = JSON.parse(cell);
 
         $('td.cell').css("background", "white");
-        drawFullTrace(offset, cell);
+        //drawFullTrace(offset, cell);
     };
 
     // functions for visualization and interaction
