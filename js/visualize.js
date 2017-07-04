@@ -262,6 +262,14 @@ function NussinovMatrixViewModel() {
         $('td#structTableCells').css({'background': '#FFF'});
         $("#4dVisual").text("");
         $("#4dVisual").text(clicked_cell.rep4d);
+        if (clicked_cell.value % 1 === 0) {
+            $("#output_value").text("Output value: " + clicked_cell.value);
+        } else {
+            $("#output_value").text("Output value: " + parseFloat(clicked_cell.value).toFixed(5));
+        }
+
+        $("#output_value").css("font-weight", "Bold");
+
         $(dom.target).css({'background': colors[color]});
 
         var cell = JSON.stringify(clicked_cell);

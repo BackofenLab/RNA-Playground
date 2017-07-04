@@ -543,7 +543,7 @@ var wuchty4d = function (xmat, maxSOS) {
                 if (!xmat.isInvalidState(sigma[s][0], sigma[s][1], sigma[s][2], sigma[s][3])) sigma_remaining++;
             }
             if (sigma.length == 0 || sigma_remaining == 0) {
-                var temp_sos = {structure: xmat.conv_str(P), traces: traces, rep4d: repres(visualize4d(xmat.sequence1, xmat.sequence2, P))};
+                var temp_sos = {value: NMax, structure: xmat.conv_str(P), traces: traces, rep4d: repres(visualize4d(xmat.sequence1, xmat.sequence2, P))};
                 //console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P)));
                 SOS.push(temp_sos);
 
