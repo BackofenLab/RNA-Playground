@@ -175,13 +175,13 @@ function NussinovMatrixViewModel() {
         $("#4dVisual").text("");
         //console.log("matrix compute");
         if (self.input.recursion() === "mcCaskill") {
-            $("#paired_dotplot").html(dotplot(self.input.sequence(), tables[2].cells, 'pd'));
-            $("#unpaired_dotplot").html(dotplot(self.input.sequence(), tables[3].cells, 'ud'));
+            $("#paired_dotplot").html(dotplot(self.input.sequence(), tables[2].cells, 'pd', false));
+            $("#unpaired_dotplot").html(dotplot(self.input.sequence(), tables[3].cells, 'ud', false));
 
         }
         if (self.input.recursion() === "rnaup") {
-            $("#dotplot_seq1").html(dotplot(self.rawSequence(), tables[1].cells, 'up1'));
-            $("#dotplot_seq2").html(dotplot(self.rawSequence2(), tables[2].cells, 'up2'));
+            $("#dotplot_seq1").html(dotplot(self.rawSequence(), tables[1].cells, 'up1', true));
+            $("#dotplot_seq2").html(dotplot(self.rawSequence2(), tables[2].cells, 'up2', true));
 
         }
 
