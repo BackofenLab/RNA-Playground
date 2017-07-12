@@ -1338,7 +1338,7 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeCell = function(i, j) {
     }
     curCell.value = ret;
     curCell.logValue = -this.energy_normal * Math.log(ret);
-    %console.log(curCell);
+    //console.log(curCell);
     return curCell;
 };
 
@@ -1382,7 +1382,7 @@ NussinovDPAlgorithm_McCaskill.Tables[3].computeCell = function(i, j) {
     }
     curCell.value = ret;
     curCell.logValue = -this.energy_normal * Math.log(ret);
-    %console.log(curCell);
+    //console.log(curCell);
     return curCell;
 };
 
