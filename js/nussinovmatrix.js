@@ -60,6 +60,8 @@ var NussinovCell = {
 // value
     value: null,
 
+    logValue: null,
+
 // traces for the current value
     traces: null,
 
@@ -76,6 +78,7 @@ var NussinovCell = {
         this.j = j;
         this.value = value;
         this.traces = [];
+        this.logValue = null;
         // this access for chaining
         return this;
     }
@@ -1334,6 +1337,8 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeCell = function(i, j) {
         }
     }
     curCell.value = ret;
+    curCell.logValue = -this.energy_normal * Math.log(ret);
+    //console.log(curCell);
     return curCell;
 };
 
@@ -1376,6 +1381,8 @@ NussinovDPAlgorithm_McCaskill.Tables[3].computeCell = function(i, j) {
         }
     }
     curCell.value = ret;
+    curCell.logValue = -this.energy_normal * Math.log(ret);
+    //console.log(curCell);
     return curCell;
 };
 
@@ -1396,6 +1403,7 @@ NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
 
     for (var i = 1; i < 4; ++i) {
         this.Tables[i].energy_basepair = -input.energy() / input.energy_normal();
+        this.Tables[i].energy_normal = input.energy_normal();
     }
 
     for (var i = 0; i < 4; ++i) {

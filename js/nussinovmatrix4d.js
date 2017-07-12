@@ -295,7 +295,7 @@ var NussinovMatrix4d = {
      */
     computeAllCells: function() {
         for (var i = 0; i <= this.seq1_length; ++i) {
-            for (var k = 0; k<= this.seq1_length; ++k) {
+            for (var k = 0; k <= this.seq1_length; ++k) {
                 for (var j = 0; j <= this.seq2_length; ++j) {
                     for (var l = 0; l <= this.seq2_length; ++l) {
                         this.getCell(i, k, j, l);
@@ -373,7 +373,7 @@ var NussinovMatrix4d = {
             for (var k = i; k <= this.seq1_length; ++k)
                 for (var j = 0; j <= this.seq2_length; ++j)
                     for (var l = j; l <= this.seq2_length; ++l)
-                        if (this.getValue(i, k, j, l) != null && Math.abs(this.getValue(i, k, j, l)) > 1e-5 ) {
+                        if (this.getValue(i, k, j, l) != null && this.getCell(i, k, j, l).traces.length > 0) {
                             res += JSON.stringify(this.getCell(i, k, j, l)) + "\n";
                         }
 
@@ -420,7 +420,7 @@ DPAlgorithm_hybrid.Tables[0].computeCell = function(i, k, j, l) {
 DPAlgorithm_hybrid.computeMatrix = function(input) {
     var splitSeq = input.sequence().indexOf('X');
     var sequence1 = input.sequence().substr(0, splitSeq);
-    var sequence2 = input.sequence().substr(parseInt(input.loopLength()) + splitSeq + 1);//split("").reverse().join("");
+    var sequence2 = input.sequence().substr(parseInt(input.loopLength()) + splitSeq + 1);
 
     this.Tables[0].init(sequence1, sequence2, "RNAHybrid");
     this.Tables[0].minLoopLength = parseInt(input.loopLength());
@@ -478,14 +478,13 @@ DPAlgorithm_rnaup.computeMatrix = function(input) {
     this.Tables[1].getCell = NussinovDPAlgorithm_McCaskill.Tables[3].getCell;
     this.Tables[1].getValue = NussinovDPAlgorithm_McCaskill.Tables[3].getValue;
     this.Tables[1].isInvalidState = NussinovDPAlgorithm_McCaskill.Tables[3].isInvalidState;
-    
+
     NussinovDPAlgorithm_McCaskill.computeMatrix({sequence: function(){return sequence2;}, loopLength: input.loopLength, energy: input.energy, energy_normal: input.energy_normal});
     this.Tables[2] = JSON.parse(JSON.stringify(NussinovDPAlgorithm_McCaskill.Tables[3]));
     this.Tables[2].getRecursionInLatex = NussinovDPAlgorithm_McCaskill.Tables[3].getRecursionInLatex;
     this.Tables[2].getCell = NussinovDPAlgorithm_McCaskill.Tables[3].getCell;
     this.Tables[2].getValue = NussinovDPAlgorithm_McCaskill.Tables[3].getValue;
     this.Tables[2].isInvalidState = NussinovDPAlgorithm_McCaskill.Tables[3].isInvalidState;
-    
     
     this.Tables[0].init(sequence1, sequence2, "RNAup");
     this.Tables[0].minLoopLength = parseInt(input.loopLength());
@@ -507,6 +506,7 @@ var wuchty4d = function (xmat, maxSOS) {
     //console.log("wuchty4d");
     var sigma_0 = [];
     var NMax = 0;
+    //console.log(xmat.seq1_length, xmat.seq2_length);
     for (var i = 0; i <= xmat.seq1_length; ++i) {
         for (var k = i; k <= xmat.seq1_length; ++k) {
             for (var j = 0; j <= xmat.seq2_length; ++j) {
@@ -522,6 +522,8 @@ var wuchty4d = function (xmat, maxSOS) {
             }
         }
     }
+    //console.log(NMax);
+    //console.log(sigma_0);
     var SOS = [];
     var loop = 0;
     for (var sig = 0; sig < sigma_0.length; ++sig) {
@@ -541,7 +543,7 @@ var wuchty4d = function (xmat, maxSOS) {
                 if (!xmat.isInvalidState(sigma[s][0], sigma[s][1], sigma[s][2], sigma[s][3])) sigma_remaining++;
             }
             if (sigma.length == 0 || sigma_remaining == 0) {
-                var temp_sos = {structure: xmat.conv_str(P), traces: traces, rep4d: repres(visualize4d(xmat.sequence1, xmat.sequence2, P))};
+                var temp_sos = {value: NMax, structure: xmat.conv_str(P), traces: traces, rep4d: repres(visualize4d(xmat.sequence1, xmat.sequence2, P))};
                 //console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P)));
                 SOS.push(temp_sos);
 

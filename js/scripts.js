@@ -293,21 +293,33 @@ function hidetext() {
         .attr("display","none")
 }
 
-function dotplot(sequence, table, pname) {
+function dotplot(sequence, table, pname, use_log_value) {
     //console.log('hi', sequence, table, pname);
     var maindic = {};
-
-
+    
     var bpp = [];
     var mlp = [];
     var keys=["source","target","value"];
 
+    var maxV = 0.001;
+
+    if (use_log_value) {
+        for (var i = 1; i < table.length; i++) {
+            for (var j = 1; j < table[i].length; j++) {
+                maxV = Math.max(maxV, table[i][j].logValue);
+            }
+        }
+    }
     for(var i=1; i<table.length; i++){
         for(var j=1; j<table[i].length; j++){
             var a = table[i][j].i;
             var b = table[i][j].j;
             //var c = Math.pow(parseFloat(table[i][j].value), 0.5);
             var c = parseFloat(table[i][j].value);
+            //console.log(table[i][j].value, table[i][j].logValue);
+            if (use_log_value) {
+                c = parseFloat(table[i][j].logValue);
+            }
             c = parseFloat(c.toFixed(3));
             var roww = {};
             roww[keys[0]]=a;
@@ -454,7 +466,7 @@ function dotplot(sequence, table, pname) {
             .attr("cy", 26)
             //.attr("width", function(d) {return x.rangeBand() * Math.pow(z(d.z), 0.5);})
             //.attr("height", function(d) {return x.rangeBand() * Math.pow(z(d.z), 0.5);})
-            .attr("r", function(d) { return 0.9*x.rangeBand() * Math.pow(z(d.z), 0.5)/2;})
+            .attr("r", function(d) { return use_log_value ? (0.9*x.rangeBand() * Math.pow(z(d.z / (maxV + 0.01)), 0.5)/2) : (0.9*x.rangeBand() * Math.pow(z(d.z), 0.5)/2);})
             //.attr("ry", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.5);})
             //.attr("border", "1px solid red")
             //.style("stroke", "rgb(0, 165, 255)")

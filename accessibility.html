@@ -72,7 +72,7 @@
         <div class="row">
             <div class="colW250" style="font-size: 120%">'Normalized' temperature $RT$:</div>
             <div class="colW400">
-                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="-2" step="(max - min) / 100">
+                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="1" step="(max - min) / 100">
                 <label for="energy_normal" data-bind="text: input.energy_normal"></label>
             </div>
         </div>
@@ -128,7 +128,9 @@
 	        	<div id="4dVisual" class="hybridVisual"></div>
 			</div>
 		</div>
-	    
+
+
+		<div id="output_value"></br></div>
 	    <div>
     		The box provides an ASCII representation of the interacting
     		base pairs of the selected structure with $S^{1}$ on top and $S^{2}$ 
@@ -139,6 +141,7 @@
     		base pairs are present, no visualization is done. 
 	    </div>
 	</div>
+
 
     <div id="output">
 
