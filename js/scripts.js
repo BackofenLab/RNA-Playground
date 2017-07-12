@@ -294,7 +294,7 @@ function hidetext() {
 }
 
 function dotplot(sequence, table, pname, use_log_value) {
-    console.log('hi', sequence, table, pname);
+    //console.log('hi', sequence, table, pname);
     var maindic = {};
     
     var bpp = [];
