@@ -3,7 +3,7 @@
 		<div class="colW600">
 			State-of-the-art RNA-RNA interaction prediction algorithms take
 			the accessibility of the interacting regions into account. That is,
-			a penalty is added to the interaction scoring that represents how
+			a penalty corrects the interaction scoring for how
 			much the interaction sites are involved in intramolecular base pairs.
 			This can be expressed by reverting unpaired probabilities $P^{u}_{i,j}$ into
 			pseudo energy scores via $-RT\log(P^{u}_{i,j})$ that represent the amount
@@ -14,10 +14,10 @@
 			<br>
 			Here, we extend the 
 			<a href="index.jsp?toolName=hybrid-only">hybrid-only approach</a>
-			towards the integration of an accessibility scoring. To this end, the
+			towards the integration of an accessibility-based scoring. To this end, the
 			<a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>
 			is used to compute unpaired probabilities $P^{u}$. The penalties are
-			added as a post-processing step to the hybridization energies in 
+			used in a post-processing step to correct the hybridization energies in 
 			order to identify the interaction that optimizes the combination of
 			hybridization and accessibility scoring.
 		</div>
@@ -87,9 +87,9 @@
         	tabularized for both sequences $S^1$ and $\overleftarrow{S^2}$, resp., using the 
         	<a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>.
         	<br>
-        	Given these values, the accessibility-incorporating interaction energies
+        	Given these values, the accessibility-incorporating interaction scorings
        		are computed and stored in table $I$. A non-zero entry $I^{i,k}_{j,l}$
-       		represents the combined minimum energy score of an interaction of
+       		represents the combined scoring for an interaction of
        		$S^1_{i..k}$ with $\overleftarrow{S^2_{j..l}}$ with 
        		left/right most base pairs $(S^1_i,\overleftarrow{S^2_j})$/$(S^1_k,\overleftarrow{S^2_l})$, respectively.
         </div>
@@ -106,9 +106,9 @@
         <div>
        		Due to the four-dimensionality of $I$, we only list the optimal
        		hybrid structures (up to 15). On selection, the intermolecular base pairs are
-       		visualized. If all entries $I^{i,k}_{j,l}$ show positive energy scores,
+       		visualized. If all entries $I^{i,k}_{j,l}$ show negative scores,
        		no favorable interaction is possible since intramolecular base pairs
-       		dominate the individual structures (too low accessibility values of 
+       		dominate the individual structures (too hight penalties for 
        		possible interaction sites). Therefore, the structure list might be
        		empty.
         </div>
@@ -129,7 +129,7 @@
 			</div>
 		</div>
 
-		<div style="display:none;font-weight:bold;">
+		<div style="font-weight:bold;">
 			Energy of selection:
 			<span id="output_value"></span>
 		</div>
