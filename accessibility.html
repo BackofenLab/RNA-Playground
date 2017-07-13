@@ -145,18 +145,23 @@
 
     <div id="output">
 
-		<h2>Unpaired probabilities</h2>
+		<h2>Accessibility</h2>
 		
 		<div>
 			The <a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>
-			is used in order to compute the unpaired probabilities for each of
-			the two sequences. Please refer to the according page for details. 
-			In the following, the unpaired probabilities for $S^1$ and $\overleftarrow{S^2}$ are 
-			visualized in dotplot format.
+			is used in order to compute the unpaired probabilities $P^{u}$ for each of
+			the two sequences. Please refer to the according page for details.
+			These are used to compute according energy penalties $ED$ to make an 
+			interacting site $i..j$ accessible, i.e. $ED_{i,j} = -RT\cdot\log(P^{u}_{i,j})$.
+			In the following, the penalties for $S^1$ and $\overleftarrow{S^2}$ are 
+			visualized in dotplot format, i.e. the larger the dot the higher is
+			the penalty for the respective subsequence to form an interaction.
 		</div>
 
+		<div style="font-weight:bold;">Penalties $ED^{1}$ to make site in $S^{1}$ accessible:</div>
         <div id="dotplot_seq1"></div>
         
+		<div style="font-weight:bold;">Penalties $ED^{2}$ to make site in $\overleftarrow{S^2}$ accessible:</div>
         <div id="dotplot_seq2"></div>
 
     </div>

@@ -350,22 +350,6 @@ function dotplot(sequence, table, pname, use_log_value) {
 
     //var svg = d3.select("#output").append("svg")
     var dev = document.createElement("div");
-    var desc = d3.select(dev).append("div").style("margin-top", 40 + "px").style("font-size", "120%");
-
-
-    if (pname === "pd") {
-        desc.text("Dotplot for paired base pair probabilities");
-    } else
-    if (pname === "ud") {
-        desc.text("Dotplot for unpaired probabilities");
-    }
-
-    if (pname === "up1") {
-        desc.text("Dotplot for unpaired probabilities $P^{u1}$ of $S^1$");
-    } else
-    if (pname === "up2") {
-        desc.text("Dotplot for unpaired probabilities $P^{u2}$ of $\\overleftarrow{S^2}$");
-    }
     var svg = d3.select(dev).append("svg")
         .attr("id", pname)
         .attr("width", width + margin.left + margin.right)
