@@ -91,7 +91,15 @@ function matrixToCSV(sequence, matrices) {
     return res;
 }
 
+/*
+ #######################--- END Download Tables ---############################
+ */
 
+
+
+/*
+ #######################--- BEGIN interaction visualization ---############################
+ */
 
 function allor3dots(str) {
     if (10 < str.length) {
@@ -250,7 +258,7 @@ function visualize4d(str1, str2, ps) {
 
 
 /*
- #######################--- END Download Tables ---############################
+ #######################--- END interaction visualization ---############################
  */
 
 /*
