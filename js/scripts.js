@@ -72,7 +72,7 @@ function matrixToCSV(sequence, matrices) {
             res += "," + sequence[j];
         }
         res += "\n";
-        for (var i = 1; i < matrix.cells.length; ++i) {
+        for (var i = 1, mat_cells_len = matrix.cells.length; i < mat_cells_len; ++i) {
             if (sequence_column && i > 0)
                 res += sequence[i - 1];
 
@@ -80,8 +80,9 @@ function matrixToCSV(sequence, matrices) {
             for (var j in matrix.cells[i]) {
                 if (sequence_column || j > 0)
                     res += ",";
-                if (!isNaN(matrix.cells[i][j].value) && matrix.cells[i][j].value != null)
-                    res += matrix.cells[i][j].value;
+                var mat_cell_value = matrix.cells[i][j].value;
+                if (!isNaN(mat_cell_value) && mat_cell_value != null)
+                    res += mat_cell_value;
             }
             res += "\n";
         }
@@ -102,16 +103,12 @@ function matrixToCSV(sequence, matrices) {
  */
 
 function allor3dots(str) {
-    if (10 < str.length) {
-        return str.substr(0, 3) + "..." + str.substr(str.length - 4);
-    } else {
-        return str;
-    }
+    return ( 10 < str.length ? ( str.substr( 0, 3 ) + "..." + str.substr( str.length - 4 ) ) : str );
 }
 
 function repres(res) {
     ret = "";
-    for (var i = 0; i < res.length; ++i) {
+    for (var i = 0, res_len = res.length; i < res_len; ++i) {
         ret += "\t";
         for (var j in res[i]) {
             ret += res[i][j];
