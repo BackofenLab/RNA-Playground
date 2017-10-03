@@ -1,0 +1,18 @@
+load:
+  - js/libs/FileSaver.min.js
+  - js/libs/jquery.js
+  - js/libs/knockout-3.4.2.js
+  - js/libs/namespace.js
+
+  - js/procedures/bases/alignment.js
+
+  - js/procedures/backtracking.js
+
+  - js/defaults.js
+  - js/gotoh.js
+  - js/needleman_wunsch.js
+  - js/smith_waterman.js
+test:
+  - js/tests/test_gotoh.js
+  - js/tests/test_needleman_wunsch.js
+  - js/tests/test_smith_waterman.js

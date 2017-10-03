@@ -1,0 +1,138 @@
+<!--
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Author: Alexander Mattheis
+-->
+
+<div id="algorithm_input">
+    <form>
+        <!-- Redundant -->
+        <p>
+            <label>Sequence 1:</label>
+            <input class="dna_sequence" data-bind="value: input.sequence1" id="sequence_1"
+                   maxlength="10" placeholder="EXAMPLE 'ATC'" type="text">
+        </p>
+
+        <p>
+            <label>Sequence 2:</label>
+            <input class="dna_sequence" data-bind="value: input.sequence2" id="sequence_2"
+                   maxlength="10" placeholder="EXAMPLE 'AGTC'" type="text">
+        </p>
+
+        <p>
+            <label>Calculation:</label>
+            <span class="group">
+                Distance <input class="optimization_type" data-bind="checked: input.calculation" id="distance"
+                                name="calculation" type="radio" value="distance">
+                Similarity <input class="optimization_type" data-bind="checked: input.calculation" id="similarity"
+                                  name="calculation" type="radio" value="similarity">
+            </span>
+        </p>
+        <!-- Redundant -->
+
+        <p>
+            <label>Function:</label>
+            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                Deletion <input class="fx_parameter" data-bind="value: input.deletion" id="deletion" type="number">
+                Insertion <input class="fx_parameter" data-bind="value: input.insertion" id="insertion" type="number">
+                Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
+                Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
+            </span>
+
+            <div class="group_hint">
+                <b>Hint:</b> <br>
+                If similarity is checked,
+                then match values should be positive and every other value lower or equal zero. <br>
+                And if distance is checked,
+                then match values should be negative and every other value higher or equal zero.
+            </div>
+        </p>
+    </form>
+</div>
+
+<div id="algorithm_output">
+    <div id="main_output">
+        <table id="calculation">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <!-- ko foreach: input.sequence1 -->
+                        <th data-bind="drawChar: [$data, $index()+1]"></th>
+                    <!-- /ko -->
+                </tr>
+            </thead>
+
+            <tbody>
+                <!-- ko foreach: output.matrix --> <!-- to get i-indexes = $parentContext.$index() -->
+                    <tr>
+                        <!-- ko if: $index() == 0 -->
+                            <th></th>
+                        <!-- /ko -->
+
+                        <!-- ko if: $index() > 0 -->
+                            <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                        <!-- /ko -->
+
+                        <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
+                            <td class="selectable_entry"
+                                data-bind="text: $root.output.matrix()[$parentContext.$index()][$index()]"></td>
+                        <!-- /ko -->
+                    </tr>
+                <!-- /ko -->
+
+                <tr>
+                    <th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
+                        <small>
+                            <b>Score:</b> <span data-bind="text: $root.output.score"></span>
+                        </small>
+                    </th>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <td class="download_table" colspan=100%>
+                        <a class="table_download" href="#">Download Table</a>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <table id="results">
+            <thead>
+                <tr>
+                    <th>
+                        Results <br>
+                        <small>
+                            You can select a result to get the related traceback.
+                        </small>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <!-- ko foreach: $root.output.alignments -->
+                    <!-- ko if: $index() < 4 -->
+                        <tr>
+                            <td class="selectable_entry">
+                                <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                            </td>
+                        </tr>
+                    <!-- /ko -->
+                <!-- /ko -->
+
+                <tr>
+                    <th>
+                        <small>
+                            <b>Hint:</b> Only the first four results are shown.
+                        </small>
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
