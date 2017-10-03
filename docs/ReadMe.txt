@@ -10,8 +10,9 @@ Author: Alexander Mattheis
 /*-------------------------*/
 
 /*-----------------------------------------------------DEVELOPMENT----------------------------------------------------*/
-The "DNA"-bionformatics-part of
-the project was developed by Alexander Mattheis with the cross-platform IDE "PhpStorm 2017.2.4".
+The DNA-bionformatics-part of
+the project was developed by Alexander Mattheis (supervised by Martin Raden)
+with the cross-platform IDE "PhpStorm 2017.2.4".
 
 /*----------------------------------------------EXTENDING VISUALIZATION-----------------------------------------------*/
 All functions which are used for visualization like highlighting, drawing arrows
