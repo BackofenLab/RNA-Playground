@@ -10,7 +10,7 @@ Author: Alexander Mattheis
 /*-------------------------*/
 
 /*-----------------------------------------------------DEVELOPMENT----------------------------------------------------*/
-The DNA-bionformatics-part of
+The DNA-bionformatics part of
 the project was developed by Alexander Mattheis (supervised by Martin Raden)
 with the cross-platform IDE "PhpStorm 2017.2.4".
 
