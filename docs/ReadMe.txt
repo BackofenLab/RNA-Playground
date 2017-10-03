@@ -76,7 +76,7 @@ id = "algorithm_view".
 /*-------------------------------------------------------PATHS--------------------------------------------------------*/
 All Javascript-paths are stored under "js/defaults.js". 
 
-Hint:	If you want change file-paths then you have also to change paths in the "alignment.html".
+Hint:	If you want change file-paths, then you have also to change paths in the "alignment.html".
 
 /*-----------------------------------------------------PROCEDURES-----------------------------------------------------*/
 To save loading time, the number of files which are sequentially loaded is limited
