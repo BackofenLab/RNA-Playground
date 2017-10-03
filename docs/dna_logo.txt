@@ -1,4 +1,12 @@
-Created with Inkscape 0.48
+/*
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Author: Alexander Mattheis
+*/
+
+The DNA-Logo in Bioinformatics Logo (look into alignment.html)
+was created with Inkscape 0.48
 
 Icon coloring based on this image:
 http://www.freepik.com/free-psd/dna-strands-medical-icon-psd_567790.htm#term=dna%20icon&page=1&position=38
