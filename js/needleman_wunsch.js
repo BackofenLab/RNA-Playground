@@ -88,8 +88,6 @@ $(document).ready(function () {
 
         for (var j = 1; j < inputData.matrixWidth; j++)
             outputData.matrix[0][j] = outputData.matrix[0][j - 1] + inputData.insertion;
-
-        alignmentInstance.setIO(inputData, outputData);
     }
 
     function computeMatrixAndScore() {
@@ -107,8 +105,6 @@ $(document).ready(function () {
         }
 
         outputData.score = outputData.matrix[inputData.matrixHeight - 1][inputData.matrixWidth - 1];
-
-        alignmentInstance.setIO(inputData, outputData);
     }
 
     function recursionFunction(diagonalValue, upValue, leftValue) {
@@ -133,7 +129,5 @@ $(document).ready(function () {
         var path = [];
         path.push(lowerRightCorner);
         outputData.tracebackPaths = backtracking.backtrace(needlemanWunschInstance, path, inputData, outputData, -1);
-
-        alignmentInstance.setIO(inputData, outputData);
     }
 }());

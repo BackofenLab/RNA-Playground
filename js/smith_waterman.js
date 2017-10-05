@@ -89,8 +89,6 @@ $(document).ready(function () {
 
         for (var j = 1; j < inputData.matrixWidth; j++)
             outputData.matrix[0][j] = 0;
-
-        alignmentInstance.setIO(inputData, outputData);
     }
 
     function computeMatrixAndScore() {
@@ -119,8 +117,6 @@ $(document).ready(function () {
             outputData.score = maxValue;
         else
             outputData.score = minValue;
-
-        alignmentInstance.setIO(inputData, outputData);
     }
 
     function recursionFunction(diagonalValue, upValue, leftValue) {
@@ -156,8 +152,6 @@ $(document).ready(function () {
             var tracebackPaths = backtracking.backtrace(smithWatermanInstance, path, inputData, outputData, -1);
             outputData.tracebackPaths = outputData.tracebackPaths.concat(tracebackPaths);
         }
-
-        alignmentInstance.setIO(inputData, outputData);
     }
 
     function getAllMaxPositions(inputData, outputData) {
