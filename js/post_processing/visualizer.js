@@ -37,7 +37,7 @@ Author: Alexander Mattheis
         this.input = {};
         this.output = {};
 
-        this.svg = createSVG(createEndMarker());
+        this.svg = createSVG();
 
         // bindings
         ko.bindingHandlers.drawChar = {
@@ -62,22 +62,23 @@ Author: Alexander Mattheis
         this.removeAllContents = removeAllContents;
     }
 
-    function createSVG(endMarker) {
+    function createSVG() {
         var svg = document.createElementNS(SVG.NAME_SPACE, "svg");
-        svg.appendChild(endMarker);
+        svg.appendChild(createEndMarker(SVG.TRACEBACK_LONG_ARROW_COLOR, SVG.MARKER.ID_TRACEBACK));
+        svg.appendChild(createEndMarker(SVG.FLOW_LONG_ARROW_COLOR, SVG.MARKER.ID_FLOW));
         return svg;
     }
 
     /* created with the help of <marker> definition https://developer.mozilla.org/de/docs/Web/SVG/Element/marker */
-    function createEndMarker() {
+    function createEndMarker(color, id) {
         // create triangle
         var trianglePath = document.createElementNS(SVG.NAME_SPACE, "path");
         trianglePath.setAttribute("d", SVG.TRIANGLE.D);  // M: move to, L: line to
-        trianglePath.setAttribute("fill", SVG.OBJECT_COLOR);
+        trianglePath.setAttribute("fill", color);
 
         // create marker object using path defined above
         var markerEnd = document.createElementNS(SVG.NAME_SPACE, "marker");
-        markerEnd.setAttribute("id", SVG.MARKER.ID);
+        markerEnd.setAttribute("id", id);
         markerEnd.setAttribute("orient", SVG.MARKER.ORIENT);
         markerEnd.setAttribute("refX", SVG.MARKER.BOUNDS.REF_X);
         markerEnd.setAttribute("refY", SVG.MARKER.BOUNDS.REF_Y);
@@ -96,14 +97,13 @@ Author: Alexander Mattheis
     }
 
     function showFlow(cellCoordinates, calculationVerticalTable, table, calculationHorizontalTable) {
-        var flows = new procedures.backtracking.Backtracking().backtrace(
-            visualizerInstance.algorithm, [cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1);
+        var flows = visualizerInstance.algorithm.getTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1);
 
         for (i = 0; i < visualizerInstance.lastFlows.length; i++)
             demarkCells(visualizerInstance.lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, i, true);
 
         for (var i = 0; i < flows.length; i++)
-            markCells(flows[i].reverse(), calculationVerticalTable, table, calculationHorizontalTable, i, true);
+            markCells(flows[i].reverse(), calculationVerticalTable, table, calculationHorizontalTable, i, true, true);
 
         visualizerInstance.lastFlows = flows;
     }
@@ -138,11 +138,11 @@ Author: Alexander Mattheis
         removeAllLines();  // below last flows/paths redrawn
 
         if (flowMode)  // redraw last traceback
-            markCells(visualizerInstance.lastPath, calculationVerticalTable, table, calculationHorizontalTable, -1, true);
+            markCells(visualizerInstance.lastPath, calculationVerticalTable, table, calculationHorizontalTable, -1, true, false);
         else {  // redraw last flow
             var lastFlows = visualizerInstance.lastFlows;
             for (var i = 0; i < lastFlows.length; i++)
-                markCells(lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, i, true);
+                markCells(lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, i, true, true);
         }
     }
 
@@ -178,7 +178,7 @@ Author: Alexander Mattheis
         }
     }
 
-    function markCells(path, calculationVerticalTable, table, calculationHorizontalTable, colorClass, arrows) {
+    function markCells(path, calculationVerticalTable, table, calculationHorizontalTable, colorClass, arrows, flowMode) {
         arrows = arrows || false;
 
         var lastPosI;
@@ -213,7 +213,7 @@ Author: Alexander Mattheis
             }
 
             if (arrows) {
-                placeArrow(currentTable, posI, posJ, lastTable, lastPosI, lastPosJ);
+                placeArrow(currentTable, posI, posJ, lastTable, lastPosI, lastPosJ, flowMode);
                 lastPosI = posI;
                 lastPosJ = posJ;
                 lastTable = currentTable;
@@ -221,7 +221,7 @@ Author: Alexander Mattheis
         }
     }
 
-    function placeArrow(table, i, j, lastTable, lastI, lastJ) {
+    function placeArrow(table, i, j, lastTable, lastI, lastJ, flowMode) {
         if (lastI !== undefined && lastI !== undefined) {
             var cell = table.rows[i].cells[j];
             var lastCell = lastTable.rows[lastI].cells[lastJ];
@@ -252,13 +252,13 @@ Author: Alexander Mattheis
                 var isXtoQ = parentMatrix === MATRICES.DEFAULT && lastParentMatrix === MATRICES.HORIZONTAL;
 
                 if (isPtoX)
-                    drawLine(cell, lastCell, MOVE.P_TO_X, i, j);
+                    drawLine(cell, lastCell, MOVE.P_TO_X, i, j, flowMode);
                 else if (isQtoX)
-                    drawLine(cell, lastCell, MOVE.Q_TO_X, i, j);
+                    drawLine(cell, lastCell, MOVE.Q_TO_X, i, j, flowMode);
                 else if (isXtoP)
-                    drawLine(cell, lastCell, MOVE.X_TO_P, i, j);
+                    drawLine(cell, lastCell, MOVE.X_TO_P, i, j, flowMode);
                 else if (isXtoQ)
-                    drawLine(cell, lastCell, MOVE.X_TO_Q, i, j);
+                    drawLine(cell, lastCell, MOVE.X_TO_Q, i, j, flowMode);
             }
         }
     }
@@ -272,7 +272,7 @@ Author: Alexander Mattheis
             return MATRICES.DEFAULT;
     }
     
-    function drawLine(cell, lastCell, move, i, j) {
+    function drawLine(cell, lastCell, move, i, j, flowMode) {
         var cellHeight = cell.offsetHeight;
         var cellWidth = cell.offsetWidth;
 
@@ -282,10 +282,10 @@ Author: Alexander Mattheis
         var lastTop;
 
         if (move === MOVE.X_TO_P) {
-            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT).toString();
-            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT).toString();
-            lastTop     =   (lastCell.offsetTop     + cellHeight    * (1-CELL_PERCENT)).toString();
+            left = (cell.offsetLeft + cellWidth * CELL_PERCENT).toString();
+            top = (cell.offsetTop + cellHeight * CELL_PERCENT).toString();
+            lastLeft = (lastCell.offsetLeft + cellWidth * CELL_PERCENT).toString();
+            lastTop = (lastCell.offsetTop + cellHeight * (1 - CELL_PERCENT)).toString();
         } else if (move === MOVE.X_TO_Q) {
             left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT).toString();
             top         =   (cell.offsetTop         + cellHeight    * (1-CELL_PERCENT)).toString();
@@ -309,8 +309,14 @@ Author: Alexander Mattheis
 
         // create line with previously defined marker
         var line = document.createElementNS(SVG.NAME_SPACE, "line");
-        line.setAttribute("marker-end", SVG.MARKER.URL);
-        line.setAttribute("stroke", SVG.OBJECT_COLOR);
+        if (flowMode) {
+            line.setAttribute("marker-end", SVG.MARKER.URL_FLOW);
+            line.setAttribute("stroke", SVG.FLOW_LONG_ARROW_COLOR);
+        }
+        else {
+            line.setAttribute("marker-end", SVG.MARKER.URL_TRACEBACK);
+            line.setAttribute("stroke", SVG.TRACEBACK_LONG_ARROW_COLOR);
+        }
         line.setAttribute("x1", left);
         line.setAttribute("y1", top);
         line.setAttribute("x2", lastLeft);
@@ -338,11 +344,11 @@ Author: Alexander Mattheis
                 visualizerInstance.lastPath = [];
             } else {  // case: different path
                 demarkCells(visualizerInstance.lastPath, calculationVerticalTable, calculationTable, calculationHorizontalTable, -1, false);
-                markCells(path, calculationVerticalTable, calculationTable, calculationHorizontalTable, -1, true);
+                markCells(path, calculationVerticalTable, calculationTable, calculationHorizontalTable, -1, true, false);
                 visualizerInstance.lastPath = path;
             }
         } else {  // case: first time selected
-            markCells(path, calculationVerticalTable, calculationTable, calculationHorizontalTable, -1, true);
+            markCells(path, calculationVerticalTable, calculationTable, calculationHorizontalTable, -1, true, false);
             visualizerInstance.lastPath = path;
         }
     }
@@ -477,14 +483,14 @@ Author: Alexander Mattheis
     }
 
     function drawAllLines(calculationVerticalTable, table, calculationHorizontalTable) {
-        drawArrowLine(visualizerInstance.lastPath, calculationVerticalTable, table, calculationHorizontalTable);
+        drawArrowLine(visualizerInstance.lastPath, calculationVerticalTable, table, calculationHorizontalTable, false);
 
         var lastFlows = visualizerInstance.lastFlows;
         for (var i = 0; i < lastFlows.length; i++)
-            drawArrowLine(lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable);
+            drawArrowLine(lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, true);
     }
 
-    function drawArrowLine(path, calculationVerticalTable, table, calculationHorizontalTable) {
+    function drawArrowLine(path, calculationVerticalTable, table, calculationHorizontalTable, flowMode) {
         var lastPosI;
         var lastPosJ;
         var lastTable;
@@ -497,7 +503,7 @@ Author: Alexander Mattheis
             var posI = path[j].i + 1;
             var posJ = path[j].j + 1;
 
-            placeArrow(currentTable, posI, posJ, lastTable, lastPosI, lastPosJ);
+            placeArrow(currentTable, posI, posJ, lastTable, lastPosI, lastPosJ, flowMode);
             lastPosI = posI;
             lastPosJ = posJ;
             lastTable = currentTable;

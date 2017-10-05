@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("procedures.backtracking", Vector, Backtracking, backtrace);
+    namespace("procedures.backtracking", Vector, Backtracking, getNeighboured, getMultiNeighboured);
 
     function Vector(i, j) {
         this.i = i;
@@ -23,99 +23,50 @@ Author: Alexander Mattheis
     }
 
     function Backtracking() {
-        this.backtrace = backtrace;
+        this.getNeighboured = getNeighboured;
+        this.getMultiNeighboured = getMultiNeighboured;
     }
 
-    /**
-     *
-     * @param pathLength - Number of edges (arrows) in the path.
-     * @return {Array}
-     */
-    function backtrace(algorithm, path, inputData, outputData, pathLength) {
-        var paths = [];
+    function getNeighboured(position, inputData, outputData, algorithm) {
+        var neighboured = [];
 
-        switch (algorithm.type) {
-            case ALGORITHMS.GOTOH:
-                /*
-                 It is based on the code of Alexander Mattheis
-                 in project Algorithms for Bioninformatics.
-                 */
-                this.gotohTraceback = function (path, inputData, outputData, pathLength) {
-                    var currentPosition = path[path.length - 1];
-                    var neighboured = getMultiNeighboured(currentPosition, inputData, outputData);
+        var left = position.j - 1;
+        var up = position.i - 1;
 
-                    for (var i = 0; i < neighboured.length; i++) {
-                        if ((neighboured[i].i === 0 && neighboured[i].j === 0)
-                            || (pathLength !== -1 && path.length >= pathLength)) {
+        // retrieve values
+        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
+        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
 
-                            path.push(neighboured[i]);
-                            paths.push(path.slice());  // creating a shallow copy
-                            path.pop();
-                        } else {
-                            path.push(neighboured[i]);
-                            this.gotohTraceback(path, inputData, outputData, pathLength);
-                            path.pop();
-                        }
-                    }
-                };
+        var currentValue = outputData.matrix[position.i][position.j];
 
-                this.gotohTraceback(path, inputData, outputData, pathLength);
-                return paths;
+        var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
 
-            case ALGORITHMS.NEEDLEMAN_WUNSCH:
-                /*
-                 It is based on the code of Alexander Mattheis
-                 in project Algorithms for Bioninformatics.
-                 */
-                this.needlemanWunschTraceback = function (path, inputData, outputData, pathLength) {
-                    var currentPosition = path[path.length - 1];
-                    var neighboured = getNeighboured(currentPosition, inputData, outputData, algorithm);
+        var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : NaN;
+        var upValue = up >= 0 ? outputData.matrix[up][position.j] : NaN;
+        var leftValue = left >= 0 ? outputData.matrix[position.i][left] : NaN;
 
-                    for (var i = 0; i < neighboured.length; i++) {
-                        if ((neighboured[i].i === 0 && neighboured[i].j === 0)
-                            || (pathLength !== -1 && path.length >= pathLength)) {
+        // check
+        var isMatchMismatch = currentValue === (diagonalValue + matchOrMismatch);
+        var isDeletion = currentValue === (upValue + inputData.deletion);
+        var isInsertion = currentValue === (leftValue + inputData.insertion);
 
-                            path.push(neighboured[i]);
-                            paths.push(path.slice());  // creating a shallow copy
-                            path.pop();
-                        } else {
-                            path.push(neighboured[i]);
-                            this.needlemanWunschTraceback(path, inputData, outputData, pathLength);
-                            path.pop();
-                        }
-                    }
-                };
-
-                this.needlemanWunschTraceback(path, inputData, outputData, pathLength);
-                return paths;
-
-            case ALGORITHMS.SMITH_WATERMAN:
-                /*
-                 It is based on the code of Alexander Mattheis
-                 in project Algorithms for Bioninformatics.
-                 */
-                this.smithWatermanTraceback = function (path, inputData, outputData, pathLength) {
-                    var currentPosition = path[path.length - 1];
-                    var neighboured = getNeighboured(currentPosition, inputData, outputData, algorithm);
-
-                    for (var i = 0; i < neighboured.length; i++) {
-                        if (outputData.matrix[neighboured[i].i][neighboured[i].j] === 0
-                            || (pathLength !== -1 && path.length >= pathLength)) {
-
-                            path.push(neighboured[i]);
-                            paths.push(path.slice());  // creating a shallow copy
-                            path.pop();
-                        } else {
-                            path.push(neighboured[i]);
-                            this.smithWatermanTraceback(path, inputData, outputData, pathLength);
-                            path.pop();
-                        }
-                    }
-                };
-
-                this.smithWatermanTraceback(path, inputData, outputData, pathLength);
-                return paths;
+        if (algorithm.type === ALGORITHMS.SMITH_WATERMAN) {
+            isMatchMismatch = isMatchMismatch || currentValue === 0 && up >= 0 && left >= 0;
+            isDeletion = isDeletion || currentValue === 0 && up >= 0;
+            isInsertion = isInsertion || currentValue === 0 && left >= 0;
         }
+
+        // add
+        if (isMatchMismatch)
+            neighboured.push(new Vector(up, left));
+
+        if (isDeletion)
+            neighboured.push(new Vector(up, position.j));
+
+        if (isInsertion)
+            neighboured.push(new Vector(position.i, left));
+
+        return neighboured;
     }
 
     function getMultiNeighboured(position, inputData, outputData) {
@@ -232,48 +183,6 @@ Author: Alexander Mattheis
 
         if (isLeftInX)
             neighboured.push(create(new Vector(position.i, left), MATRICES.DEFAULT));
-
-        return neighboured;
-    }
-
-    function getNeighboured(position, inputData, outputData, algorithm) {
-        var neighboured = [];
-
-        var left = position.j - 1;
-        var up = position.i - 1;
-
-        // retrieve values
-        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
-        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
-
-        var currentValue = outputData.matrix[position.i][position.j];
-
-        var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
-
-        var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : NaN;
-        var upValue = up >= 0 ? outputData.matrix[up][position.j] : NaN;
-        var leftValue = left >= 0 ? outputData.matrix[position.i][left] : NaN;
-
-        // check
-        var isMatchMismatch = currentValue === (diagonalValue + matchOrMismatch);
-        var isDeletion = currentValue === (upValue + inputData.deletion);
-        var isInsertion = currentValue === (leftValue + inputData.insertion);
-
-        if (algorithm.type === ALGORITHMS.SMITH_WATERMAN) {
-            isMatchMismatch = isMatchMismatch || currentValue === 0 && up >= 0 && left >= 0;
-            isDeletion = isDeletion || currentValue === 0 && up >= 0;
-            isInsertion = isInsertion || currentValue === 0 && left >= 0;
-        }
-
-        // add
-        if (isMatchMismatch)
-            neighboured.push(new Vector(up, left));
-
-        if (isDeletion)
-            neighboured.push(new Vector(up, position.j));
-
-        if (isInsertion)
-            neighboured.push(new Vector(position.i, left));
 
         return neighboured;
     }

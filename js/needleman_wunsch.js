@@ -11,6 +11,7 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
+    debugger;
     if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
         needlemanWunsch.startNeedlemanWunsch();
 });
@@ -18,7 +19,7 @@ $(document).ready(function () {
 (function () {  // namespace
     // public methods
     namespace("needlemanWunsch", startNeedlemanWunsch, NeedlemanWunsch,
-        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback);
+        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getTraces);
 
     // instances
     var alignmentInstance;
@@ -64,6 +65,8 @@ $(document).ready(function () {
         this.computeMatrixAndScore = computeMatrixAndScore;
         this.recursionFunction = recursionFunction;
         this.computeTraceback = computeTraceback;
+
+        this.getTraces = getTraces;
     }
 
     // inheritance
@@ -124,10 +127,35 @@ $(document).ready(function () {
         var outputData = alignmentInstance.getOutput();
 
         var lowerRightCorner = new procedures.backtracking.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
-        var backtracking = new procedures.backtracking.Backtracking();
+        outputData.tracebackPaths = getTraces([lowerRightCorner], inputData, outputData, -1);
+    }
 
-        var path = [];
-        path.push(lowerRightCorner);
-        outputData.tracebackPaths = backtracking.backtrace(needlemanWunschInstance, path, inputData, outputData, -1);
+    function getTraces(path, inputData, outputData, pathLength) {
+        var paths = [];
+        var backtracking = new procedures.backtracking.Backtracking();
+        traceback(backtracking, paths, path, inputData, outputData, pathLength);
+        return paths;
+    }
+
+    /*
+    It is based on the code of Alexander Mattheis
+    in project Algorithms for Bioninformatics.
+    */
+    function traceback(backtracking, paths, path, inputData, outputData, pathLength) {
+        var currentPosition = path[path.length - 1];
+        var neighboured = backtracking.getNeighboured(currentPosition, inputData, outputData, needlemanWunschInstance);
+
+        for (var i = 0; i < neighboured.length; i++) {
+            if ((neighboured[i].i === 0 && neighboured[i].j === 0)
+                || (pathLength !== -1 && path.length >= pathLength)) {
+                path.push(neighboured[i]);
+                paths.push(path.slice());  // creating a shallow copy
+                path.pop();
+            } else {
+                path.push(neighboured[i]);
+                traceback(backtracking, paths, path, inputData, outputData, pathLength);
+                path.pop();
+            }
+        }
     }
 }());

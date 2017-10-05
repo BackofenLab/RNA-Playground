@@ -150,13 +150,16 @@ var SYMBOLS = {  // contains all strings used in the project
 };
 
 var SVG = {
+    FLOW_LONG_ARROW_COLOR: "black",
     NAME_SPACE: "http://www.w3.org/2000/svg",
-    OBJECT_COLOR: "black",
+    TRACEBACK_LONG_ARROW_COLOR: "black",
 
     MARKER : {
-        ID: "triangle",
+        ID_TRACEBACK: "triangle_traceback",
+        ID_FLOW: "triangle_flow",
         ORIENT: "auto",
-        URL: "url(#triangle)",  // dependant on SVG.MARKER.ID
+        URL_TRACEBACK: "url(#triangle_traceback)",  // dependant on SVG.MARKER.ID_TRACEBACK
+        URL_FLOW: "url(#triangle_flow)",  // dependant on SVG.MARKER.ID_FLOW
         VIEW_BOX: "0 0 8 8",
 
         BOUNDS: {

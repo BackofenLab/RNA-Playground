@@ -19,7 +19,7 @@ $(document).ready(function () {
 (function () {  // namespace
     // public methods
     namespace("smithWaterman", startSmithWaterman, SmithWaterman,
-        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback);
+        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getTraces);
 
     // instances
     var alignmentInstance;
@@ -65,6 +65,8 @@ $(document).ready(function () {
         this.computeMatrixAndScore = computeMatrixAndScore;
         this.recursionFunction = recursionFunction;
         this.computeTraceback = computeTraceback;
+
+        this.getTraces = getTraces;
     }
 
     // inheritance
@@ -142,15 +144,40 @@ $(document).ready(function () {
         else
             backtraceStarts = getAllMinPositions(inputData, outputData);
 
-        var backtracking = new procedures.backtracking.Backtracking();
         outputData.tracebackPaths = [];
 
         for (var i = 0; i < backtraceStarts.length; i++) {
-            var path = [];
-            path.push(backtraceStarts[i]);
-
-            var tracebackPaths = backtracking.backtrace(smithWatermanInstance, path, inputData, outputData, -1);
+            var tracebackPaths = getTraces([backtraceStarts[i]], inputData, outputData, -1);
             outputData.tracebackPaths = outputData.tracebackPaths.concat(tracebackPaths);
+        }
+    }
+
+    function getTraces(path, inputData, outputData, pathLength) {
+        var paths = [];
+        var backtracking = new procedures.backtracking.Backtracking();
+        traceback(backtracking, paths, path, inputData, outputData, pathLength);
+        return paths;
+    }
+
+    /*
+    It is based on the code of Alexander Mattheis
+    in project Algorithms for Bioninformatics.
+    */
+    function traceback(backtracking, paths, path, inputData, outputData, pathLength) {
+        var currentPosition = path[path.length - 1];
+        var neighboured = backtracking.getNeighboured(currentPosition, inputData, outputData, smithWatermanInstance);
+
+        for (var i = 0; i < neighboured.length; i++) {
+            if (outputData.matrix[neighboured[i].i][neighboured[i].j] === 0
+                || (pathLength !== -1 && path.length >= pathLength)) {
+                path.push(neighboured[i]);
+                paths.push(path.slice());  // creating a shallow copy
+                path.pop();
+            } else {
+                path.push(neighboured[i]);
+                traceback(backtracking, paths, path, inputData, outputData, pathLength);
+                path.pop();
+            }
         }
     }
 

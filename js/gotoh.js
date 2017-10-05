@@ -18,7 +18,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("gotoh", startGotoh, Gotoh, getInput, setInput, compute, getOutput, setIO);
+    namespace("gotoh", startGotoh, Gotoh, getInput, setInput, compute, getTraces, getOutput, setIO);
 
     // instances
     var alignmentInstance;
@@ -61,6 +61,8 @@ $(document).ready(function () {
         this.setInput = setInput;
         this.compute = compute;
         this.getOutput = getOutput;
+
+        this.getTraces = getTraces;
 
         this.setIO = setIO;
     }
@@ -211,9 +213,36 @@ $(document).ready(function () {
 
     function computeTraceback() {
         var lowerRightCorner = new procedures.backtracking.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
-        var backtracking = new procedures.backtracking.Backtracking();
+        outputData.tracebackPaths = getTraces([lowerRightCorner], inputData, outputData, -1);
+    }
 
-        outputData.tracebackPaths = backtracking.backtrace(gotohInstance, [lowerRightCorner], inputData, outputData, -1);
+    function getTraces(path, inputData, outputData, pathLength) {
+        var paths = [];
+        var backtracking = new procedures.backtracking.Backtracking();
+        traceback(backtracking, paths, path, inputData, outputData, pathLength);
+        return paths;
+    }
+
+    /*
+    It is based on the code of Alexander Mattheis
+    in project Algorithms for Bioninformatics.
+    */
+    function traceback(backtracking, paths, path, inputData, outputData, pathLength) {
+        var currentPosition = path[path.length - 1];
+        var neighboured = backtracking.getMultiNeighboured(currentPosition, inputData, outputData);
+
+        for (var i = 0; i < neighboured.length; i++) {
+            if ((neighboured[i].i === 0 && neighboured[i].j === 0)
+                || (pathLength !== -1 && path.length >= pathLength)) {
+                path.push(neighboured[i]);
+                paths.push(path.slice());  // creating a shallow copy
+                path.pop();
+            } else {
+                path.push(neighboured[i]);
+                traceback(backtracking, paths, path, inputData, outputData, pathLength);
+                path.pop();
+            }
+        }
     }
 
     function createAlignments() {
