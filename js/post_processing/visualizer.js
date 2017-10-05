@@ -377,91 +377,82 @@ Author: Alexander Mattheis
     Hint: " e.data.number" allows to distinguish between the different tables of an algorithm.
      */
     function downloadTable(e) {
-        var table = getTable(e);
-        var tableCSV = htmlToCsv(table);
+        var number = e.data.number;
+
+        var matrix = getMatrix(number);
+        var upperString = visualizerInstance.input.sequenceA;
+        var leftString = visualizerInstance.input.sequenceB;
+
+        var tableCSV = tableToCSV(number, matrix, upperString, leftString);
         var tableFile = new File([tableCSV], {type: TABLE.TEXT_FILE_ENCODING});
 
         saveAs(tableFile, TABLE.DOWNLOAD_NAME);
     }
 
-    function getTable(e) {
-        var number = e.data.number;
-
-        var calculationVerticalTable;
-        var calculationTable = e.data.calculationTable[0];
-        var calculationHorizontalTable;
-
-        if (e.data.calculationVerticalTable !== undefined) {
-            calculationVerticalTable = e.data.calculationVerticalTable[0];
-            calculationHorizontalTable = e.data.calculationHorizontalTable[0];
+    function getMatrix(number) {
+        switch (number) {
+            case 0:
+                return replaceInfinities(visualizerInstance.output.verticalGaps);
+            case 2:
+                return replaceInfinities(visualizerInstance.output.horizontalGaps);
         }
 
-        if (calculationVerticalTable !== undefined) {  // OR: calculationHor.. !== undefined (case: more than table)
-            if (number === 0)
-                return calculationVerticalTable;
-            else if (number === 1)
-                return calculationTable;
+        return visualizerInstance.output.matrix;
+    }
 
-            return calculationHorizontalTable;
+    function replaceInfinities(matrix) {
+        for (var i = 0; i < matrix.length; i++) {
+            for (var j = 0; j < matrix[0].length; j++) {
+                if (matrix[i][j] === SYMBOLS.LATEX_POSITIVE_INFINITY)
+                    matrix[i][j] = SYMBOLS.INFINITY;
+                else if (matrix[i][j] === SYMBOLS.LATEX_NEGATIVE_INFINITY)
+                    matrix[i][j] = SYMBOLS.NEGATIVE_INFINITY;
+            }
         }
 
-        return calculationTable;
+        return matrix;
     }
 
     /*
     CSV specification: https://www.ietf.org/rfc/rfc4180.txt
     Hint: It is allowed to have a line break in the last line.
      */
-    function htmlToCsv(table) {
-        var a = SYMBOLS.EMPTY;
-        for (var i = 0; i < table.rows.length - 2; i++) {
-            var row = [];
+    function tableToCSV(number, matrix, upperString, leftString) {
+        var string = SYMBOLS.EMPTY;
 
-            for (var j = 0; j < table.rows[i].cells.length; j++) {
-                row[j] = table.rows[i].cells[j].innerHTML;
-            }
+        switch (number) {
+            case 0:
+                string += MATRICES.VERTICAL + SYMBOLS.COMMA;
+                break;
+            case 1:
+                string += MATRICES.DEFAULT + SYMBOLS.COMMA;
+                break;
+            case 2:
+                string += MATRICES.HORIZONTAL + SYMBOLS.COMMA;
+                break;
+        };
 
-            if (i < table.rows.length - 3)
-                a = a + removeSubscripts(getString(row)) + NEW_LINE;
+        string += SYMBOLS.COMMA + upperString.split(SYMBOLS.EMPTY).toString() + SYMBOLS.NEW_LINE;
+
+        for (var i = 0; i < matrix.length; i++) {
+            if (i == 0)
+                string += SYMBOLS.COMMA;
             else
-                a = a + removeSubscripts(getString(row));
+                string += leftString.charAt(i-1) + SYMBOLS.COMMA;
+
+            string += matrix[i] + SYMBOLS.NEW_LINE;
         }
 
-        return a;
-    }
-
-    function getString(row) {
-        var stringRow = row.toString();
-        stringRow = stringRow.replace(SUB.START_TAGS, SYMBOLS.EMPTY);
-        stringRow = stringRow.replace(SUB.END_TAGS, SYMBOLS.EMPTY);
-        stringRow = stringRow.replace(MATH_JAX_TAGS, SYMBOLS.EMPTY);
-        stringRow = stringRow.replace(DOUBLE_INFINITIES, SYMBOLS.INFINITY);
-        return stringRow;
-    }
-
-    function removeSubscripts(string) {
-        var subscriptPositions = [];
-        var copyString = string.slice(0);
-
-        var position = -1;
-        while ((position = copyString.search(CHARACTER.BASE)) !== -1) {
-            subscriptPositions.push(position);
-            copyString = copyString.slice(0, position) + SYMBOLS.DUMMY + copyString.slice(position + 1);
-        }
-
-        for (var i = 0; i < subscriptPositions.length; i++)
-            string = string.slice(0, subscriptPositions[i] + 1) + SYMBOLS.SPACE + string.slice(subscriptPositions[i] + 2);
-
-        return string.replace(MULTI_SYMBOLS.SPACE, SYMBOLS.EMPTY);
+        return string;
     }
 
     function replaceInfinityStrings(matrix) {
         for (var i = 0; i < matrix.length; i++) {
             for (var j = 0; j < matrix[0].length; j++) {
                 if (matrix[i][j] === Number.POSITIVE_INFINITY)
-                    matrix[i][j] = SYMBOLS.POSITIVE_INFINITY;
+                    matrix[i][j] = SYMBOLS.LATEX_POSITIVE_INFINITY;
                 else if (matrix[i][j] === Number.NEGATIVE_INFINITY)
-                    matrix[i][j] = SYMBOLS.NEGATIVE_INFINITY;
+                    matrix[i][j] = SYMBOLS.LATEX_NEGATIVE_INFINITY;
             }
         }
 

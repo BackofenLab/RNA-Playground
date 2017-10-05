@@ -10,11 +10,7 @@ Author: Alexander Mattheis
 // constants
 var CELL_PERCENT = 0.2;  // can change position of a "between-table"-arrow in the Gotoh algorithm
 
-var DOUBLE_INFINITIES = /∞∞/g;
-
-var MATH_JAX_TAGS = /(<[^>]*>)|(&amp;#x221E;)|(" role="presentation" style="font-size: 101%; position: relative;")|(\\infty)|(>)/g;
-
-var NEW_LINE = "\r\n";
+var MAX_NUMBER_TRACEBACKS = 10;
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have been updated
@@ -112,7 +108,7 @@ var PATHS = {
 };
 
 var MATRICES = {
-    DEFAULT: "X",
+    DEFAULT: "D",
     HORIZONTAL: "Q",
     VERTICAL: "P"
 };
@@ -137,12 +133,15 @@ var SUB = {
 };
 
 var SYMBOLS = {  // contains all strings used in the project
-    DUMMY: "X",
+    COMMA: ",",
+    DUMMY: "/",  // have to be a non-letter
     EMPTY: "",
     GAP: "_",
     INFINITY: "∞",
-    NEGATIVE_INFINITY: "-$\\infty$",  // LaTeX
-    POSITIVE_INFINITY: "$\\infty$",  // LaTeX
+    NEGATIVE_INFINITY: "-∞",
+    NEW_LINE: "\r\n",
+    LATEX_NEGATIVE_INFINITY: "-$\\infty$",  // LaTeX
+    LATEX_POSITIVE_INFINITY: "$\\infty$",  // LaTeX
     SEPARATOR: "_",
     SPACE: " ",
     STAR: "*",

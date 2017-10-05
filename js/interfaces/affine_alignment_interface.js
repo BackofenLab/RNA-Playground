@@ -110,6 +110,7 @@ Author: Alexander Mattheis
 
         viewmodels.output.alignments(outputData.alignments);
         viewmodels.output.score(outputData.score);
+        viewmodels.output.moreTracebacks(outputData.moreTracebacks);
     }
 
     function edit(inputProcessor, matrix, viewmodels) {

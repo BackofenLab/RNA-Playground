@@ -136,6 +136,7 @@ Author: Alexander Mattheis
 
         viewmodels.output.alignments(outputData.alignments);
         viewmodels.output.score(outputData.score);
+        viewmodels.output.moreTracebacks(outputData.moreTracebacks);
     }
 
     /*---- OUTPUT ----*/
@@ -161,6 +162,7 @@ Author: Alexander Mattheis
         this.alignments = ko.observableArray(outputData.alignments);
 
         this.score = ko.observable(outputData.score);
+        this.moreTracebacks = ko.observable(outputData.moreTracebacks);
     }
 
     function edit(algorithmName, inputProcessor, outputData, visualViewmodel) {

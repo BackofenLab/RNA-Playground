@@ -52,6 +52,7 @@ $(document).ready(function () {
 
         // variables
         this.type = ALGORITHMS.GOTOH;
+        this.numberOfTracebacks = 0;
 
         // inheritance
         alignmentInstance = new procedures.bases.alignment.Alignment(this);
@@ -212,7 +213,11 @@ $(document).ready(function () {
     }
 
     function computeTraceback() {
+        gotohInstance.numberOfTracebacks = 0;
+
         var lowerRightCorner = new procedures.backtracking.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
+
+        outputData.moreTracebacks = false;
         outputData.tracebackPaths = getTraces([lowerRightCorner], inputData, outputData, -1);
     }
 
@@ -233,9 +238,16 @@ $(document).ready(function () {
 
         for (var i = 0; i < neighboured.length; i++) {
             if ((neighboured[i].i === 0 && neighboured[i].j === 0)
-                || (pathLength !== -1 && path.length >= pathLength)) {
+                || (pathLength !== -1 && path.length >= pathLength)
+                || outputData.moreTracebacks) {
                 path.push(neighboured[i]);
-                paths.push(path.slice());  // creating a shallow copy
+
+                if (gotohInstance.numberOfTracebacks < MAX_NUMBER_TRACEBACKS) {
+                    paths.push(path.slice());  // creating a shallow copy
+                    gotohInstance.numberOfTracebacks++;
+                } else
+                    outputData.moreTracebacks = true;
+
                 path.pop();
             } else {
                 path.push(neighboured[i]);

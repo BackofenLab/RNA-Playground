@@ -11,7 +11,6 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    debugger;
     if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
         needlemanWunsch.startNeedlemanWunsch();
 });
@@ -50,6 +49,7 @@ $(document).ready(function () {
 
         // variables
         this.type = ALGORITHMS.NEEDLEMAN_WUNSCH;
+        this.numberOfTracebacks = 0;
 
         // inheritance
         alignmentInstance = new procedures.bases.alignment.Alignment(this);
@@ -123,10 +123,14 @@ $(document).ready(function () {
     }
 
     function computeTraceback() {
+        needlemanWunschInstance.numberOfTracebacks = 0;
+
         var inputData = alignmentInstance.getInput();
         var outputData = alignmentInstance.getOutput();
 
         var lowerRightCorner = new procedures.backtracking.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
+        
+        outputData.moreTracebacks = false;
         outputData.tracebackPaths = getTraces([lowerRightCorner], inputData, outputData, -1);
     }
 
@@ -147,9 +151,16 @@ $(document).ready(function () {
 
         for (var i = 0; i < neighboured.length; i++) {
             if ((neighboured[i].i === 0 && neighboured[i].j === 0)
-                || (pathLength !== -1 && path.length >= pathLength)) {
+                || (pathLength !== -1 && path.length >= pathLength)
+                || outputData.moreTracebacks) {
                 path.push(neighboured[i]);
-                paths.push(path.slice());  // creating a shallow copy
+
+                if (needlemanWunschInstance.numberOfTracebacks < MAX_NUMBER_TRACEBACKS) {
+                    paths.push(path.slice());  // creating a shallow copy
+                    needlemanWunschInstance.numberOfTracebacks++;
+                } else
+                    outputData.moreTracebacks = true;
+
                 path.pop();
             } else {
                 path.push(neighboured[i]);

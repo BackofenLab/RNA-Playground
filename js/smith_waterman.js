@@ -50,6 +50,7 @@ $(document).ready(function () {
 
         // variables
         this.type = ALGORITHMS.SMITH_WATERMAN;
+        this.numberOfTracebacks = 0;
 
         // inheritance
         alignmentInstance = new procedures.bases.alignment.Alignment(this);
@@ -134,6 +135,8 @@ $(document).ready(function () {
     }
 
     function computeTraceback() {
+        smithWatermanInstance.numberOfTracebacks = 0;
+
         var inputData = alignmentInstance.getInput();
         var outputData = alignmentInstance.getOutput();
 
@@ -146,6 +149,7 @@ $(document).ready(function () {
 
         outputData.tracebackPaths = [];
 
+        outputData.moreTracebacks = false;
         for (var i = 0; i < backtraceStarts.length; i++) {
             var tracebackPaths = getTraces([backtraceStarts[i]], inputData, outputData, -1);
             outputData.tracebackPaths = outputData.tracebackPaths.concat(tracebackPaths);
@@ -169,9 +173,16 @@ $(document).ready(function () {
 
         for (var i = 0; i < neighboured.length; i++) {
             if (outputData.matrix[neighboured[i].i][neighboured[i].j] === 0
-                || (pathLength !== -1 && path.length >= pathLength)) {
+                || (pathLength !== -1 && path.length >= pathLength)
+                || outputData.moreTracebacks) {
                 path.push(neighboured[i]);
-                paths.push(path.slice());  // creating a shallow copy
+
+                if (smithWatermanInstance.numberOfTracebacks < MAX_NUMBER_TRACEBACKS) {
+                    paths.push(path.slice());  // creating a shallow copy
+                    smithWatermanInstance.numberOfTracebacks++;
+                } else
+                    outputData.moreTracebacks = true;
+
                 path.pop();
             } else {
                 path.push(neighboured[i]);

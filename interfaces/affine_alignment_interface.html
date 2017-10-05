@@ -232,7 +232,9 @@ Author: Alexander Mattheis
                 <tr>
                     <th>
                         <small>
-                            <b>Hint:</b> Only the first four results are shown.
+                            <!-- ko if: $root.output.moreTracebacks -->
+                                <b>Hint:</b> Only the first ten results are computed.
+                            <!-- /ko -->
                         </small>
                     </th>
                 </tr>
