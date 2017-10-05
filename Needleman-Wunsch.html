@@ -7,52 +7,31 @@ Author: Alexander Mattheis
 
 <div id="algorithm_description">
     <div class="description">
-        Lorem ipsum dolor sit amet,
-        habemus ocurreret pertinacia ad ius,
-        vis id nemore <a href="#">definiebas</a> sadipscing.
-        Eu qui fugit officiis $D_{in}$ adipisci,
-        tamquam voluptua platonem mea eu.
-        An nam diam fastidii oportere.
-        Quo an utroque scaevola.
-        Sale dicta at nam, nec in solum semper dolorem.
-        Qui ea animal delicata.
-        Nam ad fugit labitur splendide,
-        pro cu debitis apeirian gubergren.
-        Scripta indoctum mnesarchum $D_{ij}$ ea vis,
-        ne ignota appellantur usu. Pro ut illud deseruisse.
-        Ad discere inciderint has.
-        Eu qui fugit officiis $D_{in}$ adipisci,
-        tamquam voluptua platonem mea eu.
-        Sit cetero nostrum id,
-        sea suas civibus mandamus an.
+        The dynamic programming approach
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a>
+        by Saul B. Needleman and Christian D. Wunsch
+        computes the optimal, global alignment of two sequences.
+        This algorithm from 1970 has used a minimizing scoring-function,
+        the maximizing variant was developed 1974 by Peter H. Sellers
+        and it is sometimes called
+        <a href="https://doi.org/10.1137/0126070">Needleman-Wunsch-Sellers (1974)</a>.
+        But both variants can compute the same alignments,
+        so they are equivalent with respect to their input and output space.
         <br>
         <br>
-        Ut dicta forensibus argumentum eum.
-        Duis autem vel eum iriure dolor in hendrerit in vulputate
-        velit esse molestie consequat.
-        Cu modus oporteat facilisis usu.
-        Ad discere inciderint has.
-        An nam diam fastidii oportere.
-        Cu <a href="#">tamquam volumus repudiare</a> usu.
-        Ius dolorum appellantur ei.
-        Quo an utroque scaevola.
-        Sale dicta at nam, nec in solum semper dolorem.
-        Qui ea animal delicata.
-        Nam ad fugit labitur splendide,
-        pro cu debitis apeirian gubergren.
-        Sit cetero nostrum id,
-        sea suas civibus mandamus an.
-        Ut dicta forensibus argumentum eum.
-        Duis autem vel eum iriure dolor
-        in hendrerit in vulputate velit esse
-        molestie consequat, vel illum dolore eu feugiat
-        nulla facilisis at vero eros et accumsan
-        et iusto odio dignissim qui blandit praesent
-        luptatum zzril delenit augue duis dolore
-        te feugait nulla facilisi.
-        Lorem ipsum dolor sit amet. Ut wisi enim ad minim veniam,
-        quis nostrud exerci tation ullamcorper suscipit
-        lobortis nisl ut aliquip ex ea commodo consequat.
+        The main motivation for this algorithm is biological and medical examination.
+        You want have tools to compare two sequences with each other
+        and many algorithms which are used today for alignment are based
+        on the
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>
+        algorithm.
+        <br>
+        <br>
+        In the first step of Needleman-Wunsch(-Sellers) you initialize a matrix $D$.
+        Then you fill that matrix with the help of a recursion function $D_{i,j}$.
+        And in the last step you do matrix tracebacks to compute the alignments
+        of the two input-sequences $a$ an $b$. The runtime and the space costs are in
+        $\mathcal O(nm)$, where $n=|a|$ and $m=|b|$.
     </div>
 
     <div class="picture">

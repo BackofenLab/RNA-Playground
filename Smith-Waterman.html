@@ -7,50 +7,47 @@ Author: Alexander Mattheis
 
 <div id="algorithm_description">
     <div class="description">
-        Lorem ipsum <a href="#">linca</a> sadipscing.
-        Scripta indoctum mnesarchum $D_{ij}$ ea vis,
-        ne ignota appellantur usu. Pro ut illud deseruisse.
-        Ad discere inciderint has.
-        Eu qui fugit officiis $D_{in}$ adipisci,
-        tamquam voluptua platonem mea eu.
-        Sit cetero nostrum id,
-        sea suas civibus mandamus an.
-        An nam diam fastidii oportere.
-        Quo an utroque scaevola.
-        Sale dicta at nam, nec in solum semper dolorem.
-        Qui ea animal delicata.
-        Nam ad fugit labitur splendide,
-        pro cu debitis apeirian gubergren.
-        Ut dicta forensibus argumentum eum.
+        The dynamic programming approach
+        <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman (1981)</a>
+        by Temple F. Smith and Michael S. Waterman
+        computes unlike Needleman-Wunsch not
+        the optimal, global alignment of two sequences, but the optimal, local alignment.
+        This means that no more the whole sequences are aligned,
+        but parts of both sequences such that the score is going to be optimal.
+        Like in
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a>
+        and other alignment algorithms,
+        there exists two variants. One with minimizing scoring-function
+        and also an equivalent maximizing variant.
         <br>
         <br>
-        Quo an utroque scaevola.
-        Sale dicta at nam, nec in solum semper dolorem.
-        Qui ea animal delicata.
-        Nam ad fugit labitur splendide,
-        pro cu debitis apeirian gubergren.
-        Ut dicta forensibus argumentum eum.
-        Duis autem vel eum iriure dolor
-        in hendrerit in vulputate velit esse
-        molestie consequat, vel illum dolore eu feugiat
-        nulla facilisis at vero eros et accumsan
-        et iusto odio dignissim qui blandit praesent
-        luptatum zzril delenit augue duis dolore
-        te feugait nulla facilisi. Lorem ipsum
-        dolor sit amet. Ut wisi enim ad minim veniam,
-        quis nostrud exerci tation ullamcorper suscipit
-        lobortis nisl ut aliquip ex ea commodo consequat.
-        Duis autem vel eum iriure dolor in hendrerit in vulputate
-        velit esse molestie consequat.
-        Cu modus oporteat facilisis usu.
-        Ad discere inciderint has.
-        Eu qui fugit officiis $D_{in}$ adipisci,
-        tamquam voluptua platonem mea eu.
-        Sit cetero nostrum id,
-        sea suas civibus mandamus an.
-        An nam diam fastidii oportere.
-        Cu <a href="#">tamquam volumus repudiare</a> usu.
-        Ius dolorum appellantur ei.
+        The motivation is the same like in
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>,
+        you want do biological and medical examination.
+        And therefore you need tools to compare
+        two sequences with each other.
+        Many present approaches are based on the
+        <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman</a> algorithm.
+        <br>
+        <br>
+        In the first step of
+        <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman</a>
+        you initialize the left and the upper borders of a matrix with zeros.
+        Then, like in
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>
+        you fill the matrix
+        with the help of a recursion function $D_{i,j}$.
+        The only difference to the
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>
+        recursion function
+        is that you have a fourth case with a zero in your function.
+        And the last step is the traceback-step in which you compute the alignments
+        of the two entered sequences $a$ and $b$.
+        Runtime and space
+        are again like in the
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>
+        algorithm,
+        so in $\mathcal O(nm)$, where $n=|a|$ and $m=|b|$.
     </div>
 
     <div class="picture">

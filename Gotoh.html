@@ -7,52 +7,31 @@ Author: Alexander Mattheis
 
 <div id="algorithm_description">
     <div class="description">
-        Lorem ipsum dolor sit amet,
-        tamquam voluptua platonem mea eu.
-        An nam diam fastidii oportere.
-        Quo an utroque scaevola.
-        Sale dicta at nam, nec in solum semper dolorem.
-        Qui ea animal delicata.
-        Nam ad fugit labitur splendide,
-        pro cu debitis apeirian gubergren.
-        Scripta indoctum mnesarchum $D_{ij}$ ea vis,
-        ne ignota appellantur usu. Pro ut illud deseruisse.
-        Ad discere inciderint has.
-        Eu qui fugit officiis $D_{in}$ adipisci,
-        habemus ocurreret pertinacia ad ius,
-        vis id nemore <a href="#">definiebas</a> sadipscing.
-        Eu qui fugit officiis $D_{in}$ adipisci,
-        tamquam voluptua platonem mea eu.
-        Sit cetero nostrum id,
-        sea suas $\infty$ civibus mandamus an.
+        The
+        <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Gotoh (1982)</a>
+        algorithm by Osamu Gotoh
+        computes the optimal, global affine alignment of two sequences.
+        The problem with
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a>
+        was that it does not produce
+        biologically, very relevant alignments.
+        Alignments had too many gaps
+        and by this reason, the
+        <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Gotoh</a>
+        algorithm was introduced.
+        In this algorithm, the number of gap starts is minimized
+        to get biologically better alignments.
         <br>
         <br>
-        Ut dicta forensibus argumentum eum.
-        Duis autem vel eum iriure dolor in hendrerit in vulputate
-        velit esse molestie consequat.
-        Cu modus oporteat facilisis usu.
-        Ad discere inciderint has.
-        Ut dicta forensibus argumentum eum.
-        Duis autem vel eum iriure dolor
-        in hendrerit in vulputate velit esse
-        molestie consequat, vel illum dolore eu feugiat
-        nulla facilisis at vero eros et accumsan
-        et iusto odio dignissim qui blandit praesent
-        luptatum zzril delenit augue duis dolore
-        te feugait nulla facilisi.
-        An nam diam fastidii oportere.
-        Cu <a href="#">tamquam volumus repudiare</a> usu.
-        Ius dolorum appellantur ei.
-        Quo an utroque scaevola.
-        Sale dicta at nam, nec in solum semper dolorem.
-        Qui ea animal delicata.
-        Nam ad fugit labitur splendide,
-        pro cu debitis apeirian gubergren.
-        Sit cetero nostrum id,
-        sea suas civibus mandamus an.
-        Lorem ipsum dolor sit amet. Ut wisi enim ad minim veniam,
-        quis nostrud exerci tation ullamcorper suscipit
-        lobortis nisl ut aliquip ex ea commodo consequat.
+        This done by introducing two additional matrices $P$ and $Q$
+        (which are storing the vertical and horizontal gap costs)
+        and a new recursion function $D_{i,j}$
+        (w.r.t. <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>).
+        The asymptotic runtime
+        and space consumption
+        is however, not higher than in the
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>
+        algorithm. Runtime and space are in $\mathcal O(nm)$, where $n=|a|$ and $m=|b|$
     </div>
 
     <div class="picture">

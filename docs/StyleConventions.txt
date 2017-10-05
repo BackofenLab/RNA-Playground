@@ -10,7 +10,7 @@ Author: Alexander Mattheis
 /*-------------------------*/
 
 /*---- comments ----*/
-In comments use this " symbol and not this ' symbol to emphasize something.
+In comments use this " (symbol) and not this ' (symbol) to emphasize something.
 
 /*---- constants ----*/
 Nearly all constants are stored in the "defaults.js".

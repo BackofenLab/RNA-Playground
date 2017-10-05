@@ -261,6 +261,7 @@ small {
 
 #algorithm_description .description {
     display: inline-block;
+    line-height: 140%;
     vertical-align: top;
     width: 600px;
 }
