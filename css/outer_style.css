@@ -1,0 +1,134 @@
+/*
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Author: Alexander Mattheis
+*/
+
+/* HINT: alphabetically ordered (also within definitions) */
+
+footer {
+    background-color: #8148B1;
+    box-shadow: 0 0 5px rgba(50, 50, 50, 0.4);
+    color: black;
+    height: 60px;
+    margin-top: 35px;
+}
+
+footer a {
+    color: black;
+    font-size: 0.9em; /* relative to global value */
+}
+
+footer a:hover {
+    color: white;
+}
+
+footer span {
+    font-size: 0.9em;
+    font-weight: bold;
+    line-height: 60px;
+    margin: 0 50px;
+}
+
+header {
+    background-color: #F2F3F1; /* Uni-Freiburg standard */
+    box-shadow: 0 0 5px rgba(50, 50, 50, 0.4);
+    height: 49px;
+    padding: 5px 25px 0 50px;
+}
+
+/*---- CLASS STYLING ----*/
+/* HINT: to avoid errors all pictures have to be imported as classes whether they are unique */
+.dropdown_button, .dropdown_button:hover, .dropdown_reversed, .logo {
+    background: url(../sprites.png) no-repeat;
+}
+
+.dropdown_button {
+    background-position: 0 0;
+    height: 45px;
+    width: 45px;
+}
+
+.dropdown_button:hover {
+    background-position: -45px 0;
+    height: 45px;
+    width: 45px;
+}
+
+.dropdown_reversed {
+    background-position: 0 -45px;
+    height: 45px;
+    width: 45px;
+}
+
+.logo {
+    background-position: -50px -50px;
+    height: 60px;
+    width: 60px;
+}
+
+.logo a {
+    color: #8148B1;
+    display: block;
+}
+
+.logo a:hover {
+    text-decoration: none;
+}
+
+/*---- ID STYLING ----*/
+#algorithm_chooser {
+    display: inline-block;
+    padding: 8px 6px 0 12px;
+    position: relative;
+    z-index: 3;
+}
+
+#algorithm_display {
+    color: #8148B1;
+    display: inline-block;
+    font-weight: bold;
+    padding: 8px 10px 0 6px;
+    position: absolute;
+}
+
+
+#algorithm_menu {
+    background: #e6e6e6;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 2px 2px 3px rgba(50, 50, 50, 0.4);
+    display: none;
+    line-height: 30px;
+    padding-bottom: 10px;
+    padding-top: 24px;
+    position: absolute;
+    width: 200px;
+    z-index: 2;
+}
+
+#algorithm_menu a {
+    color: black;
+    display: block;
+    padding-left: 5px;
+    text-decoration: none;
+}
+
+#algorithm_menu a:hover {
+    background-color: #8148B1;
+    color: white;
+    display: block;
+}
+
+#algorithm_menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#top_bar {
+    background: #DEDEDE;
+    border-radius: 4px 4px 0 0;
+    color: black;
+    height: 30px;
+}
