@@ -438,7 +438,7 @@ Author: Alexander Mattheis
         var copyString = string.slice(0);
 
         var position = -1;
-        while ((position = copyString.search(DNA.BASE)) !== -1) {
+        while ((position = copyString.search(CHARACTER.BASE)) !== -1) {
             subscriptPositions.push(position);
             copyString = copyString.slice(0, position) + SYMBOLS.DUMMY + copyString.slice(position + 1);
         }

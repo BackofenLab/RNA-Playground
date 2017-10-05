@@ -262,6 +262,8 @@ small {
     box-shadow: 0 0 5px rgba(50, 50, 50, 0.4);
     margin: 50px auto; /* centering website */
     min-height: 1500px; /* Uni-Freiburg standard */
+    overflow: auto;
+    padding-bottom: 30px;
     text-align: justify;
     width: 880px; /* Uni-Freiburg standard */
 }

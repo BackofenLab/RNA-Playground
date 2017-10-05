@@ -82,7 +82,7 @@ Author: Alexander Mattheis
 
         // 2nd
         functionParameters.on("focusout keypress", removeCriticalNumbers);
-        algorithmInput.find(".dna_sequence").on("keyup", removeNonDNABases);
+        algorithmInput.find(".sequence").on("keyup", removeNonAllowedBases);
 
         // 3rd
         functionArguments = {
@@ -223,7 +223,7 @@ Author: Alexander Mattheis
         if (e.which === KEY_CODES.ENTER || e.type === "focusout") {
             if ($("#similarity").is(":checked")) {
                 if (this.id === "match") {
-                    this.value = this.value >= INPUT.ABS_MIN_MATCH ? this.value : INPUT.ABS_MIN_MATCH;
+                    this.value = this.value >= INPUT.ABS_MIN ? this.value : INPUT.ABS_MIN;
                     this.value = this.value <= INPUT.ABS_MAX ? this.value : INPUT.ABS_MAX;
                 }
                 else {
@@ -232,7 +232,7 @@ Author: Alexander Mattheis
                 }
             } else {  // distance is checked
                 if (this.id === "match") {
-                    this.value = this.value <= -INPUT.ABS_MIN_MATCH ? this.value : -INPUT.ABS_MIN_MATCH;
+                    this.value = this.value <= -INPUT.ABS_MIN ? this.value : -INPUT.ABS_MIN;
                     this.value = this.value >= -INPUT.ABS_MAX ? this.value : -INPUT.ABS_MAX;
                 }
                 else {
@@ -244,12 +244,12 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Removes characters from an input-field which are not DNA-bases.
-     * Hint: The input has to be of class "dna_sequence".
+     * Removes non-english characters from an input-field.
+     * Hint: The input has to be of class "sequence".
      */
-    function removeNonDNABases() {
-        if (!DNA.BASES.test(this.value))
-            this.value = this.value.replace(DNA.NON_BASES, SYMBOLS.EMPTY);
+    function removeNonAllowedBases() {
+        if (!CHARACTER.BASES.test(this.value))
+            this.value = this.value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
     }
 
     /**
@@ -390,18 +390,18 @@ Author: Alexander Mattheis
     }
 
     function postProcess() {
-        removeWrongCharacters();
+        removeWrongBases();
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
     }
 
     /**
-     * Removes characters from an input-field which are not DNA-bases.
+     * Removes non-english characters from an input-field.
      */
-    function removeWrongCharacters() {
-        var textElements = $(".dna_sequence");
+    function removeWrongBases() {
+        var textElements = $(".sequence");
 
         for (var i = 0; i < textElements.length; i++)
-            textElements[i].value = textElements[i].value.replace(DNA.NON_BASES, SYMBOLS.EMPTY);
+            textElements[i].value = textElements[i].value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
     }
 
     /**

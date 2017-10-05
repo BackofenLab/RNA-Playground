@@ -9,15 +9,15 @@ Author: Alexander Mattheis
     <form>
         <!-- Redundant -->
         <p>
-            <label>Sequence 1:</label>
-            <input class="dna_sequence" data-bind="value: input.sequence1" id="sequence_1"
-                   maxlength="10" placeholder="EXAMPLE 'ATC'" type="text">
+            <label>Sequence $S_1$:</label>
+            <input class="sequence" data-bind="value: input.sequence1" id="sequence_1"
+                   placeholder="EXAMPLE 'ATC'" type="text">
         </p>
 
         <p>
-            <label>Sequence 2:</label>
-            <input class="dna_sequence" data-bind="value: input.sequence2" id="sequence_2"
-                   maxlength="10" placeholder="EXAMPLE 'AGTC'" type="text">
+            <label>Sequence $S_2$:</label>
+            <input class="sequence" data-bind="value: input.sequence2" id="sequence_2"
+                   placeholder="EXAMPLE 'AGTC'" type="text">
         </p>
 
         <p>
@@ -56,7 +56,7 @@ Author: Alexander Mattheis
         <table id="calculation_vertical">
             <thead>
                 <tr>
-                    <th></th>
+                    <th>$P$</th>
                     <th></th>
                     <!-- ko foreach: input.sequence1 -->
                         <th data-bind="drawChar: [$data, $index()+1]"></th>
@@ -107,7 +107,7 @@ Author: Alexander Mattheis
         <table id="calculation">
             <thead>
                 <tr>
-                    <th></th>
+                    <th>$D$</th>
                     <th></th>
                     <!-- ko foreach: input.sequence1 -->
                         <th data-bind="drawChar: [$data, $index()+1]"></th>
@@ -158,7 +158,7 @@ Author: Alexander Mattheis
         <table id="calculation_horizontal">
             <thead>
                 <tr>
-                    <th></th>
+                    <th>$Q$</th>
                     <th></th>
                     <!-- ko foreach: input.sequence1 -->
                         <th data-bind="drawChar: [$data, $index()+1]"></th>

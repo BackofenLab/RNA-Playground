@@ -68,10 +68,10 @@ var ARROWS = {  // HINT: inner quotes have to be this here: " " !
     DIAGONAL_NAME: ".arrows_d"
 };
 
-var DNA = {
-    BASE: /[acgtACGT]/i,
-    BASES: /^[acgtACGT]+$/,
-    NON_BASES: /[^acgtACGT]+/g  // g to replace globally
+var CHARACTER = {
+    BASE: /[a-zA-Z]/i,
+    BASES: /^[a-zA-Z]+$/,
+    NON_BASES: /[^a-zA-Z]+/g  // g to replace globally
 };
 
 var FILE_EXTENSIONS = {
@@ -81,8 +81,7 @@ var FILE_EXTENSIONS = {
 
 var INPUT = {
     ABS_MAX: 9,  // abs: absolute value
-    ABS_MIN: 0,
-    ABS_MIN_MATCH: 0
+    ABS_MIN: -9
 };
 
 var KEY_CODES = {
