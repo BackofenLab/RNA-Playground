@@ -149,11 +149,22 @@ small {
 }
 
 .hint {
+    border-width: 1px;
     padding-left: 8px;
     text-align: left;
 }
 
 .selectable_entry {
+    border-bottom: 0;
+    cursor: pointer;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
+}
+
+.selectable_entry_start {
+    border-bottom: 1px;
+    border-top: 0;
     cursor: pointer;
     font-family: serif;
     font-size: 1.1em;
@@ -224,17 +235,18 @@ small {
     margin-left: 30px;
 }
 
-#results td, #results th {
-    height: 24px;
-    padding-left: 10px;
-    text-align: left;
-    width: 150px;
+#calculation, #calculation_horizontal, #calculation_vertical {
+    border: solid 1px #a0a0a0;
+    border-width: 0 1px 0 0;
+    border-spacing: 0;
 }
 
 /* property values taken from project https://github.com/BackofenLab/RNA-Playground */
 #calculation td, #calculation th,
 #calculation_horizontal td, #calculation_horizontal th,
 #calculation_vertical td, #calculation_vertical th {
+    border: solid 1px #a0a0a0;
+    border-width: 1px 0 1px 1px;
     height: 24px;
     width: 32px;
 }
@@ -256,15 +268,55 @@ small {
 }
 
 #results {
-    margin-left: 30px;
+    border: none;
+    clear: left;
+    float: left;
+    max-height: 100px;
+    max-width: 160px;
+    overflow-y: scroll;
     vertical-align: top;
 }
 
+#results_footer {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+#results_header {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+#results_with_scrollbar {
+    border-left: 1px solid #a0a0a0;
+    border-right: 1px solid #a0a0a0;
+    clear: left;
+    float: left;
+    width: 161px;
+}
+
 #results td, #results th {
+    border-left: none;
+    border-right: none; /*1px solid #a0a0a0; // when sequences have max-size*/
     height: 24px;
     padding-left: 10px;
     text-align: left;
     width: 150px;
+}
+
+#results_footer td, #results_footer th,
+#results_header td, #results_header th {
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 150px;
+}
+
+#outcome {
+    clear: left;
+    float: left;
 }
 
 #overlay {

@@ -139,7 +139,11 @@ Author: Alexander Mattheis
                     </th>
                 </tr>
             </tbody>
+        </table>
 
+        <br>
+        <!-- Firefox bugfix: footer separated from table -->
+        <table>
             <tfoot>
                 <tr>
                     <td class="download_table" colspan=100%>
@@ -190,7 +194,11 @@ Author: Alexander Mattheis
                     </th>
                 </tr>
             </tbody>
+        </table>
 
+        <br>
+        <!-- Firefox bugfix: footer separated from table -->
+        <table>
             <tfoot>
                 <tr>
                     <td class="download_table" colspan=100%>
@@ -241,43 +249,66 @@ Author: Alexander Mattheis
                     </th>
                 </tr>
             </tbody>
+        </table>
 
+        <br>
+        <!-- Firefox bugfix: footer separated from table -->
+        <table>
             <tfoot>
-                <tr>
-                    <td class="download_table" colspan=100%>
-                        <a class="table_horizontal_download" href="#">Download<br>Table</a>
-                    </td>
-                </tr>
+            <tr>
+                <td class="download_table" colspan=100%>
+                    <a class="table_horizontal_download" href="#">Download<br>Table</a>
+                </td>
+            </tr>
             </tfoot>
         </table>
     </div>
 
     <div id="ancillary_output">
-        <table id="results">
-            <thead>
-                <tr>
-                    <th>
-                        Results <br>
-                        <small>
-                            You can select a result to get the related traceback.
-                        </small>
-                    </th>
-                </tr>
-            </thead>
+        <div id ="outcome">
+            <table id="results_header">
+                <thead>
+                    <tr>
+                        <th>
+                            Results <br>
+                            <small>
+                                You can select a result to get the related traceback.
+                            </small>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
 
-            <tbody>
-                <!-- ko foreach: $root.output.alignments -->
-                    <!-- ko if: $index() < 4 -->
-                        <tr>
-                            <td class="selectable_entry">
-                                <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
-                                <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
-                            </td>
-                        </tr>
-                    <!-- /ko -->
-                <!-- /ko -->
+            <div id="results_with_scrollbar">
+                <table id="results">
+                    <tbody>
+                        <!-- ko foreach: $root.output.alignments -->
+                            <!-- ko if: $index() < 4 -->
+                                <!-- ko if: $index() == 0 -->
+                                    <tr>
+                                        <td class="selectable_entry selectable_entry_start">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
+                                <!-- ko if: $index() != 0 -->
+                                    <tr>
+                                        <td class="selectable_entry">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
+                            <!-- /ko -->
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
 
+            <table id="results_footer">
                 <tr>
                     <th>
                         <small>
@@ -287,7 +318,7 @@ Author: Alexander Mattheis
                         </small>
                     </th>
                 </tr>
-            </tbody>
-        </table>
+            </table>
+        </div>
     </div>
 </div>

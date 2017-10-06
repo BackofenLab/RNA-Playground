@@ -257,6 +257,7 @@ Author: Alexander Mattheis
      * @param e - Stores data relevant to the event called that function.
      */
     function selectTableEntry(e) {
+        debugger;
         var calculationVerticalTable;
         var calculationTable = e.data.calculationTable[0];
         var calculationHorizontalTable;

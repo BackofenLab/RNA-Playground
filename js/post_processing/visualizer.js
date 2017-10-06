@@ -354,7 +354,7 @@ Author: Alexander Mattheis
     }
 
     function highlight(rowNumber, table) {
-        var start = 1;  // rows[0] contains the header and we want skip it
+        var start = 0;
 
         var cell = table.rows[rowNumber + start].cells[0];
         var lastCell = visualizerInstance.lastRowNumber >= 0
