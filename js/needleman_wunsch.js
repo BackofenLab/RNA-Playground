@@ -11,6 +11,7 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
+    debugger;
     if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
         needlemanWunsch.startNeedlemanWunsch();
 });
@@ -31,7 +32,7 @@ $(document).ready(function () {
         imports();
 
         var alignmentInterface = new interfaces.alignmentInterface.AlignmentInterface();
-        alignmentInterface.startAlignmentAlgorithm(NeedlemanWunsch);
+        alignmentInterface.startAlignmentAlgorithm(NeedlemanWunsch, ALGORITHMS.NEEDLEMAN_WUNSCH);
     }
 
     function imports() {

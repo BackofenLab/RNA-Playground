@@ -84,6 +84,93 @@ var KEY_CODES = {
     ENTER: 13
 };
 
+var LATEX = {
+    ALIGNED_PLUS: "& + &",
+    BEGIN_CASES: "\\begin{cases}",
+    END_CASES: "\\end{cases}",
+    NEGATIVE_INFINITY: "-$\\infty$",    // LaTeX
+    POSITIVE_INFINITY: "$\\infty$",     // LaTeX
+    MATH_REGION: "$",
+    MAX: "\\max",
+    MIN: "\\min",
+    MULTIPLIER: "k \\cdot",
+    NEW_LINE: "\\\\",
+    SPACE: "\\phantom{-}",
+
+    FORMULA: {
+        CURRENT: "D_{i,j}",
+        CURRENT_P: "P_{i,j}",
+        CURRENT_Q: "Q_{i,j}",
+        DELETION: "b_j = -",
+        DIAGONAL: "D_{i-1,j-1}",
+        INSERTION: "a_i = -",
+        LEFT: "D_{i,j-1}",
+        LEFT_Q: "Q_{i,j-1}",
+        MATCH: "a_i = b_j",
+        MISMATCH: "a_i \\neq b_j",
+        TOP: "D_{i-1,j}",
+        TOP_P: "P_{i-1,j}",
+        ZERO: "0"
+    },
+
+    RECURSION: {
+        GOTOH:
+  	    "\\begin{cases}"                            +
+        "D_{i-1,j-1}	& + & s(a_i,b_j)    \\\\"   +
+        "P_{i,j}                            \\\\"   +
+        "Q_{i,j}                                "   +
+        "\\end{cases}",
+
+        GOTOH_P:
+        "\\begin{cases}"                            +
+        "D_{i-1,j}      & + & g(1)		    \\\\"   +
+        "P_{i-1,j}      & + & \\delta"              +
+  	    "\\end{cases}",
+
+        GOTOH_Q:
+        "\\begin{cases}"                            +
+        "D_{i,j-1}      & + & g(1)		    \\\\"   +
+        "Q_{i,j-1}      & + & \\delta"              +
+        "\\end{cases}",
+
+        GOTOH_GAP_FUNCTION:
+        "g(k) = k \\cdot \\delta + \\alpha",
+
+        NEEDLEMAN_WUNSCH:
+        "\\begin{cases}"                            +
+        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
+        "D_{i-1,j}      & + & s(a_i,-)      \\\\"   +
+        "D_{i,j-1} 		& + & s(-,b_j)"             +
+        "\\end{cases}",
+
+        SMITH_WATERMAN:
+        "\\begin{cases}"                            +
+        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
+        "D_{i-1,j}      & + & s(a_i,-)      \\\\"   +
+        "D_{i,j-1} 		& + & s(-,b_j)      \\\\"   +
+        "0"                                         +
+        "\\end{cases}"
+    }
+};
+
+var MATRICES = {
+    DEFAULT: "D",
+    HORIZONTAL: "Q",
+    VERTICAL: "P"
+};
+
+var MOVE = {
+    P_TO_X: "pToX",
+    Q_TO_X: "qToX",
+    X_TO_P: "xToP",
+    X_TO_Q: "xToQ"
+};
+
+var MULTI_SYMBOLS = {
+    DELIMITER: /-/g,
+    SPACE: / /g
+};
+
 var PATHS = {
     AFFINE_ALIGNMENT_INTERFACE: "js/interfaces/affine_alignment_interface.js",
     ALIGNMENT: "js/procedures/bases/alignment.js",
@@ -107,24 +194,6 @@ var PATHS = {
     }
 };
 
-var MATRICES = {
-    DEFAULT: "D",
-    HORIZONTAL: "Q",
-    VERTICAL: "P"
-};
-
-var MOVE = {
-    P_TO_X: "pToX",
-    Q_TO_X: "qToX",
-    X_TO_P: "xToP",
-    X_TO_Q: "xToQ"
-};
-
-var MULTI_SYMBOLS = {
-    DELIMITER: /-/g,
-    SPACE: / /g
-};
-
 var SUB = {
     END_TAG: "</sub>",
     END_TAGS: /<\/sub>/g,
@@ -133,15 +202,18 @@ var SUB = {
 };
 
 var SYMBOLS = {  // contains all strings used in the project
+    AND: "&",
+    BRACKET_LEFT: "(",
+    BRACKET_RIGHT: ")",
     COMMA: ",",
     DUMMY: "/",  // have to be a non-letter
     EMPTY: "",
+    EQUAL: "=",
     GAP: "_",
     INFINITY: "∞",
     NEGATIVE_INFINITY: "-∞",
     NEW_LINE: "\r\n",
-    LATEX_NEGATIVE_INFINITY: "-$\\infty$",  // LaTeX
-    LATEX_POSITIVE_INFINITY: "$\\infty$",  // LaTeX
+    PLUS: "+",
     SEPARATOR: "_",
     SPACE: " ",
     STAR: "*",

@@ -22,10 +22,10 @@ Author: Alexander Mattheis
         this.startProcessing = startProcessing;
     }
 
-    function startAlignmentAlgorithm(Algorithm) {
+    function startAlignmentAlgorithm(Algorithm, algorithmName) {
         imports();
 
-        var inputViewmodel = new InputViewmodel();
+        var inputViewmodel = new InputViewmodel(algorithmName);
         sharedInterfaceOperations(Algorithm, inputViewmodel, processInput, changeOutput);
     }
 
@@ -73,7 +73,9 @@ Author: Alexander Mattheis
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      * @constructor
      */
-    function InputViewmodel() {
+    function InputViewmodel(algorithmName) {
+        var viewmodel = this;
+
         this.sequence1 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_1);
         this.sequence2 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_2);
 
@@ -84,6 +86,62 @@ Author: Alexander Mattheis
         this.insertion = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.INSERTION);
         this.match = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
         this.mismatch = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
+
+        this.formula = ko.computed(
+            function getSelectedFormula() {
+                // to fire LaTeX-Code reinterpretation after the selected formula was changed
+                // HINT: only found solution which works on all browsers
+                setTimeout(function () {
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+                }, REUPDATE_TIMEOUT_MS);
+
+                return getFormula(algorithmName, viewmodel);
+            }
+        );
+    }
+
+    function getFormula(algorithmName, viewmodel) {
+        var string = LATEX.MATH_REGION;
+
+            if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
+                string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MAX;
+            else
+                string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
+
+            if (algorithmName === ALGORITHMS.NEEDLEMAN_WUNSCH)
+                string += LATEX.RECURSION.NEEDLEMAN_WUNSCH;
+            else
+                string += LATEX.RECURSION.SMITH_WATERMAN;
+
+            if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
+                string += SYMBOLS.EQUAL + LATEX.MAX;
+            else
+                string += SYMBOLS.EQUAL + LATEX.MIN;
+
+            string += LATEX.BEGIN_CASES;
+                string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
+                string += viewmodel.match() >= 0 ? LATEX.SPACE + viewmodel.match() : viewmodel.match();
+                string += SYMBOLS.AND + LATEX.FORMULA.MATCH + LATEX.NEW_LINE;
+
+                string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
+                string += viewmodel.mismatch() >= 0 ? LATEX.SPACE + viewmodel.mismatch() : viewmodel.mismatch();
+                string += SYMBOLS.AND + LATEX.FORMULA.MISMATCH + LATEX.NEW_LINE;
+
+                string += LATEX.FORMULA.TOP + LATEX.ALIGNED_PLUS;
+                string += viewmodel.deletion() >= 0 ? LATEX.SPACE + viewmodel.deletion() : viewmodel.deletion();
+                string += SYMBOLS.AND + LATEX.FORMULA.DELETION + LATEX.NEW_LINE;
+
+                string += LATEX.FORMULA.LEFT + LATEX.ALIGNED_PLUS;
+                string += viewmodel.insertion() >= 0 ? LATEX.SPACE + viewmodel.insertion() : viewmodel.insertion();
+                string += SYMBOLS.AND + LATEX.FORMULA.INSERTION;
+
+                if (algorithmName === ALGORITHMS.SMITH_WATERMAN)
+                    string += LATEX.NEW_LINE + LATEX.FORMULA.ZERO;
+
+            string += LATEX.END_CASES;
+
+        string += LATEX.MATH_REGION;
+        return string;
     }
 
     function processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel) {

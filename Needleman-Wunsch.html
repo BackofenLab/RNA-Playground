@@ -11,7 +11,7 @@ Author: Alexander Mattheis
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a>
         by Saul B. Needleman and Christian D. Wunsch
         computes the optimal, global alignment of two sequences.
-        This algorithm from 1970 has used a minimizing scoring-function,
+        This algorithm from 1970 has used a minimizing recursion-function,
         the maximizing variant was developed 1974 by Peter H. Sellers
         and it is sometimes called
         <a href="https://doi.org/10.1137/0126070">Needleman-Wunsch-Sellers (1974)</a>.
@@ -30,8 +30,8 @@ Author: Alexander Mattheis
         In the first step of Needleman-Wunsch(-Sellers) you initialize a matrix $D$.
         Then you fill that matrix with the help of a recursion function $D_{i,j}$.
         And in the last step you do matrix tracebacks to compute the alignments
-        of the two input-sequences $S_1$ an $S_2$. The runtime and the space costs are in
-        $\mathcal O(nm)$, where $n=|S_1|$ and $m=|S_2|$.
+        of the two input-sequences $a$ an $b$. The runtime and the space costs are in
+        $\mathcal O(nm)$, where $n=|a|$ and $m=|b|$.
     </div>
 
     <div class="picture">
@@ -39,4 +39,139 @@ Author: Alexander Mattheis
     </div>
 </div>
 
-<div id="algorithm_interface"></div>
+<div id="algorithm_input">
+    <form>
+        <p>
+            <label>Sequence $a$:</label>
+            <input class="sequence" data-bind="value: input.sequence1" id="sequence_1"
+                   placeholder="EXAMPLE 'ATC'" type="text">
+        </p>
+
+        <p>
+            <label>Sequence $b$:</label>
+            <input class="sequence" data-bind="value: input.sequence2" id="sequence_2"
+                   placeholder="EXAMPLE 'AGTC'" type="text">
+        </p>
+
+        <p>
+            <label>Calculation:</label>
+            <span class="group">
+                Distance <input class="optimization_type" data-bind="checked: input.calculation" id="distance"
+                                name="calculation" type="radio" value="distance">
+                Similarity <input class="optimization_type" data-bind="checked: input.calculation" id="similarity"
+                                  name="calculation" type="radio" value="similarity">
+            </span>
+        </p>
+
+        <p>
+            <label>Scoring $s$:</label>
+            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
+                Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
+                Deletion <input class="fx_parameter" data-bind="value: input.deletion" id="deletion" type="number">
+                Insertion <input class="fx_parameter" data-bind="value: input.insertion" id="insertion" type="number">
+            </span>
+        </p>
+
+        <p>
+            <label id="recursion_needleman_wunsch">Recursion:</label>
+            <span data-bind="text: $root.input.formula"></span>
+
+            <div class="group_hint">
+                <b>Hint:</b> <br>
+                If similarity is checked,
+                then match values should be positive and every other value lower or equal zero. <br>
+                And if distance is checked,
+                then match values should be negative and every other value higher or equal zero.
+            </div>
+        </p>
+    </form>
+</div>
+
+<div id="algorithm_output">
+    <div id="main_output">
+        <table id="calculation">
+            <thead>
+                <tr>
+                    <th>$D$</th>
+                    <th></th>
+                    <!-- ko foreach: input.sequence1 -->
+                        <th data-bind="drawChar: [$data, $index()+1]"></th>
+                    <!-- /ko -->
+                </tr>
+            </thead>
+
+            <tbody>
+                <!-- ko foreach: output.matrix --> <!-- to get i-indexes = $parentContext.$index() -->
+                    <tr>
+                        <!-- ko if: $index() == 0 -->
+                            <th></th>
+                        <!-- /ko -->
+
+                        <!-- ko if: $index() > 0 -->
+                            <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                        <!-- /ko -->
+
+                        <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
+                            <td class="selectable_entry"
+                                data-bind="text: $root.output.matrix()[$parentContext.$index()][$index()]"></td>
+                        <!-- /ko -->
+                    </tr>
+                <!-- /ko -->
+
+                <tr>
+                    <th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
+                        <small>
+                            <b>Score:</b> <span data-bind="text: $root.output.score"></span>
+                        </small>
+                    </th>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <td class="download_table" colspan=100%>
+                        <a class="table_download" href="#">Download Table</a>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <table id="results">
+            <thead>
+            <tr>
+                <th>
+                    Results <br>
+                    <small>
+                        You can select a result to get the related traceback.
+                    </small>
+                </th>
+            </tr>
+            </thead>
+
+            <tbody>
+                <!-- ko foreach: $root.output.alignments -->
+                    <!-- ko if: $index() < 4 -->
+                        <tr>
+                            <td class="selectable_entry">
+                                <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                            </td>
+                        </tr>
+                    <!-- /ko -->
+                <!-- /ko -->
+
+                <tr>
+                    <th>
+                        <small>
+                            <!-- ko if: $root.output.moreTracebacks -->
+                            <b>Hint:</b> Only the first ten results are computed.
+                            <!-- /ko -->
+                        </small>
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

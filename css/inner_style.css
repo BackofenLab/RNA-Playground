@@ -185,6 +185,11 @@ small {
     color: white;
 }
 
+.span_group {
+    padding-bottom: 15px;
+    padding-left: 120px;
+}
+
 /*---- ID_TRACEBACK STYLING ----*/
 #algorithm_description .description {
     display: inline-block;
@@ -236,6 +241,18 @@ small {
 
 #main_output {
     float: left;
+}
+
+#recursion_gotoh {
+    padding-top: 32px;
+}
+
+#recursion_needleman_wunsch {
+    padding-top: 32px;
+}
+
+#recursion_smith_waterman {
+    padding-top: 40px;
 }
 
 #results {

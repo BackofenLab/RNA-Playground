@@ -403,9 +403,9 @@ Author: Alexander Mattheis
     function replaceInfinities(matrix) {
         for (var i = 0; i < matrix.length; i++) {
             for (var j = 0; j < matrix[0].length; j++) {
-                if (matrix[i][j] === SYMBOLS.LATEX_POSITIVE_INFINITY)
+                if (matrix[i][j] === LATEX.NEGATIVE_INFINITY)
                     matrix[i][j] = SYMBOLS.INFINITY;
-                else if (matrix[i][j] === SYMBOLS.LATEX_NEGATIVE_INFINITY)
+                else if (matrix[i][j] === LATEX.POSITIVE_INFINITY)
                     matrix[i][j] = SYMBOLS.NEGATIVE_INFINITY;
             }
         }
@@ -450,9 +450,9 @@ Author: Alexander Mattheis
         for (var i = 0; i < matrix.length; i++) {
             for (var j = 0; j < matrix[0].length; j++) {
                 if (matrix[i][j] === Number.POSITIVE_INFINITY)
-                    matrix[i][j] = SYMBOLS.LATEX_POSITIVE_INFINITY;
+                    matrix[i][j] = LATEX.POSITIVE_INFINITY;
                 else if (matrix[i][j] === Number.NEGATIVE_INFINITY)
-                    matrix[i][j] = SYMBOLS.LATEX_NEGATIVE_INFINITY;
+                    matrix[i][j] = LATEX.NEGATIVE_INFINITY;
             }
         }
 

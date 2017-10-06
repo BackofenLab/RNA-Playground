@@ -32,7 +32,7 @@ $(document).ready(function () {
         imports();
 
         var alignmentInterface = new interfaces.alignmentInterface.AlignmentInterface();
-        alignmentInterface.startAlignmentAlgorithm(SmithWaterman);
+        alignmentInterface.startAlignmentAlgorithm(SmithWaterman, ALGORITHMS.SMITH_WATERMAN);
     }
 
     function imports() {
