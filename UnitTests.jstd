@@ -4,7 +4,7 @@ load:
   - js/libs/knockout-3.4.2.js
   - js/libs/namespace.js
 
-  - js/procedures/bases/loader.js
+  - js/procedures/bases/alignment.js
 
   - js/procedures/backtracking.js
 
