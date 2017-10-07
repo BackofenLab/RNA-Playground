@@ -328,7 +328,6 @@ small {
 #page_contents {
     background-color: #F2F3F1; /* Uni-Freiburg standard */
     border-radius: 4px 4px 0 0;
-    box-shadow: 0 0 5px rgba(50, 50, 50, 0.4);
     margin: 50px auto; /* centering website */
     min-height: 1500px; /* Uni-Freiburg standard */
     overflow: auto;
