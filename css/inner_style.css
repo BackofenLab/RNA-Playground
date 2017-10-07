@@ -306,7 +306,7 @@ small {
 
 #results td, #results th {
     border-left: none;
-    border-right: none; /*1px solid #a0a0a0; // when sequences have max-size*/
+    border-right: none; /* other possibilities does not look good on tablets */
     height: 24px;
     padding-left: 10px;
     text-align: left;
