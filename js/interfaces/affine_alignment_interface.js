@@ -228,8 +228,8 @@ Author: Alexander Mattheis
 
         // when page was loaded the inputs have not to be updated or you get wrong inputs
         if (inputProcessor.inputUpdatesActivated()) {
-            inputViewmodel.sequence1($("#sequence_1").val());
-            inputViewmodel.sequence2($("#sequence_2").val());
+            inputViewmodel.sequence1($("#sequence_1").val().toUpperCase());
+            inputViewmodel.sequence2($("#sequence_2").val().toUpperCase());
 
             if ($("#distance").is(":checked"))
                 inputViewmodel.calculation(ALIGNMENT_TYPES.DISTANCE);

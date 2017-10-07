@@ -20,8 +20,8 @@ var UNIT_TEST_WEBTITLE = "Console Runner";  // title of the Unit-test site
 // structs
 var AFFINE_ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
-    SEQUENCE_1: "CCGA",
-    SEQUENCE_2: "CG",
+    SEQUENCE_1: "CCGA",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "CG",  // hint: UPPERCASE letters!
 
     FUNCTION: {
         BASE_COSTS: -3,
@@ -39,8 +39,8 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms
 
 var ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
-    SEQUENCE_1: "AACG",
-    SEQUENCE_2: "AATCG",
+    SEQUENCE_1: "AACG",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "AATCG",  // hint: UPPERCASE letters!
 
     FUNCTION: {
         DELETION: -2,
