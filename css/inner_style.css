@@ -247,12 +247,19 @@ small {
 #calculation_vertical td, #calculation_vertical th {
     border: solid 1px #a0a0a0;
     border-width: 1px 0 1px 1px;
+    max-height: 24px;
+    max-width: 32px;
+    min-height: 24px;
+    min-width: 32px;
     height: 24px;
     width: 32px;
 }
 
 #main_output {
     float: left;
+    max-width: 600px;
+    padding-bottom: 30px;
+    overflow: auto;
 }
 
 #recursion_gotoh {

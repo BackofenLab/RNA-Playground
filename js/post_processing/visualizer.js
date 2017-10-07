@@ -282,10 +282,10 @@ Author: Alexander Mattheis
         var lastTop;
 
         if (move === MOVE.X_TO_P) {
-            left = (cell.offsetLeft + cellWidth * CELL_PERCENT).toString();
-            top = (cell.offsetTop + cellHeight * CELL_PERCENT).toString();
-            lastLeft = (lastCell.offsetLeft + cellWidth * CELL_PERCENT).toString();
-            lastTop = (lastCell.offsetTop + cellHeight * (1 - CELL_PERCENT)).toString();
+            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT).toString();
+            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT).toString();
+            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT).toString();
+            lastTop     =   (lastCell.offsetTop     + cellHeight    * (1 - CELL_PERCENT)).toString();
         } else if (move === MOVE.X_TO_Q) {
             left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT).toString();
             top         =   (cell.offsetTop         + cellHeight    * (1-CELL_PERCENT)).toString();
