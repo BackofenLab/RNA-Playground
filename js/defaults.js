@@ -7,10 +7,17 @@ Author: Alexander Mattheis
 
 "use strict";
 
+/**
+ * Used to store all constants used in the program.
+ * Namespaces, HTML class-names and events like "mouse-over" etc. aren't stored in this file
+ * because it would slow down the development process.
+ * Multiple constants of same "logic" (for example with similar naming) stored in structures.
+ */
+
 // constants
 var CELL_PERCENT = 0.2;  // can change position of a "between-table"-arrow in the Gotoh algorithm
 
-var MAX_NUMBER_TRACEBACKS = 10;
+var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have been updated
@@ -18,6 +25,9 @@ var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight traceba
 var UNIT_TEST_WEBTITLE = "Console Runner";  // title of the Unit-test site
 
 // structs
+/**
+ * Stores the default parameters for affine alignment algorithms.
+ */
 var AFFINE_ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     SEQUENCE_1: "CCGA",  // hint: UPPERCASE letters!
@@ -31,12 +41,18 @@ var AFFINE_ALIGNMENT_DEFAULTS = {
     }
 };
 
+/**
+ * Stores the implemented algorithms.
+ */
 var ALGORITHMS = {  // contains a list of all implemented algorithms
     GOTOH: "gotoh",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
     SMITH_WATERMAN: "smith_waterman"
 };
 
+/**
+ * Stores the default parameters for alignment algorithms.
+ */
 var ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     SEQUENCE_1: "AACG",  // hint: UPPERCASE letters!
@@ -50,12 +66,18 @@ var ALIGNMENT_DEFAULTS = {
     }
 };
 
+/**
+ * Stores the types of calculation.
+ */
 var ALIGNMENT_TYPES = {  // contains a list of alignment types
     DISTANCE: "distance",
     SIMILARITY: "similarity"
 };
 
-var ARROWS = {  // HINT: inner quotes have to be this here: " " !
+/**
+ * Stores HTML-code for arrows.
+ */
+var ARROWS = {  // HINT: inner quotes have to be this here: " " or it won't work!
     LEFT: '<div class="arrows_l"></div>',
     LEFT_NAME: ".arrows_l",
     TOP: '<div class="arrows_t"></div>',
@@ -64,26 +86,41 @@ var ARROWS = {  // HINT: inner quotes have to be this here: " " !
     DIAGONAL_NAME: ".arrows_d"
 };
 
+/**
+ * Allowed input characters.
+ */
 var CHARACTER = {
     BASE: /[a-zA-Z]/i,
     BASES: /^[a-zA-Z]+$/,
     NON_BASES: /[^a-zA-Z]+/g  // g to replace globally
 };
 
+/**
+ * Allowed file extensions.
+ */
 var FILE_EXTENSIONS = {
     HYPERTEXT_MARKUP_LANGUAGE: ".html",
     JAVASCRIPT: ".js"
 };
 
+/**
+ * Allowed max values for inputs.
+ */
 var INPUT = {
     ABS_MAX: 9,  // abs: absolute value
     ABS_MIN: -9
 };
 
+/**
+ * Stores key codes from keyboard.
+ */
 var KEY_CODES = {
     ENTER: 13
 };
 
+/**
+ * Stores LaTeX-code for displayed formulas.
+ */
 var LATEX = {
     ALIGNED_PLUS: "& + &",
     BEGIN_CASES: "\\begin{cases}",
@@ -153,12 +190,18 @@ var LATEX = {
     }
 };
 
+/**
+ * Stores strings for matrix types used in the program.
+ */
 var MATRICES = {
     DEFAULT: "D",
     HORIZONTAL: "Q",
     VERTICAL: "P"
 };
 
+/**
+ * Stores the type of moves you can do from a matrix to another matrix in affine algorithms like Gotoh.
+ */
 var MOVE = {
     P_TO_X: "pToX",
     Q_TO_X: "qToX",
@@ -166,11 +209,17 @@ var MOVE = {
     X_TO_Q: "xToQ"
 };
 
+/**
+ * Symbols which are used to be for example globally replaced.
+ */
 var MULTI_SYMBOLS = {
     DELIMITER: /-/g,
     SPACE: / /g
 };
 
+/**
+ * Stores all class paths and some library paths.
+ */
 var PATHS = {
     AFFINE_ALIGNMENT_INTERFACE: "js/interfaces/affine_alignment_interface.js",
     ALIGNMENT: "js/procedures/bases/alignment.js",
@@ -178,11 +227,6 @@ var PATHS = {
     BACKTRACKING: "js/procedures/backtracking.js",
     INPUT_PROCESSOR: "js/post_processing/input_processor.js",
     VISUALIZER: "js/post_processing/visualizer.js",
-
-    HTML: {
-        AFFINE_ALIGNMENT_INTERFACE: "interfaces/affine_alignment_interface.html",
-        ALIGNMENT_INTERFACE: "interfaces/alignment_interface.html",
-    },
 
     LIBS: {
         KNOCKOUT: "js/libs/knockout-3.4.2.js"
@@ -194,6 +238,9 @@ var PATHS = {
     }
 };
 
+/**
+ * Stores HTML sub-tags.
+ */
 var SUB = {
     END_TAG: "</sub>",
     END_TAGS: /<\/sub>/g,
@@ -201,6 +248,9 @@ var SUB = {
     START_TAGS: /<sub>/g
 };
 
+/**
+ * Stores non-LaTeX symbols used in the program.
+ */
 var SYMBOLS = {  // contains all strings used in the project
     AND: "&",
     BRACKET_LEFT: "(",
@@ -220,6 +270,9 @@ var SYMBOLS = {  // contains all strings used in the project
     VERTICAL_BAR: "|"
 };
 
+/**
+ * Stores SVG-parameters of the SVG-overlay above the page.
+ */
 var SVG = {
     FLOW_LONG_ARROW_COLOR: "black",
     NAME_SPACE: "http://www.w3.org/2000/svg",
@@ -246,6 +299,9 @@ var SVG = {
     }
 };
 
+/**
+ * Stores the download-name and the encoding of the table you want to download.
+ */
 var TABLE = {
     DOWNLOAD_NAME: "table.csv",
     TEXT_FILE_ENCODING: "text/csv;charset=utf-8"

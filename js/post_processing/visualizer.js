@@ -11,7 +11,7 @@ Author: Alexander Mattheis
     // public methods
     namespace("postProcessing.visualizer", Visualizer,
         shareInformation, showFlow,
-        showTraceback, highlight, downloadTable, replaceInfinityStrings, redrawAllLines, removeAllContents);
+        showTraceback, highlight, downloadTable, replaceInfinityStrings, redrawOverlay, removeAllContents);
 
     // instances
     var visualizerInstance;
@@ -58,7 +58,7 @@ Author: Alexander Mattheis
         this.highlight = highlight;
         this.downloadTable = downloadTable;
         this.replaceInfinityStrings = replaceInfinityStrings;
-        this.redrawAllLines = redrawAllLines;
+        this.redrawOverlay = redrawOverlay;
         this.removeAllContents = removeAllContents;
     }
 
@@ -413,13 +413,19 @@ Author: Alexander Mattheis
         return matrix;
     }
 
-    /*
-    CSV specification: https://www.ietf.org/rfc/rfc4180.txt
-    Hint: It is allowed to have a line break in the last line.
+    /**
+     * Computes the string which is stored in a table download-file.
+     * @param number - The type of matrix {0: MATRICES.VERTICAL, 1: MATRICES.DEFAULT, 2: MATRICES.HORIZONTAL}.
+     * @param matrix - The matrix from which you get the values.
+     * @param upperString - The string of the first input sequence.
+     * @param leftString {string} - The string of the second input sequence.
+     * @return {string} - CSV formatted data.
+     * @see CSV specification: https://www.ietf.org/rfc/rfc4180.txt
      */
     function tableToCSV(number, matrix, upperString, leftString) {
         var string = SYMBOLS.EMPTY;
 
+        // differentiate between the type of matrices you can download and add a symbol for the matrix type to the string
         switch (number) {
             case 0:
                 string += MATRICES.VERTICAL + SYMBOLS.COMMA;
@@ -434,18 +440,24 @@ Author: Alexander Mattheis
 
         string += SYMBOLS.COMMA + upperString.split(SYMBOLS.EMPTY).toString() + SYMBOLS.NEW_LINE;
 
+        // compute CSV
         for (var i = 0; i < matrix.length; i++) {
             if (i == 0)
                 string += SYMBOLS.COMMA;
             else
                 string += leftString.charAt(i-1) + SYMBOLS.COMMA;
 
-            string += matrix[i] + SYMBOLS.NEW_LINE;
+            string += matrix[i] + SYMBOLS.NEW_LINE;  // Hint: it is allowed to have a line break in the last line
         }
 
         return string;
     }
 
+    /**
+     * Post edits a matrix and replaces infinity-values with LaTeX-infinity-symbols.
+     * @param matrix - Matrix in which you want replace infinity-values with LaTeX-symbols.
+     * @return {Array} - Matrix in which symbols where replaced with LaTeX-symbols.
+     */
     function replaceInfinityStrings(matrix) {
         for (var i = 0; i < matrix.length; i++) {
             for (var j = 0; j < matrix[0].length; j++) {
@@ -459,7 +471,11 @@ Author: Alexander Mattheis
         return matrix;
     }
 
-    function redrawAllLines(e) {
+    /**
+     * Redraw overlay after a resize-event of the browser window.
+     * @param e - Stores data relevant to the event called that function.
+     */
+    function redrawOverlay(e) {
         var calculationVerticalTable;
         var calculation = e.data.calculationTable[0];
         var calculationHorizontalTable;
@@ -502,7 +518,6 @@ Author: Alexander Mattheis
     }
 
     function removeAllContents() {
-        debugger;
         removeAllLines();
 
         visualizerInstance.algorithm = {};

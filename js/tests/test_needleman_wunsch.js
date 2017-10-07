@@ -6,7 +6,11 @@ Author: Alexander Mattheis
 */
 
 TestCase("test_needleman_wunsch", {
-    "test_1": function () {  // Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+    /**
+     * Short sequences test.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     */
+    "test_1": function () {
         var algorithm = new needlemanWunsch.NeedlemanWunsch();
 
         var inputData = {};
@@ -33,7 +37,11 @@ TestCase("test_needleman_wunsch", {
         assertEquals("A_TC", outputData.alignments[0][2]);
     },
 
-    "test_2": function () {  // Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+    /**
+     * Long sequences test.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     */
+    "test_2": function () {
         var algorithm = new needlemanWunsch.NeedlemanWunsch();
 
         var inputData = {};
@@ -60,7 +68,11 @@ TestCase("test_needleman_wunsch", {
         assertEquals("GGGTGAGACCCCAGTTCAACCC", outputData.alignments[0][2]);
     },
 
-    "test_3": function () {  // Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+    /**
+     * Short sequences test.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     */
+    "test_3": function () {
         var algorithm = new needlemanWunsch.NeedlemanWunsch();
 
         var inputData = {};
@@ -87,6 +99,9 @@ TestCase("test_needleman_wunsch", {
         assertEquals("TACGCGC", outputData.alignments[0][2]);
     },
 
+    /**
+     * Initial sequences test.
+     */
     "test_4": function () {
         var algorithm = new needlemanWunsch.NeedlemanWunsch();
 

@@ -6,6 +6,9 @@ Author: Alexander Mattheis
 */
 
 TestCase("test_smith_waterman", {
+    /**
+     * Initial sequences test.
+     */
     "test_1": function () {
         var algorithm = new smithWaterman.SmithWaterman();
 
@@ -36,6 +39,10 @@ TestCase("test_smith_waterman", {
         assertEquals("CG", outputData.alignments[1][2]);
     },
 
+    /**
+     * Multi sequences test.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis
+     */
     "test_2": function () {
         debugger;
         var algorithm = new smithWaterman.SmithWaterman();
@@ -73,6 +80,10 @@ TestCase("test_smith_waterman", {
         assertEquals("CAGA", outputData.alignments[3][2]);
     },
 
+    /**
+     * Long sequences test.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     */
     "test_3": function () {
         debugger;
         var algorithm = new smithWaterman.SmithWaterman();

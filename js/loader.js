@@ -13,12 +13,12 @@ $(document).ready(startIndex);
  * Function managing objects.
  */
 function startIndex() {
-    index.linkElements();
+    loader.linkElements();
 }
 
 (function () {  // namespace
     // public methods
-    namespace("index", linkElements);
+    namespace("loader", linkElements);
 
     /**
      * Linking elements with a function.
@@ -50,7 +50,7 @@ function startIndex() {
 
     /**
      * Shows a hidden menu or closes an opened menu.
-     * And it updates the menu button during this process.
+     * It updates the menu button during this process.
      * @param e - Stores data relevant to the event called that function.
      */
     function showHideMenu(e) {
@@ -111,11 +111,9 @@ function startIndex() {
     /**
      * Loads the HTML-page of the algorithm into current document.
      * @param algorithm - The HTML-filename without extension you want to load.
-     * Hint: "-" are replaced with "_".
      * @param view - The view in which you want load the page.
      */
     function updateDocumentView(algorithm, view) {
-        debugger;
         var algorithmName = algorithm.toLowerCase().replace(MULTI_SYMBOLS.DELIMITER, SYMBOLS.SEPARATOR)
             .replace(MULTI_SYMBOLS.SPACE, SYMBOLS.SEPARATOR);  // "-" and " " are replaced with "_"
 

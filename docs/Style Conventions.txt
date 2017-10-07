@@ -16,7 +16,7 @@ In comments use this " (symbol) and not this ' (symbol) to emphasize something.
 Nearly all constants are stored in the "defaults.js".
 Namespaces, HTML class-names and events like "mouse-over" etc. are not stored in the "defaults.js"
 because else it would slow down the development process.
-If you have multiple constants of "same logic" (for example with similar naming)
+If you have multiple constants of same "logic" (for example with similar naming)
 then you store them in a structure.
 
 /*---- order in constructor elements ----*/
@@ -115,7 +115,7 @@ Variables which are stored outside a constructor.
 /*---- variables ----*/
 Variables have to be always stored inside the constructor
 to avoid variable conflicts with other classes in the same namespace.
-An exception are shared variables which are used between the "classes".
+An exception are "shared variables" which are used between the "classes".
 
 /*------------------------------------------------------KEYWORDS------------------------------------------------------*/
  /*---- "this"-keyword ----*/

@@ -11,22 +11,48 @@ Author: Alexander Mattheis
     // public methods
     namespace("procedures.backtracking", Vector, Backtracking, getNeighboured, getMultiNeighboured);
 
+    /**
+     * Creates a vector with a label, which is by the default the default matrix label.
+     * @param i {number} - First matrix axis.
+     * @param j {number} - Second matrix axis.
+     * @constructor
+     */
     function Vector(i, j) {
         this.i = i;
         this.j = j;
         this.label = MATRICES.DEFAULT;
     }
 
+    /**
+     * Changes the label of a vector. It is used to create a vector with a specific label.
+     * @exmaple
+     * create(new Vector(i,j), MATRICES.HORIZONTAL)
+     * @param Vector
+     * @param label {string} - The string label from "defaults.js".
+     * @return {Vector} - The vector with the changed label.
+     */
     function create(Vector, label) {
         Vector.label = label;
         return Vector;
     }
 
+    /**
+     * Contains backtracking neighbouring functions shared by the alignment algorithms.
+     * @constructor
+     */
     function Backtracking() {
         this.getNeighboured = getNeighboured;
         this.getMultiNeighboured = getMultiNeighboured;
     }
 
+    /**
+     * Returns the neighbours to which you can go from the current cell position used as input.
+     * @param position {Vector} - Current cell position in matrix.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @param algorithm {Object} - Contains an alignment algorithm.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     */
     function getNeighboured(position, inputData, outputData, algorithm) {
         var neighboured = [];
 
@@ -69,6 +95,13 @@ Author: Alexander Mattheis
         return neighboured;
     }
 
+    /**
+     * Returns the neighbours to which you can go from the current cell position used as input.
+     * @param position {Vector} - Current cell position in matrix.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     */
     function getMultiNeighboured(position, inputData, outputData) {
         debugger;
         var neighboured = [];
@@ -127,6 +160,13 @@ Author: Alexander Mattheis
         return neighboured;
     }
 
+    /**
+     * Returns the neighbours to which you can go from the current cell position in the matrix for vertical gap costs.
+     * @param position {Vector} - Current cell position in matrix.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     */
     function getVerticalNeighboured(position, inputData, outputData) {
         var neighboured = [];
 
@@ -157,6 +197,13 @@ Author: Alexander Mattheis
         return neighboured;
     }
 
+    /**
+     * Returns the neighbours to which you can go from the current cell position in the matrix for horizontal gap costs.
+     * @param position {Vector} - Current cell position in matrix.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     */
     function getHorizontalNeighboured(position, inputData, outputData) {
         var neighboured = [];
 

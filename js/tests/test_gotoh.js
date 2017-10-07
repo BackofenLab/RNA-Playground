@@ -6,7 +6,11 @@ Author: Alexander Mattheis
 */
 
 TestCase("test_gotoh", {
-    "test_1": function () {  // Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+    /**
+     * Short sequences test.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     */
+    "test_1": function () {
         var algorithm = new gotoh.Gotoh();
 
         var inputData = {};
@@ -35,6 +39,9 @@ TestCase("test_gotoh", {
         assertEquals("GG__", outputData.alignments[1][2]);
     },
 
+    /**
+     * Initial sequences test.
+     */
     "test_2": function () {
         var algorithm = new gotoh.Gotoh();
 
@@ -65,7 +72,11 @@ TestCase("test_gotoh", {
         assertEquals("CG__", outputData.alignments[1][2]);
     },
 
-    "test_3": function () {  // Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+    /**
+     * Multi sequences test.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis
+     */
+    "test_3": function () {
         var algorithm = new gotoh.Gotoh();
 
         var inputData = {};
@@ -98,7 +109,11 @@ TestCase("test_gotoh", {
         assertEquals("TCCG___A", outputData.alignments[2][2]);
     },
 
-    "test_4": function () {  // Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+    /**
+     * Short sequences test.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     */
+    "test_4": function () {
         var algorithm = new gotoh.Gotoh();
 
         var inputData = {};

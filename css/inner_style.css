@@ -306,7 +306,7 @@ small {
 
 #results td, #results th {
     border-left: none;
-    border-right: none; /* other possibilities does not look good on tablets */
+    border-right: none; /* other possibilities does not look bug-like on tablets/smartphone browsers */
     height: 24px;
     padding-left: 10px;
     text-align: left;

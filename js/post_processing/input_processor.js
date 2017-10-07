@@ -157,11 +157,11 @@ Author: Alexander Mattheis
             "calculationHorizontalTable": calculationHorizontal,
             "calculationVerticalTable": calculationVertical
         };
-        browserWindow.on("resize", functionArguments, visualViewmodel.redrawAllLines);
+        browserWindow.on("resize", functionArguments, visualViewmodel.redrawOverlay);
     }
 
     /**
-     * Bug fixes for specific browsers or versions of browser.
+     * Bug fixes for specific browsers or versions of browsers.
      */
     function fixBrowserBugs() {
         /*
@@ -200,8 +200,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Negates the function parameters of an algorithm to avoid
-     * critically long run-times.
+     * Negates the function parameters of an algorithm.
      * Hint: The input has to be of class "optimization_type".
      * @param e - Stores data relevant to the event called that function.
      */
@@ -221,7 +220,7 @@ Author: Alexander Mattheis
      */
     function removeCriticalNumbers(e) {
         if (e.which === KEY_CODES.ENTER || e.type === "focusout") {
-            if ($("#similarity").is(":checked")) {
+            if ($("#similarity").is(":checked")) {  // similarity is checked
                 if (this.id === "match") {
                     this.value = this.value >= INPUT.ABS_MIN ? this.value : INPUT.ABS_MIN;
                     this.value = this.value <= INPUT.ABS_MAX ? this.value : INPUT.ABS_MAX;
@@ -257,7 +256,7 @@ Author: Alexander Mattheis
      * @param e - Stores data relevant to the event called that function.
      */
     function selectTableEntry(e) {
-        debugger;
+        // retrieve data
         var calculationVerticalTable;
         var calculationTable = e.data.calculationTable[0];
         var calculationHorizontalTable;
@@ -271,6 +270,7 @@ Author: Alexander Mattheis
         var selectableEntries = resultsTable.find(e.data.selectableEntryClass);
         var visualViewmodel = e.data.visualViewmodel;
 
+        // compute the selected position in the results table
         var selectedRow = -1;
 
         for (var i = 0; i < selectableEntries.length; i++) {
@@ -278,6 +278,7 @@ Author: Alexander Mattheis
                 selectedRow = i;
         }
 
+        // some delay without it won't work properly
         setTimeout(function () {
             visualViewmodel.highlight(selectedRow, resultsTable[0]);
             visualViewmodel.showTraceback(selectedRow, calculationVerticalTable, calculationTable, calculationHorizontalTable);
@@ -290,7 +291,7 @@ Author: Alexander Mattheis
      * @param e - Stores data relevant to the event called that function.
      */
     function selectCell(e) {
-        debugger;
+        // retrieve data
         var number = e.data.number;
         var calculationVerticalTable;
         var calculationTable = e.data.calculationTable;
@@ -321,6 +322,7 @@ Author: Alexander Mattheis
         var selectableEntries = currentSelectedTable.find(selectableEntryClass);
         var visualViewmodel = e.data.visualViewmodel;
 
+        // compute the selected position in the calculation table
         var selectedColumn = -1;
         var selectedRow = -1;
 
@@ -337,9 +339,11 @@ Author: Alexander Mattheis
             }
         }
 
+        // store selected position in a vector
         var cellCoordinates = new procedures.backtracking.Vector(selectedRow, selectedColumn);
         cellCoordinates.label = label;
 
+        // some delay without it won't work properly
         setTimeout(function () {
             visualViewmodel.showFlow(cellCoordinates,
                 calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0]);
@@ -390,6 +394,11 @@ Author: Alexander Mattheis
         });
     }
 
+    /**
+     * Does post processing after some kind of input by keyboard or mouse.
+     * @example
+     * LaTeX-math is updated or wrong characters are removed.
+     */
     function postProcess() {
         removeWrongBases();
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
@@ -406,7 +415,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Processes inputs to update outputs.
+     * Processes entered inputs with an algorithm to update the outputs.
      * @param algorithm - Algorithm used to update the user interface.
      * @param viewmodels - The viewmodel used to access visualization functions and input.
      * @param processInput - Function from the algorithm which should process the input.
@@ -421,7 +430,10 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Replace "infinity"-strings with the real infinity symbol.
+     * Post edits a matrix and replaces for example values with LaTeX-symbols.
+     * @param matrix - Matrix in which you want replace values with for example LaTeX-symbols.
+     * @param visualViewmodel - The model for visualization which is replacing symbols.
+     * @return {Array} - Matrix in which symbols where replaced with LaTeX-symbols.
      */
     function postEdit(matrix, visualViewmodel) {
         return visualViewmodel.replaceInfinityStrings(matrix);

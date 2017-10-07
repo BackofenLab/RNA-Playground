@@ -19,6 +19,11 @@ Author: Alexander Mattheis
     var inputData = {};  // stores the input of the algorithm
     var outputData = {};  // stores the output of the algorithm
 
+    /**
+     * Contains functions to compute optimal alignments.
+     * It is used by algorithms global and local alignment algorithms as superclass.
+     * @constructor
+     */
     function Alignment(child) {
         childInstance = child;
 
@@ -34,10 +39,20 @@ Author: Alexander Mattheis
         this.setIO = setIO;
     }
 
+    /**
+     * Returns the input data of the algorithm.
+     * @return {Object} - Contains all input data.
+     */
     function getInput() {
         return inputData;
     }
 
+    /**
+     * Sets the algorithm input for an appropriate algorithm
+     * which is using the inputViewmodel properties in its computations.
+     * @param inputViewmodel {InputViewmodel}
+     * - The InputViewmodel of an appropriate algorithm (Needleman-Wunsch, Smith-Waterman).
+     */
     function setInput(inputViewmodel) {
         inputData.sequenceA = inputViewmodel.sequence1();
         inputData.sequenceB = inputViewmodel.sequence2();
@@ -53,8 +68,10 @@ Author: Alexander Mattheis
         inputData.matrixWidth = inputData.sequenceA.length + 1;
     }
 
+    /**
+     * Starts the computation.
+     */
     function compute() {
-        debugger;
         initializeMatrix();
         computeMatrixAndScore();
         computeTraceback();
@@ -62,11 +79,17 @@ Author: Alexander Mattheis
         return [inputData, outputData];
     }
 
+    /**
+     * Initializes and creates the matrix.
+     */
     function initializeMatrix() {
         createMatrix();
         childInstance.initializeMatrix();
     }
 
+    /**
+     * Creates the matrix without initializing them.
+     */
     function createMatrix() {
         outputData.matrix = new Array(inputData.matrixHeight);
 
@@ -74,10 +97,22 @@ Author: Alexander Mattheis
             outputData.matrix[i] = new Array(inputData.matrixWidth);
     }
 
+    /**
+     * Computes the matrix by using the recursion function and the score.
+     * @abstract
+     */
     function computeMatrixAndScore() {
         childInstance.computeMatrixAndScore();
     }
 
+    /**
+     * Computes the cell score.
+     * @param aChar {string} - The current char from the first string.
+     * @param bChar {string} - The current char from the second string.
+     * @param i {number} - The current vertical position in the matrix.
+     * @param j {number} - The current horizontal position in the matrix.
+     * @return {number} - The value for the cell at position (i,j).
+     */
     function recursionFunction(aChar, bChar, i, j) {
         var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
 
@@ -88,10 +123,17 @@ Author: Alexander Mattheis
         return childInstance.recursionFunction(diagonalValue, upValue, leftValue);
     }
 
+    /**
+     * Initializes the traceback.
+     * @abstract
+     */
     function computeTraceback() {
         childInstance.computeTraceback();
     }
 
+    /**
+     * Creates the alignments.
+     */
     function createAlignments() {
         outputData.alignments = [];
         var numTracebacks = outputData.tracebackPaths.length;
@@ -103,9 +145,10 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Hint: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
-     * @param path - Path which is used to create the alignment.
-     * @return {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
+     * Creates an alignment by going through the path array of vectors.
+     * @param path {Array} - Path of vectors which is used to create the alignment.
+     * @return {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]} - The pair of strings which have to be displayed.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function createAlignment(path) {
         path.reverse();  // allows more intuitive calculations from left to right
@@ -117,6 +160,8 @@ Author: Alexander Mattheis
         var currentPositionA = path[0].j;
         var currentPositionB = path[0].i;
 
+        // going through each element of the path and look on the differences between vectors
+        // to find out the type of difference vector (arrow)
         for (var i = 1; i < path.length; i++) {
             var aChar = inputData.sequenceA[currentPositionA];
             var bChar = inputData.sequenceB[currentPositionB];
@@ -144,13 +189,22 @@ Author: Alexander Mattheis
             }
         }
 
-        return [alignedSequenceA.toUpperCase(), matchOrMismatchString, alignedSequenceB.toUpperCase()];
+        return [alignedSequenceA, matchOrMismatchString, alignedSequenceB];
     }
 
+    /**
+     * Returns all algorithm output.
+     * @return {Object} - Contains all output of the algorithm.
+     */
     function getOutput() {
         return outputData;
     }
 
+    /**
+     * Sets the input and output of an algorithm.
+     * @param input {Object} - Contains all input data.
+     * @param output {Object} - Contains all output data.
+     */
     function setIO(input, output) {
         inputData = input;
         outputData = output;
