@@ -7,18 +7,23 @@ Author: Alexander Mattheis
 
 "use strict";
 
-$(document).ready(startIndex);
-
 /**
- * Function managing objects.
+ * Defines tasks after page-loading.
  */
-function startIndex() {
-    loader.linkElements();
-}
+$(document).ready(function () {
+    loader.startLoader();
+});
 
 (function () {  // namespace
     // public methods
-    namespace("loader", linkElements);
+    namespace("loader", startLoader);
+
+    /**
+     * Function managing objects.
+     */
+    function startLoader() {
+        linkElements();
+    }
 
     /**
      * Linking elements with a function.

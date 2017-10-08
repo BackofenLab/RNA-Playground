@@ -53,7 +53,7 @@ Author: Alexander Mattheis
 
     /**
      * Linking static elements with a function.
-     * @param visualViewmodel - Model which is used for example to highlight cells.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
      */
     function linkElements(visualViewmodel) {
         fixBrowserBugs();
@@ -102,7 +102,7 @@ Author: Alexander Mattheis
             "calculationVerticalTable": calculationVertical,
             "selectableEntryClass": selectableEntryClass,
             "visualViewmodel": visualViewmodel,
-            "number": 0
+            "number": MATRICES.VERTICAL_NUMBER
         };
         calculationVertical.on("click", selectableEntryClass, functionArguments, selectCell);
 
@@ -112,7 +112,7 @@ Author: Alexander Mattheis
             "calculationVerticalTable": calculationVertical,
             "selectableEntryClass": selectableEntryClass,
             "visualViewmodel": visualViewmodel,
-            "number": 1
+            "number": MATRICES.DEFAULT_NUMBER
         };
         calculation.on("click", selectableEntryClass, functionArguments, selectCell);
 
@@ -122,7 +122,7 @@ Author: Alexander Mattheis
             "calculationVerticalTable": calculationVertical,
             "selectableEntryClass": selectableEntryClass,
             "visualViewmodel": visualViewmodel,
-            "number": 2
+            "number": MATRICES.HORIZONTAL_NUMBER
         };
         calculationHorizontal.on("click", selectableEntryClass, functionArguments, selectCell);
 
@@ -131,7 +131,7 @@ Author: Alexander Mattheis
             "calculationTable": calculation,
             "calculationHorizontalTable": calculationHorizontal,
             "calculationVerticalTable": calculationVertical,
-            "number": 0
+            "number": MATRICES.VERTICAL_NUMBER
         };
         tableVerticalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
 
@@ -139,7 +139,7 @@ Author: Alexander Mattheis
             "calculationTable": calculation,
             "calculationHorizontalTable": calculationHorizontal,
             "calculationVerticalTable": calculationVertical,
-            "number": 1
+            "number": MATRICES.DEFAULT_NUMBER
         };
         tableDownload.on("click", functionArguments, visualViewmodel.downloadTable);
 
@@ -147,7 +147,7 @@ Author: Alexander Mattheis
             "calculationTable": calculation,
             "calculationHorizontalTable": calculationHorizontal,
             "calculationVerticalTable": calculationVertical,
-            "number": 2
+            "number": MATRICES.HORIZONTAL_NUMBER
         };
         tableHorizontalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
 
@@ -352,10 +352,10 @@ Author: Alexander Mattheis
 
     /**
      * Updates the user interfaces of the loaded page.
-     * @param algorithm - Algorithm used to update the user interface.
-     * @param viewmodels - The viewmodels used to access visualization functions.
-     * @param processInput - Function from the algorithm which should process the input.
-     * @param changeOutput - Function from the algorithm which should change the output after processing the input.
+     * @param algorithm {Object} - Algorithm used to update the user interface.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @param processInput {Function} - Function from the algorithm which should process the input.
+     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
      */
     function updateGUI(algorithm, viewmodels, processInput, changeOutput) {
         var inputs = $("#algorithm_input").find("input");
@@ -416,10 +416,10 @@ Author: Alexander Mattheis
 
     /**
      * Processes entered inputs with an algorithm to update the outputs.
-     * @param algorithm - Algorithm used to update the user interface.
-     * @param viewmodels - The viewmodel used to access visualization functions and input.
-     * @param processInput - Function from the algorithm which should process the input.
-     * @param changeOutput - Function from the algorithm which should change the output after processing the input.
+     * @param algorithm {Object} - Algorithm used to update the user interface.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @param processInput {Function} - Function from the algorithm which should process the input.
+     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
      */
     function updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput) {
         setTimeout(function () {  // to avoid using not updated values
@@ -431,9 +431,9 @@ Author: Alexander Mattheis
 
     /**
      * Post edits a matrix and replaces for example values with LaTeX-symbols.
-     * @param matrix - Matrix in which you want replace values with for example LaTeX-symbols.
-     * @param visualViewmodel - The model for visualization which is replacing symbols.
-     * @return {Array} - Matrix in which symbols where replaced with LaTeX-symbols.
+     * @param matrix {matrix} - The matrix in which you want replace values with for example LaTeX-symbols.
+     * @param visualViewmodel {Object} - The model for visualization which is replacing symbols.
+     * @return {matrix} - The matrix in which symbols where replaced with LaTeX-symbols.
      */
     function postEdit(matrix, visualViewmodel) {
         return visualViewmodel.replaceInfinityStrings(matrix);

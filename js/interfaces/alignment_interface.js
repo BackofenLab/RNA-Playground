@@ -14,6 +14,10 @@ Author: Alexander Mattheis
     // instances
     var alignmentInterfaceInstance;
 
+    /**
+     * Is used to work with the input and output (the interface) of an alignment algorithm.
+     * @constructor
+     */
     function AlignmentInterface() {
         alignmentInterfaceInstance = this;
         this.imports = imports;
@@ -22,6 +26,9 @@ Author: Alexander Mattheis
         this.startProcessing = startProcessing;
     }
 
+    /**
+     * Function managing objects.
+     */
     function startAlignmentAlgorithm(Algorithm, algorithmName) {
         imports();
 
@@ -30,7 +37,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Manages all imported scripts.
+     * Handling imports.
      */
     function imports() {
         // third party libs
@@ -45,6 +52,13 @@ Author: Alexander Mattheis
         $.getScript(PATHS.BACKTRACKING);
     }
 
+    /**
+     * Interface Operations that are shared between algorithms to initialize and start an algorithm.
+     * @param Algorithm {Algorithm} - The alignment algorithm which has to be initialized and started.
+     * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
+     * @param processInput {Function} - Function from the algorithm which should process the input.
+     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
+     */
     function sharedInterfaceOperations(Algorithm, inputViewmodel, processInput, changeOutput) {
         var visualViewmodel = new postProcessing.visualizer.Visualizer();
 
@@ -100,8 +114,14 @@ Author: Alexander Mattheis
         );
     }
 
+    /**
+     * Returns the LaTeX-code for formulas of affine algorithms.
+     * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
+     * @param matrix {string} - The matrix for which you want display the formula.
+     * @return {string} - LaTeX code.
+     */
     function getFormula(algorithmName, viewmodel) {
-        var string = LATEX.MATH_REGION;
+        var string = LATEX.MATH_REGION;  // starting LaTeX math region
 
             if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
                 string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MAX;
@@ -118,7 +138,8 @@ Author: Alexander Mattheis
             else
                 string += SYMBOLS.EQUAL + LATEX.MIN;
 
-            string += LATEX.BEGIN_CASES;
+            string += LATEX.BEGIN_CASES;  // starting LaTeX case region
+                // Hint: -x and x with x is number should be right aligned -> LATEX.SPACE is added on positive numbers
                 string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
                 string += viewmodel.match() >= 0 ? LATEX.SPACE + viewmodel.match() : viewmodel.match();
                 string += SYMBOLS.AND + LATEX.FORMULA.MATCH + LATEX.NEW_LINE;
@@ -138,12 +159,21 @@ Author: Alexander Mattheis
                 if (algorithmName === ALGORITHMS.SMITH_WATERMAN)
                     string += LATEX.NEW_LINE + LATEX.FORMULA.ZERO;
 
-            string += LATEX.END_CASES;
+            string += LATEX.END_CASES;  // stopping LaTeX case region
 
-        string += LATEX.MATH_REGION;
+        string += LATEX.MATH_REGION;  // stopping LaTeX math region
         return string;
     }
 
+    /**
+     * Processing the input from the user.
+     * This function is executed by the Input-Processor
+     * and it is dependant on the algorithm.
+     * @param algorithm {Object} - Algorithm used to update the user interface.
+     * @param inputProcessor {Object} - The unit processing the input.
+     * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
+     * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
+     */
     function processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel) {
         visualViewmodel.removeAllContents();
 
@@ -167,17 +197,38 @@ Author: Alexander Mattheis
         startProcessing(algorithm, inputViewmodel, visualViewmodel);
     }
 
+    /**
+     * Start processing the input from the user by computing the algorithm output.
+     * @param algorithm {Object} - Algorithm used to update the user interface.
+     * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
+     * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
+     */
     function startProcessing(algorithm, inputViewmodel, visualViewmodel) {
         algorithm.setInput(inputViewmodel);
         var ioData = algorithm.compute();
         visualViewmodel.shareInformation(algorithm, ioData[0], ioData[1]);
     }
 
+    /**
+     * Binding Viewmodel-functions to InputProcessor elements.
+     * This allows for example to highlight a selected entry from a table.
+     * @param algorithm {Object} - The algorithm used to update the user interface.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @param inputProcessor {Object} - The unit processing the input.
+     * @param processInput {Function} - Function from the algorithm which should process the input.
+     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
+     */
     function linkInputWithOutput(algorithm, viewmodels, inputProcessor, processInput, changeOutput) {
         inputProcessor.linkElements(viewmodels.visual);
         inputProcessor.updateGUI(algorithm, viewmodels, processInput, changeOutput);
     }
 
+    /**
+     * Changes the output after processing the input.
+     * @param outputData {Object} - Contains all output data.
+     * @param inputProcessor {Object} - The unit processing the input.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     */
     function changeOutput(outputData, inputProcessor, viewmodels) {
         viewmodels.output.matrix(outputData.matrix);
 
@@ -198,6 +249,16 @@ Author: Alexander Mattheis
     }
 
     /*---- OUTPUT ----*/
+    /**
+     * In the Model-View-Viewmodel, the view (HTML-page) is filled with data from
+     * outside with the help of the viewmodel (here: OutputViewmodel)
+     * by getting data from a model (here: outputData).
+     * This OutputViewmodel is shared by the different alignment algorithms.
+     * @param algorithmName
+     * @param outputData {Object} - Contains all output data.
+     * @constructor
+     * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
+     */
     function OutputViewmodel(algorithmName, outputData) {
         var viewModel = this;
 
@@ -206,8 +267,7 @@ Author: Alexander Mattheis
         for (var i = 0; i < outputData.matrix.length; i++)
             this.matrix[i] = ko.observableArray(outputData.matrix[i]);
 
-
-        if (algorithmName === ALGORITHMS.GOTOH) {
+        if (algorithmName === ALGORITHMS.GOTOH) {  // special cases regarding possible algorithms
             this.horizontalGaps = ko.observableArray(outputData.horizontalGaps);
             this.verticalGaps = ko.observableArray(outputData.verticalGaps);
 
@@ -223,6 +283,12 @@ Author: Alexander Mattheis
         this.moreTracebacks = ko.observable(outputData.moreTracebacks);
     }
 
+    /**
+     * Post edits a matrix and replaces for example values with LaTeX-symbols.
+     * @param inputProcessor {Object} - The unit processing the input.
+     * @param outputData {Object} - Contains all output data.
+     * @return outputData {Object} - Changed output data.
+     */
     function edit(algorithmName, inputProcessor, outputData, visualViewmodel) {
         if (algorithmName === ALGORITHMS.GOTOH) {
             outputData.horizontalGaps = inputProcessor.postEdit(outputData.horizontalGaps, visualViewmodel);

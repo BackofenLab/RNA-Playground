@@ -77,7 +77,7 @@ $(document).ready(function () {
      * Sets the algorithm input and output for calculation.
      * @param input {Object} - The input structure.
      * @param output {Object} - The output structure.
-     * @augments Alignment
+     * @augments Alignment.setIO(input, output)
      */
     function setIO(input, output) {
         alignmentInstance.setIO(input, output);
@@ -85,7 +85,7 @@ $(document).ready(function () {
 
     /**
      * Starts computation by starting the superclass computation.
-     * @augments Alignment
+     * @augments Alignment.compute()
      */
     function compute() {
         return alignmentInstance.compute();
@@ -175,7 +175,7 @@ $(document).ready(function () {
     /**
      * Gets tracebacks by starting the traceback procedure
      * with some path containing the first element of the path.
-     * @param path {Array} - Array containing the first vector element from which on you want find the full path.
+     * @param path {Array} - Array containing the first vector element from which on you want find a path.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @param pathLength {number} - Tells after how many edges the procedure should stop.
@@ -197,7 +197,7 @@ $(document).ready(function () {
      * with special stop criteria on the matrix cells as path-nodes.
      * @param backtracking {Object} - Allows to call up cell neighbours.
      * @param paths {Array} - Array of paths.
-     * @param path - Array containing the first vector element from which on you want find the full path.
+     * @param path {Array} - Array containing the first vector element from which on you want find a path.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @param pathLength {number} - Tells after how many edges the procedure should stop.

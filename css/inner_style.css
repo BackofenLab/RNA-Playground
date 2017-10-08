@@ -247,6 +247,9 @@ small {
 #calculation_vertical td, #calculation_vertical th {
     border: solid 1px #a0a0a0;
     border-width: 1px 0 1px 1px;
+    /*
+    min- and max values avoid cell shrinking when the table is growing
+     */
     max-height: 24px;
     max-width: 32px;
     min-height: 24px;

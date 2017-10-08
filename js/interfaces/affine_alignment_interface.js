@@ -15,6 +15,11 @@ Author: Alexander Mattheis
     var alignmentInterfaceInstance;
     var affineAlignmentInterfaceInstance;
 
+    /**
+     * Is used to work with the input and output (the interface) of an affine alignment algorithm.
+     * @constructor
+     * @augments AlignmentInterface
+     */
     function AffineAlignmentInterface() {
         affineAlignmentInterfaceInstance = this;
 
@@ -25,6 +30,9 @@ Author: Alexander Mattheis
         this.startAffineAlignmentAlgorithm = startAffineAlignmentAlgorithm;
     }
 
+    /**
+     * Function managing objects.
+     */
     function startAffineAlignmentAlgorithm(Algorithm) {
         imports();
 
@@ -33,7 +41,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Manages all imported scripts.
+     * Handling imports.
      */
     function imports() {
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
@@ -65,6 +73,7 @@ Author: Alexander Mattheis
         this.match = ko.observable(AFFINE_ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
         this.mismatch = ko.observable(AFFINE_ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
 
+        // displayed dynamic formulas
         this.gapStart = ko.computed(
             function () {
                 return Number(viewmodel.baseCosts()) + Number(viewmodel.enlargement());
@@ -120,9 +129,16 @@ Author: Alexander Mattheis
         );
     }
 
+    /**
+     * Returns the LaTeX-code for formulas of affine algorithms.
+     * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
+     * @param matrix {string} - The matrix for which you want display the formula.
+     * @return {string} - LaTeX code.
+     */
     function getFormula(viewmodel, matrix) {
-        var string = LATEX.MATH_REGION;
+        var string = LATEX.MATH_REGION;  // starting LaTeX math region
 
+            // differentiate between formulas and writing code for static one
             switch (matrix) {
                 case MATRICES.VERTICAL:
                     string += LATEX.FORMULA.CURRENT_P;
@@ -134,11 +150,13 @@ Author: Alexander Mattheis
                     string += LATEX.FORMULA.CURRENT;
             }
 
+            // look if we maximize or minimize
             if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
                 string += SYMBOLS.EQUAL + LATEX.MAX;
             else
                 string += SYMBOLS.EQUAL + LATEX.MIN;
 
+        // differentiate between formulas and writing code for dynamic one
             switch (matrix) {
                 case MATRICES.VERTICAL:
                     string += LATEX.RECURSION.GOTOH_P;
@@ -153,23 +171,32 @@ Author: Alexander Mattheis
                     string += getDynamicFormula(viewmodel, matrix);
             }
 
-        string += LATEX.MATH_REGION;
+        string += LATEX.MATH_REGION;  // stopping LaTeX math region
         return string;
     }
 
+    /**
+     * Returns the LaTeX-code for dynamic, input-dependant formulas of affine algorithms.
+     * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
+     * @param matrix {string} - The matrix for which you want display the formula.
+     * @return {string} - LaTeX code.
+     */
     function getDynamicFormula(viewmodel, matrix) {
         var string = SYMBOLS.EMPTY;
 
         var gapStart = viewmodel.gapStart();
         var gapExtension = viewmodel.enlargement();
 
+        // look if we maximize or minimize
         if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
             string += SYMBOLS.EQUAL + LATEX.MAX;
         else
             string += SYMBOLS.EQUAL + LATEX.MIN;
 
-        string += LATEX.BEGIN_CASES;
+        string += LATEX.BEGIN_CASES;  // starting LaTeX case region
 
+            // differentiate between formulas and writing code for dynamic one
+            // Hint: -x and x with x is number should be right aligned -> LATEX.SPACE is added on positive numbers
             switch (matrix) {
                 case MATRICES.VERTICAL:
                     string += LATEX.FORMULA.TOP + LATEX.ALIGNED_PLUS;
@@ -201,11 +228,16 @@ Author: Alexander Mattheis
                     string += LATEX.FORMULA.CURRENT_Q;
             }
 
-        string += LATEX.END_CASES;
+        string += LATEX.END_CASES;  // stopping LaTeX case region
 
         return string;
     }
 
+    /**
+     * Returns the LaTeX-code for sub-formulas like gap-functions of affine algorithms.
+     * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
+     * @return {string} - LaTeX code.
+     */
     function getSubformula(viewmodel) {
         var string = LATEX.MATH_REGION;
 
@@ -223,6 +255,15 @@ Author: Alexander Mattheis
         return string;
     }
 
+    /**
+     * Processing the input from the user.
+     * This function is executed by the Input-Processor
+     * and it is dependant on the algorithm.
+     * @param algorithm {Object} - Algorithm used to update the user interface.
+     * @param inputProcessor {Object} - The unit processing the input.
+     * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
+     * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
+     */
     function processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel) {
         visualViewmodel.removeAllContents();
 
@@ -246,6 +287,12 @@ Author: Alexander Mattheis
         alignmentInterfaceInstance.startProcessing(algorithm, inputViewmodel, visualViewmodel);
     }
 
+    /**
+     * Changes the output after processing the input.
+     * @param outputData {Object} - Contains all output data.
+     * @param inputProcessor {Object} - The unit processing the input.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     */
     function changeOutput(outputData, inputProcessor, viewmodels) {
         viewmodels.output.matrix(outputData.matrix);
         viewmodels.output.horizontalGaps(edit(inputProcessor, outputData.horizontalGaps, viewmodels));
@@ -272,6 +319,14 @@ Author: Alexander Mattheis
         viewmodels.output.moreTracebacks(outputData.moreTracebacks);
     }
 
+    /**
+     * Post edits a matrix and replaces for example values with LaTeX-symbols.
+     * @param inputProcessor {Object} - The unit processing the input.
+     * @param matrix {matrix} - The matrix in which you want replace values with for example LaTeX-symbols.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @return {matrix} - The matrix in which symbols where replaced with LaTeX-symbols.
+     * @augments AlignmentInterface.edit(inputProcessor, matrix, viewmodels)
+     */
     function edit(inputProcessor, matrix, viewmodels) {
         return inputProcessor.postEdit(matrix, viewmodels.visual);
     }

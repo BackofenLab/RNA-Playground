@@ -22,6 +22,7 @@ Author: Alexander Mattheis
     /**
      * Contains functions to compute optimal alignments.
      * It is used by algorithms global and local alignment algorithms as superclass.
+     * @param child - The child algorithm which inherits from this class.
      * @constructor
      */
     function Alignment(child) {

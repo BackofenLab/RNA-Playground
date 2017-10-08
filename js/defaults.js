@@ -191,12 +191,15 @@ var LATEX = {
 };
 
 /**
- * Stores strings for matrix types used in the program.
+ * Stores strings, numbers to access matrices used in the program.
  */
 var MATRICES = {
     DEFAULT: "D",
+    DEFAULT_NUMBER: 1,
     HORIZONTAL: "Q",
-    VERTICAL: "P"
+    HORIZONTAL_NUMBER: 2,
+    VERTICAL: "P",
+    VERTICAL_NUMBER: 0
 };
 
 /**
@@ -288,14 +291,14 @@ var SVG = {
 
         BOUNDS: {
             HEIGHT: "4",
-            REF_X: "0",
-            REF_Y: "4",
+            REF_X: "0",  // relative marker coordinate
+            REF_Y: "4",  // relative marker coordinate
             WIDTH: "4"
         },
     },
 
     TRIANGLE : {
-        D: "M 0 0 L 0 8 L 8 4 z"
+        D: "M 0 0 L 0 8 L 8 4 z"  // M: move to, L: line to
     }
 };
 
