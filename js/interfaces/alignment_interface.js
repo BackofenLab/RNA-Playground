@@ -84,6 +84,7 @@ Author: Alexander Mattheis
      * In the Model-View-Viewmodel, the view (HTML-page) is filled with data from
      * outside with the help of the viewmodel (here: InputViewmodel)
      * by getting data from a model (here: ALIGNMENT_DEFAULTS).
+     * @param algorithmName {string} - The name of the algorithm.
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      * @constructor
      */
@@ -116,8 +117,8 @@ Author: Alexander Mattheis
 
     /**
      * Returns the LaTeX-code for formulas of affine algorithms.
+     * @param algorithmName {string} - The name of the algorithm.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
-     * @param matrix {string} - The matrix for which you want display the formula.
      * @return {string} - LaTeX code.
      */
     function getFormula(algorithmName, viewmodel) {

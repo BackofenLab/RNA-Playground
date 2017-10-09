@@ -14,15 +14,21 @@ Author: Alexander Mattheis
         The problem with
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a>
         was that it does not produce
-        biologically relevant alignments.
-        Alignments had too many gaps
-        and by this reason, the
+        biologically relevant alignments and
+        the more realistic algorithm
+        <a href="https://doi.org/10.1016/0001-8708(76)90202-4">Waterman-Smith-Beyer (1976)</a>
+        was too slow. And by this reason a compromise was made.
         <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Gotoh</a>
-        algorithm was introduced.
-        In this algorithm, the number of gap starts is minimized
+        is not that realistic like <a href="https://doi.org/10.1016/0001-8708(76)90202-4">Waterman-Smith-Beyer</a>,
+        but it has the same asymptotic runtime like
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>
+        and so it can be used practically.
+        <br>
+        <br>
+        In the
+        <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Gotoh</a>
+        algorithm, the number of gap starts is minimized
         to get biologically better alignments.
-        <br>
-        <br>
         This done by introducing two additional matrices $P$ and $Q$
         (which are storing the vertical and horizontal gap costs)
         and a new recursion function $D_{i,j}$
@@ -69,7 +75,7 @@ Author: Alexander Mattheis
                 Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
                 Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
                 Base Costs $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
-                Enlargement $\delta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
+                Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
             </span>
         </p>
 
@@ -92,9 +98,9 @@ Author: Alexander Mattheis
             <div class="group_hint">
                 <b>Hint:</b> <br>
                 If similarity is checked,
-                then match values should be positive and every other value lower or equal zero. <br>
+                then match values should be positive or zero and every other value lower or equal zero. <br>
                 And if distance is checked,
-                then match values should be negative and every other value higher or equal zero.
+                then match values should be negative or zero and every other value higher or equal zero.
             </div>
         </p>
     </form>
@@ -283,7 +289,7 @@ Author: Alexander Mattheis
                 <table id="results">
                     <tbody>
                         <!-- ko foreach: $root.output.alignments -->
-                            <!-- ko if: $index() < 4 -->
+                            <!-- ko if: $index() < 10 -->
                                 <!-- ko if: $index() == 0 -->
                                     <tr>
                                         <td class="selectable_entry selectable_entry_start">

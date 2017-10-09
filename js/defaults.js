@@ -26,28 +26,13 @@ var UNIT_TEST_WEBTITLE = "Console Runner";  // title of the Unit-test site
 
 // structs
 /**
- * Stores the default parameters for affine alignment algorithms.
- */
-var AFFINE_ALIGNMENT_DEFAULTS = {
-    CALCULATION: "similarity",
-    SEQUENCE_1: "CCGA",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "CG",  // hint: UPPERCASE letters!
-
-    FUNCTION: {
-        BASE_COSTS: -3,
-        ENLARGEMENT: -1,
-        MATCH: 1,
-        MISMATCH: -1
-    }
-};
-
-/**
- * Stores the implemented algorithms.
+ * Stores the implemented algorithm names.
  */
 var ALGORITHMS = {  // contains a list of all implemented algorithms
     GOTOH: "gotoh",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
-    SMITH_WATERMAN: "smith_waterman"
+    SMITH_WATERMAN: "smith_waterman",
+    WATERMAN_SMITH_BEYER: "waterman_smith_beyer"
 };
 
 /**
@@ -123,15 +108,20 @@ var KEY_CODES = {
  */
 var LATEX = {
     ALIGNED_PLUS: "& + &",
+    ALPHA: "\\alpha",
     BEGIN_CASES: "\\begin{cases}",
+    BETA: "\\beta",
+    DOT: "\\cdot",
     END_CASES: "\\end{cases}",
-    NEGATIVE_INFINITY: "-$\\infty$",    // LaTeX
-    POSITIVE_INFINITY: "$\\infty$",     // LaTeX
+    FACTOR: " k",
+    LN: "\\ln",
     MATH_REGION: "$",
     MAX: "\\max",
     MIN: "\\min",
-    MULTIPLIER: "k \\cdot",
+    NEGATIVE_INFINITY: "-$\\infty$",
     NEW_LINE: "\\\\",
+    POSITIVE_INFINITY: "$\\infty$",
+    POW2: "^2",
     SPACE: "\\phantom{-}",
 
     FORMULA: {
@@ -141,9 +131,14 @@ var LATEX = {
         DELETION: "b_j = -",
         DIAGONAL: "D_{i-1,j-1}",
         INSERTION: "a_i = -",
+        GAP: "g(k)",
         LEFT: "D_{i,j-1}",
         LEFT_Q: "Q_{i,j-1}",
         MATCH: "a_i = b_j",
+        MAXIMIZE_HORIZONTAL: "\\displaystyle \\max_{1 \\leq k \\leq j} \\{D_{i,j-k} & + & g(k) \\}",
+        MAXIMIZE_VERTICAL: "\\displaystyle \\max_{1 \\leq k \\leq j} \\{D_{i-k,j} & + & g(k) \\}",
+        MINIMIZE_HORIZONTAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i,j-k} & + & g(k) \\}",
+        MINIMIZE_VERTICAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i-k,j} & + & g(k) \\}",
         MISMATCH: "a_i \\neq b_j",
         TOP: "D_{i-1,j}",
         TOP_P: "P_{i-1,j}",
@@ -161,17 +156,17 @@ var LATEX = {
         GOTOH_P:
         "\\begin{cases}"                            +
         "D_{i-1,j}      & + & g(1)		    \\\\"   +
-        "P_{i-1,j}      & + & \\delta"              +
+        "P_{i-1,j}      & + & \\beta"              +
   	    "\\end{cases}",
 
         GOTOH_Q:
         "\\begin{cases}"                            +
         "D_{i,j-1}      & + & g(1)		    \\\\"   +
-        "Q_{i,j-1}      & + & \\delta"              +
+        "Q_{i,j-1}      & + & \\beta"              +
         "\\end{cases}",
 
         GOTOH_GAP_FUNCTION:
-        "g(k) = k \\cdot \\delta + \\alpha",
+        "g(k) = \\alpha + \\beta \\cdot k",
 
         NEEDLEMAN_WUNSCH:
         "\\begin{cases}"                            +
@@ -186,7 +181,21 @@ var LATEX = {
         "D_{i-1,j}      & + & s(a_i,-)      \\\\"   +
         "D_{i,j-1} 		& + & s(-,b_j)      \\\\"   +
         "0"                                         +
-        "\\end{cases}"
+        "\\end{cases}",
+
+        WATERMAN_SMITH_BEYER_MIN:
+        "\\begin{cases}"                                                                                                +
+        "\\displaystyle     \\min_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\"           +
+        "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]"      +
+        "\\displaystyle     \\min_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}"                  +
+        "\\end{cases}",
+
+        WATERMAN_SMITH_BEYER_MAX:
+        "\\begin{cases}"                                                                                                +
+        "\\displaystyle     \\max_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\"           +
+        "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]"      +
+        "\\displaystyle     \\max_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}"                  +
+        "\\end{cases}",
     }
 };
 
@@ -224,11 +233,11 @@ var MULTI_SYMBOLS = {
  * Stores all class paths and some library paths.
  */
 var PATHS = {
-    AFFINE_ALIGNMENT_INTERFACE: "js/interfaces/affine_alignment_interface.js",
     ALIGNMENT: "js/procedures/bases/alignment.js",
     ALIGNMENT_INTERFACE: "js/interfaces/alignment_interface.js",
     BACKTRACKING: "js/procedures/backtracking.js",
     INPUT_PROCESSOR: "js/post_processing/input_processor.js",
+    SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js",
     VISUALIZER: "js/post_processing/visualizer.js",
 
     LIBS: {
@@ -249,6 +258,32 @@ var SUB = {
     END_TAGS: /<\/sub>/g,
     START_TAG: "<sub>",
     START_TAGS: /<sub>/g
+};
+
+/**
+ * Stores the default parameters for subadditive alignment algorithms.
+ */
+var SUBADDITIVE_ALIGNMENT_DEFAULTS = {
+    CALCULATION: "similarity",
+    GAP_FUNCTION: "affine",
+    SEQUENCE_1: "CCGA",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "CG",  // hint: UPPERCASE letters!
+
+    FUNCTION: {
+        BASE_COSTS: -3,
+        ENLARGEMENT: -1,
+        MATCH: 1,
+        MISMATCH: -1
+    }
+};
+
+/**
+ * Stores subadditive function names.
+ */
+var SUBADDITIVE_FUNCTIONS = {
+    AFFINE: "affine",
+    LOGARITHMIC: "logarithmic",
+    QUADRATIC: "quadratic"
 };
 
 /**

@@ -12,7 +12,9 @@ load:
   - js/gotoh.js
   - js/needleman_wunsch.js
   - js/smith_waterman.js
+  - js/waterman_smith_beyer.js
 test:
   - js/tests/test_gotoh.js
   - js/tests/test_needleman_wunsch.js
   - js/tests/test_smith_waterman.js
+  - js/tests/test_waterman_smith_beyer.js

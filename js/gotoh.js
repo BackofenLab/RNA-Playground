@@ -11,7 +11,6 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    debugger;
     if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
         gotoh.startGotoh();
 });
@@ -34,21 +33,22 @@ $(document).ready(function () {
     function startGotoh() {
         imports();
 
-        var affineAlignmentInterface = new interfaces.affineAlignmentInterface.AffineAlignmentInterface();
-        affineAlignmentInterface.startAffineAlignmentAlgorithm(Gotoh);
+        var subadditiveAlignmentInterface = new interfaces.subadditiveAlignmentInterface.SubadditiveAlignmentInterface();
+        subadditiveAlignmentInterface.startSubadditiveAlignmentAlgorithm(Gotoh, ALGORITHMS.GOTOH);
     }
 
     /**
      * Handling imports.
      */
     function imports() {
-        $.getScript(PATHS.AFFINE_ALIGNMENT_INTERFACE);
+        $.getScript(PATHS.SUBADDITIVE_ALIGNMENT_INTERFACE);
     }
 
     /*---- ALGORITHM ----*/
     /**
      * Computes the optimal, global affine alignment.
      * @constructor
+     * @augments Alignment
      */
     function Gotoh() {
         gotohInstance = this;
@@ -205,7 +205,6 @@ $(document).ready(function () {
 
     /**
      * Computes the matrix by using the recursion function and the score.
-     * @override Alignment.computeMatrixAndScore()
      */
     function computeMatricesAndScore() {
         // going through every matrix cell
@@ -215,7 +214,10 @@ $(document).ready(function () {
             for (var j = 1; j < inputData.matrixWidth; j++) {
                 var aChar = inputData.sequenceA[j - 1];
 
-                outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j);
+                if (inputData.calculationType === ALIGNMENT_TYPES.DISTANCE)
+                    outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.min);
+                else  // inputData.calculationType === ALIGNMENT_TYPES.SIMILARITY
+                    outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.max);
             }
         }
 
@@ -229,49 +231,47 @@ $(document).ready(function () {
      * @param bChar {string} - The current char from the second string.
      * @param i {number} - The current vertical position in the matrix.
      * @param j {number} - The current horizontal position in the matrix.
+     * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
      * @return {number} - The value for the cell at position (i,j).
      */
-    function recursionFunction(aChar, bChar, i, j) {
+    function recursionFunction(aChar, bChar, i, j, optimum) {
         var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
 
-        var value;
+        // gap recursion-functions
+        outputData.horizontalGaps[i][j] = horizontalOptimum(optimum, i, j);
+        outputData.verticalGaps[i][j] = verticalOptimum(optimum, i, j);
 
-        if (inputData.calculationType === ALIGNMENT_TYPES.DISTANCE) {
-            // horizontal recursion-function
-            outputData.horizontalGaps[i][j] = Math.min(
-                outputData.horizontalGaps[i][j - 1] + inputData.enlargement,
-                outputData.matrix[i][j - 1] + inputData.baseCosts + inputData.enlargement);
+        // default matrix recursion function
+        return optimum(
+            outputData.horizontalGaps[i][j],
+            outputData.matrix[i - 1][j - 1] + matchOrMismatch,
+            outputData.verticalGaps[i][j]);
+    }
 
-            // vertical recursion-function
-            outputData.verticalGaps[i][j] = Math.min(
-                outputData.verticalGaps[i - 1][j] + inputData.enlargement,
-                outputData.matrix[i - 1][j] + inputData.baseCosts + inputData.enlargement);
+    /**
+     * Computes the cell score for the horizontal gap matrix.
+     * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
+     * @param i {number} - The current vertical position in the matrix.
+     * @param j {number} - The current horizontal position in the matrix.
+     * @return {number} - The optimal value.
+     */
+    function horizontalOptimum(optimum, i, j) {
+        return optimum(
+            outputData.horizontalGaps[i][j - 1] + inputData.enlargement,
+            outputData.matrix[i][j - 1] + inputData.baseCosts + inputData.enlargement);
+    }
 
-            // default matrix recursion function
-            value = Math.min(
-                outputData.horizontalGaps[i][j],
-                outputData.matrix[i - 1][j - 1] + matchOrMismatch,
-                outputData.verticalGaps[i][j]);
-        }
-        else {  // inputData.calculationType === ALIGNMENT_TYPES.SIMILARITY
-            // horizontal recursion-function
-            outputData.horizontalGaps[i][j] = Math.max(
-                outputData.horizontalGaps[i][j - 1] + inputData.enlargement,
-                outputData.matrix[i][j - 1] + inputData.baseCosts + inputData.enlargement);
-
-            // vertical recursion-function
-            outputData.verticalGaps[i][j] = Math.max(
-                outputData.verticalGaps[i - 1][j] + inputData.enlargement,
-                outputData.matrix[i - 1][j] + inputData.baseCosts + inputData.enlargement);
-
-            // default matrix recursion function
-            value = Math.max(
-                outputData.horizontalGaps[i][j],
-                outputData.matrix[i - 1][j - 1] + matchOrMismatch,
-                outputData.verticalGaps[i][j]);
-        }
-
-        return value;
+    /**
+     * Computes the cell score for the vertical gap matrix.
+     * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
+     * @param i {number} - The current vertical position in the matrix.
+     * @param j {number} - The current horizontal position in the matrix.
+     * @return {number} - The optimal value.
+     */
+    function verticalOptimum(optimum, i, j) {
+        return optimum(
+            outputData.verticalGaps[i - 1][j] + inputData.enlargement,
+            outputData.matrix[i - 1][j] + inputData.baseCosts + inputData.enlargement);
     }
 
     /**

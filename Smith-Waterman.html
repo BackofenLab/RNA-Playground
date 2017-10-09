@@ -96,9 +96,9 @@ Author: Alexander Mattheis
             <div class="group_hint">
                 <b>Hint:</b> <br>
                 If similarity is checked,
-                then match values should be positive and every other value lower or equal zero. <br>
+                then match values should be positive or zero and every other value lower or equal zero. <br>
                 And if distance is checked,
-                then match values should be negative and every other value higher or equal zero.
+                then match values should be negative or zero and every other value higher or equal zero.
             </div>
         </p>
     </form>
@@ -176,7 +176,7 @@ Author: Alexander Mattheis
                 <table id="results">
                     <tbody>
                         <!-- ko foreach: $root.output.alignments -->
-                            <!-- ko if: $index() < 4 -->
+                            <!-- ko if: $index() < 10 -->
                                 <!-- ko if: $index() == 0 -->
                                     <tr>
                                         <td class="selectable_entry selectable_entry_start">

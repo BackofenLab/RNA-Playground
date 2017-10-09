@@ -9,7 +9,8 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("procedures.backtracking", Vector, Backtracking, getNeighboured, getMultiNeighboured);
+    namespace("procedures.backtracking", Vector, Backtracking,
+        getNeighboured, getMultiNeighboured, getJumpingNeighboured);
 
     /**
      * Creates a vector with a label, which is by the default the default matrix label.
@@ -43,6 +44,7 @@ Author: Alexander Mattheis
     function Backtracking() {
         this.getNeighboured = getNeighboured;
         this.getMultiNeighboured = getMultiNeighboured;
+        this.getJumpingNeighboured = getJumpingNeighboured;
     }
 
     /**
@@ -52,6 +54,7 @@ Author: Alexander Mattheis
      * @param outputData {Object} - Contains all output data.
      * @param algorithm {Object} - Contains an alignment algorithm.
      * @return {Array} - Contains neighboured positions as Vector-objects.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function getNeighboured(position, inputData, outputData, algorithm) {
         var neighboured = [];
@@ -101,9 +104,9 @@ Author: Alexander Mattheis
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @return {Array} - Contains neighboured positions as Vector-objects.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function getMultiNeighboured(position, inputData, outputData) {
-        debugger;
         var neighboured = [];
 
         if (position.label === MATRICES.VERTICAL)
@@ -122,9 +125,9 @@ Author: Alexander Mattheis
 
         var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
 
-        var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : NaN;
-        var verticalValue = up >= 0 ? outputData.verticalGaps[position.i][position.j] : NaN;
-        var horizontalValue = left >= 0 ? outputData.horizontalGaps[position.i][position.j] : NaN;
+        var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : Number.NaN;
+        var verticalValue = up >= 0 ? outputData.verticalGaps[position.i][position.j] : Number.NaN;
+        var horizontalValue = left >= 0 ? outputData.horizontalGaps[position.i][position.j] : Number.NaN;
 
         var upValue = up >= 0 && position.j === 0 ? outputData.matrix[up][position.j] : Number.NaN;
         var leftValue = left >= 0 && position.i === 0 ? outputData.matrix[position.i][left] : Number.NaN;
@@ -166,6 +169,7 @@ Author: Alexander Mattheis
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @return {Array} - Contains neighboured positions as Vector-objects.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function getVerticalNeighboured(position, inputData, outputData) {
         var neighboured = [];
@@ -203,6 +207,7 @@ Author: Alexander Mattheis
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @return {Array} - Contains neighboured positions as Vector-objects.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function getHorizontalNeighboured(position, inputData, outputData) {
         var neighboured = [];
@@ -232,5 +237,98 @@ Author: Alexander Mattheis
             neighboured.push(create(new Vector(position.i, left), MATRICES.DEFAULT));
 
         return neighboured;
+    }
+
+    /**
+     * Returns the neighbours to which you can go from the current cell position used as input.
+     * @param position {Vector} - Current cell position in matrix.
+     * @param algorithm {Object} - Contains an alignment algorithm.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     */
+    function getJumpingNeighboured(position, algorithm, inputData, outputData) {
+        var neighboured = [];
+
+        var left = position.j - 1;
+        var up = position.i - 1;
+
+        // retrieve values
+        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
+        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
+
+        var currentValue = outputData.matrix[position.i][position.j];
+
+        var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
+        var horizontalK = searchHorizontalMatchPosition(algorithm, currentValue, position, outputData);
+        var verticalK = searchVerticalMatchPosition(algorithm, currentValue, position, outputData);
+
+        var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : Number.NaN;
+        var upValue = up >= 0 && position.j === 0 ? outputData.matrix[up][position.j] : Number.NaN;
+        var leftValue = left >= 0 && position.i === 0 ? outputData.matrix[position.i][left] : Number.NaN;
+
+        // check
+        var isMatchMismatch = currentValue === (diagonalValue + matchOrMismatch);
+        var isHorizontal = !isNaN(horizontalK);  // if a position exists to which we can horizontally jump
+        var isVertical = !isNaN(verticalK);  // if a position exists to which we can vertically jump
+
+        var isDeletion = currentValue === upValue + inputData.enlargement;
+        var isInsertion = currentValue === leftValue + inputData.enlargement;
+
+        // add
+        if (isMatchMismatch)
+            neighboured.push(new Vector(up, left));
+
+        if (isHorizontal)
+            neighboured.push(new Vector(position.i, horizontalK));
+
+        if (isVertical)
+            neighboured.push(new Vector(verticalK, position.j));
+
+        if (isInsertion)
+            neighboured.push(create(new Vector(position.i, left), MATRICES.DEFAULT));
+
+        if (isDeletion)
+            neighboured.push(create(new Vector(up, position.j), MATRICES.DEFAULT));
+
+        if (!(isMatchMismatch || isHorizontal || isVertical || isInsertion || isDeletion)
+            && (position.i !== 0 || position.j !== 0))
+            neighboured.push(create(new Vector(0, 0), MATRICES.DEFAULT));
+
+        return neighboured;
+    }
+
+    /**
+     * Computes the vertical position from which you get to the currentValue.
+     * @param algorithm {Object} - Contains an alignment algorithm.
+     * @param currentValue - The value from the current cell.
+     * @param position {Vector} - Current cell position in matrix.
+     * @param outputData {Object} - Contains all output data.
+     * @return {number} - The matching position. You get back NaN if such position does not exists.
+     */
+    function searchVerticalMatchPosition(algorithm, currentValue, position, outputData) {
+        for (var k = 1; k < position.i; k++) {
+            if (outputData.matrix[position.i - k][position.j] + algorithm.gapFunction(k) === currentValue)
+                return position.i - k;
+        }
+
+        return Number.NaN;
+    }
+
+    /**
+     * Computes the horizontal position from which you get to the currentValue.
+     * @param algorithm {Object} - Contains an alignment algorithm.
+     * @param currentValue - The value from the current cell.
+     * @param position {Vector} - Current cell position in matrix.
+     * @param outputData {Object} - Contains all output data.
+     * @return {number} - The matching position. You get back NaN if such position does not exists.
+     */
+    function searchHorizontalMatchPosition(algorithm, currentValue, position, outputData) {
+        for (var k = 1; k < position.j; k++) {
+            if (outputData.matrix[position.i][position.j - k] + algorithm.gapFunction(k) === currentValue)
+                return position.j - k;
+        }
+
+        return Number.NaN;
     }
 }());

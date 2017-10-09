@@ -11,7 +11,6 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    debugger;
     if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
         smithWaterman.startSmithWaterman();
 });
@@ -40,13 +39,13 @@ $(document).ready(function () {
      */
     function imports() {
         $.getScript(PATHS.ALIGNMENT_INTERFACE);
-        $.getScript(PATHS.ALIGNMENT);
     }
 
     /*---- ALGORITHM ----*/
     /**
      * Computes the optimal, local alignment.
      * @constructor
+     * @augments Alignment
      */
     function SmithWaterman() {
         smithWatermanInstance = this;

@@ -39,13 +39,14 @@ $(document).ready(function () {
      */
     function imports() {
         $.getScript(PATHS.ALIGNMENT_INTERFACE);
-        $.getScript(PATHS.ALIGNMENT);
+        //$.getScript(PATHS.ALIGNMENT);
     }
 
     /*---- ALGORITHM ----*/
     /**
      * Computes the optimal, global alignment.
      * @constructor
+     * @augments Alignment
      */
     function NeedlemanWunsch() {
         needlemanWunschInstance = this;

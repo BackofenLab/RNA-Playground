@@ -164,29 +164,36 @@ Author: Alexander Mattheis
         // going through each element of the path and look on the differences between vectors
         // to find out the type of difference vector (arrow)
         for (var i = 1; i < path.length; i++) {
-            var aChar = inputData.sequenceA[currentPositionA];
-            var bChar = inputData.sequenceB[currentPositionB];
+            var horizontalDifference = path[i].j - path[i - 1].j;
+            var verticalDifference = path[i].i - path[i - 1].i;
 
-            if (path[i].i - path[i - 1].i > 0 && path[i].j - path[i - 1].j > 0) {  // diagonal case
+            if (verticalDifference === 1 && horizontalDifference === 1) {  // diagonal case
+                var aChar = inputData.sequenceA[currentPositionA];
+                var bChar = inputData.sequenceB[currentPositionB];
+
                 alignedSequenceA += aChar;
                 matchOrMismatchString += aChar === bChar ? SYMBOLS.STAR : SYMBOLS.VERTICAL_BAR;
                 alignedSequenceB += bChar;
 
                 currentPositionA++;
                 currentPositionB++;
-            } else if (path[i].j - path[i - 1].j > 0) {  // horizontal case
-                alignedSequenceA += aChar;
-                matchOrMismatchString += SYMBOLS.SPACE;
-                alignedSequenceB += SYMBOLS.GAP;
+            } else if (horizontalDifference > 0) {  // horizontal case
+                for (var k = 0; k < horizontalDifference; k++) {
+                    alignedSequenceA += inputData.sequenceA[currentPositionA];
+                    matchOrMismatchString += SYMBOLS.SPACE;
+                    alignedSequenceB += SYMBOLS.GAP;
 
-                currentPositionA++;
-            } else if (path[i].i - path[i-1].i > 0) {  // vertical case
+                    currentPositionA++;
+                }
+            } else if (verticalDifference > 0) {  // vertical case
                 // Hint: for Gotoh really "else if" is needed because you can switch between matrices
-                alignedSequenceA += SYMBOLS.GAP;
-                matchOrMismatchString += SYMBOLS.SPACE;
-                alignedSequenceB += bChar;
+                for (var k = 0; k < verticalDifference; k++) {
+                    alignedSequenceA += SYMBOLS.GAP;
+                    matchOrMismatchString += SYMBOLS.SPACE;
+                    alignedSequenceB += inputData.sequenceB[currentPositionB];
 
-                currentPositionB++;
+                    currentPositionB++;
+                }
             }
         }
 

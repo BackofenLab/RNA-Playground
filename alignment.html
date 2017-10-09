@@ -34,7 +34,7 @@ Hint:   Some Javascript algorithm-parts:
         </script> <!-- stores MathJax LaTeX-settings -->
 
         <!-- THIRD PARTY LIBS -->
-        <script src="js/libs/FileSaver.min.js"></script>
+        <script src="js/libs/FileSaver.min.js"></script> <!-- allows to save files on the desktop -->
         <script src="js/libs/knockout-3.4.2.js"></script> <!-- to easify dynamic UI creation -->
         <script src="js/libs/jquery.js"></script> <!-- to traverse and transform HTML -->
         <script type="text/javascript" async
@@ -43,8 +43,8 @@ Hint:   Some Javascript algorithm-parts:
         <script src="js/libs/namespace.js"></script> <!-- to create namespaces -->
 
         <!-- IO -->
-        <script src="js/interfaces/alignment_interface.js"></script>
-        <script src="js/interfaces/affine_alignment_interface.js"></script>
+        <script src="js/interfaces/alignment_interface.js"></script> <!-- stores viewmodels and interface functions of alignment algorithms -->
+        <script src="js/interfaces/subadditive_alignment_interface.js"></script> <!-- stores viewmodels and interface functions of subadditive alignment algorithms -->
 
         <!-- CONTROLS "DESIGN/CONTROLS LOGIC" -->
         <script src="js/defaults.js"></script> <!-- stores all globally used constants -->
@@ -56,7 +56,7 @@ Hint:   Some Javascript algorithm-parts:
 
         <!-- ALGORITHMS "LOGIC" -->
         <!-- data structures -->
-        <script src="js/data_structures/phylogenetic_tree.js"></script>  <!-- implementation of phylogenetic tree -->
+        <script src="js/data_structures/phylogenetic_tree.js"></script> <!-- implementation of phylogenetic tree -->
 
         <!-- procedures -->
         <script src="js/procedures/backtracking.js"></script> <!-- contains all backtracking algorithms -->
@@ -91,6 +91,7 @@ Hint:   Some Javascript algorithm-parts:
                     <li><a href="#">Gotoh</a></li>
                     <li><a href="#">Needleman-Wunsch</a></li>
                     <li><a href="#">Smith-Waterman</a></li>
+                    <li><a href="#">Waterman-Smith-Beyer</a></li>
                 </ul>
             </div>
 
