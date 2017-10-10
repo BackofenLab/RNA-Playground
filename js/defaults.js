@@ -320,6 +320,7 @@ var SYMBOLS = {  // contains all strings used in the project
 var SVG = {
     FLOW_LONG_ARROW_COLOR: "black",
     NAME_SPACE: "http://www.w3.org/2000/svg",
+    PX: "px",
     STROKE_DASHARRAY: "3,6",
     TRACEBACK_LONG_ARROW_COLOR: "black",
 

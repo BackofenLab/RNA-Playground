@@ -90,6 +90,7 @@ Author: Alexander Mattheis
             "calculationHorizontalTable": calculationHorizontal,
             "calculationVerticalTable": calculationVertical,
             "resultsTable": results,
+            "mainOutput": mainOutput,
             "selectableEntryClass": selectableEntryClass,
             "visualViewmodel": visualViewmodel
         };
@@ -100,9 +101,10 @@ Author: Alexander Mattheis
             "calculationTable": calculation,
             "calculationHorizontalTable": calculationHorizontal,
             "calculationVerticalTable": calculationVertical,
+            "mainOutput": mainOutput,
+            "number": MATRICES.VERTICAL_NUMBER,
             "selectableEntryClass": selectableEntryClass,
-            "visualViewmodel": visualViewmodel,
-            "number": MATRICES.VERTICAL_NUMBER
+            "visualViewmodel": visualViewmodel
         };
         calculationVertical.on("click", selectableEntryClass, functionArguments, selectCell);
 
@@ -110,9 +112,10 @@ Author: Alexander Mattheis
             "calculationTable": calculation,
             "calculationHorizontalTable": calculationHorizontal,
             "calculationVerticalTable": calculationVertical,
+            "mainOutput": mainOutput,
+            "number": MATRICES.DEFAULT_NUMBER,
             "selectableEntryClass": selectableEntryClass,
-            "visualViewmodel": visualViewmodel,
-            "number": MATRICES.DEFAULT_NUMBER
+            "visualViewmodel": visualViewmodel
         };
         calculation.on("click", selectableEntryClass, functionArguments, selectCell);
 
@@ -120,9 +123,10 @@ Author: Alexander Mattheis
             "calculationTable": calculation,
             "calculationHorizontalTable": calculationHorizontal,
             "calculationVerticalTable": calculationVertical,
+            "mainOutput": mainOutput,
+            "number": MATRICES.HORIZONTAL_NUMBER,
             "selectableEntryClass": selectableEntryClass,
-            "visualViewmodel": visualViewmodel,
-            "number": MATRICES.HORIZONTAL_NUMBER
+            "visualViewmodel": visualViewmodel
         };
         calculationHorizontal.on("click", selectableEntryClass, functionArguments, selectCell);
 
@@ -155,9 +159,13 @@ Author: Alexander Mattheis
         functionArguments = {
             "calculationTable": calculation,
             "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical
+            "calculationVerticalTable": calculationVertical,
+            "mainOutput": mainOutput
         };
         browserWindow.on("resize", functionArguments, visualViewmodel.redrawOverlay);
+
+        // 7th
+        mainOutput.on("scroll", functionArguments, visualViewmodel.redrawOverlay);
     }
 
     /**
@@ -243,6 +251,7 @@ Author: Alexander Mattheis
      */
     function selectTableEntry(e) {
         // retrieve data
+        var mainOutput = e.data.mainOutput[0];
         var calculationVerticalTable;
         var calculationTable = e.data.calculationTable[0];
         var calculationHorizontalTable;
@@ -267,7 +276,7 @@ Author: Alexander Mattheis
         // some delay without it won't work properly
         setTimeout(function () {
             visualViewmodel.highlight(selectedRow, resultsTable[0]);
-            visualViewmodel.showTraceback(selectedRow, calculationVerticalTable, calculationTable, calculationHorizontalTable);
+            visualViewmodel.showTraceback(selectedRow, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
         }, REACTION_TIME_HIGHLIGHT);
     }
 
@@ -279,6 +288,7 @@ Author: Alexander Mattheis
     function selectCell(e) {
         // retrieve data
         var number = e.data.number;
+        var mainOutput = e.data.mainOutput[0];
         var calculationVerticalTable;
         var calculationTable = e.data.calculationTable;
         var calculationHorizontalTable;
@@ -332,7 +342,7 @@ Author: Alexander Mattheis
         // some delay without it won't work properly
         setTimeout(function () {
             visualViewmodel.showFlow(cellCoordinates,
-                calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0]);
+                calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput);
         }, REACTION_TIME_HIGHLIGHT);
     }
 
@@ -363,7 +373,7 @@ Author: Alexander Mattheis
                 inputProcessorInstance.avoidFocusOutUpdate = false;
             },
 
-            keypress: function () {
+            keypress: function (e) {
                 if (e.which === KEY_CODES.ENTER)
                     updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput);
             },

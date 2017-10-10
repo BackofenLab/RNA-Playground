@@ -148,7 +148,7 @@ Author: Alexander Mattheis
      * @param colorClass {number} - The highlight which should be deleted from the cell.
      * @param flowMode {boolean} - Tells if flows or traceback-paths were drawn.
      */
-    function demarkCells(path, calculationVerticalTable, table, calculationHorizontalTable, colorClass, flowMode) {
+    function demarkCells(path, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, colorClass, flowMode) {
         flowMode = flowMode || false;
 
         var currentTable;
@@ -179,11 +179,11 @@ Author: Alexander Mattheis
         removeAllLines();  // below last flows/paths redrawn
 
         if (flowMode)  // redraw last traceback
-            markCells(visualizerInstance.lastPath, calculationVerticalTable, table, calculationHorizontalTable, -1, true, false);
+            markCells(visualizerInstance.lastPath, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, -1, true, false);
         else {  // redraw last flow
             var lastFlows = visualizerInstance.lastFlows;
             for (var i = 0; i < lastFlows.length; i++)
-                markCells(lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, i, true, true);
+                markCells(lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true, true);
         }
     }
 
@@ -253,7 +253,7 @@ Author: Alexander Mattheis
      * @param arrows {boolean} - Tells if arrows should be drawn or not.
      * @param flowMode {boolean} - Tells if flows or traceback-paths are drawn.
      */
-    function markCells(path, calculationVerticalTable, table, calculationHorizontalTable, colorClass, arrows, flowMode) {
+    function markCells(path, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, colorClass, arrows, flowMode) {
         arrows = arrows || false;
 
         var lastPosI;
@@ -288,7 +288,7 @@ Author: Alexander Mattheis
             }
 
             if (arrows) {
-                placeArrow(currentTable, posI, posJ, lastTable, lastPosI, lastPosJ, flowMode);
+                placeArrow(currentTable, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode);
                 lastPosI = posI;
                 lastPosJ = posJ;
                 lastTable = currentTable;
@@ -306,7 +306,7 @@ Author: Alexander Mattheis
      * @param lastPosJ {number} - The last second coordinate.
      * @param flowMode {boolean} - Tells if flows or traceback-paths are drawn.
      */
-    function placeArrow(table, posI, posJ, lastTable, lastPosI, lastPosJ, flowMode) {
+    function placeArrow(table, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode) {
         // function is executed only if one step in the table has already been done
         if (lastPosI !== undefined && lastPosI !== undefined) {
             var cell = table.rows[posI].cells[posJ];
@@ -333,9 +333,9 @@ Author: Alexander Mattheis
                     if ($(cell).find(ARROWS.TOP_NAME).length !== 1)
                         $(cell).append(ARROWS.TOP);
                 } else if (isVertical) {
-                    drawLine(cell, lastCell, MOVE.VERTICAL, flowMode);
+                    drawLine(cell, lastCell, MOVE.VERTICAL, mainOutput, flowMode);
                 } else if (isHorizontal) {
-                    drawLine(cell, lastCell, MOVE.HORIZONTAL, flowMode);
+                    drawLine(cell, lastCell, MOVE.HORIZONTAL, mainOutput, flowMode);
                 }
             } else if (lastTable !== table) {  // drawings between two different tables
                 var parentMatrix = getParentMatrix(cell);
@@ -349,13 +349,13 @@ Author: Alexander Mattheis
 
                 // draw case
                 if (isPtoX)
-                    drawLine(cell, lastCell, MOVE.P_TO_X, flowMode);
+                    drawLine(cell, lastCell, MOVE.P_TO_X, mainOutput, flowMode);
                 else if (isQtoX)
-                    drawLine(cell, lastCell, MOVE.Q_TO_X, flowMode);
+                    drawLine(cell, lastCell, MOVE.Q_TO_X, mainOutput, flowMode);
                 else if (isXtoP)
-                    drawLine(cell, lastCell, MOVE.X_TO_P, flowMode);
+                    drawLine(cell, lastCell, MOVE.X_TO_P, mainOutput, flowMode);
                 else if (isXtoQ)
-                    drawLine(cell, lastCell, MOVE.X_TO_Q, flowMode);
+                    drawLine(cell, lastCell, MOVE.X_TO_Q, mainOutput, flowMode);
             }
         }
     }
@@ -381,9 +381,9 @@ Author: Alexander Mattheis
      * @param move {string} - The type of MOVE {P_TO_X, Q_TO_X, ...}.
      * @param flowMode {boolean} - Tells if flows or traceback-paths are drawn.
      */
-    function drawLine(cell, lastCell, move, flowMode) {
+    function drawLine(cell, lastCell, move, mainOutput, flowMode) {
         debugger;
-        var cellHeight = cell.offsetHeight;  //
+        var cellHeight = cell.offsetHeight;
         var cellWidth = cell.offsetWidth;
 
         var left;
@@ -425,8 +425,10 @@ Author: Alexander Mattheis
         }
 
         // define svg dimensions
-        visualizerInstance.svg.setAttribute("width", document.body.offsetWidth);
-        visualizerInstance.svg.setAttribute("height", document.body.offsetHeight);
+        visualizerInstance.svg.setAttribute("width", mainOutput.offsetWidth);
+        visualizerInstance.svg.setAttribute("height", mainOutput.offsetHeight);
+        visualizerInstance.container.style.left = mainOutput.offsetLeft.toString() + SVG.PX;
+        visualizerInstance.container.style.top = mainOutput.offsetTop.toString() + SVG.PX;
 
         // create line with previously defined marker
         var line = document.createElementNS(SVG.NAME_SPACE, "line");
@@ -439,10 +441,10 @@ Author: Alexander Mattheis
             line.setAttribute("marker-end", SVG.MARKER.URL_TRACEBACK);
             line.setAttribute("stroke", SVG.TRACEBACK_LONG_ARROW_COLOR);
         }
-        line.setAttribute("x1", left);
-        line.setAttribute("y1", top);
-        line.setAttribute("x2", lastLeft);
-        line.setAttribute("y2", lastTop);
+        line.setAttribute("x1", left - mainOutput.offsetLeft - mainOutput.scrollLeft);
+        line.setAttribute("y1", top - mainOutput.offsetTop - mainOutput.scrollTop);
+        line.setAttribute("x2", lastLeft - mainOutput.offsetLeft - mainOutput.scrollLeft);
+        line.setAttribute("y2", lastTop - mainOutput.offsetTop - mainOutput.scrollTop);
         line.setAttribute("stroke-dasharray", SVG.STROKE_DASHARRAY);
         visualizerInstance.svg.appendChild(line);
         visualizerInstance.cellLines.push(line);
@@ -459,7 +461,7 @@ Author: Alexander Mattheis
      * @param calculationTable {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
      */
-    function showTraceback(traceNumber, calculationVerticalTable, calculationTable, calculationHorizontalTable) {
+    function showTraceback(traceNumber, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput) {
         var path = visualizerInstance.output.tracebackPaths[traceNumber];
 
         // check if you want maybe disable "unhighlight" last drawn path
@@ -472,15 +474,15 @@ Author: Alexander Mattheis
             if (path === visualizerInstance.lastPath
                 && tableCell !== undefined
                 && tableCell.classList.contains("selected")) {  // case: same path
-                demarkCells(visualizerInstance.lastPath, calculationVerticalTable, calculationTable, calculationHorizontalTable, -1, false);
+                demarkCells(visualizerInstance.lastPath, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, -1, false);
                 visualizerInstance.lastPath = [];
             } else {  // case: different path (click on a new path)
-                demarkCells(visualizerInstance.lastPath, calculationVerticalTable, calculationTable, calculationHorizontalTable, -1, false);
-                markCells(path, calculationVerticalTable, calculationTable, calculationHorizontalTable, -1, true, false);
+                demarkCells(visualizerInstance.lastPath, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, -1, false);
+                markCells(path, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, -1, true, false);
                 visualizerInstance.lastPath = path;
             }
         } else {  // case: first time selected
-            markCells(path, calculationVerticalTable, calculationTable, calculationHorizontalTable, -1, true, false);
+            markCells(path, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, -1, true, false);
             visualizerInstance.lastPath = path;
         }
     }
@@ -626,6 +628,7 @@ Author: Alexander Mattheis
      * @param e - Stores data relevant to the event called that function.
      */
     function redrawOverlay(e) {
+        var mainOutput = e.data.mainOutput[0];
         var calculationVerticalTable;
         var calculation = e.data.calculationTable[0];
         var calculationHorizontalTable;
@@ -636,7 +639,7 @@ Author: Alexander Mattheis
         }
 
         removeAllLines();
-        drawAllLines(calculationVerticalTable, calculation, calculationHorizontalTable);
+        drawAllLines(calculationVerticalTable, calculation, calculationHorizontalTable, mainOutput);
     }
 
     /**
@@ -645,12 +648,12 @@ Author: Alexander Mattheis
      * @param table {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
      */
-    function drawAllLines(calculationVerticalTable, table, calculationHorizontalTable) {
-        drawArrowLines(visualizerInstance.lastPath, calculationVerticalTable, table, calculationHorizontalTable, false);
+    function drawAllLines(calculationVerticalTable, table, calculationHorizontalTable, mainOutput) {
+        drawArrowLines(visualizerInstance.lastPath, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, false);
 
         var lastFlows = visualizerInstance.lastFlows;
         for (var i = 0; i < lastFlows.length; i++)
-            drawArrowLines(lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, true);
+            drawArrowLines(lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, mainOutput, true);
     }
 
     /**
@@ -661,7 +664,7 @@ Author: Alexander Mattheis
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
      * @param flowMode {boolean} - Tells if flows or traceback-paths are drawn.
      */
-    function drawArrowLines(path, calculationVerticalTable, table, calculationHorizontalTable, flowMode) {
+    function drawArrowLines(path, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, flowMode) {
         var lastPosI;
         var lastPosJ;
         var lastTable;
@@ -674,7 +677,7 @@ Author: Alexander Mattheis
             var posI = path[j].i + 1;
             var posJ = path[j].j + 1;
 
-            placeArrow(currentTable, posI, posJ, lastTable, lastPosI, lastPosJ, flowMode);
+            placeArrow(currentTable, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode);
             lastPosI = posI;
             lastPosJ = posJ;
             lastTable = currentTable;
