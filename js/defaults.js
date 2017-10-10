@@ -76,12 +76,13 @@ var CELL_PERCENT = {
 };
 
 /**
- * Allowed input characters.
+ * Defines allowed and disallowed input characters.
  */
 var CHARACTER = {
     BASE: /[a-zA-Z]/i,
     BASES: /^[a-zA-Z]+$/,
-    NON_BASES: /[^a-zA-Z]+/g  // g to replace globally
+    NON_BASES: /[^a-zA-Z]+/g,  // g to replace globally
+    NUMBERS: /[-+]?[0-9]+\.[0-9]*/
 };
 
 /**
@@ -96,8 +97,8 @@ var FILE_EXTENSIONS = {
  * Allowed max values for inputs.
  */
 var INPUT = {
-    ABS_MAX: 9,  // abs: absolute value
-    ABS_MIN: -9
+    MAX: 10,  // abs: absolute value
+    MIN: -10
 };
 
 /**

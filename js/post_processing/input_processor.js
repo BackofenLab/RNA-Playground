@@ -213,32 +213,18 @@ Author: Alexander Mattheis
 
     /**
      * Removes values from an input-field
-     * which can lead to critically long run-times.
+     * which can lead to problems with traceback or visualization.
      * It is especially used for the function parameters of an algorithm.
      * Hint: The input has to be of class "fx_parameter".
      * @param e - Stores data relevant to the event called that function.
      */
     function removeCriticalNumbers(e) {
+        if (CHARACTER.NUMBERS.test(this.value))
+            this.value = Math.round(this.value);
+
         if (e.which === KEY_CODES.ENTER || e.type === "focusout") {
-            if ($("#similarity").is(":checked")) {  // similarity is checked
-                if (this.id === "match") {
-                    this.value = this.value >= INPUT.ABS_MIN ? this.value : INPUT.ABS_MIN;
-                    this.value = this.value <= INPUT.ABS_MAX ? this.value : INPUT.ABS_MAX;
-                }
-                else {
-                    this.value = this.value <= -INPUT.ABS_MIN ? this.value : -INPUT.ABS_MIN;
-                    this.value = this.value >= -INPUT.ABS_MAX ? this.value : -INPUT.ABS_MAX;
-                }
-            } else {  // distance is checked
-                if (this.id === "match") {
-                    this.value = this.value <= -INPUT.ABS_MIN ? this.value : -INPUT.ABS_MIN;
-                    this.value = this.value >= -INPUT.ABS_MAX ? this.value : -INPUT.ABS_MAX;
-                }
-                else {
-                    this.value = this.value >= INPUT.ABS_MIN ? this.value : INPUT.ABS_MIN;
-                    this.value = this.value <= INPUT.ABS_MAX ? this.value : INPUT.ABS_MAX;
-                }
-            }
+            this.value = this.value >= INPUT.MIN ? this.value : INPUT.MIN;
+            this.value = this.value <= INPUT.MAX ? this.value : INPUT.MAX;
         }
     }
 
