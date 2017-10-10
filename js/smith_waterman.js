@@ -18,7 +18,7 @@ $(document).ready(function () {
 (function () {  // namespace
     // public methods
     namespace("smithWaterman", startSmithWaterman, SmithWaterman,
-        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getTraces);
+        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getTraces, getSuperclass);
 
     // instances
     var alignmentInstance;
@@ -55,7 +55,7 @@ $(document).ready(function () {
         this.numberOfTracebacks = 0;
 
         // inheritance
-        alignmentInstance = new procedures.bases.alignment.Alignment(this);
+        alignmentInstance = new bases.alignment.Alignment(this);
 
         this.setInput = alignmentInstance.setInput;
         this.compute = alignmentInstance.compute;
@@ -70,6 +70,7 @@ $(document).ready(function () {
         this.computeTraceback = computeTraceback;
 
         this.getTraces = getTraces;
+        this.getSuperclass = getSuperclass;
     }
 
     // inheritance
@@ -192,7 +193,7 @@ $(document).ready(function () {
 
         outputData.moreTracebacks = false;
         for (var i = 0; i < backtraceStarts.length; i++) {
-            var tracebackPaths = getTraces([backtraceStarts[i]], inputData, outputData, -1);
+            var tracebackPaths = getTraces([backtraceStarts[i]], inputData, outputData, -1, alignmentInstance.getNeighboured);
             outputData.tracebackPaths = outputData.tracebackPaths.concat(tracebackPaths);
         }
     }
@@ -213,9 +214,9 @@ $(document).ready(function () {
                 if (outputData.matrix[i][j] > maxValue) {
                     maxValue = outputData.matrix[i][j];
                     maxPositions = [];
-                    maxPositions.push(new procedures.backtracking.Vector(i, j));
+                    maxPositions.push(new bases.alignment.Vector(i, j));
                 } else if (outputData.matrix[i][j] === maxValue) {
-                    maxPositions.push(new procedures.backtracking.Vector(i, j));
+                    maxPositions.push(new bases.alignment.Vector(i, j));
                 }
             }
         }
@@ -239,9 +240,9 @@ $(document).ready(function () {
                 if (outputData.matrix[i][j] < minValue) {
                     minValue = outputData.matrix[i][j];
                     minPositions = [];
-                    minPositions.push(new procedures.backtracking.Vector(i, j));
+                    minPositions.push(new bases.alignment.Vector(i, j));
                 } else if (outputData.matrix[i][j] === minValue) {
-                    minPositions.push(new procedures.backtracking.Vector(i, j));
+                    minPositions.push(new bases.alignment.Vector(i, j));
                 }
             }
         }
@@ -258,11 +259,11 @@ $(document).ready(function () {
      * @param pathLength {number} - Tells after how many edges the procedure should stop.
      * The value -1 indicates arbitrarily long paths.
      * @return {Array} - Array of paths.
+     * @override Alignment.getTraces(...)
      */
-    function getTraces(path, inputData, outputData, pathLength) {
+    function getTraces(path, inputData, outputData, pathLength, neighbourFunction) {
         var paths = [];
-        var backtracking = new procedures.backtracking.Backtracking();
-        traceback(backtracking, paths, path, inputData, outputData, pathLength);
+        traceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
         return paths;
     }
 
@@ -280,9 +281,9 @@ $(document).ready(function () {
      * @param pathLength {number} - Tells after how many edges the procedure should stop.
      * @see It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
-    function traceback(backtracking, paths, path, inputData, outputData, pathLength) {
+    function traceback(paths, path, inputData, outputData, pathLength, neighbourFunction) {
         var currentPosition = path[path.length - 1];
-        var neighboured = backtracking.getNeighboured(currentPosition, inputData, outputData, smithWatermanInstance);
+        var neighboured = neighbourFunction(currentPosition, inputData, outputData, smithWatermanInstance);
 
         // going through all successors (initial nodes of possible paths)
         for (var i = 0; i < neighboured.length; i++) {
@@ -302,9 +303,17 @@ $(document).ready(function () {
             } else {
                 // executing procedure with a successor
                 path.push(neighboured[i]);
-                traceback(backtracking, paths, path, inputData, outputData, pathLength);
+                traceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
                 path.pop();
             }
         }
+    }
+
+    /**
+     * Returns the superclass instance.
+     * @return {Object} - Superclass instance.
+     */
+    function getSuperclass() {
+        return alignmentInstance;
     }
 }());

@@ -17,7 +17,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("gotoh", startGotoh, Gotoh, getInput, setInput, compute, getTraces, getOutput, setIO);
+    namespace("gotoh", startGotoh, Gotoh, getInput, setInput, compute, getNeighboured, getOutput, setIO, getSuperclass);
 
     // instances
     var alignmentInstance;
@@ -58,17 +58,17 @@ $(document).ready(function () {
         this.numberOfTracebacks = 0;
 
         // inheritance
-        alignmentInstance = new procedures.bases.alignment.Alignment(this);
+        alignmentInstance = new bases.alignment.Alignment(this);
 
         this.getInput = getInput;
 
         this.setInput = setInput;
         this.compute = compute;
+        this.getNeighboured = getNeighboured;
         this.getOutput = getOutput;
 
-        this.getTraces = getTraces;
-
         this.setIO = setIO;
+        this.getSuperclass = getSuperclass;
     }
 
     /**
@@ -281,69 +281,153 @@ $(document).ready(function () {
     function computeTraceback() {
         gotohInstance.numberOfTracebacks = 0;
 
-        var lowerRightCorner = new procedures.backtracking.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
+        var lowerRightCorner = new bases.alignment.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
 
         outputData.moreTracebacks = false;
-        outputData.tracebackPaths = getTraces([lowerRightCorner], inputData, outputData, -1);
+        outputData.tracebackPaths = alignmentInstance.getTraces([lowerRightCorner], inputData, outputData, -1, getNeighboured);
     }
 
     /**
-     * Gets tracebacks by starting the traceback procedure
-     * with some path containing the first element of the path.
-     * @param path {Array} - Array containing the first vector element from which on you want find a path.
+     * Returns the neighbours to which you can go from the current cell position used as input.
+     * @param position {Vector} - Current cell position in matrix.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
-     * @param pathLength {number} - Tells after how many edges the procedure should stop.
-     * The value -1 indicates arbitrarily long paths.
-     * @return {Array} - Array of paths.
+     * @param algorithm {Object} - Contains an alignment algorithm.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     * @see Hint: The parameter algorithm is needed!
+     * It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
-    function getTraces(path, inputData, outputData, pathLength) {
-        var paths = [];
-        var backtracking = new procedures.backtracking.Backtracking();
-        traceback(backtracking, paths, path, inputData, outputData, pathLength);
-        return paths;
+    function getNeighboured(position, inputData, outputData, algorithm) {
+        var neighboured = [];
+
+        if (position.label === MATRICES.VERTICAL)
+            return getVerticalNeighboured(position, inputData, outputData);
+        else if (position.label === MATRICES.HORIZONTAL)
+            return getHorizontalNeighboured(position, inputData, outputData);
+
+        var left = position.j - 1;
+        var up = position.i - 1;
+
+        // retrieve values
+        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
+        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
+
+        var currentValue = outputData.matrix[position.i][position.j];
+
+        var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
+
+        var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : Number.NaN;
+        var verticalValue = up >= 0 ? outputData.verticalGaps[position.i][position.j] : Number.NaN;
+        var horizontalValue = left >= 0 ? outputData.horizontalGaps[position.i][position.j] : Number.NaN;
+
+        var upValue = up >= 0 && position.j === 0 ? outputData.matrix[up][position.j] : Number.NaN;
+        var leftValue = left >= 0 && position.i === 0 ? outputData.matrix[position.i][left] : Number.NaN;
+
+        // check
+        var isMatchMismatch = currentValue === (diagonalValue + matchOrMismatch);
+        var isChangeToP = currentValue === verticalValue;
+        var isChangeToQ = currentValue === horizontalValue;
+
+        var isDeletion = currentValue === upValue + inputData.enlargement;
+        var isInsertion = currentValue === leftValue + inputData.enlargement;
+
+        // add
+        if (isMatchMismatch)
+            neighboured.push(new bases.alignment.Vector(up, left));
+
+        if (isChangeToP)
+            neighboured.push(bases.alignment.create(new bases.alignment.Vector(position.i, position.j), MATRICES.VERTICAL));
+
+        if (isChangeToQ)
+            neighboured.push(bases.alignment.create(new bases.alignment.Vector(position.i, position.j), MATRICES.HORIZONTAL));
+
+        if (isInsertion)
+            neighboured.push(new bases.alignment.Vector(position.i, left));
+
+        if (isDeletion)
+            neighboured.push(new bases.alignment.Vector(up, position.j));
+
+        if (!(isMatchMismatch || isChangeToP || isChangeToQ || isInsertion || isDeletion)
+            && (position.i !== 0 || position.j !== 0))
+            neighboured.push(new bases.alignment.Vector(0, 0));
+
+        return neighboured;
     }
 
     /**
-     * Computing the traceback and stops after it has found a constant number of tracebacks.
-     * It sets a flag "moreTracebacks" in the "outputData", if it has stopped before computing all tracebacks.
-     * The traceback algorithm executes a recursive,
-     * modified deep-first-search (deleting last found path from memory)
-     * with special stop criteria on the matrix cells as path-nodes.
-     * @param backtracking {Object} - Allows to call up cell neighbours.
-     * @param paths {Array} - Array of paths.
-     * @param path {Array} - Array containing the first vector element from which on you want find a path.
+     * Returns the neighbours to which you can go from the current cell position in the matrix for vertical gap costs.
+     * @param position {Vector} - Current cell position in matrix.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
-     * @param pathLength {number} - Tells after how many edges the procedure should stop.
-     * @see It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
-    function traceback(backtracking, paths, path, inputData, outputData, pathLength) {
-        var currentPosition = path[path.length - 1];
-        var neighboured = backtracking.getMultiNeighboured(currentPosition, inputData, outputData);
+    function getVerticalNeighboured(position, inputData, outputData) {
+        var neighboured = [];
 
-        // going through all successors (initial nodes of possible paths)
-        for (var i = 0; i < neighboured.length; i++) {
-            if ((neighboured[i].i === 0 && neighboured[i].j === 0)
-                || (pathLength !== -1 && path.length >= pathLength)
-                || outputData.moreTracebacks) {
-                path.push(neighboured[i]);
+        var up = position.i - 1;
 
-                // path storage, if MAX_NUMBER_TRACEBACKS is not exceeded
-                if (gotohInstance.numberOfTracebacks < MAX_NUMBER_TRACEBACKS) {
-                    paths.push(path.slice());  // creating a shallow copy
-                    gotohInstance.numberOfTracebacks++;
-                } else
-                    outputData.moreTracebacks = true;
+        // retrieve values
+        var currentValue = outputData.verticalGaps[position.i][position.j];
 
-                path.pop();
-            } else {
-                // executing procedure with a successor
-                path.push(neighboured[i]);
-                traceback(backtracking, paths, path, inputData, outputData, pathLength);
-                path.pop();
-            }
+        var pUpValue = Number.NaN;
+        var xUpValue = Number.NaN;
+
+        if (position.i >= 0 && up >= 0) {
+            pUpValue = outputData.verticalGaps[up][position.j];
+            xUpValue = outputData.matrix[up][position.j];
         }
+
+        // check
+        var isUpInP = currentValue === pUpValue + inputData.enlargement;
+        var isUpInX = currentValue === xUpValue + inputData.baseCosts + inputData.enlargement;
+
+        // add
+        if (isUpInP)
+            neighboured.push(bases.alignment.create(new bases.alignment.Vector(up, position.j), MATRICES.VERTICAL));
+
+        if (isUpInX)
+            neighboured.push(new bases.alignment.Vector(up, position.j));
+
+        return neighboured;
+    }
+
+    /**
+     * Returns the neighbours to which you can go from the current cell position in the matrix for horizontal gap costs.
+     * @param position {Vector} - Current cell position in matrix.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     */
+    function getHorizontalNeighboured(position, inputData, outputData) {
+        var neighboured = [];
+
+        var left = position.j - 1;
+
+        // retrieve values
+        var currentValue = outputData.horizontalGaps[position.i][position.j];
+
+        var qLeftValue = Number.NaN;
+        var xLeftValue = Number.NaN;
+
+        if (position.i >= 0 && left >= 0) {
+            qLeftValue = outputData.horizontalGaps[position.i][left];
+            xLeftValue = outputData.matrix[position.i][left];
+        }
+
+        // check
+        var isLeftInQ = currentValue === qLeftValue + inputData.enlargement;
+        var isLeftInX = currentValue === xLeftValue + inputData.baseCosts + inputData.enlargement;
+
+        // add
+        if (isLeftInQ)
+            neighboured.push(bases.alignment.create(new bases.alignment.Vector(position.i, left), MATRICES.HORIZONTAL));
+
+        if (isLeftInX)
+            neighboured.push(new bases.alignment.Vector(position.i, left));
+
+        return neighboured;
     }
 
     /**
@@ -372,5 +456,13 @@ $(document).ready(function () {
     function setIO(input, output) {
         inputData = input;
         outputData = output;
+    }
+
+    /**
+     * Returns the superclass instance.
+     * @return {Object} - Superclass instance.
+     */
+    function getSuperclass() {
+        return alignmentInstance;
     }
 }());

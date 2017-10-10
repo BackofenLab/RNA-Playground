@@ -326,7 +326,7 @@ Author: Alexander Mattheis
         }
 
         // store selected position in a vector
-        var cellCoordinates = new procedures.backtracking.Vector(selectedRow, selectedColumn);
+        var cellCoordinates = new bases.alignment.Vector(selectedRow, selectedColumn);
         cellCoordinates.label = label;
 
         // some delay without it won't work properly

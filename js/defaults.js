@@ -240,9 +240,8 @@ var MULTI_SYMBOLS = {
  * Stores all class paths and some library paths.
  */
 var PATHS = {
-    ALIGNMENT: "js/procedures/bases/alignment.js",
+    ALIGNMENT: "js/bases/alignment.js",
     ALIGNMENT_INTERFACE: "js/interfaces/alignment_interface.js",
-    BACKTRACKING: "js/procedures/backtracking.js",
     INPUT_PROCESSOR: "js/post_processing/input_processor.js",
     SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js",
     VISUALIZER: "js/post_processing/visualizer.js",

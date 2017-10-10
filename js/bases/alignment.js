@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("procedures.bases.alignment",
+    namespace("bases.alignment", Vector, create, getTraces, getNeighboured,
         Alignment, getInput, setInput, compute, recursionFunction, createAlignments, getOutput, setIO);
 
     // instances
@@ -18,6 +18,31 @@ Author: Alexander Mattheis
     // shared variables
     var inputData = {};  // stores the input of the algorithm
     var outputData = {};  // stores the output of the algorithm
+
+    /**
+     * Creates a vector with a label, which is by the default the default matrix label.
+     * @param i {number} - First matrix axis.
+     * @param j {number} - Second matrix axis.
+     * @constructor
+     */
+    function Vector(i, j) {
+        this.i = i;
+        this.j = j;
+        this.label = MATRICES.DEFAULT;
+    }
+
+    /**
+     * Changes the label of a vector. It is used to create a vector with a specific label.
+     * @example
+     * create(new Vector(i,j), MATRICES.HORIZONTAL)
+     * @param Vector - The vector of which the label should be changed.
+     * @param label {string} - The string label from "defaults.js".
+     * @return {Vector} - The vector with the changed label.
+     */
+    function create(Vector, label) {
+        Vector.label = label;
+        return Vector;
+    }
 
     /**
      * Contains functions to compute optimal alignments.
@@ -34,6 +59,8 @@ Author: Alexander Mattheis
         this.setInput = setInput;
         this.compute = compute;
         this.recursionFunction = recursionFunction;
+        this.getTraces = getTraces;
+        this.getNeighboured = getNeighboured;
         this.createAlignments = createAlignments;
         this.getOutput = getOutput;
 
@@ -130,6 +157,119 @@ Author: Alexander Mattheis
      */
     function computeTraceback() {
         childInstance.computeTraceback();
+    }
+
+    /**
+     * Gets tracebacks by starting the traceback procedure
+     * with some path containing the first element of the path.
+     * @param path {Array} - Array containing the first vector element from which on you want find a path.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @param pathLength {number} - Tells after how many edges the procedure should stop.
+     * The value -1 indicates arbitrarily long paths.
+     * @return {Array} - Array of paths.
+     */
+    function getTraces(path, inputData, outputData, pathLength, neighbourFunction) {
+        if (childInstance.getTraces !== undefined)
+            return childInstance.getTraces(path, inputData, outputData, pathLength, neighbourFunction);
+
+        var paths = [];
+        traceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
+        return paths;
+    }
+
+    /**
+     * Computing the traceback and stops after it has found a constant number of tracebacks.
+     * It sets a flag "moreTracebacks" in the "outputData", if it has stopped before computing all tracebacks.
+     * The traceback algorithm executes a recursive,
+     * modified deep-first-search (deleting last found path from memory)
+     * with special stop criteria on the matrix cells as path-nodes.
+     * @param backtracking {Object} - Allows to call up cell neighbours.
+     * @param paths {Array} - Array of paths.
+     * @param path {Array} - Array containing the first vector element from which on you want find a path.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @param pathLength {number} - Tells after how many edges the procedure should stop.
+     * @see It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     */
+    function traceback(paths, path, inputData, outputData, pathLength, neighbourFunction) {
+        var currentPosition = path[path.length - 1];
+        var neighboured = neighbourFunction(currentPosition, inputData, outputData, childInstance);
+
+        // going through all successors (initial nodes of possible paths)
+        for (var i = 0; i < neighboured.length; i++) {
+            if ((neighboured[i].i === 0 && neighboured[i].j === 0)  // stop criteria checks
+                || (pathLength !== -1 && path.length >= pathLength)
+                || outputData.moreTracebacks) {
+
+                path.push(neighboured[i]);
+
+                // path storage, if MAX_NUMBER_TRACEBACKS is not exceeded
+                if (childInstance.numberOfTracebacks < MAX_NUMBER_TRACEBACKS) {
+                    paths.push(path.slice());  // creating a shallow copy
+                    childInstance.numberOfTracebacks++;
+                } else
+                    outputData.moreTracebacks = true;
+
+                path.pop();
+            } else {
+                // executing procedure with a successor
+                path.push(neighboured[i]);
+                traceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
+                path.pop();
+            }
+        }
+    }
+
+    /**
+     * Returns the neighbours to which you can go from the current cell position used as input.
+     * @param position {Vector} - Current cell position in matrix.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @param algorithm {Object} - Contains an alignment algorithm.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     */
+    function getNeighboured(position, inputData, outputData, algorithm) {
+        var neighboured = [];
+
+        var left = position.j - 1;
+        var up = position.i - 1;
+
+        // retrieve values
+        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
+        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
+
+        var currentValue = outputData.matrix[position.i][position.j];
+
+        var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
+
+        var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : NaN;
+        var upValue = up >= 0 ? outputData.matrix[up][position.j] : NaN;
+        var leftValue = left >= 0 ? outputData.matrix[position.i][left] : NaN;
+
+        // check
+        var isMatchMismatch = currentValue === (diagonalValue + matchOrMismatch);
+        var isDeletion = currentValue === (upValue + inputData.deletion);
+        var isInsertion = currentValue === (leftValue + inputData.insertion);
+
+        if (algorithm.type === ALGORITHMS.SMITH_WATERMAN) {
+            isMatchMismatch = isMatchMismatch || currentValue === 0 && up >= 0 && left >= 0;
+            isDeletion = isDeletion || currentValue === 0 && up >= 0;
+            isInsertion = isInsertion || currentValue === 0 && left >= 0;
+        }
+
+        // add
+        if (isMatchMismatch)
+            neighboured.push(new Vector(up, left));
+
+        if (isDeletion)
+            neighboured.push(new Vector(up, position.j));
+
+        if (isInsertion)
+            neighboured.push(new Vector(position.i, left));
+
+        return neighboured;
     }
 
     /**

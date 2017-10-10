@@ -47,9 +47,6 @@ Author: Alexander Mattheis
         // design/controls logic
         $.getScript(PATHS.INPUT_PROCESSOR);
         $.getScript(PATHS.VISUALIZER);
-
-        // algorithms logic
-        $.getScript(PATHS.BACKTRACKING);
     }
 
     /**
@@ -226,10 +223,10 @@ Author: Alexander Mattheis
 
     /**
      * Changes the output after processing the input.
-     * Hint: The parameter inputProcessor is needed!
      * @param outputData {Object} - Contains all output data.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
         viewmodels.output.matrix(outputData.matrix);

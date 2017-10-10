@@ -120,7 +120,15 @@ Author: Alexander Mattheis
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
      */
     function showFlow(cellCoordinates, calculationVerticalTable, table, calculationHorizontalTable) {
-        var flows = visualizerInstance.algorithm.getTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1);
+        var algorithm = visualizerInstance.algorithm;
+        var superclass = algorithm.getSuperclass();
+
+        var flows;
+        visualizerInstance.algorithm.numberOfTracebacks = 0;
+        if (algorithm.getNeighboured !== undefined)
+            flows = superclass.getTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, algorithm.getNeighboured);
+        else
+            flows = superclass.getTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, superclass.getNeighboured);
 
         for (i = 0; i < visualizerInstance.lastFlows.length; i++)
             demarkCells(visualizerInstance.lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, i, true);

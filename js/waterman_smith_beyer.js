@@ -19,7 +19,7 @@ $(document).ready(function () {
 (function () {  // namespace
     // public methods
     namespace("watermanSmithBeyer", startWatermanSmithBeyer, WatermanSmithBeyer,
-        getInput, setInput, compute, gapFunction, getTraces, getOutput, setIO);
+        getInput, setInput, compute, gapFunction, getNeighboured, getOutput, setIO, getSuperclass);
 
     // instances
     var alignmentInstance;
@@ -59,18 +59,18 @@ $(document).ready(function () {
         this.numberOfTracebacks = 0;
 
         // inheritance
-        alignmentInstance = new procedures.bases.alignment.Alignment(this);
+        alignmentInstance = new bases.alignment.Alignment(this);
 
         this.getInput = getInput;
 
         this.setInput = setInput;
         this.compute = compute;
+        this.gapFunction = gapFunction;
+        this.getNeighboured = getNeighboured;
         this.getOutput = getOutput;
 
-        this.gapFunction = gapFunction;
-        this.getTraces = getTraces;
-
         this.setIO = setIO;
+        this.getSuperclass = getSuperclass;
     }
 
     /**
@@ -279,69 +279,118 @@ $(document).ready(function () {
     function computeTraceback() {
         watermanSmithBeyerInstance.numberOfTracebacks = 0;
 
-        var lowerRightCorner = new procedures.backtracking.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
+        var lowerRightCorner = new bases.alignment.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
 
         outputData.moreTracebacks = false;
-        outputData.tracebackPaths = getTraces([lowerRightCorner], inputData, outputData, -1);
+        outputData.tracebackPaths =
+            alignmentInstance.getTraces([lowerRightCorner], inputData, outputData, -1, getNeighboured);
     }
 
     /**
-     * Gets tracebacks by starting the traceback procedure
-     * with some path containing the first element of the path.
-     * @param path {Array} - Array containing the first vector element from which on you want find a path.
+     * Returns the neighbours to which you can go from the current cell position used as input.
+     * @param position {Vector} - Current cell position in matrix.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
-     * @param pathLength {number} - Tells after how many edges the procedure should stop.
-     * The value -1 indicates arbitrarily long paths.
-     * @return {Array} - Array of paths.
+     * @param algorithm {Object} - Contains an alignment algorithm.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
      */
-    function getTraces(path, inputData, outputData, pathLength) {
-        var paths = [];
-        var backtracking = new procedures.backtracking.Backtracking();
-        traceback(backtracking, paths, path, inputData, outputData, pathLength);
-        return paths;
+    function getNeighboured(position, inputData, outputData, algorithm) {
+        var neighboured = [];
+
+        var left = position.j - 1;
+        var up = position.i - 1;
+
+        // retrieve values
+        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
+        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
+
+        var currentValue = outputData.matrix[position.i][position.j];
+
+        var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
+        var horizontalK = searchHorizontalMatchPosition(algorithm, currentValue, position, outputData);
+        var verticalK = searchVerticalMatchPosition(algorithm, currentValue, position, outputData);
+
+        var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : Number.NaN;
+        var upValue = up >= 0 && position.j === 0 ? outputData.matrix[up][position.j] : Number.NaN;
+        var leftValue = left >= 0 && position.i === 0 ? outputData.matrix[position.i][left] : Number.NaN;
+
+        // check
+        var isMatchMismatch = currentValue === (diagonalValue + matchOrMismatch);
+        var isHorizontal = !isNaN(horizontalK);  // if a position exists to which we can horizontally jump
+        var isVertical = !isNaN(verticalK);  // if a position exists to which we can vertically jump
+
+        var isDeletion = currentValue === upValue + inputData.enlargement;
+        var isInsertion = currentValue === leftValue + inputData.enlargement;
+
+        // add
+        if (isMatchMismatch)
+            neighboured.push(new bases.alignment.Vector(up, left));
+
+        if (isHorizontal)
+            neighboured.push(new bases.alignment.Vector(position.i, horizontalK));
+
+        if (isVertical)
+            neighboured.push(new bases.alignment.Vector(verticalK, position.j));
+
+        if (isInsertion)
+            neighboured.push(new bases.alignment.Vector(position.i, left));
+
+        if (isDeletion)
+            neighboured.push(new bases.alignment.Vector(up, position.j));
+
+        if (!(isMatchMismatch || isHorizontal || isVertical || isInsertion || isDeletion)
+            && (position.i !== 0 || position.j !== 0))
+            neighboured.push(new bases.alignment.Vector(0, 0));
+
+        return neighboured;
     }
 
     /**
-     * Computing the traceback and stops after it has found a constant number of tracebacks.
-     * It sets a flag "moreTracebacks" in the "outputData", if it has stopped before computing all tracebacks.
-     * The traceback algorithm executes a recursive,
-     * modified deep-first-search (deleting last found path from memory)
-     * with special stop criteria on the matrix cells as path-nodes.
-     * @param backtracking {Object} - Allows to call up cell neighbours.
-     * @param paths {Array} - Array of paths.
-     * @param path {Array} - Array containing the first vector element from which on you want find a path.
-     * @param inputData {Object} - Contains all input data.
+     * Computes the vertical position from which you get to the currentValue.
+     * @param algorithm {Object} - Contains an alignment algorithm.
+     * @param currentValue - The value from the current cell.
+     * @param position {Vector} - Current cell position in matrix.
      * @param outputData {Object} - Contains all output data.
-     * @param pathLength {number} - Tells after how many edges the procedure should stop.
-     * @see It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     * @return {number} - The matching position. You get back NaN if such position does not exists.
      */
-    function traceback(backtracking, paths, path, inputData, outputData, pathLength) {
-        var currentPosition = path[path.length - 1];
-        var neighboured = backtracking.getJumpingNeighboured(currentPosition, watermanSmithBeyerInstance, inputData, outputData);
-
-        // going through all successors (initial nodes of possible paths)
-        for (var i = 0; i < neighboured.length; i++) {
-            if ((neighboured[i].i === 0 && neighboured[i].j === 0)
-                || (pathLength !== -1 && path.length >= pathLength)
-                || outputData.moreTracebacks) {
-                path.push(neighboured[i]);
-
-                // path storage, if MAX_NUMBER_TRACEBACKS is not exceeded
-                if (watermanSmithBeyerInstance.numberOfTracebacks < MAX_NUMBER_TRACEBACKS) {
-                    paths.push(path.slice());  // creating a shallow copy
-                    watermanSmithBeyerInstance.numberOfTracebacks++;
-                } else
-                    outputData.moreTracebacks = true;
-
-                path.pop();
-            } else {
-                // executing procedure with a successor
-                path.push(neighboured[i]);
-                traceback(backtracking, paths, path, inputData, outputData, pathLength);
-                path.pop();
-            }
+    function searchVerticalMatchPosition(algorithm, currentValue, position, outputData) {
+        for (var k = 1; k < position.i; k++) {
+            if (differenceLowerEpsilon(outputData.matrix[position.i - k][position.j] + algorithm.gapFunction(k), currentValue, EPSILON))
+                return position.i - k;
         }
+
+        return Number.NaN;
+    }
+
+    /**
+     * Tests if the difference between to values is lower some parameter Epsilon.
+     * Hint: It would maybe work without this function. So, this function is only for security reasons.
+     * @param value1 - The first value.
+     * @param value2 - The second value.
+     * @param epsilon - The small number you test against.
+     * @return {boolean} - The
+     */
+    function differenceLowerEpsilon(value1, value2, epsilon) {
+        var difference = value1 - value2;
+
+        return Math.abs(difference) < epsilon;
+    }
+
+    /**
+     * Computes the horizontal position from which you get to the currentValue.
+     * @param algorithm {Object} - Contains an alignment algorithm.
+     * @param currentValue - The value from the current cell.
+     * @param position {Vector} - Current cell position in matrix.
+     * @param outputData {Object} - Contains all output data.
+     * @return {number} - The matching position. You get back NaN if such position does not exists.
+     */
+    function searchHorizontalMatchPosition(algorithm, currentValue, position, outputData) {
+        for (var k = 1; k < position.j; k++) {
+            if (differenceLowerEpsilon(outputData.matrix[position.i][position.j - k] + algorithm.gapFunction(k), currentValue, EPSILON))
+                return position.j - k;
+        }
+
+        return Number.NaN;
     }
 
     /**
@@ -370,5 +419,13 @@ $(document).ready(function () {
     function setIO(input, output) {
         inputData = input;
         outputData = output;
+    }
+
+    /**
+     * Returns the superclass instance.
+     * @return {Object} - Superclass instance.
+     */
+    function getSuperclass() {
+        return alignmentInstance;
     }
 }());

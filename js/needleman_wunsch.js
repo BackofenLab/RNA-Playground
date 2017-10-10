@@ -18,7 +18,7 @@ $(document).ready(function () {
 (function () {  // namespace
     // public methods
     namespace("needlemanWunsch", startNeedlemanWunsch, NeedlemanWunsch,
-        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getTraces);
+        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getSuperclass);
 
     // instances
     var alignmentInstance;
@@ -56,7 +56,7 @@ $(document).ready(function () {
         this.numberOfTracebacks = 0;
 
         // inheritance
-        alignmentInstance = new procedures.bases.alignment.Alignment(this);
+        alignmentInstance = new bases.alignment.Alignment(this);
 
         this.setInput = alignmentInstance.setInput;
         this.compute = alignmentInstance.compute;
@@ -69,8 +69,7 @@ $(document).ready(function () {
         this.computeMatrixAndScore = computeMatrixAndScore;
         this.recursionFunction = recursionFunction;
         this.computeTraceback = computeTraceback;
-
-        this.getTraces = getTraces;
+        this.getSuperclass = getSuperclass;
     }
 
     // inheritance
@@ -167,69 +166,18 @@ $(document).ready(function () {
         var inputData = alignmentInstance.getInput();
         var outputData = alignmentInstance.getOutput();
 
-        var lowerRightCorner = new procedures.backtracking.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
+        var lowerRightCorner = new bases.alignment.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
         
         outputData.moreTracebacks = false;
-        outputData.tracebackPaths = getTraces([lowerRightCorner], inputData, outputData, -1);
+        outputData.tracebackPaths =
+            alignmentInstance.getTraces([lowerRightCorner], inputData, outputData, -1, alignmentInstance.getNeighboured);
     }
 
     /**
-     * Gets tracebacks by starting the traceback procedure
-     * with some path containing the first element of the path.
-     * @param path {Array} - Array containing the first vector element from which on you want find a path.
-     * @param inputData {Object} - Contains all input data.
-     * @param outputData {Object} - Contains all output data.
-     * @param pathLength {number} - Tells after how many edges the procedure should stop.
-     * The value -1 indicates arbitrarily long paths.
-     * @return {Array} - Array of paths.
+     * Returns the superclass instance.
+     * @return {Object} - Superclass instance.
      */
-    function getTraces(path, inputData, outputData, pathLength) {
-        var paths = [];
-        var backtracking = new procedures.backtracking.Backtracking();
-        traceback(backtracking, paths, path, inputData, outputData, pathLength);
-        return paths;
-    }
-
-    /**
-     * Computing the traceback and stops after it has found a constant number of tracebacks.
-     * It sets a flag "moreTracebacks" in the "outputData", if it has stopped before computing all tracebacks.
-     * The traceback algorithm executes a recursive,
-     * modified deep-first-search (deleting last found path from memory)
-     * with special stop criteria on the matrix cells as path-nodes.
-     * @param backtracking {Object} - Allows to call up cell neighbours.
-     * @param paths {Array} - Array of paths.
-     * @param path {Array} - Array containing the first vector element from which on you want find a path.
-     * @param inputData {Object} - Contains all input data.
-     * @param outputData {Object} - Contains all output data.
-     * @param pathLength {number} - Tells after how many edges the procedure should stop.
-     * @see It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
-     */
-    function traceback(backtracking, paths, path, inputData, outputData, pathLength) {
-        var currentPosition = path[path.length - 1];
-        var neighboured = backtracking.getNeighboured(currentPosition, inputData, outputData, needlemanWunschInstance);
-
-        // going through all successors (initial nodes of possible paths)
-        for (var i = 0; i < neighboured.length; i++) {
-            if ((neighboured[i].i === 0 && neighboured[i].j === 0)  // stop criteria checks
-                || (pathLength !== -1 && path.length >= pathLength)
-                || outputData.moreTracebacks) {
-
-                path.push(neighboured[i]);
-
-                // path storage, if MAX_NUMBER_TRACEBACKS is not exceeded
-                if (needlemanWunschInstance.numberOfTracebacks < MAX_NUMBER_TRACEBACKS) {
-                    paths.push(path.slice());  // creating a shallow copy
-                    needlemanWunschInstance.numberOfTracebacks++;
-                } else
-                    outputData.moreTracebacks = true;
-
-                path.pop();
-            } else {
-                // executing procedure with a successor
-                path.push(neighboured[i]);
-                traceback(backtracking, paths, path, inputData, outputData, pathLength);
-                path.pop();
-            }
-        }
+    function getSuperclass() {
+        return alignmentInstance;
     }
 }());
