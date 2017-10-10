@@ -307,8 +307,10 @@ Author: Alexander Mattheis
             // drawings within the same table
             if (lastTable === table) {
                 // case determination
-                var isTop = posI - lastPosI > 0;
-                var isLeft = posJ - lastPosJ > 0;
+                var isTop = posI - lastPosI === 1;
+                var isLeft = posJ - lastPosJ === 1;
+                var isVertical = posI - lastPosI > 1;
+                var isHorizontal = posJ - lastPosJ > 1;
 
                 // draw case
                 if (isTop && isLeft) {
@@ -322,6 +324,10 @@ Author: Alexander Mattheis
                 else if (isTop) {
                     if ($(cell).find(ARROWS.TOP_NAME).length !== 1)
                         $(cell).append(ARROWS.TOP);
+                } else if (isVertical) {
+                    drawLine(cell, lastCell, MOVE.VERTICAL, flowMode);
+                } else if (isHorizontal) {
+                    drawLine(cell, lastCell, MOVE.HORIZONTAL, flowMode);
                 }
             } else if (lastTable !== table) {  // drawings between two different tables
                 var parentMatrix = getParentMatrix(cell);
@@ -377,27 +383,37 @@ Author: Alexander Mattheis
         var lastLeft;
         var lastTop;
 
-        // with different "between-table" moves, the long arrow has to be drawn different
-        if (move === MOVE.X_TO_P) {
-            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT).toString();
-            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT).toString();
-            lastTop     =   (lastCell.offsetTop     + cellHeight    * (1 - CELL_PERCENT)).toString();
-        } else if (move === MOVE.X_TO_Q) {
-            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT).toString();
-            top         =   (cell.offsetTop         + cellHeight    * (1-CELL_PERCENT)).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT).toString();
-            lastTop     =   (lastCell.offsetTop     + cellHeight    * CELL_PERCENT).toString();
-        } else if (move === MOVE.Q_TO_X) {
-            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT).toString();
-            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * (1-CELL_PERCENT)).toString();
-            lastTop     =   (lastCell.offsetTop     + cellHeight    * (1-CELL_PERCENT)).toString();
+        // with different moves, the long arrow has to be drawn different
+        if (move === MOVE.HORIZONTAL) {
+            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE).toString();
+            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT.LINE).toString();
+            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * (1-CELL_PERCENT.LINE_HEAD_PENETRATION)).toString();
+            lastTop     =   (lastCell.offsetTop     + cellHeight    * CELL_PERCENT.LINE).toString();
         } else if (move === MOVE.P_TO_X) {
-            left        =   (cell.offsetLeft        + cellWidth     * (1-CELL_PERCENT)).toString();
-            top         =   (cell.offsetTop         + cellHeight    * (1-CELL_PERCENT)).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * (1-CELL_PERCENT)).toString();
-            lastTop     =   (lastCell.offsetTop     + cellHeight    * CELL_PERCENT).toString();
+            left        =   (cell.offsetLeft        + cellWidth     * (1-CELL_PERCENT.LINE)).toString();
+            top         =   (cell.offsetTop         + cellHeight    * (1-CELL_PERCENT.LINE)).toString();
+            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * (1-CELL_PERCENT.LINE)).toString();
+            lastTop     =   (lastCell.offsetTop     + cellHeight    * CELL_PERCENT.LINE).toString();
+        } else if (move === MOVE.Q_TO_X) {
+            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE).toString();
+            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT.LINE).toString();
+            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * (1-CELL_PERCENT.LINE)).toString();
+            lastTop     =   (lastCell.offsetTop     + cellHeight    * (1-CELL_PERCENT.LINE)).toString();
+        } else if (move === MOVE.VERTICAL) {
+            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE).toString();
+            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT.LINE).toString();
+            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT.LINE).toString();
+            lastTop     =   (lastCell.offsetTop     + cellHeight    * (1-CELL_PERCENT.LINE_HEAD_PENETRATION)).toString();
+        } else if (move === MOVE.X_TO_P) {
+            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE).toString();
+            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT.LINE).toString();
+            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT.LINE).toString();
+            lastTop     =   (lastCell.offsetTop     + cellHeight    * (1 - CELL_PERCENT.LINE)).toString();
+        } else if (move === MOVE.X_TO_Q) {
+            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE).toString();
+            top         =   (cell.offsetTop         + cellHeight    * (1-CELL_PERCENT.LINE)).toString();
+            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT.LINE).toString();
+            lastTop     =   (lastCell.offsetTop     + cellHeight    * CELL_PERCENT.LINE).toString();
         }
 
         // define svg dimensions
@@ -419,6 +435,7 @@ Author: Alexander Mattheis
         line.setAttribute("y1", top);
         line.setAttribute("x2", lastLeft);
         line.setAttribute("y2", lastTop);
+        line.setAttribute("stroke-dasharray", SVG.STROKE_DASHARRAY);
         visualizerInstance.svg.appendChild(line);
         visualizerInstance.cellLines.push(line);
 

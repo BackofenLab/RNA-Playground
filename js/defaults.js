@@ -15,8 +15,6 @@ Author: Alexander Mattheis
  */
 
 // constants
-var CELL_PERCENT = 0.2;  // can change position of a "between-table"-arrow in the Gotoh algorithm
-
 var EPSILON = 0.000000001;  // some very low number to test again
 var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 
@@ -70,6 +68,11 @@ var ARROWS = {  // HINT: inner quotes have to be this here: " " or it won't work
     TOP_NAME: ".arrows_t",
     DIAGONAL: '<div class="arrows_d"></div>',
     DIAGONAL_NAME: ".arrows_d"
+};
+
+var CELL_PERCENT = {
+    LINE: 0.2,  // position of a "between-table"-arrow in the Gotoh algorithm
+    LINE_HEAD_PENETRATION: 0.1  // tells how much a line-head of a long "in-table"-arrow penetrates into a cell
 };
 
 /**
@@ -216,8 +219,10 @@ var MATRICES = {
  * Stores the type of moves you can do from a matrix to another matrix in affine algorithms like Gotoh.
  */
 var MOVE = {
+    HORIZONTAL: "horizontal",
     P_TO_X: "pToX",
     Q_TO_X: "qToX",
+    VERTICAL: "vertical",
     X_TO_P: "xToP",
     X_TO_Q: "xToQ"
 };
@@ -315,6 +320,7 @@ var SYMBOLS = {  // contains all strings used in the project
 var SVG = {
     FLOW_LONG_ARROW_COLOR: "black",
     NAME_SPACE: "http://www.w3.org/2000/svg",
+    STROKE_DASHARRAY: "3,6",
     TRACEBACK_LONG_ARROW_COLOR: "black",
 
     MARKER : {
