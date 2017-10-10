@@ -106,8 +106,8 @@ $(document).ready(function () {
 
     /**
      * Updates a display placed on the HTML document with the text of the caller object.
-     * @param {String} display - The display to update.
-     * @param {String} displayText - The new text for the display.
+     * @param {string} display - The display to update.
+     * @param {string} displayText - The new text for the display.
      */
     function updateDisplay(display, displayText) {
         display.text(displayText);

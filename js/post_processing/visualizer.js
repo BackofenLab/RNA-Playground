@@ -114,7 +114,7 @@ Author: Alexander Mattheis
 
     /**
      * Shows to which cells a cell can backtrack.
-     * @param cellCoordinates {Vector} - The vector-position of the cell which have been clicked.
+     * @param cellCoordinates {Object} - The vector-position of the cell which have been clicked.
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
      * @param table {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
@@ -225,10 +225,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Removes short long SVG arrows at a specific position in the table.
-     * @param table {Element} - The table from which arrows have to be removed.
-     * @param posI {number} - The first coordinate.
-     * @param posJ {number} - The second coordinate.
+     * Removes long SVG arrows in the table.
      */
     function removeAllLines() {
         var line;
@@ -434,7 +431,7 @@ Author: Alexander Mattheis
      * Highlights tracebacks in the matrix.
      * @param traceNumber {number} - The current path which should be drawn.
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
-     * @param table {Element} - The default or main table.
+     * @param calculationTable {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
      */
     function showTraceback(traceNumber, calculationVerticalTable, calculationTable, calculationHorizontalTable) {
@@ -565,13 +562,12 @@ Author: Alexander Mattheis
             case 2:
                 string += MATRICES.HORIZONTAL + SYMBOLS.COMMA;
                 break;
-        };
-
+        }
         string += SYMBOLS.COMMA + upperString.split(SYMBOLS.EMPTY).toString() + SYMBOLS.NEW_LINE;
 
         // compute CSV
         for (var i = 0; i < matrix.length; i++) {
-            if (i == 0)
+            if (i === 0)
                 string += SYMBOLS.COMMA;
             else
                 string += leftString.charAt(i-1) + SYMBOLS.COMMA;

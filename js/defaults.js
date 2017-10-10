@@ -17,6 +17,7 @@ Author: Alexander Mattheis
 // constants
 var CELL_PERCENT = 0.2;  // can change position of a "between-table"-arrow in the Gotoh algorithm
 
+var EPSILON = 0.000000001;  // some very low number to test again
 var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
@@ -195,7 +196,7 @@ var LATEX = {
         "\\displaystyle     \\max_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\"           +
         "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]"      +
         "\\displaystyle     \\max_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}"                  +
-        "\\end{cases}",
+        "\\end{cases}"
     }
 };
 
@@ -329,7 +330,7 @@ var SVG = {
             REF_X: "0",  // relative marker coordinate
             REF_Y: "4",  // relative marker coordinate
             WIDTH: "4"
-        },
+        }
     },
 
     TRIANGLE : {

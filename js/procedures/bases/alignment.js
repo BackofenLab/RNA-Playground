@@ -51,7 +51,7 @@ Author: Alexander Mattheis
     /**
      * Sets the algorithm input for an appropriate algorithm
      * which is using the inputViewmodel properties in its computations.
-     * @param inputViewmodel {InputViewmodel}
+     * @param inputViewmodel {Object}
      * - The InputViewmodel of an appropriate algorithm (Needleman-Wunsch, Smith-Waterman).
      */
     function setInput(inputViewmodel) {

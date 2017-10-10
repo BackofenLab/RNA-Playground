@@ -26,7 +26,7 @@ Author: Alexander Mattheis
 
     /**
      * Changes the label of a vector. It is used to create a vector with a specific label.
-     * @exmaple
+     * @example
      * create(new Vector(i,j), MATRICES.HORIZONTAL)
      * @param Vector - The vector of which the label should be changed.
      * @param label {string} - The string label from "defaults.js".
@@ -308,11 +308,25 @@ Author: Alexander Mattheis
      */
     function searchVerticalMatchPosition(algorithm, currentValue, position, outputData) {
         for (var k = 1; k < position.i; k++) {
-            if (outputData.matrix[position.i - k][position.j] + algorithm.gapFunction(k) === currentValue)
+            if (differenceLowerEpsilon(outputData.matrix[position.i - k][position.j] + algorithm.gapFunction(k), currentValue, EPSILON))
                 return position.i - k;
         }
 
         return Number.NaN;
+    }
+
+    /**
+     * Tests if the difference between to values is lower some parameter Epsilon.
+     * Hint: It would maybe work without this function. So, this function is only for security reasons.
+     * @param value1 - The first value.
+     * @param value2 - The second value.
+     * @param epsilon - The small number you test against.
+     * @return {boolean} - The
+     */
+    function differenceLowerEpsilon(value1, value2, epsilon) {
+        var difference = value1 - value2;
+
+        return Math.abs(difference) < epsilon;
     }
 
     /**
@@ -325,7 +339,7 @@ Author: Alexander Mattheis
      */
     function searchHorizontalMatchPosition(algorithm, currentValue, position, outputData) {
         for (var k = 1; k < position.j; k++) {
-            if (outputData.matrix[position.i][position.j - k] + algorithm.gapFunction(k) === currentValue)
+            if (differenceLowerEpsilon(outputData.matrix[position.i][position.j - k] + algorithm.gapFunction(k), currentValue, EPSILON))
                 return position.j - k;
         }
 

@@ -82,7 +82,7 @@ $(document).ready(function () {
     /**
      * Sets the algorithm input for an appropriate algorithm
      * which is using the inputViewmodel properties in its computations.
-     * @param inputViewmodel {InputViewmodel} - The InputViewmodel of an appropriate algorithm.
+     * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
         inputData.sequenceA = inputViewmodel.sequence1();

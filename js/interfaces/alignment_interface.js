@@ -54,7 +54,7 @@ Author: Alexander Mattheis
 
     /**
      * Interface Operations that are shared between algorithms to initialize and start an algorithm.
-     * @param Algorithm {Algorithm} - The alignment algorithm which has to be initialized and started.
+     * @param Algorithm {Object} - The alignment algorithm which has to be initialized and started.
      * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
      * @param processInput {Function} - Function from the algorithm which should process the input.
      * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
@@ -226,6 +226,7 @@ Author: Alexander Mattheis
 
     /**
      * Changes the output after processing the input.
+     * Hint: The parameter inputProcessor is needed!
      * @param outputData {Object} - Contains all output data.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions.
@@ -255,18 +256,17 @@ Author: Alexander Mattheis
      * outside with the help of the viewmodel (here: OutputViewmodel)
      * by getting data from a model (here: outputData).
      * This OutputViewmodel is shared by the different alignment algorithms.
-     * @param algorithmName
+     * @param algorithmName {string} - The name of the algorithm which is executed.
      * @param outputData {Object} - Contains all output data.
      * @constructor
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      */
     function OutputViewmodel(algorithmName, outputData) {
-        var viewModel = this;
-
         this.matrix = ko.observableArray(outputData.matrix);
 
-        for (var i = 0; i < outputData.matrix.length; i++)
+        for (var i = 0; i < outputData.matrix.length; i++) {
             this.matrix[i] = ko.observableArray(outputData.matrix[i]);
+        }
 
         if (algorithmName === ALGORITHMS.GOTOH) {  // special cases regarding possible algorithms
             this.horizontalGaps = ko.observableArray(outputData.horizontalGaps);
@@ -286,8 +286,10 @@ Author: Alexander Mattheis
 
     /**
      * Post edits a matrix and replaces for example values with LaTeX-symbols.
+     * @param algorithmName {string} - The name of the algorithm which is executed.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param outputData {Object} - Contains all output data.
+     * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
      * @return outputData {Object} - Changed output data.
      */
     function edit(algorithmName, inputProcessor, outputData, visualViewmodel) {

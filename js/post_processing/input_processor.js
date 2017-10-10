@@ -361,12 +361,12 @@ Author: Alexander Mattheis
         var inputs = $("#algorithm_input").find("input");
 
         inputs.on({
-            click: function (e) {
+            click: function () {
                 if ($(this).is(":radio"))
                     updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput);
             },
 
-            focusout: function (e) {
+            focusout: function () {
                 if (!inputProcessorInstance.avoidFocusOutUpdate) {
                     // Important: if "alert" is used in this function then it will fire this event forever in Chrome
                     // because the alert-box gets the focus and loses it when you click on "OK"
@@ -377,12 +377,12 @@ Author: Alexander Mattheis
                 inputProcessorInstance.avoidFocusOutUpdate = false;
             },
 
-            keypress: function (e) {
+            keypress: function () {
                 if (e.which === KEY_CODES.ENTER)
                     updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput);
             },
 
-            mousedown: function (e) {
+            mousedown: function () {
                 if (this.className === "fx_parameter"
                     && this !== document.activeElement
                     && document.activeElement !== document.body)

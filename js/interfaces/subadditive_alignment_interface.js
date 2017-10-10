@@ -32,6 +32,8 @@ Author: Alexander Mattheis
 
     /**
      * Function managing objects.
+     * @param Algorithm - The algorithm which is started.
+     * @param algorithmName - The name of the algorithm which is started.
      */
     function startSubadditiveAlignmentAlgorithm(Algorithm, algorithmName) {
         imports();
@@ -55,7 +57,7 @@ Author: Alexander Mattheis
     /**
      * In the Model-View-Viewmodel, the view (HTML-page) is filled with data from
      * outside with the help of the viewmodel (here: InputViewmodel)
-     * by getting data from a model (here: AFFINE_ALIGNMENT_DEFAULTS).
+     * by getting data from a model (here: SUBADDITIVE_ALIGNMENT_DEFAULTS).
      * @param algorithmName {string} - The name of the algorithm.
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      * @constructor
@@ -129,7 +131,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Returns the LaTeX-code for formulas of affine algorithms.
+     * Returns the LaTeX-code for formulas of subadditive algorithms.
      * @param algorithmName {string} - The name of the algorithm.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
      * @param matrix {string} - The matrix for which you want display the formula.
@@ -142,6 +144,11 @@ Author: Alexander Mattheis
         return getGotohFormula(viewmodel, matrix);
     }
 
+    /**
+     * Returns the LaTeX-code for Waterman-Smith-Beyer formula.
+     * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
+     * @return {string} - LaTeX code.
+     */
     function getWatermanSmithBeyerFormula(viewmodel) {
         var string = LATEX.MATH_REGION;  // starting LaTeX math region
 
@@ -164,15 +171,12 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Returns the LaTeX-code for Waterman-Smith-Beyer.
+     * Returns the dynamic, input-dependant LaTeX-code for Waterman-Smith-Beyer formula.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
      * @return {string} - LaTeX code.
      */
     function getWatermanSmithBeyerDynamicFormula(viewmodel) {
         var string = SYMBOLS.EMPTY;
-
-        var gapStart = viewmodel.gapStart();
-        var gapExtension = viewmodel.enlargement();
 
         // look if we maximize or minimize
         if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
@@ -205,6 +209,12 @@ Author: Alexander Mattheis
         return string;
     }
 
+    /**
+     * Returns the LaTeX-code for Gotoh formulas.
+     * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
+     * @param matrix {string} - The matrix for which you want display the formula.
+     * @return {string} - LaTeX code.
+     */
     function getGotohFormula(viewmodel, matrix) {
         var string = LATEX.MATH_REGION;  // starting LaTeX math region
 
@@ -246,7 +256,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Returns the LaTeX-code for Gotoh.
+     * Returns the dynamic, input-dependant LaTeX-code for Gotoh formulas.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
      * @param matrix {string} - The matrix for which you want display the formula.
      * @return {string} - LaTeX code.
@@ -328,7 +338,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Returns the right factor for the enlargement formula.
+     * Returns the right gap function.
      * @param algorithmName {string} - The name of the algorithm.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
      * @return {string} - LaTeX code.
@@ -421,9 +431,13 @@ Author: Alexander Mattheis
      * Changes the output after processing the input.
      * @param outputData {Object} - Contains all output data.
      * @param inputProcessor {Object} - The unit processing the input.
-     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
+        if (viewmodels.input.subadditiveFunction !== undefined
+            && viewmodels.input.subadditiveFunction() === SUBADDITIVE_FUNCTIONS.LOGARITHMIC)
+            roundValues(outputData);
+
         viewmodels.output.matrix(outputData.matrix);
 
         if (viewmodels.output.horizontalGaps !== undefined) {
@@ -457,6 +471,26 @@ Author: Alexander Mattheis
         viewmodels.output.alignments(outputData.alignments);
         viewmodels.output.score(outputData.score);
         viewmodels.output.moreTracebacks(outputData.moreTracebacks);
+    }
+
+    /**
+     * Rounds the matrix values and the score to one decimal place.
+     * @param outputData - Output data which is modified.
+     */
+    function roundValues(outputData) {
+        for (var i = 0; i < outputData.matrix.length; i++)
+            for (var j = 0; j < outputData.matrix[0].length; j++)
+                outputData.matrix[i][j] = roundToOneDecimalPlace(outputData.matrix[i][j]);
+
+        outputData.score = roundToOneDecimalPlace(outputData.score);
+    }
+
+    /**
+     * Rounds a value to one decimal place.
+     * @param number - The number which is rounded.
+     */
+    function roundToOneDecimalPlace(number) {
+        return Math.round(number*10)/10;
     }
 
     /**
