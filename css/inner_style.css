@@ -52,6 +52,10 @@ label {
     padding-top: 2px; /* to align with inputs */
 }
 
+small {
+    font-weight: normal;
+}
+
 table {
     border-collapse: collapse;
     display: inline-block;
@@ -78,10 +82,6 @@ th {
     background-color: #F3F4F1;
     border: 1px solid #a0a0a0;
     color: gray;
-}
-
-small {
-    font-weight: normal;
 }
 
 /*---- CLASS STYLING ----*/
