@@ -15,7 +15,7 @@ Author: Alexander Mattheis
  */
 
 // constants
-var EPSILON = 0.000000001;  // some very low number to test again
+var EPSILON = 0.000000001;  // some very low number to test against
 var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
@@ -38,15 +38,15 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms
  * Stores the default parameters for alignment algorithms.
  */
 var ALIGNMENT_DEFAULTS = {
-    CALCULATION: "similarity",
+    CALCULATION: "distance",
     SEQUENCE_1: "AACG",  // hint: UPPERCASE letters!
     SEQUENCE_2: "AATCG",  // hint: UPPERCASE letters!
 
     FUNCTION: {
-        DELETION: -2,
-        INSERTION: -2,
-        MATCH: 1,
-        MISMATCH: -1
+        DELETION: 2,
+        INSERTION: 2,
+        MATCH: -1,
+        MISMATCH: 1
     }
 };
 
@@ -152,7 +152,7 @@ var LATEX = {
 
     RECURSION: {
         GOTOH:
-  	    "\\begin{cases}"                            +
+        "\\begin{cases}"                            +
         "D_{i-1,j-1}	& + & s(a_i,b_j)    \\\\"   +
         "P_{i,j}                            \\\\"   +
         "Q_{i,j}                                "   +
@@ -162,7 +162,7 @@ var LATEX = {
         "\\begin{cases}"                            +
         "D_{i-1,j}      & + & g(1)		    \\\\"   +
         "P_{i-1,j}      & + & \\beta"              +
-  	    "\\end{cases}",
+        "\\end{cases}",
 
         GOTOH_Q:
         "\\begin{cases}"                            +
@@ -171,7 +171,7 @@ var LATEX = {
         "\\end{cases}",
 
         GOTOH_GAP_FUNCTION:
-        "g(k) = \\alpha + \\beta \\cdot k",
+            "g(k) = \\alpha + \\beta \\cdot k",
 
         NEEDLEMAN_WUNSCH:
         "\\begin{cases}"                            +
@@ -295,7 +295,7 @@ var SUBADDITIVE_FUNCTIONS = {
 /**
  * Stores non-LaTeX symbols used in the program.
  */
-var SYMBOLS = {  // contains all strings used in the project
+var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
     AND: "&",
     BRACKET_LEFT: "(",
     BRACKET_RIGHT: ")",
@@ -306,7 +306,7 @@ var SYMBOLS = {  // contains all strings used in the project
     GAP: "_",
     INFINITY: "∞",
     NEGATIVE_INFINITY: "-∞",
-    NEW_LINE: "\r\n",
+    NEW_LINE: "\n",
     PLUS: "+",
     SEPARATOR: "_",
     SPACE: " ",

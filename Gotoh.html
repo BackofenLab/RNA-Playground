@@ -84,13 +84,13 @@ Author: Alexander Mattheis
         <p>
             <label id="recursion_gotoh">Recursions:</label>
             <div class="span_group">
-                <span data-bind="text: $root.input.formula"></span>
-                <br>
-                <br>
                 <span data-bind="text: $root.input.formulaP"></span>
                 <br>
                 <br>
                 <span data-bind="text: $root.input.formulaQ"></span>
+                <br>
+                <br>
+                <span data-bind="text: $root.input.formula"></span>
                 <br>
                 <br>
                 <br>
@@ -107,167 +107,169 @@ Author: Alexander Mattheis
 </div>
 
 <div id="algorithm_output">
-    <div id="main_output">
-        <table id="calculation_vertical">
-            <thead>
-                <tr>
-                    <th>$P$</th>
-                    <th></th>
-                    <!-- ko foreach: input.sequence1 -->
-                        <th data-bind="drawChar: [$data, $index()+1]"></th>
-                    <!-- /ko -->
-                </tr>
-            </thead>
-
-            <tbody>
-                <!-- ko foreach: output.verticalGaps --> <!-- to get i-indexes = $parentContext.$index() -->
+    <div id="output">
+        <div id="main_output">
+            <table id="calculation_vertical">
+                <thead>
                     <tr>
-                        <!-- ko if: $index() == 0 -->
-                            <th></th>
+                        <th>$P$</th>
+                        <th></th>
+                        <!-- ko foreach: input.sequence1 -->
+                            <th data-bind="drawChar: [$data, $index()+1]"></th>
                         <!-- /ko -->
+                    </tr>
+                </thead>
 
-                        <!-- ko if: $index() > 0 -->
-                            <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                <tbody>
+                    <!-- ko foreach: output.verticalGaps --> <!-- to get i-indexes = $parentContext.$index() -->
+                        <tr>
+                            <!-- ko if: $index() == 0 -->
+                                <th></th>
+                            <!-- /ko -->
+
+                            <!-- ko if: $index() > 0 -->
+                                <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                            <!-- /ko -->
+
+                            <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
+                                <td class="selectable_entry"
+                                    data-bind="text: $root.output.verticalGaps()[$parentContext.$index()][$index()]"></td>
+                            <!-- /ko -->
+                        </tr>
+                    <!-- /ko -->
+
+                    <tr>
+                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
+                            <small>
+                                <b>Score:</b> -
+                            </small>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+
+            <br>
+            <br>
+            <br>
+
+            <table id="calculation">
+                <thead>
+                    <tr>
+                        <th>$D$</th>
+                        <th></th>
+                        <!-- ko foreach: input.sequence1 -->
+                            <th data-bind="drawChar: [$data, $index()+1]"></th>
                         <!-- /ko -->
+                    </tr>
+                </thead>
 
-                        <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
+                <tbody>
+                    <!-- ko foreach: output.matrix --> <!-- to get i-indexes = $parentContext.$index() -->
+                        <tr>
+                            <!-- ko if: $index() == 0 -->
+                                <th></th>
+                            <!-- /ko -->
+
+                            <!-- ko if: $index() > 0 -->
+                                <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                            <!-- /ko -->
+
+                            <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
+                                <td class="selectable_entry"
+                                    data-bind="text: $root.output.matrix()[$parentContext.$index()][$index()]"></td>
+                            <!-- /ko -->
+                        </tr>
+                    <!-- /ko -->
+
+                    <tr>
+                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
+                            <small>
+                                <b>Score:</b> <span data-bind="text: $root.output.score"></span>
+                            </small>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+
+            <br>
+            <br>
+            <br>
+
+            <table id="calculation_horizontal">
+                <thead>
+                    <tr>
+                        <th>$Q$</th>
+                        <th></th>
+                        <!-- ko foreach: input.sequence1 -->
+                            <th data-bind="drawChar: [$data, $index()+1]"></th>
+                        <!-- /ko -->
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- ko foreach: output.horizontalGaps --> <!-- to get i-indexes = $parentContext.$index() -->
+                        <tr>
+                            <!-- ko if: $index() == 0 -->
+                                <th></th>
+                            <!-- /ko -->
+
+                            <!-- ko if: $index() > 0 -->
+                                <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                            <!-- /ko -->
+
+                            <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
                             <td class="selectable_entry"
-                                data-bind="text: $root.output.verticalGaps()[$parentContext.$index()][$index()]"></td>
-                        <!-- /ko -->
-                    </tr>
-                <!-- /ko -->
-
-                <tr>
-                    <th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
-                        <small>
-                            <b>Score:</b> -
-                        </small>
-                    </th>
-                </tr>
-            </tbody>
-        </table>
-
-        <br>
-        <!-- Firefox bugfix: footer separated from table -->
-        <table>
-            <tfoot>
-                <tr>
-                    <td class="download_table" colspan=100%>
-                        <a class="table_vertical_download" href="#">Download<br>Table</a>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-
-        <br>
-        <br>
-        <br>
-
-        <table id="calculation">
-            <thead>
-                <tr>
-                    <th>$D$</th>
-                    <th></th>
-                    <!-- ko foreach: input.sequence1 -->
-                        <th data-bind="drawChar: [$data, $index()+1]"></th>
+                                data-bind="text: $root.output.horizontalGaps()[$parentContext.$index()][$index()]"></td>
+                            <!-- /ko -->
+                        </tr>
                     <!-- /ko -->
-                </tr>
-            </thead>
 
-            <tbody>
-                <!-- ko foreach: output.matrix --> <!-- to get i-indexes = $parentContext.$index() -->
                     <tr>
-                        <!-- ko if: $index() == 0 -->
-                            <th></th>
-                        <!-- /ko -->
-
-                        <!-- ko if: $index() > 0 -->
-                            <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
-                        <!-- /ko -->
-
-                        <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
-                            <td class="selectable_entry"
-                                data-bind="text: $root.output.matrix()[$parentContext.$index()][$index()]"></td>
-                        <!-- /ko -->
+                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
+                            <small>
+                                <b>Score:</b> -
+                            </small>
+                        </th>
                     </tr>
-                <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
 
-                <tr>
-                    <th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
-                        <small>
-                            <b>Score:</b> <span data-bind="text: $root.output.score"></span>
-                        </small>
-                    </th>
-                </tr>
-            </tbody>
-        </table>
-
-        <br>
-        <!-- Firefox bugfix: footer separated from table -->
-        <table>
-            <tfoot>
+        <div id="download">
+            <table>
+                <tfoot>
                 <tr>
                     <td class="download_table" colspan=100%>
-                        <a class="table_download" href="#">Download<br>Table</a>
+                        <a class="table_vertical_download" href="#">Download Table P</a>
                     </td>
                 </tr>
-            </tfoot>
-        </table>
+                </tfoot>
+            </table>
 
-        <br>
-        <br>
-        <br>
+            <br>
 
-        <table id="calculation_horizontal">
-            <thead>
-                <tr>
-                    <th>$Q$</th>
-                    <th></th>
-                    <!-- ko foreach: input.sequence1 -->
-                        <th data-bind="drawChar: [$data, $index()+1]"></th>
-                    <!-- /ko -->
-                </tr>
-            </thead>
-
-            <tbody>
-                <!-- ko foreach: output.horizontalGaps --> <!-- to get i-indexes = $parentContext.$index() -->
-                    <tr>
-                        <!-- ko if: $index() == 0 -->
-                            <th></th>
-                        <!-- /ko -->
-
-                        <!-- ko if: $index() > 0 -->
-                            <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
-                        <!-- /ko -->
-
-                        <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
-                        <td class="selectable_entry"
-                            data-bind="text: $root.output.horizontalGaps()[$parentContext.$index()][$index()]"></td>
-                        <!-- /ko -->
-                    </tr>
-                <!-- /ko -->
-
-                <tr>
-                    <th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
-                        <small>
-                            <b>Score:</b> -
-                        </small>
-                    </th>
-                </tr>
-            </tbody>
-        </table>
-
-        <br>
-        <!-- Firefox bugfix: footer separated from table -->
-        <table>
-            <tfoot>
+            <table>
+                <tfoot>
                 <tr>
                     <td class="download_table" colspan=100%>
-                        <a class="table_horizontal_download" href="#">Download<br>Table</a>
+                        <a class="table_download" href="#">Download Table D</a>
                     </td>
                 </tr>
-            </tfoot>
-        </table>
+                </tfoot>
+            </table>
+
+            <br>
+
+            <table>
+                <tfoot>
+                <tr>
+                    <td class="download_table" colspan=100%>
+                        <a class="table_horizontal_download" href="#">Download Table Q</a>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
     </div>
 
     <div id="ancillary_output">

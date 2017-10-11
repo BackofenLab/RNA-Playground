@@ -119,7 +119,7 @@ Author: Alexander Mattheis
      * @param table {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
      */
-    function showFlow(cellCoordinates, calculationVerticalTable, table, calculationHorizontalTable) {
+    function showFlow(cellCoordinates, calculationVerticalTable, table, calculationHorizontalTable, mainOutput) {
         var algorithm = visualizerInstance.algorithm;
         var superclass = algorithm.getSuperclass();
 
@@ -131,10 +131,10 @@ Author: Alexander Mattheis
             flows = superclass.getTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, superclass.getNeighboured);
 
         for (i = 0; i < visualizerInstance.lastFlows.length; i++)
-            demarkCells(visualizerInstance.lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, i, true);
+            demarkCells(visualizerInstance.lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true);
 
         for (var i = 0; i < flows.length; i++)
-            markCells(flows[i].reverse(), calculationVerticalTable, table, calculationHorizontalTable, i, true, true);
+            markCells(flows[i].reverse(), calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true, true);
 
         visualizerInstance.lastFlows = flows;
     }

@@ -121,43 +121,43 @@ Author: Alexander Mattheis
     function getFormula(algorithmName, viewmodel) {
         var string = LATEX.MATH_REGION;  // starting LaTeX math region
 
-            if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
-                string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MAX;
-            else
-                string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
+        if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
+            string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MAX;
+        else
+            string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
 
-            if (algorithmName === ALGORITHMS.NEEDLEMAN_WUNSCH)
-                string += LATEX.RECURSION.NEEDLEMAN_WUNSCH;
-            else
-                string += LATEX.RECURSION.SMITH_WATERMAN;
+        if (algorithmName === ALGORITHMS.NEEDLEMAN_WUNSCH)
+            string += LATEX.RECURSION.NEEDLEMAN_WUNSCH;
+        else
+            string += LATEX.RECURSION.SMITH_WATERMAN;
 
-            if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
-                string += SYMBOLS.EQUAL + LATEX.MAX;
-            else
-                string += SYMBOLS.EQUAL + LATEX.MIN;
+        if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
+            string += SYMBOLS.EQUAL + LATEX.MAX;
+        else
+            string += SYMBOLS.EQUAL + LATEX.MIN;
 
-            string += LATEX.BEGIN_CASES;  // starting LaTeX case region
-                // Hint: -x and x with x is number should be right aligned -> LATEX.SPACE is added on positive numbers
-                string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
-                string += viewmodel.match() >= 0 ? LATEX.SPACE + viewmodel.match() : viewmodel.match();
-                string += SYMBOLS.AND + LATEX.FORMULA.MATCH + LATEX.NEW_LINE;
+        string += LATEX.BEGIN_CASES;  // starting LaTeX case region
+        // Hint: -x and x with x is number should be right aligned -> LATEX.SPACE is added on positive numbers
+        string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
+        string += viewmodel.match() >= 0 ? LATEX.SPACE + viewmodel.match() : viewmodel.match();
+        string += SYMBOLS.AND + LATEX.FORMULA.MATCH + LATEX.NEW_LINE;
 
-                string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
-                string += viewmodel.mismatch() >= 0 ? LATEX.SPACE + viewmodel.mismatch() : viewmodel.mismatch();
-                string += SYMBOLS.AND + LATEX.FORMULA.MISMATCH + LATEX.NEW_LINE;
+        string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
+        string += viewmodel.mismatch() >= 0 ? LATEX.SPACE + viewmodel.mismatch() : viewmodel.mismatch();
+        string += SYMBOLS.AND + LATEX.FORMULA.MISMATCH + LATEX.NEW_LINE;
 
-                string += LATEX.FORMULA.TOP + LATEX.ALIGNED_PLUS;
-                string += viewmodel.deletion() >= 0 ? LATEX.SPACE + viewmodel.deletion() : viewmodel.deletion();
-                string += SYMBOLS.AND + LATEX.FORMULA.DELETION + LATEX.NEW_LINE;
+        string += LATEX.FORMULA.TOP + LATEX.ALIGNED_PLUS;
+        string += viewmodel.deletion() >= 0 ? LATEX.SPACE + viewmodel.deletion() : viewmodel.deletion();
+        string += SYMBOLS.AND + LATEX.FORMULA.DELETION + LATEX.NEW_LINE;
 
-                string += LATEX.FORMULA.LEFT + LATEX.ALIGNED_PLUS;
-                string += viewmodel.insertion() >= 0 ? LATEX.SPACE + viewmodel.insertion() : viewmodel.insertion();
-                string += SYMBOLS.AND + LATEX.FORMULA.INSERTION;
+        string += LATEX.FORMULA.LEFT + LATEX.ALIGNED_PLUS;
+        string += viewmodel.insertion() >= 0 ? LATEX.SPACE + viewmodel.insertion() : viewmodel.insertion();
+        string += SYMBOLS.AND + LATEX.FORMULA.INSERTION;
 
-                if (algorithmName === ALGORITHMS.SMITH_WATERMAN)
-                    string += LATEX.NEW_LINE + LATEX.FORMULA.ZERO;
+        if (algorithmName === ALGORITHMS.SMITH_WATERMAN)
+            string += LATEX.NEW_LINE + LATEX.FORMULA.ZERO;
 
-            string += LATEX.END_CASES;  // stopping LaTeX case region
+        string += LATEX.END_CASES;  // stopping LaTeX case region
 
         string += LATEX.MATH_REGION;  // stopping LaTeX math region
         return string;
@@ -180,10 +180,11 @@ Author: Alexander Mattheis
             inputViewmodel.sequence1($("#sequence_1").val().toUpperCase());
             inputViewmodel.sequence2($("#sequence_2").val().toUpperCase());
 
-            if ($("#distance").is(":checked"))
-                inputViewmodel.calculation(ALIGNMENT_TYPES.DISTANCE);
-            else
-                inputViewmodel.calculation(ALIGNMENT_TYPES.SIMILARITY);
+            if (algorithm.type !== ALGORITHMS.SMITH_WATERMAN)
+                if ($("#distance").is(":checked"))
+                    inputViewmodel.calculation(ALIGNMENT_TYPES.DISTANCE);
+                else
+                    inputViewmodel.calculation(ALIGNMENT_TYPES.SIMILARITY);
 
             inputViewmodel.deletion(Number($("#deletion").val()));
             inputViewmodel.insertion(Number($("#insertion").val()));
