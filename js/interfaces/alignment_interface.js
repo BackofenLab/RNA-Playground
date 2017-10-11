@@ -159,6 +159,9 @@ Author: Alexander Mattheis
 
         string += LATEX.END_CASES;  // stopping LaTeX case region
 
+        if (algorithmName === ALGORITHMS.SMITH_WATERMAN)
+            string = string.replace(MULTI_SYMBOLS.D_BIG, SYMBOLS.S_BIG);
+
         string += LATEX.MATH_REGION;  // stopping LaTeX math region
         return string;
     }

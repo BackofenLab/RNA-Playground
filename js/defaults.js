@@ -183,9 +183,9 @@ var LATEX = {
 
         SMITH_WATERMAN:
         "\\begin{cases}"                            +
-        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
-        "D_{i-1,j}      & + & s(a_i,-)      \\\\"   +
-        "D_{i,j-1} 		& + & s(-,b_j)      \\\\"   +
+        "S_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
+        "S_{i-1,j}      & + & s(a_i,-)      \\\\"   +
+        "S_{i,j-1} 		& + & s(-,b_j)      \\\\"   +
         "0"                                         +
         "\\end{cases}",
 
@@ -233,6 +233,7 @@ var MOVE = {
  * Symbols which are used to be for example globally replaced.
  */
 var MULTI_SYMBOLS = {
+    D_BIG: /D/g,
     DELIMITER: /-/g,
     G_LITTLE_SPECIAL: /ğ/g,
     SPACE: / /g
@@ -311,6 +312,7 @@ var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
     NEGATIVE_INFINITY: "-∞",
     NEW_LINE: "\n",
     PLUS: "+",
+    S_BIG: "S",
     SEPARATOR: "_",
     SPACE: " ",
     STAR: "*",
