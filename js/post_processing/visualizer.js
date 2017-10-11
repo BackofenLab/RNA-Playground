@@ -124,7 +124,7 @@ Author: Alexander Mattheis
         var superclass = algorithm.getSuperclass();
 
         var flows;
-        visualizerInstance.algorithm.numberOfTracebacks = 0;
+        visualizerInstance.algorithm.numberOfTracebacks = 0;  // to avoid counting and a cancellation after some reached limit
         if (algorithm.getNeighboured !== undefined)
             flows = superclass.getTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, algorithm.getNeighboured);
         else

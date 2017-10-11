@@ -31,7 +31,8 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms
     GOTOH: "gotoh",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
     SMITH_WATERMAN: "smith_waterman",
-    WATERMAN_SMITH_BEYER: "waterman_smith_beyer"
+    WATERMAN_SMITH_BEYER: "waterman_smith_beyer",
+    ARSLAN_EGECIOGLU_PEVZNER: "arslan_egecioglu_pevzner"
 };
 
 /**
@@ -233,6 +234,7 @@ var MOVE = {
  */
 var MULTI_SYMBOLS = {
     DELIMITER: /-/g,
+    G_LITTLE_SPECIAL: /ğ/g,
     SPACE: / /g
 };
 
@@ -304,6 +306,7 @@ var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
     EMPTY: "",
     EQUAL: "=",
     GAP: "_",
+    G_LITTLE: "g",
     INFINITY: "∞",
     NEGATIVE_INFINITY: "-∞",
     NEW_LINE: "\n",

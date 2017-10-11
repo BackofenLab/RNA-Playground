@@ -115,15 +115,19 @@ $(document).ready(function () {
 
     /**
      * Loads the HTML-page of the algorithm into current document.
-     * @param algorithm - The HTML-filename without extension you want to load.
+     * @param algorithm - The algorithm name without extension you want to load.
      * @param view - The view in which you want load the page.
      */
     function updateDocumentView(algorithm, view) {
-        var algorithmName = algorithm.toLowerCase().replace(MULTI_SYMBOLS.DELIMITER, SYMBOLS.SEPARATOR)
+        var htmlName = algorithm.replace(MULTI_SYMBOLS.G_LITTLE_SPECIAL, SYMBOLS.G_LITTLE);
+
+        var javascriptName = algorithm.toLowerCase()
+            .replace(MULTI_SYMBOLS.G_LITTLE_SPECIAL, SYMBOLS.G_LITTLE)
+            .replace(MULTI_SYMBOLS.DELIMITER, SYMBOLS.SEPARATOR)
             .replace(MULTI_SYMBOLS.SPACE, SYMBOLS.SEPARATOR);  // "-" and " " are replaced with "_"
 
-        view.load(PATHS.MAIN.PAGES + algorithm + FILE_EXTENSIONS.HYPERTEXT_MARKUP_LANGUAGE, function () {
-            $.getScript(PATHS.MAIN.SCRIPTS + algorithmName + FILE_EXTENSIONS.JAVASCRIPT);
+        view.load(PATHS.MAIN.PAGES + htmlName + FILE_EXTENSIONS.HYPERTEXT_MARKUP_LANGUAGE, function () {
+            $.getScript(PATHS.MAIN.SCRIPTS + javascriptName + FILE_EXTENSIONS.JAVASCRIPT);
         });
     }
 }());
