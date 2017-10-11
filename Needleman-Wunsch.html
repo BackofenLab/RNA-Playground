@@ -9,7 +9,7 @@ Author: Alexander Mattheis
     <div class="description">
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">
         Saul B. Needleman and Christian D. Wunsch</a> introduced 1970 an approach to
-        compute the optimal global alignment of two sequences based.
+        compute the optimal global alignment of two sequences.
         A minimizing variant was introduced 1974 by 
         <a href="https://doi.org/10.1137/0126070">Peter H. Sellers</a>.
         <br>
@@ -19,12 +19,12 @@ Author: Alexander Mattheis
         changes needed to transfer one sequence into the other.
         The changes are scored and an optimal set of changes is identified, which defines an alignment.
         The dynamic programming approach tabularizes optimal subsolutions in matrix $D$,
-        where an entry $D_{i,j}$ represents the best score for the alignment of the 
+        where an entry $D_{i,j}$ represents the best score for aligning the 
         prefixes $a_{1..i}$ with $b_{1..j}$. The according recursions are shown below. 
-        Note, consecutive gap (insertions/deletions) scoring is done linearly.
+        Note, consecutive gap (insertion/deletion) scoring is done linearly.
         <br>
         <br>
-        For the given input, the according table $D$ is shown along with a list 
+        For the given input, the final table $D$ is provided along with a list 
         of according optimal alignments. 
         On table cell selection, optimal traceback options are shown.
         On alignment selection, an according traceback path is visualized in the table.
@@ -75,7 +75,7 @@ Author: Alexander Mattheis
 
             <div class="group_hint">
                 <b>Hint:</b> <br>
-                For similarity maximization, match scores should be positive and all scores lower. <br>
+                For similarity maximization, match scores should be positive and all other scores lower. <br>
                 For distance minimization the reverse applies.
             </div>
         </p>
