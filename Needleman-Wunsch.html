@@ -7,31 +7,26 @@ Author: Alexander Mattheis
 
 <div id="algorithm_description">
     <div class="description">
-        The dynamic programming approach
-        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a>
-        by Saul B. Needleman and Christian D. Wunsch
-        computes the optimal, global alignment of two sequences.
-        This algorithm from 1970 (publishing) has used a maximizing recursion-function,
-        the minimizing variant was developed 1974 by Peter H. Sellers
-        and it is sometimes called
-        <a href="https://doi.org/10.1137/0126070">Needleman-Wunsch-Sellers (1974)</a>.
-        But both variants can compute the same alignments,
-        so they are equivalent with respect to their input and output space.
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">
+        Saul B. Needleman and Christian D. Wunsch</a> introduced 1970 an approach to
+        compute the optimal global alignment of two sequences based.
+        A minimizing variant was introduced 1974 by 
+        <a href="https://doi.org/10.1137/0126070">Peter H. Sellers</a>.
         <br>
         <br>
-        The main motivation for this algorithm is biological and medical examination.
-        You want have tools to compare two sequences with each other
-        and many algorithms which are used today for alignment are based
-        on the
-        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>
-        algorithm.
+        Under the assumption that both input sequences $a$ and $b$ stem from the same origin,
+        a global alignment tries to identify matching parts and the 
+        changes needed to transfer one sequence into the other.
+        The changes are scored and an optimal set of changes is identified, which defines an alignment.
+        The dynamic programming approach tabularizes optimal subsolutions in matrix $D$,
+        where an entry $D_{i,j}$ represents the best score for the alignment of the 
+        prefixes $a_{1..i}$ with $b_{1..j}$. The according recursions are shown below.
         <br>
         <br>
-        In the first step of Needleman-Wunsch(-Sellers) you initialize a matrix $D$.
-        Then you fill that matrix with the help of a recursion function $D_{i,j}$.
-        And in the last step you do matrix tracebacks to compute the alignments
-        of the two input-sequences $a$ an $b$. The runtime and the space costs are in
-        $\mathcal O(nm)$, where $n=|a|$ and $m=|b|$.
+        For the given input, the according table $D$ is shown along with a list 
+        of according optimal alignments. 
+        On table cell selection, optimal traceback options are shown.
+        On alignment selection, an according traceback path is visualized in the table.
     </div>
 
     <div class="picture">
@@ -54,7 +49,7 @@ Author: Alexander Mattheis
         </p>
 
         <p>
-            <label>Calculation:</label>
+            <label>Optimization of:</label>
             <span class="group">
                 Distance <input class="optimization_type" data-bind="checked: input.calculation" id="distance"
                                 name="calculation" type="radio" value="distance">
@@ -64,7 +59,7 @@ Author: Alexander Mattheis
         </p>
 
         <p>
-            <label>Scoring $s$:</label>
+            <label>Scoring in $s$:</label>
             <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
                 Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
                 Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
@@ -79,10 +74,8 @@ Author: Alexander Mattheis
 
             <div class="group_hint">
                 <b>Hint:</b> <br>
-                If similarity is checked,
-                then match values should be positive or zero and every other value lower or equal zero. <br>
-                And if distance is checked,
-                then match values should be negative or zero and every other value higher or equal zero.
+                For similarity maximization, match scores should be positive and all scores lower. <br>
+                For distance minimization the reverse applies.
             </div>
         </p>
     </form>
