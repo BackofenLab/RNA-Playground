@@ -357,34 +357,8 @@ Author: Alexander Mattheis
         var inputs = $("#algorithm_input").find("input");
 
         inputs.on({
-            click: function () {
-                if ($(this).is(":radio"))
-                    updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput);
-            },
-
-            focusout: function () {
-                if (!inputProcessorInstance.avoidFocusOutUpdate) {
-                    // Important: if "alert" is used in this function then it will fire this event forever in Chrome
-                    // because the alert-box gets the focus and loses it when you click on "OK"
-                    // Solution: use "console.log(..)"
-                    if (!$(this).is(":radio"))  // a radio button should only fire on a click or you get bugs!
-                        updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput);
-                }
-                inputProcessorInstance.avoidFocusOutUpdate = false;
-            },
-
-            keypress: function (e) {
-                if (e.which === KEY_CODES.ENTER)
-                    updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput);
-            },
-
-            mousedown: function () {
-                if (this.className === "fx_parameter"
-                    && this !== document.activeElement
-                    && document.activeElement !== document.body)
-                    inputProcessorInstance.avoidFocusOutUpdate = true;
-                else
-                    inputProcessorInstance.avoidFocusOutUpdate = false;
+            change: function () {
+                updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput);
                 postProcess();
             }
         });
