@@ -7,40 +7,34 @@ Author: Alexander Mattheis
 
 <div id="algorithm_description">
     <div class="description">
-        The dynamic programming approach
-        <a href="https://doi.org/10.1016/0001-8708(76)90202-4">Waterman-Smith-Beyer (1976)</a>
-        by Michael S. Waterman, Temple F. Smith and William. A. Beyer
-        computes the optimal, global subadditive alignment of two sequences.
-        The problem with
-        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a>
-        was that it does not produce
-        biologically relevant alignments.
-        Alignments had too many gaps
-        and by this reason, the
-        <a href="https://doi.org/10.1016/0001-8708(76)90202-4">Waterman-Smith-Beyer</a>
-        algorithm was introduced.
+        The dynamic programming approach by
+        <a href="https://doi.org/10.1016/0001-8708(76)90202-4">
+            Michael S. Waterman, Temple F. Smith and William. A. Beyer (1976)</a>
+        computes optimal global alignments for two sequences and 
+        allows for an arbitrary scoring of consecutive gaps (insertions/deletions).
+        Thus, it can incorporate the assumption that a single large insertion/deletion event is 
+        biologically more likely to happen compared to many small insertions/deletions by 
+        using e.g. a logarithmic or affine gap scoring function, which reduces the number of
+        gaps while increase their lengths.
         <br>
         <br>
-        This algorithm is minimizing the number of gap starts
-        by using a subadditive gap function.
-        Such way you get biologically better results.
-        In the algorithm you try to build a large as possible gap with every cell position
-        left of the current cell position and with every cell position
-        over the current cell position.
-        Therefore, you optimize (minimize/maximize) over the possible positions left and up
-        of the current position in the matrix.
-        So, you have a new recursion function $D_{i,j}$
-        (w.r.t. <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>).
+        To this end, all possible gap lengths are explicitely considered within the recursion,
+        which increases runtime and time complexity compared to the approach by
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman and Wunsch (1970)</a>
+        that applies a linear gap scoring.
+        Under the assumption that both input sequences $a$ and $b$ stem from the same origin,
+        a global alignment tries to identify matching parts and the 
+        changes needed to transfer one sequence into the other.
+        The changes are scored and an optimal set of changes is identified, which defines an alignment.
+        The dynamic programming approach tabularizes optimal subsolutions in matrix $D$,
+        where an entry $D_{i,j}$ represents the best score for the alignment of the 
+        prefixes $a_{1..i}$ with $b_{1..j}$. The according recursion is shown below. 
         <br>
         <br>
-        Apart from that, the algorithm works analogously to
-        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>.
-        You initialize a matrix $D$,
-        then you fill the matrix with the help of the recursion function $D_{i,j}$.
-        And in the last step you do tracebacks to compute the alignments
-        of the input-sequences $a$ and $b$. The space costs are in
-        $\mathcal O(nm)$, where $n=|a|$ and $m=|b|$, but the runtime is because
-        of the optimization over the possible positions in $\mathcal O(n^2m + nm^2)$.
+        For the given input, the according table $D$ is shown along with a list 
+        of according optimal alignments. 
+        On table cell selection, optimal traceback options are shown.
+        On alignment selection, an according traceback path is visualized in the table.
     </div>
 
     <div class="picture">
@@ -63,7 +57,7 @@ Author: Alexander Mattheis
         </p>
 
         <p>
-            <label>Calculation:</label>
+            <label>Optimization of:</label>
             <span class="group">
                 Distance <input class="optimization_type" data-bind="checked: input.calculation" id="distance"
                                 name="calculation" type="radio" value="distance">
@@ -73,12 +67,10 @@ Author: Alexander Mattheis
         </p>
 
         <p>
-            <label>Scoring $s$:</label>
+            <label>Scoring in $s$:</label>
             <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
                 Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
                 Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
-                Base Costs $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
-                Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
             </span>
         </p>
 
@@ -94,23 +86,28 @@ Author: Alexander Mattheis
                 Quadratic <input class="gap_function_type" data-bind="checked: input.subadditiveFunction" id="quadratic"
                                  name="functionGroup" type="radio" value="quadratic">
             </span>
+            <br>
+            <span data-bind="text: $root.input.gapFunction"></span>
         </p>
 
         <p>
-            <label id="recursion_waterman_smith_beyer">Recursions:</label>
+            <label>Scoring in $g$:</label>
+            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                Base Costs $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
+                Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
+            </span>
+        </p>
+
+        <p>
+            <label id="recursion_waterman_smith_beyer">Recursion:</label>
             <div class="span_group">
                 <span data-bind="text: $root.input.formula"></span>
-                <br>
-                <br>
-                <span data-bind="text: $root.input.gapFunction"></span>
             </div>
 
             <div class="group_hint">
                 <b>Hint:</b> <br>
-                If similarity is checked,
-                then match values should be positive or zero and every other value lower or equal zero. <br>
-                And if distance is checked,
-                then match values should be negative or zero and every other value higher or equal zero.
+                For similarity maximization, match scores should be positive and all scores lower. <br>
+                For distance minimization the reverse applies.
             </div>
         </p>
     </form>
