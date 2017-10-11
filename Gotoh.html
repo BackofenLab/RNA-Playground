@@ -9,8 +9,8 @@ Author: Alexander Mattheis
     <div class="description">
         The algorithm by <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Osamu Gotoh (1982)</a>
         computes the optimal global alignment of two sequences when using an affine gap scoring.
-        Here, the scoring of a long consecutive gap (insertion/deletion) is favored compared to
-        a collection of small gaps with same combined length.
+        Here, the scoring of a long consecutive gap (insertion/deletion) is favored over
+        a collection of small gaps with the same combined length.
         This incorporates the assumption that a single large insertion/deletion event is 
         biologically more likely to happen compared to many small insertions/deletions.
         While sophisticated gap scoring models can be applied in the generic algorithm by
@@ -28,10 +28,9 @@ Author: Alexander Mattheis
         prefixes $a_{1..i}$ with $b_{1..j}$, while an entry $P_{i,j}/Q_{i,j}$ provides the best score
         under the additional constraint that the alignment ends in a gap within sequence $b/a$, respectively.
         The according recursions and the used affine gap function $g$ are shown below. 
-        Note, consecutive gap (insertions/deletions) scoring is done linearly.
         <br>
         <br>
-        For the given input, the according tables $D,P$ and $Q$ are shown along with a list 
+        For the given input, the according tables $D,P$ and $Q$ are provided along with a list 
         of according optimal alignments. 
         On table cell selection, optimal traceback options are shown.
         On alignment selection, an according traceback path is visualized in the table.
@@ -100,7 +99,7 @@ Author: Alexander Mattheis
 
             <div class="group_hint">
                 <b>Hint:</b> <br>
-                For similarity maximization, match scores should be positive and all scores lower. <br>
+                For similarity maximization, match scores should be positive and all other scores lower. <br>
                 For distance minimization the reverse applies.
             </div>
         </p>
