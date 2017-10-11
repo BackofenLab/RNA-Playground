@@ -237,8 +237,8 @@ th {
 
 #calculation, #calculation_horizontal, #calculation_vertical {
     border: solid 1px #a0a0a0;
-    border-width: 0 1px 0 0;
     border-spacing: 0;
+    border-width: 0 1px 0 0;
 }
 
 /* property values taken from project https://github.com/BackofenLab/RNA-Playground */
