@@ -277,6 +277,10 @@ small {
     padding-top: 40px;
 }
 
+#recursion_waterman_smith_beyer {
+    padding-top: 40px;
+}
+
 #results {
     border: none;
     clear: left;
