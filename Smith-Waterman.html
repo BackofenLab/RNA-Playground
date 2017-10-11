@@ -7,47 +7,37 @@ Author: Alexander Mattheis
 
 <div id="algorithm_description">
     <div class="description">
-        The dynamic programming approach
-        <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman (1981)</a>
-        by Temple F. Smith and Michael S. Waterman
-        computes unlike Needleman-Wunsch not
-        the optimal, global alignment of two sequences, but the optimal, local alignment.
-        This means that no more the whole sequences are aligned,
-        but parts of both sequences such that the score is going to be optimal.
-        Like in
-        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a>
-        and other alignment algorithms,
-        there exists two variants. One with a minimizing recursion-function
-        and also an equivalent maximizing variant.
+        The dynamic programming approach by
+        <a href="https://doi.org/10.1016/0022-2836(81)90087-5">
+            Temple F. Smith and Michael S. Waterman (1981)</a>
+        computes optimal local alignments of two sequences.
+        This means it identifies the two subsequences that are best preserved,
+        i.e. their alignment shows the maximal similarity scoring.
         <br>
         <br>
-        The motivation is the same like in
-        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>,
-        you want do biological and medical examination.
-        And therefore you need tools to compare
-        two sequences with each other.
-        Many present approaches are based on the
-        <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman</a> algorithm.
+        In order to find such a local alignment, the global alignment algorithm by 
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman and Wunsch (1970)</a> or
+        <a href="https://doi.org/10.1137/0126070">Sellers</a>
+        is extended with an additional case '0'.
+        This lower bound on the similarity score excludes 'too bad' alignments
+        that are eventually 'not similar' (score < 0).
         <br>
         <br>
-        In the first step of
-        <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman</a>
-        you initialize the left and the upper borders of a matrix with zeros.
-        Then, like in
-        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>
-        you fill the matrix
-        with the help of a recursion function $D_{i,j}$.
-        The only difference to the
-        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>
-        recursion function
-        is that you have a fourth case with a zero in your function.
-        And the last step is the traceback-step in which you compute the alignments
-        of the two entered sequences $a$ and $b$.
-        Runtime and space
-        are again like in the
-        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch</a>
-        algorithm,
-        so in $\mathcal O(nm)$, where $n=|a|$ and $m=|b|$.
+        A local alignment approach tries to identify the most similar subsequences
+        that maximize the scoring of their matching parts and the 
+        changes needed to transfer one subsequence into the other.
+        The dynamic programming approach tabularizes optimal subsolutions in matrix $S$,
+        where an entry $S_{i,j}$ represents the maximal similarity score for any local alignment of the 
+        (sub)prefixes $a_{x..i}$ with $b_{y..j}$, where $x,y>0$ are so far unknown 
+        and to be identified via traceback. 
+        The according recursions are shown below. 
+        Note, consecutive gap (insertions/deletions) scoring is done linearly.
+        <br>
+        <br>
+        For the given input, the according table $S$ is shown along with a list 
+        of according optimal local alignments. 
+        On table cell selection, optimal traceback options are shown.
+        On alignment selection, an according traceback path is visualized in the table.
     </div>
 
     <div class="picture">
@@ -70,7 +60,7 @@ Author: Alexander Mattheis
         </p>
 
         <p>
-            <label>Calculation:</label>
+            <label>Optimization of:</label>
             <span class="group">
                 Distance <input class="optimization_type" data-bind="checked: input.calculation" id="distance"
                                 name="calculation" type="radio" value="distance">
@@ -80,7 +70,7 @@ Author: Alexander Mattheis
         </p>
 
         <p>
-            <label>Scoring $s$:</label>
+            <label>Scoring in $s$:</label>
             <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
                 Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
                 Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
@@ -95,10 +85,7 @@ Author: Alexander Mattheis
 
             <div class="group_hint">
                 <b>Hint:</b> <br>
-                If similarity is checked,
-                then match values should be positive or zero and every other value lower or equal zero. <br>
-                And if distance is checked,
-                then match values should be negative or zero and every other value higher or equal zero.
+                For similarity maximization, match scores should be positive and all other scores lower.
             </div>
         </p>
     </form>
@@ -109,7 +96,7 @@ Author: Alexander Mattheis
         <table id="calculation">
             <thead>
                 <tr>
-                    <th>$D$</th>
+                    <th>$S$</th>
                     <th></th>
                     <!-- ko foreach: input.sequence1 -->
                         <th data-bind="drawChar: [$data, $index()+1]"></th>
