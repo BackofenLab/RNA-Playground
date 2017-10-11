@@ -357,6 +357,11 @@ Author: Alexander Mattheis
         var inputs = $("#algorithm_input").find("input");
 
         inputs.on({
+            keypress: function (e) {
+                if (e.which === KEY_CODES.ENTER)
+                    updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput);
+            },
+
             change: function () {
                 updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput);
                 postProcess();
