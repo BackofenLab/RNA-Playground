@@ -20,7 +20,8 @@ Author: Alexander Mattheis
         The changes are scored and an optimal set of changes is identified, which defines an alignment.
         The dynamic programming approach tabularizes optimal subsolutions in matrix $D$,
         where an entry $D_{i,j}$ represents the best score for the alignment of the 
-        prefixes $a_{1..i}$ with $b_{1..j}$. The according recursions are shown below.
+        prefixes $a_{1..i}$ with $b_{1..j}$. The according recursions are shown below. 
+        Note, consecutive gap (insertions/deletions) scoring is done linearly.
         <br>
         <br>
         For the given input, the according table $D$ is shown along with a list 
