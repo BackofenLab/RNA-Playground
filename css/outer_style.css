@@ -17,11 +17,11 @@ footer {
 
 footer a {
     color: black;
-    font-size: 0.9em; /* relative to global value */
 }
 
 footer a:hover {
     color: white;
+    text-decoration: none;
 }
 
 footer span {

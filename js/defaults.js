@@ -38,15 +38,15 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms
  * Stores the default parameters for alignment algorithms.
  */
 var ALIGNMENT_DEFAULTS = {
-    CALCULATION: "distance",
+    CALCULATION: "similarity",
     SEQUENCE_1: "AACG",  // hint: UPPERCASE letters!
     SEQUENCE_2: "AATCG",  // hint: UPPERCASE letters!
 
     FUNCTION: {
-        DELETION: 2,
-        INSERTION: 2,
-        MATCH: -1,
-        MISMATCH: 1
+        DELETION: -2,
+        INSERTION: -2,
+        MATCH: 1,
+        MISMATCH: -1
     }
 };
 
