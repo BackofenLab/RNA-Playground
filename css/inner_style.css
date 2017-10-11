@@ -205,7 +205,7 @@ th {
     padding-left: 120px;
 }
 
-/*---- ID_TRACEBACK STYLING ----*/
+/*---- ID STYLING ----*/
 #algorithm_description .description {
     display: inline-block;
     line-height: 140%;
@@ -358,4 +358,23 @@ th {
     padding-bottom: 30px;
     text-align: justify;
     width: 880px; /* Uni-Freiburg standard */
+}
+
+/*---- BROWSER SPECIFIC ----*/
+/* Microsoft */
+_:-ms-lang(x), _:-webkit-full-screen, input[type="number"]:focus {
+    outline: black solid 1px;
+}
+
+_:-ms-lang(x), _:-webkit-full-screen, input[type="text"]:focus {
+    outline: black solid 1px;
+}
+
+/* Mozilla */
+_:-moz-tree-row(hover), input[type="number"]:focus {
+    outline: black solid 1px;
+}
+
+_:-moz-tree-row(hover), input[type="text"]:focus {
+    outline: black solid 1px;
 }
