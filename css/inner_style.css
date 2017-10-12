@@ -1,0 +1,380 @@
+/*
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Author: Alexander Mattheis
+*/
+
+/* HINT: alphabetically ordered (also within definitions) */
+
+/*---- TAG STYLING ----*/
+a {
+    color: #4F81BD;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+body {
+    font-family: sans-serif;
+    font-size: 13px;
+    margin: 0;
+}
+
+code {
+    white-space: pre;
+}
+
+form input {
+    user-focus: ignore;
+}
+
+h1 {
+    font-size: 1.8em;
+    line-height: 20px;
+    margin: 0 25px;
+    padding: 3px 40px;
+}
+
+input[type="text"] {
+    text-transform: uppercase;
+}
+
+input[type="number"] {
+    width: 35px;
+}
+
+label {
+    padding-top: 2px; /* to align with inputs */
+}
+
+small {
+    font-weight: normal;
+}
+
+table {
+    border-collapse: collapse;
+    display: inline-block;
+    text-align: center;
+}
+
+/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
+td {
+    /*
+    bug fix for Firefox and Microsoft Browsers:
+    https://bugzilla.mozilla.org/show_bug.cgi?id=688556
+    https://bugzilla.mozilla.org/show_bug.cgi?id=995263
+    https://stackoverflow.com/questions/7517127/
+    borders-not-shown-in-firefox-with-border-collapse-on-table-position-relative-o
+    */
+    background-clip: padding-box;
+    background-color: #FCFCFB;
+    border: 1px solid #a0a0a0;
+    color: gray;
+}
+
+/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
+th {
+    background-color: #F3F4F1;
+    border: 1px solid #a0a0a0;
+    color: gray;
+}
+
+/*---- CLASS STYLING ----*/
+/* HINT: to avoid errors all pictures have to be imported as classes whether they are unique */
+.arrows_d, .arrows_dt, .arrows_l, .arrows_ld, .arrows_ldt, .arrows_lt, .arrows_t {
+    background: url(../sprites.png) no-repeat;
+}
+
+.arrows_d, .arrows_l, .arrows_t {
+    height: 32px;
+    left: -10px;
+    pointer-events: none; /* shouldn't work on IE lower 11 */
+    position: absolute;
+    top: -8px;
+    width: 42px;
+}
+
+.arrows_d { /* diagonal */
+    background-position: -50px -112px;
+}
+
+.arrows_l { /* left */
+    background-position: -50px -150px;
+}
+
+.arrows_t { /* top */
+    background-position: -50px -185px;
+}
+
+/* Some extra pictures for possible optimizations
+.arrows_dt {
+    background-position: 0 -150px;
+}
+
+.arrows_ld {
+    background-position: 0 -112px;
+}
+
+.arrows_ldt {
+    background-position: 0 -220px;
+}
+
+.arrows_lt {
+    background-position: 0 -185px;
+}
+*/
+
+.download {
+    padding-bottom: 30px;
+}
+
+.download_table {
+    background: none;
+    border: none;
+    position: relative;
+    text-align: left;
+    top: 8px;
+}
+
+.group_hint {
+    color: gray;
+    font-size: smaller;
+    padding-left: 120px;
+}
+
+.group input {
+    margin-left: 5px;
+    margin-right: 15px;
+}
+
+.hint {
+    border-width: 1px;
+    padding-left: 8px;
+    text-align: left;
+}
+
+.selectable_entry {
+    border-bottom: 0;
+    cursor: pointer;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
+}
+
+.selectable_entry_start {
+    border-bottom: 1px;
+    border-top: 0;
+    cursor: pointer;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
+}
+
+.selected {
+    background-color: #8148B1;
+    color: white;
+}
+
+.selected_green {
+    background-color: #9ACD32;
+    color: white;
+}
+
+.selected_light_red {
+    background-color: #F5CAD1;
+    color: white;
+}
+
+.selected_red {
+    background-color: #E9909F;
+    color: white;
+}
+
+.selected_very_light_red {
+    background-color: #FFEFEC;
+    color: white;
+}
+
+.span_group {
+    padding-bottom: 15px;
+    padding-left: 120px;
+}
+
+/*---- ID STYLING ----*/
+#algorithm_description .description {
+    display: inline-block;
+    line-height: 140%;
+    vertical-align: top;
+    width: 600px;
+}
+
+#algorithm_description .picture {
+    display: inline-block;
+    margin-left: 30px;
+    width: 150px;
+}
+
+#algorithm_input form {
+    padding: 15px 0 15px 15px;
+}
+
+#algorithm_input form p label {
+    display: block;
+    float: left;
+    width: 120px;
+}
+
+#algorithm_output {
+    padding-bottom: 30px;
+}
+
+#algorithm_view {
+    padding: 30px;
+    z-index: 1;
+}
+
+#ancillary_output {
+    float: left;
+    padding-left: 30px;
+}
+
+#calculation, #calculation_horizontal, #calculation_vertical {
+    border: solid 1px #a0a0a0;
+    border-spacing: 0;
+    border-width: 0 1px 0 0;
+}
+
+/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
+#calculation td, #calculation th,
+#calculation_horizontal td, #calculation_horizontal th,
+#calculation_vertical td, #calculation_vertical th {
+    border: solid 1px #a0a0a0;
+    border-width: 1px 0 1px 1px;
+    /*
+    min- and max values avoid cell shrinking when the table is growing
+     */
+    height: 24px;
+    max-height: 24px;
+    max-width: 32px;
+    min-height: 24px;
+    min-width: 32px;
+    width: 32px;
+}
+
+#main_output {
+    max-width: 600px;
+    overflow: auto;
+}
+
+#output {
+    float: left;
+}
+
+#recursion_gotoh {
+    padding-top: 16px;
+}
+
+#recursion_needleman_wunsch {
+    padding-top: 32px;
+}
+
+#recursion_smith_waterman {
+    padding-top: 40px;
+}
+
+#recursion_waterman_smith_beyer {
+    padding-top: 40px;
+}
+
+#results {
+    border: none;
+    clear: left;
+    float: left;
+    max-height: 200px;
+    max-width: 160px;
+    overflow-y: scroll;
+    vertical-align: top;
+}
+
+#results_footer {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+#results_header {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+#results_with_scrollbar {
+    border-left: 1px solid #a0a0a0;
+    border-right: 1px solid #a0a0a0;
+    clear: left;
+    float: left;
+    width: 161px;
+}
+
+#results td, #results th {
+    border-left: none;
+    border-right: none; /* other possibilities does not look bug-like on tablets/smartphone browsers */
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 150px;
+}
+
+#results_footer td, #results_footer th,
+#results_header td, #results_header th {
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 150px;
+}
+
+#outcome {
+    clear: left;
+    float: left;
+}
+
+#overlay {
+    pointer-events: none;
+    position: absolute;
+    z-index: 4;
+}
+
+#page_contents {
+    background-color: #F2F3F1; /* Uni-Freiburg standard */
+    border-radius: 4px 4px 0 0;
+    margin: 50px auto; /* centering website */
+    min-height: 1500px; /* Uni-Freiburg standard */
+    overflow: auto;
+    padding-bottom: 30px;
+    text-align: justify;
+    width: 880px; /* Uni-Freiburg standard */
+}
+
+/*---- BROWSER SPECIFIC ----*/
+/* Microsoft */
+_:-ms-lang(x), _:-webkit-full-screen, input[type="number"]:focus {
+    outline: black solid 1px;
+}
+
+_:-ms-lang(x), _:-webkit-full-screen, input[type="text"]:focus {
+    outline: black solid 1px;
+}
+
+/* Mozilla */
+_:-moz-tree-row(hover), input[type="number"]:focus {
+    outline: black solid 1px;
+}
+
+_:-moz-tree-row(hover), input[type="text"]:focus {
+    outline: black solid 1px;
+}

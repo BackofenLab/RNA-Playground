@@ -1,0 +1,109 @@
+<!--
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Author: Alexander Mattheis
+
+Hint:   Some Javascript algorithm-parts:
+        - Gotoh
+        - Needleman-Wunsch
+        - Feng-Doolittle
+        - Sum-of-Pairs Score
+        - UPGMA
+        have been also already been programmed before with Python
+        in the project Algorithms for Bioninformatics by Daniel Maticzka and Omer Alkhnbashi.
+
+        Alexander Mattheis 2017-10-02
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Bioinformatics Algorithms</title>
+
+        <link rel="stylesheet" href="css/inner_style.css"> <!-- stylesheet for single pages -->
+        <link rel="stylesheet" href="css/outer_style.css"> <!-- stylesheet for header, dropdown menu and footer -->
+
+        <!-- CONFIGURATION -->
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+              tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+              displayAlign: "left"
+            });
+        </script> <!-- stores MathJax LaTeX-settings -->
+
+        <!-- THIRD PARTY LIBS -->
+        <script src="js/libs/FileSaver.min.js"></script> <!-- allows to save files on the desktop -->
+        <script src="js/libs/knockout-3.4.2.js"></script> <!-- to easify dynamic UI creation -->
+        <script src="js/libs/jquery.js"></script> <!-- to traverse and transform HTML -->
+        <script type="text/javascript" async
+                src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+        </script> <!-- to display LaTeX formulas -->
+        <script src="js/libs/namespace.js"></script> <!-- to create namespaces -->
+
+        <!-- IO -->
+        <script src="js/interfaces/alignment_interface.js"></script> <!-- stores viewmodels and interface functions of alignment algorithms -->
+        <script src="js/interfaces/subadditive_alignment_interface.js"></script> <!-- stores viewmodels and interface functions of subadditive alignment algorithms -->
+
+        <!-- CONTROLS "DESIGN/CONTROLS LOGIC" -->
+        <script src="js/defaults.js"></script> <!-- stores all globally used constants -->
+        <script src="js/loader.js"></script> <!-- to choose and load algorithms into the alignment.html -->
+
+        <!-- post processing -->
+        <script src="js/post_processing/input_processor.js"></script> <!-- does the post-processing of inputs -->
+        <script src="js/post_processing/visualizer.js"></script> <!-- contains all functions for visualization -->
+
+        <!-- ALGORITHMS "LOGIC" -->
+        <!-- data structures -->
+        <script src="js/data_structures/phylogenetic_tree.js"></script> <!-- implementation of phylogenetic tree -->
+
+        <!-- bases -->
+        <script src="js/bases/alignment.js"></script> <!-- stores basic alignment function -->
+    </head>
+
+    <div id="overlay"></div>
+
+    <body>
+        <header>
+            <div class="logo">
+                <a href="alignment.html">
+                    <h1>Bioinformatics Algorithms</h1>
+                </a>
+            </div>
+        </header>
+
+        <div id="page_contents">
+
+            <nav id="top_bar">
+                <div id="algorithm_chooser">
+                    <div class="dropdown_button"></div>
+                </div>
+
+                <div id="algorithm_display">Choose algorithm...</div>
+            </nav>
+
+            <div id="algorithm_menu">
+                <ul>
+                    <li><a href="#">Arslan-Eğecioğlu-Pevzner</a></li>
+                    <li><a href="#">Gotoh</a></li>
+                    <li><a href="#">Needleman-Wunsch</a></li>
+                    <li><a href="#">Smith-Waterman</a></li>
+                    <li><a href="#">Waterman-Smith-Beyer</a></li>
+                </ul>
+            </div>
+
+            <div id="algorithm_view"></div>
+        </div>
+
+        <footer>
+            <span>
+                Author: Alexander Mattheis
+            </span>
+
+            <span>
+                Supervised by <a href="http://www.bioinf.uni-freiburg.de"/>Martin Raden</a>
+            </span>
+        </footer>
+    </body>
+</html>
