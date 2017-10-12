@@ -9,16 +9,16 @@ All approaches are [available in the Freiburg RNA Teaching webserver](http://rna
 
 ### We are currently supporting:
 
-- Nested RNA structure prediction
+- **Nested RNA structure prediction**
   - nested structure [counting](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=counting)
   - maximal base pair structure prediction via the [Nussinov](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Nussinov) algorithm with different recursions
   - base pair probability and unpaired probability computation via a variant of the [McCaskill](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=McCaskill) algorithm
   - maximum expected accuracy ([MEA](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=MEA)) structure prediction
-- RNA-RNA interaction prediction
+- **RNA-RNA interaction prediction**
   - [co-folding](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=co-folding) approach via Nussinov-variant
   - maximal [hybrid-only](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=hybrid-only) intermolecular base pair interaction prediction
   - [accessibility](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=accessibility)-incorporating interaction prediction
-- General sequence alignment approaches
+- **General sequence alignment approaches**
   - Needleman-Wunsch (global, linear gap costs)
   - Gotoh (global, affine gap costs)
   - Waterman-Smith-Beyer (global, arbitrary gap costs)
