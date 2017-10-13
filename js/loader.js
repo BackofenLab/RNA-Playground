@@ -11,12 +11,16 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    loader.startLoader();
+	
+    	if (typeof ALIGNMENT_WEBTITLE !== 'undefined' && document.title === ALIGNMENT_WEBTITLE) {
+    	// to avoid the execution of the algorithm interfaces during a Unit-Test
+    	loader.startLoader();
+    } 
 });
 
 (function () {  // namespace
     // public methods
-    namespace("loader", startLoader);
+    namespace("loader", startLoader, updateDocumentView);
 
     /**
      * Function managing objects.
@@ -119,6 +123,7 @@ $(document).ready(function () {
      * @param view - The view in which you want load the page.
      */
     function updateDocumentView(algorithm, view) {
+		$("#overlay").empty();
         var htmlName = algorithm.replace(MULTI_SYMBOLS.G_LITTLE_SPECIAL, SYMBOLS.G_LITTLE);
 
         var javascriptName = algorithm.toLowerCase()
