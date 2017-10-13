@@ -15,6 +15,7 @@ Author: Alexander Mattheis
  */
 
 // constants
+var ALIGNMENT_WEBTITLE = "Bioinformatics Algorithms";
 var EPSILON = 0.000000001;  // some very low number to test against
 var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 
