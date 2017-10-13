@@ -19,10 +19,10 @@ All approaches are [available in the Freiburg RNA Teaching webserver](http://rna
   - maximal [hybrid-only](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=hybrid-only) intermolecular base pair interaction prediction
   - [accessibility](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=accessibility)-incorporating interaction prediction
 - **General sequence alignment approaches**
-  - Needleman-Wunsch (global, linear gap costs)
-  - Gotoh (global, affine gap costs)
-  - Waterman-Smith-Beyer (global, arbitrary gap costs)
-  - Smith-Waterman (local, linear gap costs)
+  - [Needleman-Wunsch](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch) (global, linear gap costs)
+  - [Gotoh](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh) (global, affine gap costs)
+  - [Waterman-Smith-Beyer](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Waterman-Smith-Beyer) (global, arbitrary gap costs)
+  - [Smith-Waterman](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Smith-Waterman) (local, linear gap costs)
   
 Each algorithm comes with a short introduction with links to related
 literature, the according dynamic programming recursions 
