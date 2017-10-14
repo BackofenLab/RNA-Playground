@@ -11,9 +11,8 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-	
-    	if (typeof ALIGNMENT_WEBTITLE !== 'undefined' && document.title === ALIGNMENT_WEBTITLE) {
-    	// to avoid the execution of the algorithm interfaces during a Unit-Test
+    if (typeof ALIGNMENT_WEBTITLE !== "undefined" && document.title === ALIGNMENT_WEBTITLE) {
+        // to avoid the execution of the drop down menu
     	loader.startLoader();
     } 
 });

@@ -111,4 +111,116 @@ Author: Alexander Mattheis
 </div>
 
 <div id="algorithm_output">
+    <div class="output">
+        <div class="main_output">
+            <table class="calculation">
+                <thead>
+					<tr>
+						<th>$D$</th>
+						<th></th>
+                        <!-- ko foreach: input.sequence1 -->
+							<th data-bind="drawChar: [$data, $index()+1]"></th>
+                        <!-- /ko -->
+					</tr>
+                </thead>
+
+                <tbody>
+					<!-- ko foreach: output.matrix --> <!-- to get i-indexes = $parentContext.$index() -->
+						<tr>
+							<!-- ko if: $index() == 0 -->
+								<th></th>
+                            <!-- /ko -->
+
+                            <!-- ko if: $index() > 0 -->
+								<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                            <!-- /ko -->
+
+                            <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
+								<td class="selectable_entry"
+                                    data-bind="text: $root.output.matrix()[$parentContext.$index()][$index()]"></td>
+                            <!-- /ko -->
+						</tr>
+                    <!-- /ko -->
+
+					<tr>
+						<th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+							<small>
+								<b>Score:</b> <span data-bind="text: $root.output.score"></span>
+							</small>
+						</th>
+					</tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="download">
+            <table>
+                <tfoot>
+                    <tr>
+                        <td class="download_table" colspan=100%>
+                            <a class="table_download" href="#">Download Table</a>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="outcome">
+        <div class ="ancillary_output">
+            <table class="results_header">
+                <thead>
+					<tr>
+						<th>
+							Results <br>
+							<small>
+								You can select a result to get the related traceback.
+							</small>
+						</th>
+					</tr>
+                </thead>
+            </table>
+
+            <div class="results_with_scrollbar">
+                <table class="results">
+                    <tbody>
+                        <!-- ko foreach: $root.output.alignments -->
+                            <!-- ko if: $index() < 10 -->
+                                <!-- ko if: $index() == 0 -->
+                                    <tr>
+                                        <td class="selectable_entry selectable_entry_start">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
+                                <!-- ko if: $index() != 0 -->
+                                    <tr>
+                                        <td class="selectable_entry">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
+                            <!-- /ko -->
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="results_footer">
+                <tr>
+                    <th>
+                        <small>
+                            <!-- ko if: $root.output.moreTracebacks -->
+                                <b>Hint:</b> Only the first ten results are computed.
+                            <!-- /ko -->
+                        </small>
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
 </div>

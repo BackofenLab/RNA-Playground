@@ -120,6 +120,7 @@ Author: Alexander Mattheis
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
      */
     function showFlow(cellCoordinates, calculationVerticalTable, table, calculationHorizontalTable, mainOutput) {
+        debugger;
         var algorithm = visualizerInstance.algorithm;
         var superclass = algorithm.getSuperclass();
 
@@ -366,11 +367,11 @@ Author: Alexander Mattheis
      * @return {string} - The identifier of the matrix cell.
      */
     function getParentMatrix(cell) {
-        if (cell.parentNode.parentNode.parentNode.id === "calculation_horizontal")
+        if (cell.parentNode.parentNode.parentNode.className === "calculation_horizontal")
             return MATRICES.HORIZONTAL;
-        else if (cell.parentNode.parentNode.parentNode.id === "calculation_vertical")
+        else if (cell.parentNode.parentNode.parentNode.className === "calculation_vertical")
             return MATRICES.VERTICAL;
-        else if (cell.parentNode.parentNode.parentNode.id === "calculation")
+        else if (cell.parentNode.parentNode.parentNode.className === "calculation")
             return MATRICES.DEFAULT;
     }
 

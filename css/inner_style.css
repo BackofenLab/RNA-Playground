@@ -57,6 +57,11 @@ th {
 }
 
 /*---- CLASS STYLING ----*/
+.ancillary_output {
+    clear: left;
+    float: left;
+}
+
 /* HINT: to avoid errors all pictures have to be imported as classes whether they are unique */
 .arrows_d, .arrows_dt, .arrows_l, .arrows_ld, .arrows_ldt, .arrows_lt, .arrows_t {
     background: url(../sprites.png) no-repeat;
@@ -101,6 +106,29 @@ th {
 }
 */
 
+.calculation, .calculation_horizontal, .calculation_vertical {
+    border: solid 1px #a0a0a0;
+    border-spacing: 0;
+    border-width: 0 1px 0 0;
+}
+
+/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
+.calculation td, .calculation th,
+.calculation_horizontal td, .calculation_horizontal th,
+.calculation_vertical td, .calculation_vertical th {
+    border: solid 1px #a0a0a0;
+    border-width: 1px 0 1px 1px;
+    /*
+    min- and max values avoid cell shrinking when the table is growing
+     */
+    height: 24px;
+    max-height: 24px;
+    max-width: 32px;
+    min-height: 24px;
+    min-width: 32px;
+    width: 32px;
+}
+
 .download {
     padding-bottom: 30px;
 }
@@ -128,6 +156,67 @@ th {
     border-width: 1px;
     padding-left: 8px;
     text-align: left;
+}
+
+.main_output {
+    max-width: 600px;
+    overflow: auto;
+}
+
+.outcome {
+    display: inline-block;
+    padding-left: 30px;
+}
+
+.output {
+    float: left;
+}
+
+.results {
+    border: none;
+    clear: left;
+    float: left;
+    max-height: 200px;
+    max-width: 160px;
+    overflow-y: scroll;
+    vertical-align: top;
+}
+
+.results td, .results th {
+    border-left: none;
+    border-right: none; /* other possibilities does not look bug-like on tablets/smartphone browsers */
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 150px;
+}
+
+.results_footer {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+.results_footer td, .results_footer th,
+.results_header td, .results_header th {
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 150px;
+}
+
+.results_header {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+.results_with_scrollbar {
+    border-left: 1px solid #a0a0a0;
+    border-right: 1px solid #a0a0a0;
+    clear: left;
+    float: left;
+    width: 161px;
 }
 
 .selectable_entry {
@@ -211,43 +300,6 @@ th {
     z-index: 1;
 }
 
-#ancillary_output {
-    float: left;
-    padding-left: 30px;
-}
-
-#calculation, #calculation_horizontal, #calculation_vertical {
-    border: solid 1px #a0a0a0;
-    border-spacing: 0;
-    border-width: 0 1px 0 0;
-}
-
-/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
-#calculation td, #calculation th,
-#calculation_horizontal td, #calculation_horizontal th,
-#calculation_vertical td, #calculation_vertical th {
-    border: solid 1px #a0a0a0;
-    border-width: 1px 0 1px 1px;
-    /*
-    min- and max values avoid cell shrinking when the table is growing
-     */
-    height: 24px;
-    max-height: 24px;
-    max-width: 32px;
-    min-height: 24px;
-    min-width: 32px;
-    width: 32px;
-}
-
-#main_output {
-    max-width: 600px;
-    overflow: auto;
-}
-
-#output {
-    float: left;
-}
-
 #recursion_arslan_egecioglu_pevzner {
     padding-top: 40px;
 }
@@ -266,58 +318,6 @@ th {
 
 #recursion_waterman_smith_beyer {
     padding-top: 40px;
-}
-
-#results {
-    border: none;
-    clear: left;
-    float: left;
-    max-height: 200px;
-    max-width: 160px;
-    overflow-y: scroll;
-    vertical-align: top;
-}
-
-#results_footer {
-    clear: left;
-    float: left;
-    vertical-align: top;
-}
-
-#results_header {
-    clear: left;
-    float: left;
-    vertical-align: top;
-}
-
-#results_with_scrollbar {
-    border-left: 1px solid #a0a0a0;
-    border-right: 1px solid #a0a0a0;
-    clear: left;
-    float: left;
-    width: 161px;
-}
-
-#results td, #results th {
-    border-left: none;
-    border-right: none; /* other possibilities does not look bug-like on tablets/smartphone browsers */
-    height: 24px;
-    padding-left: 10px;
-    text-align: left;
-    width: 150px;
-}
-
-#results_footer td, #results_footer th,
-#results_header td, #results_header th {
-    height: 24px;
-    padding-left: 10px;
-    text-align: left;
-    width: 150px;
-}
-
-#outcome {
-    clear: left;
-    float: left;
 }
 
 #overlay {

@@ -62,11 +62,11 @@ Author: Alexander Mattheis
         var algorithmInput = $("#algorithm_input");
         var functionParameters = algorithmInput.find(".fx_parameter");
 
-        var mainOutput = $("#main_output");
-        var calculation = mainOutput.find("#calculation");
-        var calculationHorizontal = mainOutput.find("#calculation_horizontal");
-        var calculationVertical = mainOutput.find("#calculation_vertical");
-        var results = $("#results");
+        var mainOutput = $(".main_output");
+        var calculation = mainOutput.find(".calculation");
+        var calculationHorizontal = mainOutput.find(".calculation_horizontal");
+        var calculationVertical = mainOutput.find(".calculation_vertical");
+        var results = $(".results");
 
         var selectableEntryClass = ".selectable_entry";
 

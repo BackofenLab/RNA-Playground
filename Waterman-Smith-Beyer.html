@@ -114,9 +114,9 @@ Author: Alexander Mattheis
 </div>
 
 <div id="algorithm_output">
-    <div id="output">
-        <div id="main_output">
-            <table id="calculation">
+    <div class="output">
+        <div class="main_output">
+            <table class="calculation">
                 <thead>
 					<tr>
 						<th>$D$</th>
@@ -146,7 +146,7 @@ Author: Alexander Mattheis
                     <!-- /ko -->
 
 					<tr>
-						<th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
+						<th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
 							<small>
 								<b>Score:</b> <span data-bind="text: $root.output.score"></span>
 							</small>
@@ -159,19 +159,19 @@ Author: Alexander Mattheis
         <div class="download">
             <table>
                 <tfoot>
-                <tr>
-                    <td class="download_table" colspan=100%>
-                        <a class="table_download" href="#">Download Table</a>
-                    </td>
-                </tr>
+                    <tr>
+                        <td class="download_table" colspan=100%>
+                            <a class="table_download" href="#">Download Table</a>
+                        </td>
+                    </tr>
                 </tfoot>
             </table>
         </div>
     </div>
 
-    <div id="ancillary_output">
-        <div id ="outcome">
-            <table id="results_header">
+    <div class="outcome">
+        <div class ="ancillary_output">
+            <table class="results_header">
                 <thead>
 					<tr>
 						<th>
@@ -184,41 +184,41 @@ Author: Alexander Mattheis
                 </thead>
             </table>
 
-            <div id="results_with_scrollbar">
-                <table id="results">
+            <div class="results_with_scrollbar">
+                <table class="results">
                     <tbody>
-                    <!-- ko foreach: $root.output.alignments -->
-                        <!-- ko if: $index() < 10 -->
-                            <!-- ko if: $index() == 0 -->
-                                <tr>
-                                    <td class="selectable_entry selectable_entry_start">
-                                        <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                        <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
-                                        <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
-                                    </td>
-                                </tr>
-                            <!-- /ko -->
-                            <!-- ko if: $index() != 0 -->
-                                <tr>
-                                    <td class="selectable_entry">
-                                        <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                        <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
-                                        <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
-                                    </td>
-                                </tr>
+                        <!-- ko foreach: $root.output.alignments -->
+                            <!-- ko if: $index() < 10 -->
+                                <!-- ko if: $index() == 0 -->
+                                    <tr>
+                                        <td class="selectable_entry selectable_entry_start">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
+                                <!-- ko if: $index() != 0 -->
+                                    <tr>
+                                        <td class="selectable_entry">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
                             <!-- /ko -->
                         <!-- /ko -->
-                    <!-- /ko -->
                     </tbody>
                 </table>
             </div>
 
-            <table id="results_footer">
+            <table class="results_footer">
                 <tr>
                     <th>
                         <small>
                             <!-- ko if: $root.output.moreTracebacks -->
-                            <b>Hint:</b> Only the first ten results are computed.
+                                <b>Hint:</b> Only the first ten results are computed.
                             <!-- /ko -->
                         </small>
                     </th>
