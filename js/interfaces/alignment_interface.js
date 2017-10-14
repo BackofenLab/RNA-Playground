@@ -99,6 +99,9 @@ Author: Alexander Mattheis
         this.match = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
         this.mismatch = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
 
+        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
+            this.length = ko.observable(ALIGNMENT_DEFAULTS.LENGTH);
+
         this.formula = ko.computed(
             function getSelectedFormula() {
                 // to fire LaTeX-Code reinterpretation after the selected formula was changed
@@ -110,10 +113,24 @@ Author: Alexander Mattheis
                 return getFormula(algorithmName, viewmodel);
             }
         );
+
+        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
+            this.subFormula = ko.computed(
+                function getSelectedSubFormula() {
+                    // to fire LaTeX-Code reinterpretation after the selected formula was changed
+                    // HINT: only found solution which works on all browsers
+                    setTimeout(function () {
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+                    }, REUPDATE_TIMEOUT_MS);
+
+                    return getSubFormula(viewmodel);
+                }
+            );
+        }
     }
 
     /**
-     * Returns the LaTeX-code for formulas of affine algorithms.
+     * Returns the LaTeX-code for formulas.
      * @param algorithmName {string} - The name of the algorithm.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
      * @return {string} - LaTeX code.
@@ -121,48 +138,64 @@ Author: Alexander Mattheis
     function getFormula(algorithmName, viewmodel) {
         var string = LATEX.MATH_REGION;  // starting LaTeX math region
 
-        if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
-            string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MAX;
-        else
-            string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
+            if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
+                string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MAX;
+            else
+                string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
 
-        if (algorithmName === ALGORITHMS.NEEDLEMAN_WUNSCH)
-            string += LATEX.RECURSION.NEEDLEMAN_WUNSCH;
-        else
-            string += LATEX.RECURSION.SMITH_WATERMAN;
+            if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
+                string += LATEX.RECURSION.SMITH_WATERMAN_MODIFIED;
+            else if (algorithmName === ALGORITHMS.NEEDLEMAN_WUNSCH)
+                string += LATEX.RECURSION.NEEDLEMAN_WUNSCH;
+            else
+                string += LATEX.RECURSION.SMITH_WATERMAN;
 
-        if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
-            string += SYMBOLS.EQUAL + LATEX.MAX;
-        else
-            string += SYMBOLS.EQUAL + LATEX.MIN;
+            if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
+                string += SYMBOLS.EQUAL + LATEX.MAX;
+            else
+                string += SYMBOLS.EQUAL + LATEX.MIN;
 
-        string += LATEX.BEGIN_CASES;  // starting LaTeX case region
-        // Hint: -x and x with x is number should be right aligned -> LATEX.SPACE is added on positive numbers
-        string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
-        string += viewmodel.match() >= 0 ? LATEX.SPACE + viewmodel.match() : viewmodel.match();
-        string += SYMBOLS.AND + LATEX.FORMULA.MATCH + LATEX.NEW_LINE;
+            string += LATEX.BEGIN_CASES;  // starting LaTeX case region
+                // Hint: -x and x with x is number should be right aligned -> LATEX.SPACE is added on positive numbers
+                string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
+                string += viewmodel.match() >= 0 ? LATEX.SPACE + viewmodel.match() : viewmodel.match();
+                string += SYMBOLS.AND + LATEX.FORMULA.MATCH + LATEX.NEW_LINE;
 
-        string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
-        string += viewmodel.mismatch() >= 0 ? LATEX.SPACE + viewmodel.mismatch() : viewmodel.mismatch();
-        string += SYMBOLS.AND + LATEX.FORMULA.MISMATCH + LATEX.NEW_LINE;
+                string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
+                string += viewmodel.mismatch() >= 0 ? LATEX.SPACE + viewmodel.mismatch() : viewmodel.mismatch();
+                string += SYMBOLS.AND + LATEX.FORMULA.MISMATCH + LATEX.NEW_LINE;
 
-        string += LATEX.FORMULA.TOP + LATEX.ALIGNED_PLUS;
-        string += viewmodel.deletion() >= 0 ? LATEX.SPACE + viewmodel.deletion() : viewmodel.deletion();
-        string += SYMBOLS.AND + LATEX.FORMULA.DELETION + LATEX.NEW_LINE;
+                string += LATEX.FORMULA.TOP + LATEX.ALIGNED_PLUS;
+                string += viewmodel.deletion() >= 0 ? LATEX.SPACE + viewmodel.deletion() : viewmodel.deletion();
+                string += SYMBOLS.AND + LATEX.FORMULA.DELETION + LATEX.NEW_LINE;
 
-        string += LATEX.FORMULA.LEFT + LATEX.ALIGNED_PLUS;
-        string += viewmodel.insertion() >= 0 ? LATEX.SPACE + viewmodel.insertion() : viewmodel.insertion();
-        string += SYMBOLS.AND + LATEX.FORMULA.INSERTION;
+                string += LATEX.FORMULA.LEFT + LATEX.ALIGNED_PLUS;
+                string += viewmodel.insertion() >= 0 ? LATEX.SPACE + viewmodel.insertion() : viewmodel.insertion();
+                string += SYMBOLS.AND + LATEX.FORMULA.INSERTION;
 
-        if (algorithmName === ALGORITHMS.SMITH_WATERMAN)
-            string += LATEX.NEW_LINE + LATEX.FORMULA.ZERO;
+                if (algorithmName === ALGORITHMS.SMITH_WATERMAN || algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
+                    string += LATEX.NEW_LINE + LATEX.FORMULA.ZERO;
 
-        string += LATEX.END_CASES;  // stopping LaTeX case region
+            string += LATEX.END_CASES;  // stopping LaTeX case region
 
-        if (algorithmName === ALGORITHMS.SMITH_WATERMAN)
-            string = string.replace(MULTI_SYMBOLS.D_BIG, SYMBOLS.S_BIG);
+            if (algorithmName === ALGORITHMS.SMITH_WATERMAN || algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
+                string = string.replace(MULTI_SYMBOLS.D_BIG, SYMBOLS.S_BIG);
 
         string += LATEX.MATH_REGION;  // stopping LaTeX math region
+        return string;
+    }
+
+    /**
+     * Returns the LaTeX-code for sub-formulas like gap-functions of subadditive algorithms.
+     * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
+     * @return {string} - LaTeX code.
+     */
+    function getSubFormula(viewmodel) {
+        var string = LATEX.MATH_REGION;
+
+        string += LATEX.SUB_FORMULAS.ARSLAN_EGECIOGLE_PEVZNER_SCORING;
+
+        string += LATEX.MATH_REGION;
         return string;
     }
 
@@ -183,7 +216,7 @@ Author: Alexander Mattheis
             inputViewmodel.sequence1($("#sequence_1").val().toUpperCase());
             inputViewmodel.sequence2($("#sequence_2").val().toUpperCase());
 
-            if (algorithm.type !== ALGORITHMS.SMITH_WATERMAN)
+            if (algorithm.type !== ALGORITHMS.SMITH_WATERMAN && algorithm.type !== ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
                 if ($("#distance").is(":checked"))
                     inputViewmodel.calculation(ALIGNMENT_TYPES.DISTANCE);
                 else
@@ -193,6 +226,9 @@ Author: Alexander Mattheis
             inputViewmodel.insertion(Number($("#insertion").val()));
             inputViewmodel.match(Number($("#match").val()));
             inputViewmodel.mismatch(Number($("#mismatch").val()));
+
+            if (algorithm.type === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
+                inputViewmodel.length(Number($("#length").val()));
         } else
             inputProcessor.activateInputUpdates();
 
@@ -233,22 +269,74 @@ Author: Alexander Mattheis
      * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
-        viewmodels.output.matrix(outputData.matrix);
+        if (viewmodels.output.iterationData !== undefined)
+            changeAEPOutput(outputData, viewmodels);
+        else {
+            viewmodels.output.matrix(outputData.matrix);
 
-        for (var i = 0; i < outputData.matrix.length; i++) {
-            // new variables (rows) are not automatically functions
+            for (var i = 0; i < outputData.matrix.length; i++) {
+                // new variables (rows) are not automatically functions
+                // and so we have to convert new variables manually into functions
+                // or we get the following error
+                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                if (i > viewmodels.output.matrix.length)
+                    viewmodels.output.matrix[i] = new Function();
+
+                viewmodels.output.matrix[i](outputData.matrix[i]);
+            }
+
+            viewmodels.output.alignments(outputData.alignments);
+            viewmodels.output.score(outputData.score);
+            viewmodels.output.moreTracebacks(outputData.moreTracebacks);
+        }
+    }
+
+    /**
+     * Changes the output of Arslan-Egecioglu-Pevzner algorithm after processing the input.
+     * @param outputData {Object} - Contains all output data.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     */
+    function changeAEPOutput(outputData, viewmodels) {
+        viewmodels.output.iterationData(outputData.iterationData);
+
+        for (var i = 0; i < outputData.iterationData.length; i++) {  // iteration over possibilities
+            // new possibilities are not automatically functions
             // and so we have to convert new variables manually into functions
             // or we get the following error
-            // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
-            if (i > viewmodels.output.matrix.length)
-                viewmodels.output.matrix[i] = new Function();
+            // 'Uncaught TypeError: ... is not a function'
+            if (i > outputData.iterationData.length)
+                viewmodels.output.iterationData[i] = new Function();
 
-            viewmodels.output.matrix[i](outputData.matrix[i]);
+            viewmodels.output.iterationData[i](outputData.iterationData[i]);
+
+            for (var j = 0; j < outputData.iterationData[i].length; j++) {  // iteration over rounds
+                // new ... automatically functions
+                if (j > outputData.iterationData[i].length)
+                    viewmodels.output.iterationData[i][j] = new Function();
+
+                viewmodels.output.iterationData[i][j](outputData.iterationData[i][j]);
+
+                // iteration over [score, length, lambda, deletion, insertion, match, mismatch, alignments, matrix]
+                for (var k = 0; k < outputData.iterationData[i][j].length; k++) {
+
+                    // new ... not automatically functions
+                    if (k > outputData.iterationData[i][j].length)
+                        viewmodels.output.iterationData[i][j][k] = new Function();
+
+                    viewmodels.output.iterationData[i][j][k](outputData.iterationData[i][j][k]);
+                }
+
+                // iteration over matrix rows
+                for (var l = 0; l < outputData.iterationData[i][j][8].length; l++) {
+
+                    // new ... not automatically functions
+                    if (l > outputData.iterationData[i][j][8].length)
+                        viewmodels.output.iterationData[i][j][k][l] = new Function();
+
+                    viewmodels.output.iterationData[i][j][8][l](outputData.iterationData[i][j][8][l]);
+                }
+            }
         }
-
-        viewmodels.output.alignments(outputData.alignments);
-        viewmodels.output.score(outputData.score);
-        viewmodels.output.moreTracebacks(outputData.moreTracebacks);
     }
 
     /*---- OUTPUT ----*/
@@ -263,26 +351,47 @@ Author: Alexander Mattheis
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      */
     function OutputViewmodel(algorithmName, outputData) {
-        this.matrix = ko.observableArray(outputData.matrix);
+        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER){
+            this.iterationData = ko.observable(outputData.iterationData);
 
-        for (var i = 0; i < outputData.matrix.length; i++) {
-            this.matrix[i] = ko.observableArray(outputData.matrix[i]);
-        }
+            for (var i = 0; i < outputData.iterationData.length; i++) {  // iteration over possibilities
+                this.iterationData[i] = ko.observable(outputData.iterationData[i]);
 
-        if (algorithmName === ALGORITHMS.GOTOH) {  // special cases regarding possible algorithms
-            this.horizontalGaps = ko.observableArray(outputData.horizontalGaps);
-            this.verticalGaps = ko.observableArray(outputData.verticalGaps);
+                for (var j = 0; j < outputData.iterationData[i].length; j++) {  // iteration over rounds
+                    this.iterationData[i][j] = ko.observable(outputData.iterationData[i][j]);
+
+                    // iteration over [score, length, lambda, deletion, insertion, match, mismatch, alignments, matrix]
+                    for (var k = 0; k < outputData.iterationData[i][j].length; k++) {
+                        this.iterationData[i][j][k] = ko.observable(outputData.iterationData[i][j][k]);
+                    }
+
+                    for (var l = 0; l < outputData.iterationData[i][j][8].length; l++) {
+                        this.iterationData[i][j][8][l] = ko.observable(outputData.iterationData[i][j][8][l]);
+                    }
+                }
+            }
+        } else {
+            this.matrix = ko.observableArray(outputData.matrix);
 
             for (var i = 0; i < outputData.matrix.length; i++) {
-                this.horizontalGaps[i] = ko.observableArray(outputData.horizontalGaps[i]);
-                this.verticalGaps[i] = ko.observableArray(outputData.verticalGaps[i]);
+                this.matrix[i] = ko.observableArray(outputData.matrix[i]);
             }
+
+            if (algorithmName === ALGORITHMS.GOTOH) {  // special cases regarding possible algorithms
+                this.horizontalGaps = ko.observableArray(outputData.horizontalGaps);
+                this.verticalGaps = ko.observableArray(outputData.verticalGaps);
+
+                for (var i = 0; i < outputData.matrix.length; i++) {
+                    this.horizontalGaps[i] = ko.observableArray(outputData.horizontalGaps[i]);
+                    this.verticalGaps[i] = ko.observableArray(outputData.verticalGaps[i]);
+                }
+            }
+
+            this.alignments = ko.observableArray(outputData.alignments);
+
+            this.score = ko.observable(outputData.score);
+            this.moreTracebacks = ko.observable(outputData.moreTracebacks);
         }
-
-        this.alignments = ko.observableArray(outputData.alignments);
-
-        this.score = ko.observable(outputData.score);
-        this.moreTracebacks = ko.observable(outputData.moreTracebacks);
     }
 
     /**

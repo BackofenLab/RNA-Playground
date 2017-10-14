@@ -8,7 +8,6 @@ Author: Alexander Mattheis
 /* HINT: alphabetically ordered (also within definitions) */
 
 /*---- TAG STYLING ----*/
-
 form input {
     user-focus: ignore;
 }
@@ -176,6 +175,7 @@ th {
 .span_group {
     padding-bottom: 15px;
     padding-left: 120px;
+    margin-bottom: -15px;
 }
 
 /*---- ID STYLING ----*/
@@ -246,6 +246,10 @@ th {
 
 #output {
     float: left;
+}
+
+#recursion_arslan_egecioglu_pevzner {
+    padding-top: 40px;
 }
 
 #recursion_gotoh {

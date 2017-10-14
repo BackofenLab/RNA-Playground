@@ -10,7 +10,8 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("bases.alignment", Vector, create, getTraces, getNeighboured,
-        Alignment, getInput, setInput, compute, recursionFunction, createAlignments, getOutput, setIO);
+        Alignment, getInput, setInput, compute, recursionFunction, createAlignments, getOutput, setIO,
+        differenceLowerEpsilon);
 
     // instances
     var childInstance;
@@ -65,6 +66,8 @@ Author: Alexander Mattheis
         this.getOutput = getOutput;
 
         this.setIO = setIO;
+
+        this.differenceLowerEpsilon = differenceLowerEpsilon;
     }
 
     /**
@@ -356,5 +359,19 @@ Author: Alexander Mattheis
     function setIO(input, output) {
         inputData = input;
         outputData = output;
+    }
+
+    /**
+     * Tests if the difference between to values is lower some parameter Epsilon.
+     * Hint: It would maybe work without this function. So, this function is only for security reasons.
+     * @param value1 - The first value.
+     * @param value2 - The second value.
+     * @param epsilon - The small number you test against.
+     * @return {boolean} - The
+     */
+    function differenceLowerEpsilon(value1, value2, epsilon) {
+        var difference = value1 - value2;
+
+        return Math.abs(difference) < epsilon;
     }
 }());

@@ -11,7 +11,6 @@ TestCase("test_waterman_smith_beyer", {
      * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_1": function () {
-        debugger;
         var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
 
         var inputData = {};

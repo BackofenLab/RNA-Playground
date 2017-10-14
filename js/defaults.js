@@ -19,6 +19,7 @@ var ALIGNMENT_WEBTITLE = "Bioinformatics Algorithms";
 var EPSILON = 0.000000001;  // some very low number to test against
 var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 
+var MAX_NUMBER_ITERATIONS = 5;  // number of iterations in algorithm with convergence
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have been updated
 
@@ -29,11 +30,11 @@ var UNIT_TEST_WEBTITLE = "Console Runner";  // title of the Unit-test site
  * Stores the implemented algorithm names.
  */
 var ALGORITHMS = {  // contains a list of all implemented algorithms
+	ARSLAN_EGECIOGLU_PEVZNER: "arslan_egecioglu_pevzner",
     GOTOH: "gotoh",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
     SMITH_WATERMAN: "smith_waterman",
-    WATERMAN_SMITH_BEYER: "waterman_smith_beyer",
-    ARSLAN_EGECIOGLU_PEVZNER: "arslan_egecioglu_pevzner"
+    WATERMAN_SMITH_BEYER: "waterman_smith_beyer"
 };
 
 /**
@@ -41,6 +42,7 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms
  */
 var ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
+    LENGTH: 10,
     SEQUENCE_1: "AACG",  // hint: UPPERCASE letters!
     SEQUENCE_2: "AATCG",  // hint: UPPERCASE letters!
 
@@ -172,9 +174,6 @@ var LATEX = {
         "Q_{i,j-1}      & + & \\beta"              +
         "\\end{cases}",
 
-        GOTOH_GAP_FUNCTION:
-            "g(k) = \\alpha + \\beta \\cdot k",
-
         NEEDLEMAN_WUNSCH:
         "\\begin{cases}"                            +
         "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
@@ -190,6 +189,13 @@ var LATEX = {
         "0"                                         +
         "\\end{cases}",
 
+      SMITH_WATERMAN_MODIFIED:
+        "\\begin{cases}"                            +
+        "S_{i-1,j-1}    & + & s'(a_i,b_j)    \\\\"	+
+        "S_{i-1,j}      & + & s'(a_i,-)      \\\\"	+
+        "S_{i,j-1} 		& + & s'(-,b_j)      \\\\"	+
+        "0"                                         +
+        "\\end{cases}",
         WATERMAN_SMITH_BEYER_MIN:
         "\\begin{cases}"                                                                                                +
         "\\displaystyle     \\min_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\"           +
@@ -203,6 +209,17 @@ var LATEX = {
         "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]"      +
         "\\displaystyle     \\max_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}"                  +
         "\\end{cases}"
+    },
+
+    SUB_FORMULAS: {
+        ARSLAN_EGECIOGLE_PEVZNER_SCORING:
+        "s'(a_i,b_j) = "                                                    +
+        "\\begin{cases}"                                                    +
+        "s(a_i,b_j) - 2 \\lambda    &  a_i, b_j \\in \\Sigma     \\\\"      +
+        "s(a_i,b_j) - \\lambda      &  a_i =\\_ \\vee b_j = \\_ "           +
+        "\\end{cases}",
+
+        GOTOH_GAP_FUNCTION: "g(k) = \\alpha + \\beta \\cdot k"
     }
 };
 
@@ -241,12 +258,13 @@ var MULTI_SYMBOLS = {
 };
 
 /**
- * Stores all class paths and some library paths.
+ * Stores used class paths and some library paths.
  */
 var PATHS = {
     ALIGNMENT: "js/bases/alignment.js",
     ALIGNMENT_INTERFACE: "js/interfaces/alignment_interface.js",
     INPUT_PROCESSOR: "js/post_processing/input_processor.js",
+    SMITH_WATERMAN: "js/smith_waterman.js",
     SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js",
     VISUALIZER: "js/post_processing/visualizer.js",
 

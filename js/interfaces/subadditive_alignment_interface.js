@@ -344,7 +344,7 @@ Author: Alexander Mattheis
      * @return {string} - LaTeX code.
      */
     function getGapFunction(algorithmName, viewmodel) {
-        var finalFunction = LATEX.RECURSION.GOTOH_GAP_FUNCTION;
+        var finalFunction = LATEX.SUB_FORMULAS.GOTOH_GAP_FUNCTION;
 
         if (algorithmName === ALGORITHMS.WATERMAN_SMITH_BEYER) {
             switch (viewmodel.subadditiveFunction()) {

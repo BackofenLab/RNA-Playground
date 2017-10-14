@@ -63,8 +63,7 @@ and the "InputProcessor" is executing interfaces to get an algorithm output.
 
 /*------------------------------------------------------LOADING-------------------------------------------------------*/
 The loading of an algorithm-page into the "alignment.html" is done in the "loader.js"-file.
-In this file is a function "updateDocumentView(algorithm, view)" which loads the page into the "div" with
-id = "algorithm_view".
+In this file is a function "updateDocumentView(algorithm, view)" which loads the page into a "div".
 
 /*-------------------------------------------------------PATHS--------------------------------------------------------*/
 All Javascript-paths are stored under "js/defaults.js". 

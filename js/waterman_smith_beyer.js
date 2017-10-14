@@ -61,6 +61,7 @@ $(document).ready(function () {
         // inheritance
         alignmentInstance = new bases.alignment.Alignment(this);
 
+        // public methods (linking)
         this.getInput = getInput;
 
         this.setInput = setInput;
@@ -355,25 +356,11 @@ $(document).ready(function () {
      */
     function searchVerticalMatchPosition(algorithm, currentValue, position, outputData) {
         for (var k = 1; k < position.i; k++) {
-            if (differenceLowerEpsilon(outputData.matrix[position.i - k][position.j] + algorithm.gapFunction(k), currentValue, EPSILON))
+            if (alignmentInstance.differenceLowerEpsilon(outputData.matrix[position.i - k][position.j] + algorithm.gapFunction(k), currentValue, EPSILON))
                 return position.i - k;
         }
 
         return Number.NaN;
-    }
-
-    /**
-     * Tests if the difference between to values is lower some parameter Epsilon.
-     * Hint: It would maybe work without this function. So, this function is only for security reasons.
-     * @param value1 - The first value.
-     * @param value2 - The second value.
-     * @param epsilon - The small number you test against.
-     * @return {boolean} - The
-     */
-    function differenceLowerEpsilon(value1, value2, epsilon) {
-        var difference = value1 - value2;
-
-        return Math.abs(difference) < epsilon;
     }
 
     /**
@@ -386,7 +373,7 @@ $(document).ready(function () {
      */
     function searchHorizontalMatchPosition(algorithm, currentValue, position, outputData) {
         for (var k = 1; k < position.j; k++) {
-            if (differenceLowerEpsilon(outputData.matrix[position.i][position.j - k] + algorithm.gapFunction(k), currentValue, EPSILON))
+            if (alignmentInstance.differenceLowerEpsilon(outputData.matrix[position.i][position.j - k] + algorithm.gapFunction(k), currentValue, EPSILON))
                 return position.j - k;
         }
 
