@@ -112,6 +112,7 @@ Author: Alexander Mattheis
 
 <!-- Dynamic creation of iterations didn't work, because of several problems with MathJax, ObservableArrays and runtime for drawing. -->
 <div id="algorithm_output">
+<<<<<<< HEAD
 	<div class="iteration">
 		<div class="iteration_header">
 			<h4>Iteration 5</h4>
@@ -845,6 +846,192 @@ Author: Alexander Mattheis
     <div class="iteration_footer">
         <b>Hints:</b> <br>
         No more than 5 iterations are computed! <br>
+=======
+    <!-- ko foreach: output.iterationData -->  <!-- possibilities -->
+        <!-- ko foreach: $root.output.iterationData[0] -->  <!-- rounds -->
+            <div class="iteration">
+                <div class="iteration_header">
+                    <h4>Iteration <span data-bind="text: $index()"></span></h4>
+                </div>
+
+                <div class="output">
+                    <div class="main_output">
+                        <table class="calculation">
+                            <thead>
+                                <tr>
+                                    <th>$D$</th>
+                                    <th></th>
+                                    <!-- ko foreach: $root.input.sequence1 -->
+                                        <th data-bind="drawChar: [$data, $index()+1]"></th>
+                                    <!-- /ko -->
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <!-- ko foreach: $root.output.iterationData[0][0][8] -->
+                                    <tr>
+                                        <!-- ko if: $index() == 0 -->
+                                            <th></th>
+                                        <!-- /ko -->
+
+                                        <!-- ko if: $index() > 0 -->
+                                            <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                                        <!-- /ko -->
+
+                                        <!-- ko foreach: $root.output.iterationData[0][0][8][0] -->
+                                            <td class="selectable_entry"
+                                                data-bind="text: $root.output.iterationData()
+                                                [$parentContext.$parentContext.$parentContext.$index()]
+                                                [$parentContext.$parentContext.$index()]
+                                                [8]
+                                                [$parentContext.$index()]
+                                                [$index()]"></td>
+                                        <!-- /ko -->
+                                    </tr>
+                                <!-- /ko -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="download">
+                        <table>
+                            <tfoot>
+                                <tr>
+                                    <td class="download_table" colspan=100%>
+                                        <a class="table_download" href="#">Download Table</a>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="parameters">
+                        Score $s(\mathscr{A})$:
+                        <span data-bind="text: $root.output.iterationData()[$parentContext.$index()][$index()][0]"></span> <br>
+
+                        Length $⟦A⟧$:
+                        <span data-bind="text: $root.output.iterationData()[$parentContext.$index()][$index()][1]"></span> <br>
+
+                        Normalized score $\lambda$:
+                        <span data-bind="text: $root.output.iterationData()[$parentContext.$index()][$index()][2]"></span> <br>
+                    </div>
+                </div>
+
+                <div class="outcome">
+                    <div class ="ancillary_output">
+                        <table class="results_header">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Result <br>
+                                        <small>
+                                            You can select the result to get the related traceback.
+                                        </small>
+                                    </th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                        <div class="results_with_scrollbar">
+                            <table class="results">
+                                <tbody>
+                                    <!-- ko foreach: $root.output.iterationData[$parentContext.$index()][$index()][7] -->
+                                        <!-- ko if: $index() < 10 -->
+
+                                            <!-- ko if: $index() == $root.output.iterationData()
+                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][10] -->
+                                                <!-- ko if: $index() == 0 -->
+                                                    <tr>
+                                                        <td class="entry entry_start entry_marked">
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][0]"></code> <br>
+
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][1]"></code> <br>
+
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][2]"></code>
+                                                         </td>
+                                                    </tr>
+                                                <!-- /ko -->
+
+                                                <!-- ko if: $index() != 0 -->
+                                                    <tr>
+                                                        <td class="entry entry_marked">
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][0]"></code> <br>
+
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][1]"></code> <br>
+
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][2]"></code>
+                                                         </td>
+                                                    </tr>
+                                                <!-- /ko -->
+                                            <!-- /ko -->
+
+                                            <!-- ko if: $index() != $root.output.iterationData()
+                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][10] -->
+
+                                                <!-- ko if: $index() == 0 -->
+                                                    <tr>
+                                                        <td class="selectable_entry selectable_entry_start">
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][0]"></code> <br>
+
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][1]"></code> <br>
+
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][2]"></code>
+                                                         </td>
+                                                    </tr>
+                                                <!-- /ko -->
+
+                                                <!-- ko if: $index() != 0 -->
+                                                    <tr>
+                                                        <td class="selectable_entry">
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][0]"></code> <br>
+
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][1]"></code> <br>
+
+                                                            <code data-bind="text: $root.output.iterationData()
+                                                            [$parentContext.$parentContext.$index()][$parentContext.$index()][7][$index()][2]"></code>
+                                                         </td>
+                                                    </tr>
+                                                <!-- /ko -->
+
+                                            <!-- /ko -->
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <table class="results_footer">
+                            <tr>
+                                <th>
+                                    <small>
+                                        <!-- ko if: $root.output.moreTracebacks -->
+                                            <b>Hint:</b> Only the first ten results are computed.
+                                        <!-- /ko -->
+                                    </small>
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        <!-- /ko -->
+    <!-- /ko -->
+
+    <div class="iteration_footer">
+        <b>Hints:</b> <br>
+        Only the first five iterations are computed! <br>
+>>>>>>> e78cd77771bc5ccb66cf273a9a2c5aa791968b03
         Scores $s(\mathscr{A})$ and normalised scores $\lambda$ are rounded to four digits after the decimal point.
     </div>
 </div>
