@@ -26,7 +26,7 @@ Author: Alexander Mattheis
         // inheritance
         alignmentInterfaceInstance = new interfaces.alignmentInterface.AlignmentInterface();
 
-        // public methods (linking)
+        // public class methods
         this.startSubadditiveAlignmentAlgorithm = startSubadditiveAlignmentAlgorithm;
     }
 
@@ -436,7 +436,7 @@ Author: Alexander Mattheis
     function changeOutput(outputData, inputProcessor, viewmodels) {
         if (viewmodels.input.subadditiveFunction !== undefined
             && viewmodels.input.subadditiveFunction() === SUBADDITIVE_FUNCTIONS.LOGARITHMIC)
-            roundValues(outputData);
+            alignmentInterfaceInstance.roundValues(outputData);
 
         viewmodels.output.matrix(outputData.matrix);
 
@@ -471,26 +471,6 @@ Author: Alexander Mattheis
         viewmodels.output.alignments(outputData.alignments);
         viewmodels.output.score(outputData.score);
         viewmodels.output.moreTracebacks(outputData.moreTracebacks);
-    }
-
-    /**
-     * Rounds the matrix values and the score to one decimal place.
-     * @param outputData - Output data which is modified.
-     */
-    function roundValues(outputData) {
-        for (var i = 0; i < outputData.matrix.length; i++)
-            for (var j = 0; j < outputData.matrix[0].length; j++)
-                outputData.matrix[i][j] = roundToOneDecimalPlace(outputData.matrix[i][j]);
-
-        outputData.score = roundToOneDecimalPlace(outputData.score);
-    }
-
-    /**
-     * Rounds a value to one decimal place.
-     * @param number - The number which is rounded.
-     */
-    function roundToOneDecimalPlace(number) {
-        return Math.round(number*10)/10;
     }
 
     /**

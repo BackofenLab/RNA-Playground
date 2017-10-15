@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.alignmentInterface", AlignmentInterface, imports, sharedInterfaceOperations, startProcessing);
+    namespace("interfaces.alignmentInterface", AlignmentInterface, imports, sharedInterfaceOperations, startProcessing, roundValues);
 
     // instances
     var alignmentInterfaceInstance;
@@ -20,10 +20,13 @@ Author: Alexander Mattheis
      */
     function AlignmentInterface() {
         alignmentInterfaceInstance = this;
+
+        // public class methods
         this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
         this.startAlignmentAlgorithm = startAlignmentAlgorithm;
         this.startProcessing = startProcessing;
+        this.roundValues = roundValues;
     }
 
     /**
@@ -41,6 +44,7 @@ Author: Alexander Mattheis
      */
     function imports() {
         // third party libs
+        $.getScript(PATHS.LIBS.MATH_JAX);  // in some cases (AEP-algorithm) the script have to be reloaded
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
         $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
 
@@ -297,6 +301,8 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions.
      */
     function changeAEPOutput(outputData, viewmodels) {
+        debugger;
+        roundValues(outputData);
         viewmodels.output.iterationData(outputData.iterationData);
 
         for (var i = 0; i < outputData.iterationData.length; i++) {  // iteration over possibilities
@@ -318,25 +324,66 @@ Author: Alexander Mattheis
 
                 // iteration over [score, length, lambda, deletion, insertion, match, mismatch, alignments, matrix]
                 for (var k = 0; k < outputData.iterationData[i][j].length; k++) {
-
-                    // new ... not automatically functions
-                    if (k > outputData.iterationData[i][j].length)
-                        viewmodels.output.iterationData[i][j][k] = new Function();
-
                     viewmodels.output.iterationData[i][j][k](outputData.iterationData[i][j][k]);
                 }
 
                 // iteration over matrix rows
                 for (var l = 0; l < outputData.iterationData[i][j][8].length; l++) {
-
                     // new ... not automatically functions
                     if (l > outputData.iterationData[i][j][8].length)
-                        viewmodels.output.iterationData[i][j][k][l] = new Function();
+                        viewmodels.output.iterationData[i][j][8][l] = new Function();
 
                     viewmodels.output.iterationData[i][j][8][l](outputData.iterationData[i][j][8][l]);
                 }
             }
         }
+    }
+
+    /**
+     * Rounds matrix values, scores and other parameters.
+     * @param outputData {Object} - Output data which is modified.
+     */
+    function roundValues(outputData) {
+        if (outputData.iterationData !== undefined) {  // AEP
+
+            // every possibility
+            for (var i = 0; i < outputData.iterationData.length; i++) {
+                // every round
+                for (var j = 0; j < outputData.iterationData[i].length; j++) {
+
+                    // every matrix row
+                    for (var l = 0; l < outputData.iterationData[i][j][8].length; l++) {
+
+                        // every entry
+                        for (var k = 0; k < outputData.iterationData[i][j][8][l].length; k++) {
+                            outputData.iterationData[i][j][8][l][k]
+                                = round(outputData.iterationData[i][j][8][l][k], 1);
+                        }
+                    }
+
+                    outputData.iterationData[i][j][0] = round(outputData.iterationData[i][j][0], 4); // score
+                    outputData.iterationData[i][j][2] = round(outputData.iterationData[i][j][2], 4); // lambda
+                }
+            }
+
+        } else { // other algorithms
+            for (var i = 0; i < outputData.matrix.length; i++)
+                for (var j = 0; j < outputData.matrix[0].length; j++)
+                    outputData.matrix[i][j] = round(outputData.matrix[i][j], 1);
+
+            outputData.score = round(outputData.score, 1);
+        }
+    }
+
+    /**
+     * Rounds a value to one decimal place.
+     * @param number {number} - The number which is rounded.
+     * @param decimalPlaces {number} - The number of decimal places you want round to.
+     * @return {number} - Rounded value.
+     */
+    function round(number, decimalPlaces) {
+        var factor = Math.pow(10, decimalPlaces);
+        return Math.round(number*factor)/factor;
     }
 
     /*---- OUTPUT ----*/
@@ -351,26 +398,32 @@ Author: Alexander Mattheis
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      */
     function OutputViewmodel(algorithmName, outputData) {
+        roundValues(outputData);
+
         if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER){
-            this.iterationData = ko.observable(outputData.iterationData);
+            this.iterationData = ko.observableArray(outputData.iterationData);
 
             for (var i = 0; i < outputData.iterationData.length; i++) {  // iteration over possibilities
-                this.iterationData[i] = ko.observable(outputData.iterationData[i]);
+                this.iterationData[i] = ko.observableArray(outputData.iterationData[i]);
 
                 for (var j = 0; j < outputData.iterationData[i].length; j++) {  // iteration over rounds
-                    this.iterationData[i][j] = ko.observable(outputData.iterationData[i][j]);
+                    this.iterationData[i][j] = ko.observableArray(outputData.iterationData[i][j]);
 
-                    // iteration over [score, length, lambda, deletion, insertion, match, mismatch, alignments, matrix]
+                    // iteration over [score, length, lambda, deletion, insertion, match, mismatch, alignments, matrix, tracebacks, alignmentNumber]
                     for (var k = 0; k < outputData.iterationData[i][j].length; k++) {
-                        this.iterationData[i][j][k] = ko.observable(outputData.iterationData[i][j][k]);
+                        if (k === 7 || k === 8 || k === 9)
+                            this.iterationData[i][j][k] = ko.observableArray(outputData.iterationData[i][j][k]);
+                        else
+                            this.iterationData[i][j][k] = ko.observable(outputData.iterationData[i][j][k]);
                     }
 
+                    // iteration over matrix rows
                     for (var l = 0; l < outputData.iterationData[i][j][8].length; l++) {
-                        this.iterationData[i][j][8][l] = ko.observable(outputData.iterationData[i][j][8][l]);
+                        this.iterationData[i][j][8][l] = ko.observableArray(outputData.iterationData[i][j][8][l]);
                     }
                 }
             }
-        } else {
+        } else {  // other algorithms
             this.matrix = ko.observableArray(outputData.matrix);
 
             for (var i = 0; i < outputData.matrix.length; i++) {

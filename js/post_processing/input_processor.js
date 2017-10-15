@@ -28,7 +28,7 @@ Author: Alexander Mattheis
         this.inputUpdatesStarted = false;
         this.avoidFocusOutUpdate = false;
 
-        // public methods (linking)
+        // public class methods
         this.activateInputUpdates = activateInputUpdates;
         this.inputUpdatesActivated = inputUpdatesActivated;
         this.linkElements = linkElements;

@@ -51,7 +51,7 @@ Author: Alexander Mattheis
             }
         };
 
-        // public methods (linking)
+        // public class methods
         this.shareInformation = shareInformation;
         this.showFlow = showFlow;
         this.showTraceback = showTraceback;

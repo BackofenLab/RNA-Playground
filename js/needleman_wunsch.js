@@ -64,7 +64,7 @@ $(document).ready(function () {
 
         this.setIO = alignmentInstance.setIO;
 
-        // public methods (linking)
+        // public class methods
         this.initializeMatrix = initializeMatrix;
         this.computeMatrixAndScore = computeMatrixAndScore;
         this.recursionFunction = recursionFunction;

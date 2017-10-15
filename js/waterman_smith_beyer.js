@@ -61,7 +61,7 @@ $(document).ready(function () {
         // inheritance
         alignmentInstance = new bases.alignment.Alignment(this);
 
-        // public methods (linking)
+        // public class methods
         this.getInput = getInput;
 
         this.setInput = setInput;

@@ -88,7 +88,7 @@ th {
     background-position: -50px -185px;
 }
 
-/* Some extra pictures for possible optimizations
+/* some extra pictures for possible optimizations
 .arrows_dt {
     background-position: 0 -150px;
 }
@@ -130,7 +130,7 @@ th {
 }
 
 .download {
-    padding-bottom: 30px;
+    padding-bottom: 15px;
 }
 
 .download_table {
@@ -139,6 +139,26 @@ th {
     position: relative;
     text-align: left;
     top: 8px;
+}
+
+.entry {
+    border-bottom: 0;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
+}
+
+.entry_start {
+    border-bottom: 1px;
+    border-top: 0;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
+}
+
+.entry_marked {
+    background-color: #003592; /* Bioinformatics RNA-Playground blue */
+    color: white;
 }
 
 .group_hint {
@@ -158,6 +178,24 @@ th {
     text-align: left;
 }
 
+.iteration {
+    clear: both;
+    padding-bottom: 30px;
+}
+
+.iteration_footer {
+    background-color: #ebebeb; /* Uni-Freiburg standard */
+    clear: both;
+    font-size: smaller;
+    padding: 5px;
+}
+
+.iteration_header h4 {
+    background-color: #ebebeb; /* Uni-Freiburg standard */
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
 .main_output {
     max-width: 600px;
     overflow: auto;
@@ -170,6 +208,11 @@ th {
 
 .output {
     float: left;
+}
+
+.parameters {
+    line-height: 180%;
+    padding-bottom: 30px;
 }
 
 .results {
@@ -292,12 +335,7 @@ th {
 }
 
 #algorithm_output {
-    padding-bottom: 30px;
-}
-
-#algorithm_view {
-    padding: 30px;
-    z-index: 1;
+    padding-bottom: 15px;
 }
 
 #recursion_arslan_egecioglu_pevzner {
