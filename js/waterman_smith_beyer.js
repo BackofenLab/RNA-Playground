@@ -316,7 +316,7 @@ $(document).ready(function () {
         var leftValue = left >= 0 && position.i === 0 ? outputData.matrix[position.i][left] : Number.NaN;
 
         // check
-        var isMatchMismatch = currentValue === (diagonalValue + matchOrMismatch);
+        var isMatchMismatch = alignmentInstance.differenceLowerEpsilon(currentValue, diagonalValue + matchOrMismatch, EPSILON);
         var isHorizontal = !isNaN(horizontalK);  // if a position exists to which we can horizontally jump
         var isVertical = !isNaN(verticalK);  // if a position exists to which we can vertically jump
 
