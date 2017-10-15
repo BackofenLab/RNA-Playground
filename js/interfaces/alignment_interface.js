@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.alignmentInterface", AlignmentInterface, imports, sharedInterfaceOperations, startProcessing);
+    namespace("interfaces.alignmentInterface", AlignmentInterface, imports, sharedInterfaceOperations, startProcessing, roundValues);
 
     // instances
     var alignmentInterfaceInstance;
@@ -20,10 +20,13 @@ Author: Alexander Mattheis
      */
     function AlignmentInterface() {
         alignmentInterfaceInstance = this;
+
+        // public class methods
         this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
         this.startAlignmentAlgorithm = startAlignmentAlgorithm;
         this.startProcessing = startProcessing;
+        this.roundValues = roundValues;
     }
 
     /**
@@ -41,7 +44,6 @@ Author: Alexander Mattheis
      */
     function imports() {
         // third party libs
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
         $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
 
         // design/controls logic
@@ -269,7 +271,9 @@ Author: Alexander Mattheis
      * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
-        if (viewmodels.output.iterationData !== undefined)
+        roundValues(outputData);
+
+        if (outputData.iterationData !== undefined)
             changeAEPOutput(outputData, viewmodels);
         else {
             viewmodels.output.matrix(outputData.matrix);
@@ -295,48 +299,205 @@ Author: Alexander Mattheis
      * Changes the output of Arslan-Egecioglu-Pevzner algorithm after processing the input.
      * @param outputData {Object} - Contains all output data.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @see Not nice without array, but the only found way it's working without any bugs!
      */
     function changeAEPOutput(outputData, viewmodels) {
-        viewmodels.output.iterationData(outputData.iterationData);
+        if (outputData.iterationData.length > 0 && outputData.iterationData[0].length > 0) {
+            viewmodels.output.matrix1(outputData.iterationData[0][0][8]);
 
-        for (var i = 0; i < outputData.iterationData.length; i++) {  // iteration over possibilities
-            // new possibilities are not automatically functions
-            // and so we have to convert new variables manually into functions
-            // or we get the following error
-            // 'Uncaught TypeError: ... is not a function'
-            if (i > outputData.iterationData.length)
-                viewmodels.output.iterationData[i] = new Function();
+            for (var i = 0; i < outputData.iterationData[0][0][8].length; i++) {
+                // new variables (rows) are not automatically functions
+                // and so we have to convert new variables manually into functions
+                // or we get the following error
+                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                if (i > viewmodels.output.matrix1.length)
+                    viewmodels.output.matrix1[i] = new Function();
 
-            viewmodels.output.iterationData[i](outputData.iterationData[i]);
+                viewmodels.output.matrix1[i](outputData.iterationData[0][0][8][i]);
+            }
 
-            for (var j = 0; j < outputData.iterationData[i].length; j++) {  // iteration over rounds
-                // new ... automatically functions
-                if (j > outputData.iterationData[i].length)
-                    viewmodels.output.iterationData[i][j] = new Function();
+            viewmodels.output.alignments1(outputData.iterationData[0][0][7]);
 
-                viewmodels.output.iterationData[i][j](outputData.iterationData[i][j]);
+            viewmodels.output.score1(outputData.iterationData[0][0][0]);
+            viewmodels.output.length1(outputData.iterationData[0][0][1]);
+            viewmodels.output.lambda1(outputData.iterationData[0][0][2]);
 
-                // iteration over [score, length, lambda, deletion, insertion, match, mismatch, alignments, matrix]
-                for (var k = 0; k < outputData.iterationData[i][j].length; k++) {
+            viewmodels.output.alignmentNumber1(outputData.iterationData[0][0][10]);
+        } else {
+            viewmodels.output.matrix1([]);
+            viewmodels.output.alignments1([]);
+            viewmodels.output.score1(0);
+            viewmodels.output.length1(0);
+            viewmodels.output.lambda1(0);
+            viewmodels.output.alignmentNumber1(undefined);
+        }
 
-                    // new ... not automatically functions
-                    if (k > outputData.iterationData[i][j].length)
-                        viewmodels.output.iterationData[i][j][k] = new Function();
+        if (outputData.iterationData.length > 0 && outputData.iterationData[0].length > 1) {
+            viewmodels.output.matrix2(outputData.iterationData[0][1][8]);
 
-                    viewmodels.output.iterationData[i][j][k](outputData.iterationData[i][j][k]);
-                }
+            for (var i = 0; i < outputData.iterationData[0][1][8].length; i++) {
+                // new variables (rows) are not automatically functions
+                // and so we have to convert new variables manually into functions
+                // or we get the following error
+                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                if (i > viewmodels.output.matrix2.length)
+                    viewmodels.output.matrix2[i] = new Function();
 
-                // iteration over matrix rows
-                for (var l = 0; l < outputData.iterationData[i][j][8].length; l++) {
+                viewmodels.output.matrix2[i](outputData.iterationData[0][1][8][i]);
+            }
 
-                    // new ... not automatically functions
-                    if (l > outputData.iterationData[i][j][8].length)
-                        viewmodels.output.iterationData[i][j][k][l] = new Function();
+            viewmodels.output.alignments2(outputData.iterationData[0][1][7]);
 
-                    viewmodels.output.iterationData[i][j][8][l](outputData.iterationData[i][j][8][l]);
+            viewmodels.output.score2(outputData.iterationData[0][1][0]);
+            viewmodels.output.length2(outputData.iterationData[0][1][1]);
+            viewmodels.output.lambda2(outputData.iterationData[0][1][2]);
+
+            viewmodels.output.alignmentNumber2(outputData.iterationData[0][1][10]);
+        } else {
+            viewmodels.output.matrix2([]);
+            viewmodels.output.alignments2([]);
+            viewmodels.output.score2(0);
+            viewmodels.output.length2(0);
+            viewmodels.output.lambda2(0);
+            viewmodels.output.alignmentNumber2(undefined);
+        }
+
+        if (outputData.iterationData.length > 0 && outputData.iterationData[0].length > 2) {
+            viewmodels.output.matrix3(outputData.iterationData[0][2][8]);
+
+            for (var i = 0; i < outputData.iterationData[0][2][8].length; i++) {
+                // new variables (rows) are not automatically functions
+                // and so we have to convert new variables manually into functions
+                // or we get the following error
+                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                if (i > viewmodels.output.matrix3.length)
+                    viewmodels.output.matrix3[i] = new Function();
+
+                viewmodels.output.matrix3[i](outputData.iterationData[0][2][8][i]);
+            }
+
+            viewmodels.output.alignments3(outputData.iterationData[0][2][7]);
+
+            viewmodels.output.score3(outputData.iterationData[0][2][0]);
+            viewmodels.output.length3(outputData.iterationData[0][2][1]);
+            viewmodels.output.lambda3(outputData.iterationData[0][2][2]);
+
+            viewmodels.output.alignmentNumber3(outputData.iterationData[0][2][10]);
+        } else {
+            viewmodels.output.matrix3([]);
+            viewmodels.output.alignments3([]);
+            viewmodels.output.score3(0);
+            viewmodels.output.length3(0);
+            viewmodels.output.lambda3(0);
+            viewmodels.output.alignmentNumber3(undefined);
+        }
+
+        if (outputData.iterationData.length > 0 && outputData.iterationData[0].length > 3) {
+            viewmodels.output.matrix4(outputData.iterationData[0][3][8]);
+
+            for (var i = 0; i < outputData.iterationData[0][3][8].length; i++) {
+                // new variables (rows) are not automatically functions
+                // and so we have to convert new variables manually into functions
+                // or we get the following error
+                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                if (i > viewmodels.output.matrix4.length)
+                    viewmodels.output.matrix4[i] = new Function();
+
+                viewmodels.output.matrix4[i](outputData.iterationData[0][3][8][i]);
+            }
+
+            viewmodels.output.alignments4(outputData.iterationData[0][3][7]);
+
+            viewmodels.output.score4(outputData.iterationData[0][3][0]);
+            viewmodels.output.length4(outputData.iterationData[0][3][1]);
+            viewmodels.output.lambda4(outputData.iterationData[0][3][2]);
+
+            viewmodels.output.alignmentNumber4(outputData.iterationData[0][3][10]);
+        } else {
+            viewmodels.output.matrix4([]);
+            viewmodels.output.alignments4([]);
+            viewmodels.output.score4(0);
+            viewmodels.output.length4(0);
+            viewmodels.output.lambda4(0);
+            viewmodels.output.alignmentNumber4(undefined);
+        }
+
+        if (outputData.iterationData.length > 0 && outputData.iterationData[0].length > 4) {
+            viewmodels.output.matrix5(outputData.iterationData[0][4][8]);
+
+            for (var i = 0; i < outputData.iterationData[0][4][8].length; i++) {
+                // new variables (rows) are not automatically functions
+                // and so we have to convert new variables manually into functions
+                // or we get the following error
+                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                if (i > viewmodels.output.matrix5.length)
+                    viewmodels.output.matrix5[i] = new Function();
+
+                viewmodels.output.matrix5[i](outputData.iterationData[0][4][8][i]);
+            }
+
+            viewmodels.output.alignments5(outputData.iterationData[0][4][7]);
+
+            viewmodels.output.score5(outputData.iterationData[0][4][0]);
+            viewmodels.output.length5(outputData.iterationData[0][4][1]);
+            viewmodels.output.lambda5(outputData.iterationData[0][4][2]);
+
+            viewmodels.output.alignmentNumber5(outputData.iterationData[0][4][10]);
+        } else {
+            viewmodels.output.matrix5([]);
+            viewmodels.output.alignments5([]);
+            viewmodels.output.score5(0);
+            viewmodels.output.length5(0);
+            viewmodels.output.lambda5(0);
+            viewmodels.output.alignmentNumber5(undefined);
+        }
+    }
+
+    /**
+     * Rounds matrix values, scores and other parameters.
+     * @param outputData {Object} - Output data which is modified.
+     */
+    function roundValues(outputData) {
+        if (outputData.iterationData !== undefined) {  // AEP
+
+            // every possibility
+            for (var i = 0; i < outputData.iterationData.length; i++) {
+                // every round
+                for (var j = 0; j < outputData.iterationData[i].length; j++) {
+
+                    // every matrix row
+                    for (var l = 0; l < outputData.iterationData[i][j][8].length; l++) {
+
+                        // every entry
+                        for (var k = 0; k < outputData.iterationData[i][j][8][l].length; k++) {
+                            outputData.iterationData[i][j][8][l][k]
+                                = round(outputData.iterationData[i][j][8][l][k], 1);
+                        }
+                    }
+
+                    outputData.iterationData[i][j][0] = round(outputData.iterationData[i][j][0], 4); // score
+                    outputData.iterationData[i][j][2] = round(outputData.iterationData[i][j][2], 4); // lambda
                 }
             }
+
+        } else { // other algorithms
+            for (var i = 0; i < outputData.matrix.length; i++)
+                for (var j = 0; j < outputData.matrix[0].length; j++)
+                    outputData.matrix[i][j] = round(outputData.matrix[i][j], 1);
+
+            outputData.score = round(outputData.score, 1);
         }
+    }
+
+    /**
+     * Rounds a value to one decimal place.
+     * @param number {number} - The number which is rounded.
+     * @param decimalPlaces {number} - The number of decimal places you want round to.
+     * @return {number} - Rounded value.
+     */
+    function round(number, decimalPlaces) {
+        var factor = Math.pow(10, decimalPlaces);
+        return Math.round(number*factor)/factor;
     }
 
     /*---- OUTPUT ----*/
@@ -351,26 +512,12 @@ Author: Alexander Mattheis
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      */
     function OutputViewmodel(algorithmName, outputData) {
-        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER){
-            this.iterationData = ko.observable(outputData.iterationData);
+        var viewmodel = this;
+        roundValues(outputData);
 
-            for (var i = 0; i < outputData.iterationData.length; i++) {  // iteration over possibilities
-                this.iterationData[i] = ko.observable(outputData.iterationData[i]);
-
-                for (var j = 0; j < outputData.iterationData[i].length; j++) {  // iteration over rounds
-                    this.iterationData[i][j] = ko.observable(outputData.iterationData[i][j]);
-
-                    // iteration over [score, length, lambda, deletion, insertion, match, mismatch, alignments, matrix]
-                    for (var k = 0; k < outputData.iterationData[i][j].length; k++) {
-                        this.iterationData[i][j][k] = ko.observable(outputData.iterationData[i][j][k]);
-                    }
-
-                    for (var l = 0; l < outputData.iterationData[i][j][8].length; l++) {
-                        this.iterationData[i][j][8][l] = ko.observable(outputData.iterationData[i][j][8][l]);
-                    }
-                }
-            }
-        } else {
+        if (outputData.iterationData !== undefined && outputData.iterationData.length > 0) {  // AEP
+            createAEPOutputViewmodel(viewmodel, outputData);
+        } else {  // other algorithms
             this.matrix = ko.observableArray(outputData.matrix);
 
             for (var i = 0; i < outputData.matrix.length; i++) {
@@ -391,6 +538,94 @@ Author: Alexander Mattheis
 
             this.score = ko.observable(outputData.score);
             this.moreTracebacks = ko.observable(outputData.moreTracebacks);
+        }
+    }
+
+    /**
+     * Creates the AEP OutputViewmodel.
+     * @param viewmodel - The output viewmodel container which should be filled.
+     * @param outputData - The data which is used to fill the viewmodel.
+     * @see Not nice without array, but the only found way it's working without any bugs!
+     */
+    function createAEPOutputViewmodel(viewmodel, outputData) {
+        if (outputData.iterationData[0].length > 0) {
+            viewmodel.matrix1 = ko.observableArray(outputData.iterationData[0][0][8]);
+
+            for (var i = 0; i < outputData.iterationData[0][0][8].length; i++) {
+                viewmodel.matrix1[i] = ko.observableArray(outputData.iterationData[0][0][8][i]);
+            }
+
+            viewmodel.alignments1 = ko.observableArray(outputData.iterationData[0][0][7]);
+
+            viewmodel.score1 = ko.observable(outputData.iterationData[0][0][0]);
+            viewmodel.length1 = ko.observable(outputData.iterationData[0][0][1]);
+            viewmodel.lambda1 = ko.observable(outputData.iterationData[0][0][2]);
+
+            viewmodel.alignmentNumber1 = ko.observable(outputData.iterationData[0][0][10]);
+        }
+
+        if (outputData.iterationData[0].length > 1) {
+            viewmodel.matrix2 = ko.observableArray(outputData.iterationData[0][1][8]);
+
+            for (var i = 0; i < outputData.iterationData[0][0][8].length; i++) {
+                viewmodel.matrix2[i] = ko.observableArray(outputData.iterationData[0][1][8][i]);
+            }
+
+            viewmodel.alignments2 = ko.observableArray(outputData.iterationData[0][1][7]);
+
+            viewmodel.score2 = ko.observable(outputData.iterationData[0][1][0]);
+            viewmodel.length2 = ko.observable(outputData.iterationData[0][1][1]);
+            viewmodel.lambda2 = ko.observable(outputData.iterationData[0][1][2]);
+
+            viewmodel.alignmentNumber2 = ko.observable(outputData.iterationData[0][1][10]);
+        }
+
+        if (outputData.iterationData[0].length > 2) {
+            viewmodel.matrix3 = ko.observableArray(outputData.iterationData[0][1][8]);
+
+            for (var i = 0; i < outputData.iterationData[0][0][8].length; i++) {
+                viewmodel.matrix3[i] = ko.observableArray(outputData.iterationData[0][1][8][i]);
+            }
+
+            viewmodel.alignments3 = ko.observableArray(outputData.iterationData[0][1][7]);
+
+            viewmodel.score3 = ko.observable(outputData.iterationData[0][1][0]);
+            viewmodel.length3 = ko.observable(outputData.iterationData[0][1][1]);
+            viewmodel.lambda3 = ko.observable(outputData.iterationData[0][1][2]);
+
+            viewmodel.alignmentNumber3 = ko.observable(outputData.iterationData[0][1][10]);
+        }
+
+        if (outputData.iterationData[0].length > 3) {
+            viewmodel.matrix4 = ko.observableArray(outputData.iterationData[0][1][8]);
+
+            for (var i = 0; i < outputData.iterationData[0][0][8].length; i++) {
+                viewmodel.matrix4[i] = ko.observableArray(outputData.iterationData[0][1][8][i]);
+            }
+
+            viewmodel.alignments4 = ko.observableArray(outputData.iterationData[0][1][7]);
+
+            viewmodel.score4 = ko.observable(outputData.iterationData[0][1][0]);
+            viewmodel.length4 = ko.observable(outputData.iterationData[0][1][1]);
+            viewmodel.lambda4 = ko.observable(outputData.iterationData[0][1][2]);
+
+            viewmodel.alignmentNumber4 = ko.observable(outputData.iterationData[0][1][10]);
+        }
+
+        if (outputData.iterationData[0].length > 4) {
+            viewmodel.matrix5 = ko.observableArray(outputData.iterationData[0][1][8]);
+
+            for (var i = 0; i < outputData.iterationData[0][0][8].length; i++) {
+                viewmodel.matrix5[i] = ko.observableArray(outputData.iterationData[0][1][8][i]);
+            }
+
+            viewmodel.alignments5 = ko.observableArray(outputData.iterationData[0][1][7]);
+
+            viewmodel.score5 = ko.observable(outputData.iterationData[0][1][0]);
+            viewmodel.length5 = ko.observable(outputData.iterationData[0][1][1]);
+            viewmodel.lambda5 = ko.observable(outputData.iterationData[0][1][2]);
+
+            viewmodel.alignmentNumber5 = ko.observable(outputData.iterationData[0][1][10]);
         }
     }
 

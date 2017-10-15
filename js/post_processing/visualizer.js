@@ -51,7 +51,7 @@ Author: Alexander Mattheis
             }
         };
 
-        // public methods (linking)
+        // public class methods
         this.shareInformation = shareInformation;
         this.showFlow = showFlow;
         this.showTraceback = showTraceback;
@@ -119,13 +119,15 @@ Author: Alexander Mattheis
      * @param table {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
      */
-    function showFlow(cellCoordinates, calculationVerticalTable, table, calculationHorizontalTable, mainOutput) {
+    function showFlow(cellCoordinates, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, iteration) {
         debugger;
         var algorithm = visualizerInstance.algorithm;
         var superclass = algorithm.getSuperclass();
 
         var flows;
         visualizerInstance.algorithm.numberOfTracebacks = 0;  // to avoid counting and a cancellation after some reached limit
+        visualizerInstance.output.iteration = iteration;  // the iteration in which the table should be selected
+
         if (algorithm.getNeighboured !== undefined)
             flows = superclass.getTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, algorithm.getNeighboured);
         else
@@ -521,16 +523,19 @@ Author: Alexander Mattheis
      * @param e - Stores data relevant to the event called that function.
      */
     function downloadTable(e) {
+        debugger;
         var number = e.data.number;
 
         var matrix = getMatrix(number);
-        var upperString = visualizerInstance.input.sequenceA;
-        var leftString = visualizerInstance.input.sequenceB;
+        if (matrix !== undefined) {
+            var upperString = visualizerInstance.input.sequenceA;
+            var leftString = visualizerInstance.input.sequenceB;
 
-        var tableCSV = tableToCSV(number, matrix, upperString, leftString);
-        var tableFile = new File([tableCSV], {type: TABLE.TEXT_FILE_ENCODING});
+            var tableCSV = tableToCSV(number, matrix, upperString, leftString);
+            var tableFile = new File([tableCSV], {type: TABLE.TEXT_FILE_ENCODING});
 
-        saveAs(tableFile, TABLE.DOWNLOAD_NAME);
+            saveAs(tableFile, TABLE.DOWNLOAD_NAME);
+        }
     }
 
     /**
@@ -542,6 +547,11 @@ Author: Alexander Mattheis
         switch (number) {
             case MATRICES.VERTICAL_NUMBER:
                 return replaceInfinities(visualizerInstance.output.verticalGaps);
+            case MATRICES.ITERATION_NUMBER_1:
+                if(visualizerInstance.output.iterationData !== undefined
+                    && visualizerInstance.output.iterationData.length > 0
+                    && visualizerInstance.output.iterationData[0].length > 0)
+                    return visualizerInstance.output.iterationData[0][-(number+1)][8];
             case MATRICES.HORIZONTAL_NUMBER:
                 return replaceInfinities(visualizerInstance.output.horizontalGaps);
         }
@@ -555,16 +565,18 @@ Author: Alexander Mattheis
      * @return {matrix} - The appropriate matrix to the number which was passed.
      */
     function replaceInfinities(matrix) {
-        for (var i = 0; i < matrix.length; i++) {
-            for (var j = 0; j < matrix[0].length; j++) {
-                if (matrix[i][j] === LATEX.NEGATIVE_INFINITY)
-                    matrix[i][j] = SYMBOLS.INFINITY;
-                else if (matrix[i][j] === LATEX.POSITIVE_INFINITY)
-                    matrix[i][j] = SYMBOLS.NEGATIVE_INFINITY;
+        if (matrix !== undefined) {
+            for (var i = 0; i < matrix.length; i++) {
+                for (var j = 0; j < matrix[0].length; j++) {
+                    if (matrix[i][j] === LATEX.NEGATIVE_INFINITY)
+                        matrix[i][j] = SYMBOLS.INFINITY;
+                    else if (matrix[i][j] === LATEX.POSITIVE_INFINITY)
+                        matrix[i][j] = SYMBOLS.NEGATIVE_INFINITY;
+                }
             }
-        }
 
-        return matrix;
+            return matrix;
+        }
     }
 
     /**

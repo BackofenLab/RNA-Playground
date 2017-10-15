@@ -252,9 +252,9 @@ Author: Alexander Mattheis
         var leftValue = left >= 0 ? outputData.matrix[position.i][left] : NaN;
 
         // check
-        var isMatchMismatch = currentValue === (diagonalValue + matchOrMismatch);
-        var isDeletion = currentValue === (upValue + inputData.deletion);
-        var isInsertion = currentValue === (leftValue + inputData.insertion);
+        var isMatchMismatch = differenceLowerEpsilon(currentValue, diagonalValue + matchOrMismatch, EPSILON);
+        var isDeletion = differenceLowerEpsilon(currentValue, upValue + inputData.deletion, EPSILON);
+        var isInsertion = differenceLowerEpsilon(currentValue, leftValue + inputData.insertion, EPSILON);
 
         if (algorithm.type === ALGORITHMS.SMITH_WATERMAN) {
             isMatchMismatch = isMatchMismatch || currentValue === 0 && up >= 0 && left >= 0;

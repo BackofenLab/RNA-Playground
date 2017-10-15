@@ -19,7 +19,7 @@ $(document).ready(function () {
 (function () {  // namespace
     // public methods
     namespace("arslanEgeciougluPevzner", startArslanEgeciougluPevzner, ArslanEgeciougluPevzner,
-        getInput, setInput, compute, getNeighboured, getOutput, setIO, getSuperclass);
+        getInput, setInput, compute, getOutput, setIO, getSuperclass);
 
     // instances
     var alignmentInstance;
@@ -65,12 +65,11 @@ $(document).ready(function () {
         alignmentInstance = new bases.alignment.Alignment(this);
         smithWatermanInstance = new smithWaterman.SmithWaterman();
 
-        // public methods (linking)
+        // public class methods
         this.getInput = getInput;
 
         this.setInput = setInput;
         this.compute = compute;
-        this.getNeighboured = getNeighboured;
         this.getOutput = getOutput;
 
         this.setIO = setIO;
@@ -127,7 +126,7 @@ $(document).ready(function () {
 
     /**
      * Initializes the given input with the read in inputData.
-     * @param input - The input which has to be initialized.
+     * @param input {Object} - The input which has to be initialized.
      */
     function initializeInput(input) {
         input.sequenceA = inputData.sequenceA;
@@ -144,9 +143,9 @@ $(document).ready(function () {
      * So, there are multiple alignments which are found by Smith-Waterman
      * and every alignment has to be tried out
      * or you maybe won't found all possible alignments with final Lambda.
-     * @param input - The initialized Waterman-Smith input structure.
-     * @param currentData - Stores the data from the current iteration. At the beginning it is empty.
-     * @param iterationData - Stores the data from all iterations.
+     * @param input {Object} - The initialized Waterman-Smith input structure.
+     * @param currentData {Object} - Stores the data from the current iteration. At the beginning it is empty.
+     * @param iterationData {Object} - Stores the data from all iterations.
      */
     function computeAllIterationData(input, currentData, iterationData) {
         // [1,4] computes Smith-Waterman with the given Lambda
@@ -174,7 +173,8 @@ $(document).ready(function () {
                 arslanEgeciougluPevznerInstance.lastLambda = arslanEgeciougluPevznerInstance.lambda;
                 arslanEgeciougluPevznerInstance.lambda = score / (alignmentLength + inputData.length);
 
-                currentData.push(getDataCopy(score, alignmentLength, arslanEgeciougluPevznerInstance.lambda, alignments, ioData[1].matrix));
+                currentData.push(
+                    getDataCopy(score, alignmentLength, arslanEgeciougluPevznerInstance.lambda, alignments, ioData[1].matrix, ioData[1].tracebackPaths, i));
                 computeAllIterationData(input, currentData, iterationData);
                 currentData.pop();
             }
@@ -183,8 +183,8 @@ $(document).ready(function () {
 
     /**
      * Computes Smith-Waterman output with the given lambda.
-     * @param input - The initialized Waterman-Smith input structure.
-     * @param lambda - The last computed normalized score lambda.
+     * @param input {Object} - The initialized Waterman-Smith input structure.
+     * @param lambda {number} - The last computed normalized score lambda.
      * @return {Object} - Output data of Smith-Waterman with the given parameter lambda.
      */
     function computeSmithWaterman(input, lambda) {
@@ -200,8 +200,8 @@ $(document).ready(function () {
 
     /**
      * Computes score and length.
-     * @param alignments - The alignments computed with Smith-Waterman.
-     * @param i - The selected alignments index.
+     * @param alignments {Object} - The alignments computed with Smith-Waterman.
+     * @param i {number} - The selected alignments index.
      * @return {[number,number]} - Score and length.
      */
     function computeScoreAndLength(alignments, i) {
@@ -210,7 +210,7 @@ $(document).ready(function () {
 
     /**
      * Computes the score.
-     * @param alignment - The alignment computed with Smith-Waterman.
+     * @param alignment {Object} - The alignment computed with Smith-Waterman.
      * @return {number} - Score.
      */
     function getScore(alignment) {
@@ -236,7 +236,7 @@ $(document).ready(function () {
 
     /**
      * Computes the alignment length.
-     * @param alignment - The alignment computed with Smith-Waterman.
+     * @param alignment {Object} - The alignment computed with Smith-Waterman.
      * @return {number} - Score.
      */
     function getAlignmentLength(alignment) {
@@ -251,7 +251,7 @@ $(document).ready(function () {
 
     /**
      * Returns the number of non-gaps in the given sequence.
-     * @param sequence - Sequence in which the characters should be counted.
+     * @param sequence {string} - Sequence in which the characters should be counted.
      * @return {number} - Number of non-gaps.
      */
     function countCharacters(sequence) {
@@ -274,7 +274,7 @@ $(document).ready(function () {
      * @param alignments - The matrix you want store.
      * @return {Object} - [score, lambda, deletion, insertion, match, mismatch, alignments matrix]
      */
-    function getDataCopy(score, alignmentLength, lambda, alignments, matrix) {
+    function getDataCopy(score, alignmentLength, lambda, alignments, matrix, tracebackPaths, alignmentNumber) {
         return [
             score,
             alignmentLength,
@@ -284,21 +284,10 @@ $(document).ready(function () {
             inputData.match - 2 * lambda,
             inputData.mismatch - 2 * lambda,
             alignments.slice(),
-            matrix.slice()
+            matrix.slice(),
+            tracebackPaths.slice(),
+            alignmentNumber
         ];
-    }
-
-    /**
-     * Returns the neighbours to which you can go from the current cell position used as input.
-     * @param position {Vector} - Current cell position in matrix.
-     * @param inputData {Object} - Contains all input data.
-     * @param outputData {Object} - Contains all output data.
-     * @param algorithm {Object} - Contains an alignment algorithm.
-     * @return {Array} - Contains neighboured positions as Vector-objects.
-     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
-     */
-    function getNeighboured(position, inputData, outputData, algorithm) {
-        return smithWatermanInstance.getNeighboured(position, inputData, outputData, algorithm);
     }
 
     /**

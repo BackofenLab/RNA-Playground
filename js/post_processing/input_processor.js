@@ -28,7 +28,7 @@ Author: Alexander Mattheis
         this.inputUpdatesStarted = false;
         this.avoidFocusOutUpdate = false;
 
-        // public methods (linking)
+        // public class methods
         this.activateInputUpdates = activateInputUpdates;
         this.inputUpdatesActivated = inputUpdatesActivated;
         this.linkElements = linkElements;
@@ -73,6 +73,9 @@ Author: Alexander Mattheis
         var tableDownload = $(".table_download");
         var tableVerticalDownload = $(".table_vertical_download");
         var tableHorizontalDownload = $(".table_horizontal_download");
+
+        var tableDownload1 = $(".table_download_1");
+        var calculation1 = mainOutput.find(".calculation_1");
 
         // 1st
         var functionArguments = {"functionParameters": functionParameters};
@@ -166,6 +169,15 @@ Author: Alexander Mattheis
 
         // 7th
         mainOutput.on("scroll", functionArguments, visualViewmodel.redrawOverlay);
+
+        // 8th
+        functionArguments = {
+            "calculationTable": calculation1,
+            "calculationHorizontalTable": calculationHorizontal,
+            "calculationVerticalTable": calculationVertical,
+            "number": MATRICES.ITERATION_NUMBER_1
+        };
+        tableDownload1.on("click", functionArguments, visualViewmodel.downloadTable);
     }
 
     /**
@@ -286,6 +298,7 @@ Author: Alexander Mattheis
      * @param e - Stores data relevant to the event called that function.
      */
     function selectCell(e) {
+        debugger;
         // retrieve data
         var number = e.data.number;
         var mainOutput = e.data.mainOutput[0];
@@ -342,7 +355,7 @@ Author: Alexander Mattheis
         // some delay without it won't work properly
         setTimeout(function () {
             visualViewmodel.showFlow(cellCoordinates,
-                calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput);
+                calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput, number);
         }, REACTION_TIME_HIGHLIGHT);
     }
 

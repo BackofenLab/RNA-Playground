@@ -43,13 +43,13 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms
 var ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     LENGTH: 10,
-    SEQUENCE_1: "AACG",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "AATCG",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "GCATTUGCCUU",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "CTTGACCATU",  // hint: UPPERCASE letters!
 
     FUNCTION: {
         DELETION: -2,
         INSERTION: -2,
-        MATCH: 1,
+        MATCH: 3,
         MISMATCH: -1
     }
 };
@@ -231,6 +231,11 @@ var MATRICES = {
     DEFAULT_NUMBER: 1,
     HORIZONTAL: "Q",
     HORIZONTAL_NUMBER: 2,
+    ITERATION_NUMBER_1: -1,
+    ITERATION_NUMBER_2: -2,
+    ITERATION_NUMBER_3: -3,
+    ITERATION_NUMBER_4: -4,
+    ITERATION_NUMBER_5: -5,
     VERTICAL: "P",
     VERTICAL_NUMBER: 0
 };
@@ -269,7 +274,8 @@ var PATHS = {
     VISUALIZER: "js/post_processing/visualizer.js",
 
     LIBS: {
-        KNOCKOUT: "js/libs/knockout-3.4.2.js"
+        KNOCKOUT: "js/libs/knockout-3.4.2.js",
+        MATH_JAX: "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"
     },
 
     MAIN: {

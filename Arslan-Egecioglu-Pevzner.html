@@ -71,7 +71,7 @@ Author: Alexander Mattheis
         </p>
 
         <p>
-            <label>Scoring in $s'$:</label>
+            <label>Scoring in $ns$:</label>
             <div class="span_group">
                 <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
                     Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
@@ -97,7 +97,7 @@ Author: Alexander Mattheis
                 <span data-bind="text: $root.input.subFormula"></span>
                 <br>
                 <br>
-                where $\lambda_0 = 0$
+                where $\lambda^0 = 0$
                 <br>
                 <br>
             </div>
@@ -110,117 +110,741 @@ Author: Alexander Mattheis
     </form>
 </div>
 
+<!-- Dynamic creation of iterations didn't work, because of several problems with MathJax, ObservableArrays and runtime for drawing. -->
 <div id="algorithm_output">
-    <div class="output">
-        <div class="main_output">
-            <table class="calculation">
-                <thead>
-					<tr>
-						<th>$D$</th>
-						<th></th>
-                        <!-- ko foreach: input.sequence1 -->
-							<th data-bind="drawChar: [$data, $index()+1]"></th>
-                        <!-- /ko -->
-					</tr>
-                </thead>
+	<div class="iteration">
+		<div class="iteration_header">
+			<h4>Iteration 5</h4>
+		</div>
 
-                <tbody>
-					<!-- ko foreach: output.matrix --> <!-- to get i-indexes = $parentContext.$index() -->
+		<div class="output">
+			<div class="main_output">
+				<table class="calculation_5">
+					<thead>
 						<tr>
-							<!-- ko if: $index() == 0 -->
-								<th></th>
-                            <!-- /ko -->
-
-                            <!-- ko if: $index() > 0 -->
-								<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
-                            <!-- /ko -->
-
-                            <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
-								<td class="selectable_entry"
-                                    data-bind="text: $root.output.matrix()[$parentContext.$index()][$index()]"></td>
-                            <!-- /ko -->
+							<th>$D$</th>
+							<th></th>
+							<!-- ko foreach: $root.input.sequence1 -->
+								<th data-bind="drawChar: [$data, $index()+1]"></th>
+							<!-- /ko -->
 						</tr>
-                    <!-- /ko -->
+					</thead>
 
-					<tr>
-						<th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
-							<small>
-								<b>Score:</b> <span data-bind="text: $root.output.score"></span>
-							</small>
-						</th>
-					</tr>
-                </tbody>
-            </table>
-        </div>
+					<tbody>
+						<!-- ko foreach: $root.output.matrix5 -->
+							<tr>
+                                <!-- ko if: $index() == 0 -->
+									<th></th>
+								<!-- /ko -->
 
-        <div class="download">
-            <table>
-                <tfoot>
-                    <tr>
-                        <td class="download_table" colspan=100%>
-                            <a class="table_download" href="#">Download Table</a>
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
+								<!-- ko if: $index() > 0 -->
+									<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+								<!-- /ko -->
 
-    <div class="outcome">
-        <div class ="ancillary_output">
-            <table class="results_header">
-                <thead>
+								<!-- ko foreach: $root.output.matrix5[0] -->
+									<td class="non_selectable_entry" data-bind="text: $root.output.matrix5()[$parentContext.$index()][$index()]"></td>
+								<!-- /ko -->
+							</tr>
+						<!-- /ko -->
+					</tbody>
+				</table>
+			</div>
+
+			<div class="download">
+				<table>
+					<tfoot>
+						<tr>
+							<td class="download_table" colspan=100%>
+								<a class="table_download_5" href="#">Download Table</a>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+
+			<div class="parameters">
+				Score $s(\mathscr{A})$:
+				<span data-bind="text: $root.output.score5"></span> <br>
+
+				Length $⟦A⟧$:
+				<span data-bind="text: $root.output.length5"></span> <br>
+
+				Normalized score $\lambda$:
+				<span data-bind="text: $root.output.lambda5"></span> <br>
+			</div>
+		</div>
+
+		<div class="outcome">
+			<div class ="ancillary_output">
+				<table class="results_header">
+					<thead>
+						<tr>
+							<th>
+								Results <br>
+								<small>
+									The result for which the score, length and normalized score were computed is marked.
+								</small>
+							</th>
+						</tr>
+					</thead>
+				</table>
+
+				<div class="results_with_scrollbar">
+					<table class="results">
+						<tbody>
+							<!-- ko foreach: $root.output.alignments5 -->
+                                <!-- ko if: $index() < 10 -->
+
+                                    <!-- ko if: $index() == $root.output.alignmentNumber5() -->
+                                        <!-- ko if: $index() == 0 -->
+                                                <tr>
+                                                    <td class="entry entry_start entry_marked">
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                        <!-- ko if: $index() != 0 -->
+                                                <tr>
+                                                    <td class="entry entry_marked">
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+
+                                    <!-- ko if: $index() != $root.output.alignmentNumber5() -->
+                                        <!-- ko if: $index() == 0 -->
+                                                <tr>
+                                                    <td class="entry entry_start">
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                        <!-- ko if: $index() != 0 -->
+                                                <tr>
+                                                    <td class="entry">
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments5()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+
+                                <!-- /ko -->
+                            <!-- /ko -->
+						</tbody>
+					</table>
+				</div>
+
+				<table class="results_footer">
 					<tr>
 						<th>
-							Results <br>
 							<small>
-								You can select a result to get the related traceback.
+								<!-- ko if: $root.output.moreTracebacks -->
+									<b>Hint:</b> Only the first ten results are computed.
+								<!-- /ko -->
 							</small>
 						</th>
 					</tr>
-                </thead>
-            </table>
+				</table>
+			</div>
+		</div>
+	</div>
+		
+	<div class="iteration">
+		<div class="iteration_header">
+			<h4>Iteration 4</h4>
+		</div>
 
-            <div class="results_with_scrollbar">
-                <table class="results">
-                    <tbody>
-                        <!-- ko foreach: $root.output.alignments -->
-                            <!-- ko if: $index() < 10 -->
+		<div class="output">
+			<div class="main_output">
+				<table class="calculation_4">
+					<thead>
+						<tr>
+							<th>$D$</th>
+							<th></th>
+							<!-- ko foreach: $root.input.sequence1 -->
+								<th data-bind="drawChar: [$data, $index()+1]"></th>
+							<!-- /ko -->
+						</tr>
+					</thead>
+
+					<tbody>
+						<!-- ko foreach: $root.output.matrix4 -->
+							<tr>
                                 <!-- ko if: $index() == 0 -->
-                                    <tr>
-                                        <td class="selectable_entry selectable_entry_start">
-                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
-                                        </td>
-                                    </tr>
-                                <!-- /ko -->
-                                <!-- ko if: $index() != 0 -->
-                                    <tr>
-                                        <td class="selectable_entry">
-                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
-                                        </td>
-                                    </tr>
-                                <!-- /ko -->
-                            <!-- /ko -->
-                        <!-- /ko -->
-                    </tbody>
-                </table>
-            </div>
+									<th></th>
+								<!-- /ko -->
 
-            <table class="results_footer">
-                <tr>
-                    <th>
-                        <small>
-                            <!-- ko if: $root.output.moreTracebacks -->
-                                <b>Hint:</b> Only the first ten results are computed.
+								<!-- ko if: $index() > 0 -->
+									<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+								<!-- /ko -->
+
+								<!-- ko foreach: $root.output.matrix4[0] -->
+									<td class="non_selectable_entry" data-bind="text: $root.output.matrix4()[$parentContext.$index()][$index()]"></td>
+								<!-- /ko -->
+							</tr>
+						<!-- /ko -->
+					</tbody>
+				</table>
+			</div>
+
+			<div class="download">
+				<table>
+					<tfoot>
+						<tr>
+							<td class="download_table" colspan=100%>
+								<a class="table_download_4" href="#">Download Table</a>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+
+			<div class="parameters">
+				Score $s(\mathscr{A})$:
+				<span data-bind="text: $root.output.score4"></span> <br>
+
+				Length $⟦A⟧$:
+				<span data-bind="text: $root.output.length4"></span> <br>
+
+				Normalized score $\lambda$:
+				<span data-bind="text: $root.output.lambda4"></span> <br>
+			</div>
+		</div>
+
+		<div class="outcome">
+			<div class ="ancillary_output">
+				<table class="results_header">
+					<thead>
+						<tr>
+							<th>
+								Results <br>
+								<small>
+									The result for which the score, length and normalized score were computed is marked.
+								</small>
+							</th>
+						</tr>
+					</thead>
+				</table>
+
+				<div class="results_with_scrollbar">
+					<table class="results">
+						<tbody>
+							<!-- ko foreach: $root.output.alignments4 -->
+                                <!-- ko if: $index() < 10 -->
+
+                                    <!-- ko if: $index() == $root.output.alignmentNumber4() -->
+                                        <!-- ko if: $index() == 0 -->
+                                                <tr>
+                                                    <td class="entry entry_start entry_marked">
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                        <!-- ko if: $index() != 0 -->
+                                                <tr>
+                                                    <td class="entry entry_marked">
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+
+                                    <!-- ko if: $index() != $root.output.alignmentNumber4() -->
+                                        <!-- ko if: $index() == 0 -->
+                                                <tr>
+                                                    <td class="entry entry_start">
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                        <!-- ko if: $index() != 0 -->
+                                                <tr>
+                                                    <td class="entry">
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments4()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+
+                                <!-- /ko -->
                             <!-- /ko -->
-                        </small>
-                    </th>
-                </tr>
-            </table>
-        </div>
+						</tbody>
+					</table>
+				</div>
+
+				<table class="results_footer">
+					<tr>
+						<th>
+							<small>
+								<!-- ko if: $root.output.moreTracebacks -->
+									<b>Hint:</b> Only the first ten results are computed.
+								<!-- /ko -->
+							</small>
+						</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+	<div class="iteration">
+		<div class="iteration_header">
+			<h4>Iteration 3</h4>
+		</div>
+
+		<div class="output">
+			<div class="main_output">
+				<table class="calculation_3">
+					<thead>
+						<tr>
+							<th>$D$</th>
+							<th></th>
+							<!-- ko foreach: $root.input.sequence1 -->
+								<th data-bind="drawChar: [$data, $index()+1]"></th>
+							<!-- /ko -->
+						</tr>
+					</thead>
+
+					<tbody>
+						<!-- ko foreach: $root.output.matrix3 -->
+							<tr>
+                                <!-- ko if: $index() == 0 -->
+									<th></th>
+								<!-- /ko -->
+
+								<!-- ko if: $index() > 0 -->
+									<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+								<!-- /ko -->
+
+								<!-- ko foreach: $root.output.matrix3[0] -->
+									<td class="non_selectable_entry" data-bind="text: $root.output.matrix3()[$parentContext.$index()][$index()]"></td>
+								<!-- /ko -->
+							</tr>
+						<!-- /ko -->
+					</tbody>
+				</table>
+			</div>
+
+			<div class="download">
+				<table>
+					<tfoot>
+						<tr>
+							<td class="download_table" colspan=100%>
+								<a class="table_download_3" href="#">Download Table</a>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+
+			<div class="parameters">
+				Score $s(\mathscr{A})$:
+				<span data-bind="text: $root.output.score3"></span> <br>
+
+				Length $⟦A⟧$:
+				<span data-bind="text: $root.output.length3"></span> <br>
+
+				Normalized score $\lambda$:
+				<span data-bind="text: $root.output.lambda3"></span> <br>
+			</div>
+		</div>
+
+		<div class="outcome">
+			<div class ="ancillary_output">
+				<table class="results_header">
+					<thead>
+						<tr>
+							<th>
+								Results <br>
+								<small>
+									The result for which the score, length and normalized score were computed is marked.
+								</small>
+							</th>
+						</tr>
+					</thead>
+				</table>
+
+				<div class="results_with_scrollbar">
+					<table class="results">
+						<tbody>
+							<!-- ko foreach: $root.output.alignments3 -->
+                                <!-- ko if: $index() < 10 -->
+
+                                    <!-- ko if: $index() == $root.output.alignmentNumber3() -->
+                                        <!-- ko if: $index() == 0 -->
+                                                <tr>
+                                                    <td class="entry entry_start entry_marked">
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                        <!-- ko if: $index() != 0 -->
+                                                <tr>
+                                                    <td class="entry entry_marked">
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+
+                                    <!-- ko if: $index() != $root.output.alignmentNumber3() -->
+                                        <!-- ko if: $index() == 0 -->
+                                                <tr>
+                                                    <td class="entry entry_start">
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                        <!-- ko if: $index() != 0 -->
+                                                <tr>
+                                                    <td class="entry">
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments3()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+
+                                <!-- /ko -->
+                            <!-- /ko -->
+						</tbody>
+					</table>
+				</div>
+
+				<table class="results_footer">
+					<tr>
+						<th>
+							<small>
+								<!-- ko if: $root.output.moreTracebacks -->
+									<b>Hint:</b> Only the first ten results are computed.
+								<!-- /ko -->
+							</small>
+						</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div class="iteration">
+		<div class="iteration_header">
+			<h4>Iteration 2</h4>
+		</div>
+
+		<div class="output">
+			<div class="main_output">
+				<table class="calculation_2">
+					<thead>
+						<tr>
+							<th>$D$</th>
+							<th></th>
+							<!-- ko foreach: $root.input.sequence1 -->
+								<th data-bind="drawChar: [$data, $index()+1]"></th>
+							<!-- /ko -->
+						</tr>
+					</thead>
+
+					<tbody>
+						<!-- ko foreach: $root.output.matrix2 -->
+							<tr>
+                                <!-- ko if: $index() == 0 -->
+									<th></th>
+								<!-- /ko -->
+
+								<!-- ko if: $index() > 0 -->
+									<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+								<!-- /ko -->
+
+								<!-- ko foreach: $root.output.matrix2[0] -->
+									<td class="non_selectable_entry" data-bind="text: $root.output.matrix2()[$parentContext.$index()][$index()]"></td>
+								<!-- /ko -->
+							</tr>
+						<!-- /ko -->
+					</tbody>
+				</table>
+			</div>
+
+			<div class="download">
+				<table>
+					<tfoot>
+						<tr>
+							<td class="download_table" colspan=100%>
+								<a class="table_download_2" href="#">Download Table</a>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+
+			<div class="parameters">
+				Score $s(\mathscr{A})$:
+				<span data-bind="text: $root.output.score2"></span> <br>
+
+				Length $⟦A⟧$:
+				<span data-bind="text: $root.output.length2"></span> <br>
+
+				Normalized score $\lambda$:
+				<span data-bind="text: $root.output.lambda2"></span> <br>
+			</div>
+		</div>
+
+		<div class="outcome">
+			<div class ="ancillary_output">
+				<table class="results_header">
+					<thead>
+						<tr>
+							<th>
+								Results <br>
+								<small>
+									The result for which the score, length and normalized score were computed is marked.
+								</small>
+							</th>
+						</tr>
+					</thead>
+				</table>
+
+				<div class="results_with_scrollbar">
+					<table class="results">
+						<tbody>
+							<!-- ko foreach: $root.output.alignments2 -->
+                                <!-- ko if: $index() < 10 -->
+
+                                    <!-- ko if: $index() == $root.output.alignmentNumber2() -->
+                                        <!-- ko if: $index() == 0 -->
+                                                <tr>
+                                                    <td class="entry entry_start entry_marked">
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                        <!-- ko if: $index() != 0 -->
+                                                <tr>
+                                                    <td class="entry entry_marked">
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+
+                                    <!-- ko if: $index() != $root.output.alignmentNumber2() -->
+                                        <!-- ko if: $index() == 0 -->
+                                                <tr>
+                                                    <td class="entry entry_start">
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                        <!-- ko if: $index() != 0 -->
+                                                <tr>
+                                                    <td class="entry">
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments2()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+
+                                <!-- /ko -->
+                            <!-- /ko -->
+						</tbody>
+					</table>
+				</div>
+
+				<table class="results_footer">
+					<tr>
+						<th>
+							<small>
+								<!-- ko if: $root.output.moreTracebacks -->
+									<b>Hint:</b> Only the first ten results are computed.
+								<!-- /ko -->
+							</small>
+						</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+    <div class="iteration">
+		<div class="iteration_header">
+			<h4>Iteration 1</h4>
+		</div>
+
+		<div class="output">
+			<div class="main_output">
+				<table class="calculation_1">
+					<thead>
+						<tr>
+							<th>$D$</th>
+							<th></th>
+							<!-- ko foreach: $root.input.sequence1 -->
+								<th data-bind="drawChar: [$data, $index()+1]"></th>
+							<!-- /ko -->
+						</tr>
+					</thead>
+
+					<tbody>
+						<!-- ko foreach: $root.output.matrix1 -->
+							<tr>
+                                <!-- ko if: $index() == 0 -->
+									<th></th>
+								<!-- /ko -->
+
+								<!-- ko if: $index() > 0 -->
+									<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+								<!-- /ko -->
+
+								<!-- ko foreach: $root.output.matrix1[0] -->
+									<td class="non_selectable_entry" data-bind="text: $root.output.matrix1()[$parentContext.$index()][$index()]"></td>
+								<!-- /ko -->
+							</tr>
+						<!-- /ko -->
+					</tbody>
+				</table>
+			</div>
+
+			<div class="download">
+				<table>
+					<tfoot>
+						<tr>
+							<td class="download_table" colspan=100%>
+								<a class="table_download_1" href="#">Download Table</a>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+
+			<div class="parameters">
+				Score $s(\mathscr{A})$:
+				<span data-bind="text: $root.output.score1"></span> <br>
+
+				Length $⟦A⟧$:
+				<span data-bind="text: $root.output.length1"></span> <br>
+
+				Normalized score $\lambda$:
+				<span data-bind="text: $root.output.lambda1"></span> <br>
+			</div>
+		</div>
+
+		<div class="outcome">
+			<div class ="ancillary_output">
+				<table class="results_header">
+					<thead>
+						<tr>
+							<th>
+								Results <br>
+								<small>
+									The result for which the score, length and normalized score were computed is marked.
+								</small>
+							</th>
+						</tr>
+					</thead>
+				</table>
+
+				<div class="results_with_scrollbar">
+					<table class="results">
+						<tbody>
+							<!-- ko foreach: $root.output.alignments1 -->
+                                <!-- ko if: $index() < 10 -->
+
+                                    <!-- ko if: $index() == $root.output.alignmentNumber1() -->
+                                        <!-- ko if: $index() == 0 -->
+                                                <tr>
+                                                    <td class="entry entry_start entry_marked">
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                        <!-- ko if: $index() != 0 -->
+                                                <tr>
+                                                    <td class="entry entry_marked">
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+
+                                    <!-- ko if: $index() != $root.output.alignmentNumber1() -->
+                                        <!-- ko if: $index() == 0 -->
+                                                <tr>
+                                                    <td class="entry entry_start">
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                        <!-- ko if: $index() != 0 -->
+                                                <tr>
+                                                    <td class="entry">
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br>
+                                                        <code data-bind="text: $root.output.alignments1()[$index()][2]"></code>
+                                                    </td>
+                                                </tr>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+
+                                <!-- /ko -->
+                            <!-- /ko -->
+						</tbody>
+					</table>
+				</div>
+
+				<table class="results_footer">
+					<tr>
+						<th>
+							<small>
+								<!-- ko if: $root.output.moreTracebacks -->
+									<b>Hint:</b> Only the first ten results are computed.
+								<!-- /ko -->
+							</small>
+						</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+    <div class="iteration_footer">
+        <b>Hints:</b> <br>
+        No more than 5 iterations are computed! <br>
+        Scores $s(\mathscr{A})$ and normalised scores $\lambda$ are rounded to four digits after the decimal point.
     </div>
 </div>
