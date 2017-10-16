@@ -99,6 +99,7 @@ $(document).ready(function () {
         inputData.insertion = inputViewmodel.insertion();
         inputData.match = inputViewmodel.match();
         inputData.mismatch = inputViewmodel.mismatch();
+        debugger;
         inputData.length = inputViewmodel.length();
 
         inputData.matrixHeight = inputData.sequenceB.length + 1;
@@ -110,17 +111,22 @@ $(document).ready(function () {
      * the Smith-Waterman input with the inputData.
      */
     function compute() {
+        debugger;
         var iterationData = [];
         var currentData = [];
 
         // initialize
         var input = {};
         initializeInput(input);
-        arslanEgeciougluPevznerInstance.numberOfIterations = 0;
+        arslanEgeciougluPevznerInstance.lambda = 0;
+        arslanEgeciougluPevznerInstance.lastLambda = Number.POSITIVE_INFINITY;
+        arslanEgeciougluPevznerInstance.numberOfIterations = 0; // because last one is counted
+        outputData.maxNumberIterations = false;
         computeAllIterationData(input, currentData, iterationData);
 
         // storage of output
         outputData.iterationData = iterationData;
+        outputData.maxNumberIterations =  arslanEgeciougluPevznerInstance.numberOfIterations > MAX_NUMBER_ITERATIONS;
         return [inputData, outputData];
     }
 
@@ -139,45 +145,56 @@ $(document).ready(function () {
     /**
      * Executes a recursive
      * deep-first-search (deleting last found path from memory)
-     * to find all possible iteration paths.
-     * So, there are multiple alignments which are found by Smith-Waterman
-     * and every alignment has to be tried out
-     * or you maybe won't found all possible alignments with final Lambda.
+     * to find potentially all possible iteration paths.
+     * Hint: For scores bigger 0 the algorithm have always to converge (Dinkelbach).
      * @param input {Object} - The initialized Waterman-Smith input structure.
      * @param currentData {Object} - Stores the data from the current iteration. At the beginning it is empty.
      * @param iterationData {Object} - Stores the data from all iterations.
+     * @see: Restricted to one path for better runtime!
      */
     function computeAllIterationData(input, currentData, iterationData) {
         // [1,4] computes Smith-Waterman with the given Lambda
         var ioData = computeSmithWaterman(input, arslanEgeciougluPevznerInstance.lambda);
-
         var alignments = ioData[1].alignments;
 
-        // going through all alignments (initial nodes of possible paths)
-        for (var i = 0; i < alignments.length; i++) {
-            if (arslanEgeciougluPevznerInstance.lambda === arslanEgeciougluPevznerInstance.lastLambda
-                || arslanEgeciougluPevznerInstance.numberOfIterations >= MAX_NUMBER_ITERATIONS) {  // stop criteria checks
+        if (alignments.length > 0) {
+            // going through all alignments (initial nodes of possible paths)
+            for (var i = 0; i < 1; i++) { // RESTRICTION: change "1" to "alignments.length" in for-loop to get all paths and remove MAX_NUMBER_ITERATIONS
+                if (arslanEgeciougluPevznerInstance.lambda === arslanEgeciougluPevznerInstance.lastLambda
+                    || arslanEgeciougluPevznerInstance.numberOfIterations >= MAX_NUMBER_ITERATIONS) {  // stop criteria checks
 
-                iterationData.push(currentData.slice());  // shallow copy
-                arslanEgeciougluPevznerInstance.lambda = 0;
-                arslanEgeciougluPevznerInstance.lastLambda = Number.POSITIVE_INFINITY;
-                arslanEgeciougluPevznerInstance.numberOfIterations++;
-            } else { // executing procedure with an alignment
-                // [2] compute score and alignment length
-                var saData = computeScoreAndLength(alignments, i);
+                    iterationData.push(currentData.slice());  // shallow copy
+                    arslanEgeciougluPevznerInstance.lambda = 0;
+                    arslanEgeciougluPevznerInstance.lastLambda = Number.POSITIVE_INFINITY;
+                    arslanEgeciougluPevznerInstance.numberOfIterations--;  // because else break up is counted twice
+                } else { // executing procedure with an alignment
+                    // [2] compute score and alignment length
+                    var saData = computeScoreAndLength(alignments, i);
 
-                var score = saData[0];
-                var alignmentLength = saData[1];
+                    var score = saData[0];
+                    var alignmentLength = saData[1];
 
-                // [3] compute scale-factor lambda
-                arslanEgeciougluPevznerInstance.lastLambda = arslanEgeciougluPevznerInstance.lambda;
-                arslanEgeciougluPevznerInstance.lambda = score / (alignmentLength + inputData.length);
+                    // [3] compute scale-factor lambda
+                    arslanEgeciougluPevznerInstance.lastLambda = arslanEgeciougluPevznerInstance.lambda;
+                    arslanEgeciougluPevznerInstance.lambda = score / (alignmentLength + inputData.length);
 
-                currentData.push(
-                    getDataCopy(score, alignmentLength, arslanEgeciougluPevznerInstance.lambda, alignments, ioData[1].matrix, ioData[1].tracebackPaths, i));
-                computeAllIterationData(input, currentData, iterationData);
-                currentData.pop();
+                    currentData.push(
+                        getDataCopy(score, alignmentLength, arslanEgeciougluPevznerInstance.lambda, alignments,
+                            ioData[1].matrix, ioData[1].tracebackPaths, i, ioData[1].moreTracebacks));
+                    computeAllIterationData(input, currentData, iterationData);
+                    currentData.pop();
+                }
             }
+            arslanEgeciougluPevznerInstance.numberOfIterations++;
+        } else { // case: DELETION: -2,INSERTION: -2, MATCH: 3, MISMATCH: -1, LENGTH: 0
+            var score = 0;
+            var alignmentLength = 0;
+            arslanEgeciougluPevznerInstance.lambda = score / (alignmentLength + inputData.length);  // 0/0 = 0 would also make sense
+            currentData.push(
+                getDataCopy(score, alignmentLength, arslanEgeciougluPevznerInstance.lambda, alignments,
+                    ioData[1].matrix, ioData[1].tracebackPaths, i, ioData[1].moreTracebacks));
+            iterationData.push(currentData.slice());  // shallow copy
+            arslanEgeciougluPevznerInstance.numberOfIterations++;
         }
     }
 
@@ -274,7 +291,7 @@ $(document).ready(function () {
      * @param alignments - The matrix you want store.
      * @return {Object} - [score, lambda, deletion, insertion, match, mismatch, alignments matrix]
      */
-    function getDataCopy(score, alignmentLength, lambda, alignments, matrix, tracebackPaths, alignmentNumber) {
+    function getDataCopy(score, alignmentLength, lambda, alignments, matrix, tracebackPaths, alignmentNumber, moreTracebacks) {
         return [
             score,
             alignmentLength,
@@ -286,7 +303,8 @@ $(document).ready(function () {
             alignments.slice(),
             matrix.slice(),
             tracebackPaths.slice(),
-            alignmentNumber
+            alignmentNumber,
+            moreTracebacks
         ];
     }
 

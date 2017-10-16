@@ -544,16 +544,19 @@ Author: Alexander Mattheis
      * @return {matrix} - The appropriate matrix to the number which was passed.
      */
     function getMatrix(number) {
+        debugger;
         switch (number) {
             case MATRICES.VERTICAL_NUMBER:
                 return replaceInfinities(visualizerInstance.output.verticalGaps);
-            case MATRICES.ITERATION_NUMBER_1:
-                if(visualizerInstance.output.iterationData !== undefined
-                    && visualizerInstance.output.iterationData.length > 0
-                    && visualizerInstance.output.iterationData[0].length > 0)
-                    return visualizerInstance.output.iterationData[0][-(number+1)][8];
             case MATRICES.HORIZONTAL_NUMBER:
                 return replaceInfinities(visualizerInstance.output.horizontalGaps);
+            default:  // downloading matrices from AEP algorithm
+                if (MATRICES.ITERATION_NUMBER_5 <= number && number <= MATRICES.ITERATION_NUMBER_1)
+                    if (visualizerInstance.output.iterationData !== undefined
+                        && visualizerInstance.output.iterationData[0] !== undefined
+                        && visualizerInstance.output.iterationData[0][-(number+1)] !== undefined
+                        && visualizerInstance.output.iterationData[0][-(number+1)][8] !== undefined)
+                        return visualizerInstance.output.iterationData[0][-(number+1)][8];  // iteration numbers are negative in "defaults.js"
         }
 
         return visualizerInstance.output.matrix;
@@ -601,6 +604,9 @@ Author: Alexander Mattheis
                 break;
             case 2:
                 string += MATRICES.HORIZONTAL + SYMBOLS.COMMA;
+                break;
+            default:
+                string += MATRICES.DEFAULT + (-number) + SYMBOLS.COMMA;  // iteration numbers are negative
                 break;
         }
         string += SYMBOLS.COMMA + upperString.split(SYMBOLS.EMPTY).toString() + SYMBOLS.NEW_LINE;

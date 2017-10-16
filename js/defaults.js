@@ -101,6 +101,8 @@ var FILE_EXTENSIONS = {
  * Allowed max values for inputs.
  */
 var INPUT = {
+    LENGTH_MIN: 0,
+    LENGTH_MAX: 1000,
     MAX: 10,  // abs: absolute value
     MIN: -10
 };

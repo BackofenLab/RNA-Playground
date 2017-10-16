@@ -116,6 +116,8 @@ TestCase("test_arslan_egecioglu_pevzner", {
         assertEquals("CAT", alignments[0][0]);
         assertEquals("CAT", alignments[0][2]);
 
+        /*
+        // [All path test-cases below!]
         // [second/third possibility]
         // [4,7]
         var fourthIterationData = outputData.iterationData[1][0];
@@ -215,5 +217,6 @@ TestCase("test_arslan_egecioglu_pevzner", {
 
         assertEquals("CAT", alignmentsNinth[0][0]);
         assertEquals("CAT", alignmentsNinth[0][2]);
+        */
     }
 });

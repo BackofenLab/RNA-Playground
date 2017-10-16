@@ -28,8 +28,8 @@ Author: Alexander Mattheis
         The normalized local alignment algorithm tries
         to find the alignment $\mathscr{A}$ of two sequences
         which is producing the highest normalized score
-        $$\lambda^* = ns(\mathscr{A}) = \frac{s(\mathscr{A})}{⟦A⟧ + L}$$
-        where $⟦A⟧ = |a_i ... a_j| + |b_k ... b_l|$ is the alignment-length
+        $$\lambda^* = ns(\mathscr{A}) = \frac{s(\mathscr{A})}{⟦\mathscr{A}⟧ + L}$$
+        where $⟦\mathscr{A}⟧ = |a_i ... a_j| + |b_k ... b_l|$ is the alignment-length
         of the subsequences and $L$ is a parameter
         to control the dependence of the normalized similarity to the alignment-length.
         <br>
@@ -82,7 +82,7 @@ Author: Alexander Mattheis
                 <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
                      Deletion <input class="fx_parameter" data-bind="value: input.deletion" id="deletion" type="number">
                      Insertion <input class="fx_parameter" data-bind="value: input.insertion" id="insertion" type="number">
-                     Length $L$ <input class="fx_parameter" data-bind="value: input.length" id="length" type="number">
+                     Length $L$ <input class="fx_parameter" data-bind="value: input.length" id="length" step="5" type="number">
                 </span>
             </div>
         </p>
@@ -97,7 +97,7 @@ Author: Alexander Mattheis
                 <span data-bind="text: $root.input.subFormula"></span>
                 <br>
                 <br>
-                where $\lambda^0 = 0$
+                where $\lambda^1 = 0$
                 <br>
                 <br>
             </div>
@@ -112,7 +112,7 @@ Author: Alexander Mattheis
 
 <!-- Dynamic creation of iterations didn't work,
 because of several problems with MathJax, ObservableArrays of arrays and runtime for drawing.
-The "foreach"-bidning is strange, but it's the only found way which works without any bugs. -->
+The "foreach"-binding is strange, but it's the only found way which works without any bugs. -->
 <div id="algorithm_output">
 	<!-- ko foreach: $root.output.matrix5 -->
 		<!-- ko if: $index() == 0 -->
@@ -126,7 +126,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 						<table class="calculation_5">
 							<thead>
 								<tr>
-									<th>$D$</th>
+							       <th>$D^5$</th>
 									<th></th>
 									<!-- ko foreach: $root.input.sequence1 -->
 										<th data-bind="drawChar: [$data, $index()+1]"></th>
@@ -154,23 +154,11 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 						</table>
 					</div>
 
-					<div class="download">
-						<table>
-							<tfoot>
-								<tr>
-									<td class="download_table" colspan=100%>
-										<a class="table_download_5" href="#">Download Table</a>
-									</td>
-								</tr>
-							</tfoot>
-						</table>
-					</div>
-
 					<div class="parameters">
 						Score $s(\mathscr{A})$:
 						<span data-bind="text: $root.output.score5"></span> <br>
 
-						Length $⟦A⟧$:
+						Length $⟦\mathscr{A}⟧$:
 						<span data-bind="text: $root.output.length5"></span> <br>
 
 						Normalized score $\lambda$:
@@ -186,7 +174,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 									<th>
 										Results <br>
 										<small>
-											The result for which the score, length and normalized score were computed is marked.
+											The result for which the normalized score was computed is marked blue.
 										</small>
 									</th>
 								</tr>
@@ -251,7 +239,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 							<tr>
 								<th>
 									<small>
-										<!-- ko if: $root.output.moreTracebacks -->
+										<!-- ko if: $root.output.moreTracebacks5 -->
 											<b>Hint:</b> Only the first ten results are computed.
 										<!-- /ko -->
 									</small>
@@ -276,7 +264,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 						<table class="calculation_4">
 							<thead>
 								<tr>
-									<th>$D$</th>
+                                    <th>$D^4$</th>
 									<th></th>
 									<!-- ko foreach: $root.input.sequence1 -->
 										<th data-bind="drawChar: [$data, $index()+1]"></th>
@@ -304,23 +292,11 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 						</table>
 					</div>
 
-					<div class="download">
-						<table>
-							<tfoot>
-								<tr>
-									<td class="download_table" colspan=100%>
-										<a class="table_download_4" href="#">Download Table</a>
-									</td>
-								</tr>
-							</tfoot>
-						</table>
-					</div>
-
 					<div class="parameters">
 						Score $s(\mathscr{A})$:
 						<span data-bind="text: $root.output.score4"></span> <br>
 
-						Length $⟦A⟧$:
+						Length $⟦\mathscr{A}⟧$:
 						<span data-bind="text: $root.output.length4"></span> <br>
 
 						Normalized score $\lambda$:
@@ -336,7 +312,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 									<th>
 										Results <br>
 										<small>
-											The result for which the score, length and normalized score were computed is marked.
+											The result for which the normalized score was computed is marked blue.
 										</small>
 									</th>
 								</tr>
@@ -401,7 +377,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 							<tr>
 								<th>
 									<small>
-										<!-- ko if: $root.output.moreTracebacks -->
+										<!-- ko if: $root.output.moreTracebacks4 -->
 											<b>Hint:</b> Only the first ten results are computed.
 										<!-- /ko -->
 									</small>
@@ -426,7 +402,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 						<table class="calculation_3">
 							<thead>
 								<tr>
-									<th>$D$</th>
+								    <th>$D^3$</th>
 									<th></th>
 									<!-- ko foreach: $root.input.sequence1 -->
 										<th data-bind="drawChar: [$data, $index()+1]"></th>
@@ -454,23 +430,11 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 						</table>
 					</div>
 
-					<div class="download">
-						<table>
-							<tfoot>
-								<tr>
-									<td class="download_table" colspan=100%>
-										<a class="table_download_3" href="#">Download Table</a>
-									</td>
-								</tr>
-							</tfoot>
-						</table>
-					</div>
-
 					<div class="parameters">
 						Score $s(\mathscr{A})$:
 						<span data-bind="text: $root.output.score3"></span> <br>
 
-						Length $⟦A⟧$:
+						Length $⟦\mathscr{A}⟧$:
 						<span data-bind="text: $root.output.length3"></span> <br>
 
 						Normalized score $\lambda$:
@@ -486,7 +450,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 									<th>
 										Results <br>
 										<small>
-											The result for which the score, length and normalized score were computed is marked.
+											The result for which the normalized score was computed is marked blue.
 										</small>
 									</th>
 								</tr>
@@ -551,7 +515,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 							<tr>
 								<th>
 									<small>
-										<!-- ko if: $root.output.moreTracebacks -->
+										<!-- ko if: $root.output.moreTracebacks3 -->
 											<b>Hint:</b> Only the first ten results are computed.
 										<!-- /ko -->
 									</small>
@@ -576,7 +540,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 						<table class="calculation_2">
 							<thead>
 								<tr>
-									<th>$D$</th>
+                                    <th>$D^2$</th>
 									<th></th>
 									<!-- ko foreach: $root.input.sequence1 -->
 										<th data-bind="drawChar: [$data, $index()+1]"></th>
@@ -604,23 +568,11 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 						</table>
 					</div>
 
-					<div class="download">
-						<table>
-							<tfoot>
-								<tr>
-									<td class="download_table" colspan=100%>
-										<a class="table_download_2" href="#">Download Table</a>
-									</td>
-								</tr>
-							</tfoot>
-						</table>
-					</div>
-
 					<div class="parameters">
 						Score $s(\mathscr{A})$:
 						<span data-bind="text: $root.output.score2"></span> <br>
 
-						Length $⟦A⟧$:
+						Length $⟦\mathscr{A}⟧$:
 						<span data-bind="text: $root.output.length2"></span> <br>
 
 						Normalized score $\lambda$:
@@ -636,7 +588,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 									<th>
 										Results <br>
 										<small>
-											The result for which the score, length and normalized score were computed is marked.
+											The result for which the normalized score was computed is marked blue.
 										</small>
 									</th>
 								</tr>
@@ -701,7 +653,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 							<tr>
 								<th>
 									<small>
-										<!-- ko if: $root.output.moreTracebacks -->
+										<!-- ko if: $root.output.moreTracebacks2 -->
 											<b>Hint:</b> Only the first ten results are computed.
 										<!-- /ko -->
 									</small>
@@ -726,7 +678,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 						<table class="calculation_1">
 							<thead>
 								<tr>
-									<th>$D$</th>
+									<th>$D^1$</th>
 									<th></th>
 									<!-- ko foreach: $root.input.sequence1 -->
 										<th data-bind="drawChar: [$data, $index()+1]"></th>
@@ -754,23 +706,11 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 						</table>
 					</div>
 
-					<div class="download">
-						<table>
-							<tfoot>
-								<tr>
-									<td class="download_table" colspan=100%>
-										<a class="table_download_1" href="#">Download Table</a>
-									</td>
-								</tr>
-							</tfoot>
-						</table>
-					</div>
-
 					<div class="parameters">
 						Score $s(\mathscr{A})$:
 						<span data-bind="text: $root.output.score1"></span> <br>
 
-						Length $⟦A⟧$:
+						Length $⟦\mathscr{A}⟧$:
 						<span data-bind="text: $root.output.length1"></span> <br>
 
 						Normalized score $\lambda$:
@@ -786,7 +726,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 									<th>
 										Results <br>
 										<small>
-											The result for which the score, length and normalized score were computed is marked.
+											The result for which the normalized score was computed is marked blue.
 										</small>
 									</th>
 								</tr>
@@ -851,7 +791,7 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 							<tr>
 								<th>
 									<small>
-										<!-- ko if: $root.output.moreTracebacks -->
+										<!-- ko if: $root.output.moreTracebacks1 -->
 											<b>Hint:</b> Only the first ten results are computed.
 										<!-- /ko -->
 									</small>
@@ -866,7 +806,17 @@ The "foreach"-bidning is strange, but it's the only found way which works withou
 
 	<div class="iteration_footer">
 		<b>Hints:</b> <br>
-		No more than 5 iterations are computed! <br>
+		<!-- ko if: $root.output.maxNumberIterations -->
+		Only first five iterations are computed. <br>
+		<!-- /ko -->
 		Scores $s(\mathscr{A})$ and normalised scores $\lambda$ are rounded to four digits after the decimal point.
 	</div>
+
+    <div class="download_area">
+        <a class="table_download_5" href="#">Download Iteration 5 Table</a> <br>
+        <a class="table_download_4" href="#">Download Iteration 4 Table</a> <br>
+        <a class="table_download_3" href="#">Download Iteration 3 Table</a> <br>
+        <a class="table_download_2" href="#">Download Iteration 2 Table</a> <br>
+        <a class="table_download_1" href="#">Download Iteration 1 Table</a>
+    </div>
 </div>

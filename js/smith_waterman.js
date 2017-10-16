@@ -122,7 +122,6 @@ $(document).ready(function () {
         var outputData = alignmentInstance.getOutput();
 
         var maxValue = 0;
-        var minValue = 0;
 
         // going through every matrix cell
         for (var i = 1; i < inputData.matrixHeight; i++) {
@@ -133,45 +132,30 @@ $(document).ready(function () {
 
                 outputData.matrix[i][j] = alignmentInstance.recursionFunction(aChar, bChar, i, j);
 
-                // storing minimum/maximum
+                // storing maximum
                 if (maxValue < outputData.matrix[i][j])
                     maxValue = outputData.matrix[i][j];
-                else if (minValue > outputData.matrix[i][j])
-                    minValue = outputData.matrix[i][j];
             }
         }
 
-        // score is the minimum or maximum dependant on the type of calculation
-        if (inputData.calculationType === ALIGNMENT_TYPES.SIMILARITY)
-            outputData.score = maxValue;
-        else
-            outputData.score = minValue;
+        // score is the maximum value
+        outputData.score = maxValue;
     }
 
     /**
-     * Computing maximum or minimum of the three input values and zero to compute the cell score.
-     * If the type of calculation is similarity,
-     * the maximum will be computed and else the minimum.
+     * Computing maximum of the three input values and zero to compute the cell score.
      * @param diagonalValue {number} - First input value.
      * @param upValue {number} - Second input value.
      * @param leftValue {number} - Third input value.
-     * @return {number} - Maximum or minimum.
+     * @return {number} - Maximum.
      */
     function recursionFunction(diagonalValue, upValue, leftValue) {
-        var inputData = alignmentInstance.getInput();
-
-        var value;
-        if (inputData.calculationType === ALIGNMENT_TYPES.DISTANCE)
-            value = Math.min(diagonalValue, upValue, leftValue, 0);
-        else  // inputData.calculationType === ALIGNMENT_TYPES.SIMILARITY
-            value = Math.max(diagonalValue, upValue, leftValue, 0);
-
-        return value;
+        return Math.max(diagonalValue, upValue, leftValue, 0);;
     }
 
     /**
      * Initializes the traceback and starts
-     * the traceback from every minimum or maximum
+     * the traceback from every maximum bigger 0
      * to get all tracebacks.
      * @override Alignment.computeTraceback()
      */
@@ -181,17 +165,12 @@ $(document).ready(function () {
         var inputData = alignmentInstance.getInput();
         var outputData = alignmentInstance.getOutput();
 
-        var backtraceStarts = [];
-
         // computing all traceback start-positions
-        if (inputData.calculationType === ALIGNMENT_TYPES.SIMILARITY)
-            backtraceStarts = getAllMaxPositions(inputData, outputData);
-        else
-            backtraceStarts = getAllMinPositions(inputData, outputData);
+        var backtraceStarts = getAllMaxPositions(inputData, outputData);
 
         outputData.tracebackPaths = [];
-
         outputData.moreTracebacks = false;
+
         for (var i = 0; i < backtraceStarts.length; i++) {
             var tracebackPaths = getTraces([backtraceStarts[i]], inputData, outputData, -1, alignmentInstance.getNeighboured);
             outputData.tracebackPaths = outputData.tracebackPaths.concat(tracebackPaths);
@@ -206,48 +185,18 @@ $(document).ready(function () {
      */
     function getAllMaxPositions(inputData, outputData) {
         var maxPositions = [];
-        var maxValue = Number.NEGATIVE_INFINITY;
 
-        // going through every matrix cell
-        for (var i = 0; i < inputData.matrixHeight; i++) {
-            for (var j = 0; j < inputData.matrixWidth; j++) {
-                if (outputData.matrix[i][j] > maxValue) {
-                    maxValue = outputData.matrix[i][j];
-                    maxPositions = [];
-                    maxPositions.push(new bases.alignment.Vector(i, j));
-                } else if (outputData.matrix[i][j] === maxValue) {
-                    maxPositions.push(new bases.alignment.Vector(i, j));
+        if (outputData.score > 0) {  // only positions bigger 0 can be start positions (because local alignments never lower 0)
+            for (var i = 0; i < inputData.matrixHeight; i++) {
+                for (var j = 0; j < inputData.matrixWidth; j++) {
+                    if (outputData.matrix[i][j] === outputData.score) {
+                        maxPositions.push(new bases.alignment.Vector(i, j));
+                    }
                 }
             }
         }
 
         return maxPositions;
-    }
-
-    /**
-     * Returning all minimums of the computed matrix.
-     * @param inputData {Object} - Containing information about the output matrix.
-     * @param outputData {Object} - Containing the output matrix.
-     * @return {Array} - Array of vectors (min-positions).
-     */
-    function getAllMinPositions(inputData, outputData) {
-        var minPositions = [];
-        var minValue = Number.POSITIVE_INFINITY;
-
-        // going through every matrix cell
-        for (var i = 0; i < inputData.matrixHeight; i++) {
-            for (var j = 0; j < inputData.matrixWidth; j++) {
-                if (outputData.matrix[i][j] < minValue) {
-                    minValue = outputData.matrix[i][j];
-                    minPositions = [];
-                    minPositions.push(new bases.alignment.Vector(i, j));
-                } else if (outputData.matrix[i][j] === minValue) {
-                    minPositions.push(new bases.alignment.Vector(i, j));
-                }
-            }
-        }
-
-        return minPositions;
     }
 
     /**

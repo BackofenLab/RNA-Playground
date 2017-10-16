@@ -74,9 +74,6 @@ Author: Alexander Mattheis
         var tableVerticalDownload = $(".table_vertical_download");
         var tableHorizontalDownload = $(".table_horizontal_download");
 
-        var tableDownload1 = $(".table_download_1");
-        var calculation1 = mainOutput.find(".calculation_1");
-
         // 1st
         var functionArguments = {"functionParameters": functionParameters};
         algorithmInput.find(".optimization_type").on("change", functionArguments, negateOptimizationParameters);
@@ -171,13 +168,33 @@ Author: Alexander Mattheis
         mainOutput.on("scroll", functionArguments, visualViewmodel.redrawOverlay);
 
         // 8th
-        functionArguments = {
-            "calculationTable": calculation1,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "number": MATRICES.ITERATION_NUMBER_1
-        };
-        tableDownload1.on("click", functionArguments, visualViewmodel.downloadTable);
+        linkIterationDownloadLinks(visualViewmodel);
+    }
+
+    /**
+     * Linking download links with a download function.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     */
+    function linkIterationDownloadLinks(visualViewmodel) {
+        for (var i = 0; i < MAX_NUMBER_ITERATIONS; i++) {
+            var currentTableNumber = (i + 1);
+            linkDownloadLink(
+                $(".table_download_"+ currentTableNumber),
+                $(".calculation_" + currentTableNumber),
+                -currentTableNumber,  // iteration numbers are negative in "defaults.js"
+                visualViewmodel);
+        }
+    }
+
+    /**
+     * Linking download link with a download function.
+     * @param download {Element} - The link-element <a>...</a> which is to be linked.
+     * @param table {Element} - The table you want download.
+     * @param number {number} - The table id.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     */
+    function linkDownloadLink(download, table, number, visualViewmodel) {
+        download.on("click", {"calculationTable": table, "number": number}, visualViewmodel.downloadTable);
     }
 
     /**
@@ -243,8 +260,15 @@ Author: Alexander Mattheis
             this.value = Math.round(this.value);
 
         if (e.which === KEY_CODES.ENTER || e.type === "focusout") {
-            this.value = this.value >= INPUT.MIN ? this.value : INPUT.MIN;
-            this.value = this.value <= INPUT.MAX ? this.value : INPUT.MAX;
+            if (this.id === "length") {
+                this.value = this.value >= INPUT.LENGTH_MIN ? this.value : INPUT.LENGTH_MIN;
+                this.value = this.value <= INPUT.LENGTH_MAX ? this.value : INPUT.LENGTH_MAX;
+            }
+            else
+            {
+                this.value = this.value >= INPUT.MIN ? this.value : INPUT.MIN;
+                this.value = this.value <= INPUT.MAX ? this.value : INPUT.MAX;
+            }
         }
     }
 

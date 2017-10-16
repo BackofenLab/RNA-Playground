@@ -323,6 +323,7 @@ Author: Alexander Mattheis
             viewmodels.output.lambda1(outputData.iterationData[0][0][2]);
 
             viewmodels.output.alignmentNumber1(outputData.iterationData[0][0][10]);
+            viewmodels.output.moreTracebacks1(outputData.iterationData[0][0][11]);
         } else if (viewmodels.output.matrix1 !== undefined) {
             viewmodels.output.matrix1([]);
             viewmodels.output.matrix1[0]([]);
@@ -331,6 +332,7 @@ Author: Alexander Mattheis
             viewmodels.output.length1(0);
             viewmodels.output.lambda1(0);
             viewmodels.output.alignmentNumber1(undefined);
+            viewmodels.output.moreTracebacks1(false);
         }
 
         if (outputData.iterationData.length > 0 && outputData.iterationData[0].length > 1) {
@@ -354,6 +356,7 @@ Author: Alexander Mattheis
             viewmodels.output.lambda2(outputData.iterationData[0][1][2]);
 
             viewmodels.output.alignmentNumber2(outputData.iterationData[0][1][10]);
+            viewmodels.output.moreTracebacks2(outputData.iterationData[0][1][11]);
         } else if (viewmodels.output.matrix2 !== undefined) {
             viewmodels.output.matrix2([]);
             viewmodels.output.matrix2[0]([]);
@@ -362,6 +365,7 @@ Author: Alexander Mattheis
             viewmodels.output.length2(0);
             viewmodels.output.lambda2(0);
             viewmodels.output.alignmentNumber2(undefined);
+            viewmodels.output.moreTracebacks2(false);
         }
 
         if (outputData.iterationData.length > 0 && outputData.iterationData[0].length > 2) {
@@ -385,6 +389,7 @@ Author: Alexander Mattheis
             viewmodels.output.lambda3(outputData.iterationData[0][2][2]);
 
             viewmodels.output.alignmentNumber3(outputData.iterationData[0][2][10]);
+            viewmodels.output.moreTracebacks3(outputData.iterationData[0][2][11]);
         } else if (viewmodels.output.matrix3 !== undefined) {
             viewmodels.output.matrix3([]);
             viewmodels.output.matrix3[0]([]);
@@ -393,6 +398,7 @@ Author: Alexander Mattheis
             viewmodels.output.length3(0);
             viewmodels.output.lambda3(0);
             viewmodels.output.alignmentNumber3(undefined);
+            viewmodels.output.moreTracebacks3(false);
         }
 
         if (outputData.iterationData.length > 0 && outputData.iterationData[0].length > 3) {
@@ -416,6 +422,7 @@ Author: Alexander Mattheis
             viewmodels.output.lambda4(outputData.iterationData[0][3][2]);
 
             viewmodels.output.alignmentNumber4(outputData.iterationData[0][3][10]);
+            viewmodels.output.moreTracebacks4(outputData.iterationData[0][3][11]);
         } else if (viewmodels.output.matrix4 !== undefined) {
             viewmodels.output.matrix4([]);
             viewmodels.output.matrix4[0]([]);
@@ -424,6 +431,7 @@ Author: Alexander Mattheis
             viewmodels.output.length4(0);
             viewmodels.output.lambda4(0);
             viewmodels.output.alignmentNumber4(undefined);
+            viewmodels.output.moreTracebacks4(false);
         }
 
         if (outputData.iterationData.length > 0 && outputData.iterationData[0].length > 4) {
@@ -447,6 +455,7 @@ Author: Alexander Mattheis
             viewmodels.output.lambda5(outputData.iterationData[0][4][2]);
 
             viewmodels.output.alignmentNumber5(outputData.iterationData[0][4][10]);
+            viewmodels.output.moreTracebacks5(outputData.iterationData[0][4][11]);
         } else if (viewmodels.output.matrix5 !== undefined) {
             viewmodels.output.matrix5([]);
             viewmodels.output.matrix5[0]([]);
@@ -455,7 +464,10 @@ Author: Alexander Mattheis
             viewmodels.output.length5(0);
             viewmodels.output.lambda5(0);
             viewmodels.output.alignmentNumber5(undefined);
+            viewmodels.output.moreTracebacks5(false);
         }
+
+        viewmodels.output.maxNumberIterations(outputData.maxNumberIterations);
     }
 
     /**
@@ -567,6 +579,7 @@ Author: Alexander Mattheis
             viewmodel.lambda1 = ko.observable(outputData.iterationData[0][0][2]);
 
             viewmodel.alignmentNumber1 = ko.observable(outputData.iterationData[0][0][10]);
+            viewmodel.moreTracebacks1 = ko.observable(outputData.iterationData[0][0][11]);
         } else {
             viewmodel.matrix1 = ko.observableArray([]);
             viewmodel.matrix1[0] = ko.observableArray([]);
@@ -575,6 +588,7 @@ Author: Alexander Mattheis
             viewmodel.length1 = ko.observable(undefined);
             viewmodel.lambda1 = ko.observable(undefined);
             viewmodel.alignmentNumber1 = ko.observable(undefined);
+            viewmodel.moreTracebacks1 = ko.observable(false);
         }
 
         if (outputData.iterationData[0].length > 1) {
@@ -591,6 +605,7 @@ Author: Alexander Mattheis
             viewmodel.lambda2 = ko.observable(outputData.iterationData[0][1][2]);
 
             viewmodel.alignmentNumber2 = ko.observable(outputData.iterationData[0][1][10]);
+            viewmodel.moreTracebacks2 = ko.observable(outputData.iterationData[0][1][11]);
         } else {
             viewmodel.matrix2 = ko.observableArray([]);
             viewmodel.matrix2[0] = ko.observableArray([]);
@@ -599,6 +614,7 @@ Author: Alexander Mattheis
             viewmodel.length2 = ko.observable(undefined);
             viewmodel.lambda2 = ko.observable(undefined);
             viewmodel.alignmentNumber2 = ko.observable(undefined);
+            viewmodel.moreTracebacks2 = ko.observable(false);
         }
 
         if (outputData.iterationData[0].length > 2) {
@@ -615,6 +631,7 @@ Author: Alexander Mattheis
             viewmodel.lambda3 = ko.observable(outputData.iterationData[0][2][2]);
 
             viewmodel.alignmentNumber3 = ko.observable(outputData.iterationData[0][2][10]);
+            viewmodel.moreTracebacks3 = ko.observable(outputData.iterationData[0][2][11]);
         } else {
             viewmodel.matrix3 = ko.observableArray([]);
             viewmodel.matrix3[0] = ko.observableArray([]);
@@ -623,6 +640,7 @@ Author: Alexander Mattheis
             viewmodel.length3 = ko.observable(undefined);
             viewmodel.lambda3 = ko.observable(undefined);
             viewmodel.alignmentNumber3 = ko.observable(undefined);
+            viewmodel.moreTracebacks3 = ko.observable(false);
         }
 
         if (outputData.iterationData[0].length > 3) {
@@ -639,6 +657,7 @@ Author: Alexander Mattheis
             viewmodel.lambda4 = ko.observable(outputData.iterationData[0][3][2]);
 
             viewmodel.alignmentNumber4 = ko.observable(outputData.iterationData[0][3][10]);
+            viewmodel.moreTracebacks4 = ko.observable(outputData.iterationData[0][3][11]);
         } else {
             viewmodel.matrix4 = ko.observableArray([]);
             viewmodel.matrix4[0] = ko.observableArray([]);
@@ -647,6 +666,7 @@ Author: Alexander Mattheis
             viewmodel.length4 = ko.observable(undefined);
             viewmodel.lambda4 = ko.observable(undefined);
             viewmodel.alignmentNumber4 = ko.observable(undefined);
+            viewmodel.moreTracebacks4 = ko.observable(false);
         }
 
         if (outputData.iterationData[0].length > 4) {
@@ -663,6 +683,7 @@ Author: Alexander Mattheis
             viewmodel.lambda5 = ko.observable(outputData.iterationData[0][4][2]);
 
             viewmodel.alignmentNumber5 = ko.observable(outputData.iterationData[0][4][10]);
+            viewmodel.moreTracebacks5 = ko.observable(outputData.iterationData[0][4][11]);
         } else {
             viewmodel.matrix5 = ko.observableArray([]);
             viewmodel.matrix5[0] = ko.observableArray([]);
@@ -671,7 +692,10 @@ Author: Alexander Mattheis
             viewmodel.length5 = ko.observable(undefined);
             viewmodel.lambda5 = ko.observable(undefined);
             viewmodel.alignmentNumber5 = ko.observable(undefined);
+            viewmodel.moreTracebacks5 = ko.observable(false);
         }
+
+        viewmodel.maxNumberIterations = ko.observable(outputData.maxNumberIterations);
     }
 
     /**

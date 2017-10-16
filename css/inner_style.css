@@ -140,6 +140,12 @@ th {
     padding-bottom: 15px;
 }
 
+.download_area {
+    clear: both;
+    line-height: 140%;
+    padding-top: 10px;
+}
+
 .download_table {
     background: none;
     border: none;
@@ -350,6 +356,10 @@ th {
 
 #algorithm_output {
     padding-bottom: 15px;
+}
+
+#length {
+    width: 55px;
 }
 
 #recursion_arslan_egecioglu_pevzner {
