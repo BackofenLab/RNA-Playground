@@ -275,7 +275,7 @@ Author: Alexander Mattheis
 
         if (outputData.iterationData !== undefined)
             changeAEPOutput(outputData, viewmodels);
-        else {
+        else if (outputData.matrix !== undefined) {
             viewmodels.output.matrix(outputData.matrix);
 
             for (var i = 0; i < outputData.matrix.length; i++) {
@@ -323,8 +323,9 @@ Author: Alexander Mattheis
             viewmodels.output.lambda1(outputData.iterationData[0][0][2]);
 
             viewmodels.output.alignmentNumber1(outputData.iterationData[0][0][10]);
-        } else {
+        } else if (viewmodels.output.matrix1 !== undefined) {
             viewmodels.output.matrix1([]);
+            viewmodels.output.matrix1[0]([]);
             viewmodels.output.alignments1([]);
             viewmodels.output.score1(0);
             viewmodels.output.length1(0);
@@ -353,8 +354,9 @@ Author: Alexander Mattheis
             viewmodels.output.lambda2(outputData.iterationData[0][1][2]);
 
             viewmodels.output.alignmentNumber2(outputData.iterationData[0][1][10]);
-        } else {
+        } else if (viewmodels.output.matrix2 !== undefined) {
             viewmodels.output.matrix2([]);
+            viewmodels.output.matrix2[0]([]);
             viewmodels.output.alignments2([]);
             viewmodels.output.score2(0);
             viewmodels.output.length2(0);
@@ -383,8 +385,9 @@ Author: Alexander Mattheis
             viewmodels.output.lambda3(outputData.iterationData[0][2][2]);
 
             viewmodels.output.alignmentNumber3(outputData.iterationData[0][2][10]);
-        } else {
+        } else if (viewmodels.output.matrix3 !== undefined) {
             viewmodels.output.matrix3([]);
+            viewmodels.output.matrix3[0]([]);
             viewmodels.output.alignments3([]);
             viewmodels.output.score3(0);
             viewmodels.output.length3(0);
@@ -413,8 +416,9 @@ Author: Alexander Mattheis
             viewmodels.output.lambda4(outputData.iterationData[0][3][2]);
 
             viewmodels.output.alignmentNumber4(outputData.iterationData[0][3][10]);
-        } else {
+        } else if (viewmodels.output.matrix4 !== undefined) {
             viewmodels.output.matrix4([]);
+            viewmodels.output.matrix4[0]([]);
             viewmodels.output.alignments4([]);
             viewmodels.output.score4(0);
             viewmodels.output.length4(0);
@@ -443,8 +447,9 @@ Author: Alexander Mattheis
             viewmodels.output.lambda5(outputData.iterationData[0][4][2]);
 
             viewmodels.output.alignmentNumber5(outputData.iterationData[0][4][10]);
-        } else {
+        } else if (viewmodels.output.matrix5 !== undefined) {
             viewmodels.output.matrix5([]);
+            viewmodels.output.matrix5[0]([]);
             viewmodels.output.alignments5([]);
             viewmodels.output.score5(0);
             viewmodels.output.length5(0);
@@ -517,7 +522,7 @@ Author: Alexander Mattheis
 
         if (outputData.iterationData !== undefined && outputData.iterationData.length > 0) {  // AEP
             createAEPOutputViewmodel(viewmodel, outputData);
-        } else {  // other algorithms
+        } else if (outputData.matrix != undefined) {  // other algorithms
             this.matrix = ko.observableArray(outputData.matrix);
 
             for (var i = 0; i < outputData.matrix.length; i++) {
@@ -562,12 +567,20 @@ Author: Alexander Mattheis
             viewmodel.lambda1 = ko.observable(outputData.iterationData[0][0][2]);
 
             viewmodel.alignmentNumber1 = ko.observable(outputData.iterationData[0][0][10]);
+        } else {
+            viewmodel.matrix1 = ko.observableArray([]);
+            viewmodel.matrix1[0] = ko.observableArray([]);
+            viewmodel.alignments1 = ko.observableArray([]);
+            viewmodel.score1 = ko.observable(undefined);
+            viewmodel.length1 = ko.observable(undefined);
+            viewmodel.lambda1 = ko.observable(undefined);
+            viewmodel.alignmentNumber1 = ko.observable(undefined);
         }
 
         if (outputData.iterationData[0].length > 1) {
             viewmodel.matrix2 = ko.observableArray(outputData.iterationData[0][1][8]);
 
-            for (var i = 0; i < outputData.iterationData[0][0][8].length; i++) {
+            for (var i = 0; i < outputData.iterationData[0][1][8].length; i++) {
                 viewmodel.matrix2[i] = ko.observableArray(outputData.iterationData[0][1][8][i]);
             }
 
@@ -578,54 +591,86 @@ Author: Alexander Mattheis
             viewmodel.lambda2 = ko.observable(outputData.iterationData[0][1][2]);
 
             viewmodel.alignmentNumber2 = ko.observable(outputData.iterationData[0][1][10]);
+        } else {
+            viewmodel.matrix2 = ko.observableArray([]);
+            viewmodel.matrix2[0] = ko.observableArray([]);
+            viewmodel.alignments2 = ko.observableArray([]);
+            viewmodel.score2 = ko.observable(undefined);
+            viewmodel.length2 = ko.observable(undefined);
+            viewmodel.lambda2 = ko.observable(undefined);
+            viewmodel.alignmentNumber2 = ko.observable(undefined);
         }
 
         if (outputData.iterationData[0].length > 2) {
-            viewmodel.matrix3 = ko.observableArray(outputData.iterationData[0][1][8]);
+            viewmodel.matrix3 = ko.observableArray(outputData.iterationData[0][2][8]);
 
-            for (var i = 0; i < outputData.iterationData[0][0][8].length; i++) {
-                viewmodel.matrix3[i] = ko.observableArray(outputData.iterationData[0][1][8][i]);
+            for (var i = 0; i < outputData.iterationData[0][2][8].length; i++) {
+                viewmodel.matrix3[i] = ko.observableArray(outputData.iterationData[0][2][8][i]);
             }
 
-            viewmodel.alignments3 = ko.observableArray(outputData.iterationData[0][1][7]);
+            viewmodel.alignments3 = ko.observableArray(outputData.iterationData[0][2][7]);
 
-            viewmodel.score3 = ko.observable(outputData.iterationData[0][1][0]);
-            viewmodel.length3 = ko.observable(outputData.iterationData[0][1][1]);
-            viewmodel.lambda3 = ko.observable(outputData.iterationData[0][1][2]);
+            viewmodel.score3 = ko.observable(outputData.iterationData[0][2][0]);
+            viewmodel.length3 = ko.observable(outputData.iterationData[0][2][1]);
+            viewmodel.lambda3 = ko.observable(outputData.iterationData[0][2][2]);
 
-            viewmodel.alignmentNumber3 = ko.observable(outputData.iterationData[0][1][10]);
+            viewmodel.alignmentNumber3 = ko.observable(outputData.iterationData[0][2][10]);
+        } else {
+            viewmodel.matrix3 = ko.observableArray([]);
+            viewmodel.matrix3[0] = ko.observableArray([]);
+            viewmodel.alignments3 = ko.observableArray([]);
+            viewmodel.score3 = ko.observable(undefined);
+            viewmodel.length3 = ko.observable(undefined);
+            viewmodel.lambda3 = ko.observable(undefined);
+            viewmodel.alignmentNumber3 = ko.observable(undefined);
         }
 
         if (outputData.iterationData[0].length > 3) {
-            viewmodel.matrix4 = ko.observableArray(outputData.iterationData[0][1][8]);
+            viewmodel.matrix4 = ko.observableArray(outputData.iterationData[0][3][8]);
 
-            for (var i = 0; i < outputData.iterationData[0][0][8].length; i++) {
-                viewmodel.matrix4[i] = ko.observableArray(outputData.iterationData[0][1][8][i]);
+            for (var i = 0; i < outputData.iterationData[0][3][8].length; i++) {
+                viewmodel.matrix4[i] = ko.observableArray(outputData.iterationData[0][3][8][i]);
             }
 
-            viewmodel.alignments4 = ko.observableArray(outputData.iterationData[0][1][7]);
+            viewmodel.alignments4 = ko.observableArray(outputData.iterationData[0][3][7]);
 
-            viewmodel.score4 = ko.observable(outputData.iterationData[0][1][0]);
-            viewmodel.length4 = ko.observable(outputData.iterationData[0][1][1]);
-            viewmodel.lambda4 = ko.observable(outputData.iterationData[0][1][2]);
+            viewmodel.score4 = ko.observable(outputData.iterationData[0][3][0]);
+            viewmodel.length4 = ko.observable(outputData.iterationData[0][3][1]);
+            viewmodel.lambda4 = ko.observable(outputData.iterationData[0][3][2]);
 
-            viewmodel.alignmentNumber4 = ko.observable(outputData.iterationData[0][1][10]);
+            viewmodel.alignmentNumber4 = ko.observable(outputData.iterationData[0][3][10]);
+        } else {
+            viewmodel.matrix4 = ko.observableArray([]);
+            viewmodel.matrix4[0] = ko.observableArray([]);
+            viewmodel.alignments4 = ko.observableArray([]);
+            viewmodel.score4 = ko.observable(undefined);
+            viewmodel.length4 = ko.observable(undefined);
+            viewmodel.lambda4 = ko.observable(undefined);
+            viewmodel.alignmentNumber4 = ko.observable(undefined);
         }
 
         if (outputData.iterationData[0].length > 4) {
-            viewmodel.matrix5 = ko.observableArray(outputData.iterationData[0][1][8]);
+            viewmodel.matrix5 = ko.observableArray(outputData.iterationData[0][4][8]);
 
-            for (var i = 0; i < outputData.iterationData[0][0][8].length; i++) {
-                viewmodel.matrix5[i] = ko.observableArray(outputData.iterationData[0][1][8][i]);
+            for (var i = 0; i < outputData.iterationData[0][4][8].length; i++) {
+                viewmodel.matrix5[i] = ko.observableArray(outputData.iterationData[0][4][8][i]);
             }
 
-            viewmodel.alignments5 = ko.observableArray(outputData.iterationData[0][1][7]);
+            viewmodel.alignments5 = ko.observableArray(outputData.iterationData[0][4][7]);
 
-            viewmodel.score5 = ko.observable(outputData.iterationData[0][1][0]);
-            viewmodel.length5 = ko.observable(outputData.iterationData[0][1][1]);
-            viewmodel.lambda5 = ko.observable(outputData.iterationData[0][1][2]);
+            viewmodel.score5 = ko.observable(outputData.iterationData[0][4][0]);
+            viewmodel.length5 = ko.observable(outputData.iterationData[0][4][1]);
+            viewmodel.lambda5 = ko.observable(outputData.iterationData[0][4][2]);
 
-            viewmodel.alignmentNumber5 = ko.observable(outputData.iterationData[0][1][10]);
+            viewmodel.alignmentNumber5 = ko.observable(outputData.iterationData[0][4][10]);
+        } else {
+            viewmodel.matrix5 = ko.observableArray([]);
+            viewmodel.matrix5[0] = ko.observableArray([]);
+            viewmodel.alignments5 = ko.observableArray([]);
+            viewmodel.score5 = ko.observable(undefined);
+            viewmodel.length5 = ko.observable(undefined);
+            viewmodel.lambda5 = ko.observable(undefined);
+            viewmodel.alignmentNumber5 = ko.observable(undefined);
         }
     }
 
