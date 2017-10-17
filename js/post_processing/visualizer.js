@@ -120,18 +120,7 @@ Author: Alexander Mattheis
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
      */
     function showFlow(cellCoordinates, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, iteration) {
-        debugger;
-        var algorithm = visualizerInstance.algorithm;
-        var superclass = algorithm.getSuperclass();
-
-        var flows;
-        visualizerInstance.algorithm.numberOfTracebacks = 0;  // to avoid counting and a cancellation after some reached limit
-        visualizerInstance.output.iteration = iteration;  // the iteration in which the table should be selected
-
-        if (algorithm.getNeighboured !== undefined)
-            flows = superclass.getTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, algorithm.getNeighboured);
-        else
-            flows = superclass.getTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, superclass.getNeighboured);
+       var flows = getTraces(cellCoordinates, iteration);
 
         for (i = 0; i < visualizerInstance.lastFlows.length; i++)
             demarkCells(visualizerInstance.lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true);
@@ -140,6 +129,36 @@ Author: Alexander Mattheis
             markCells(flows[i].reverse(), calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true, true);
 
         visualizerInstance.lastFlows = flows;
+    }
+
+    /**
+     * Returns the right traces for the right algorithm.
+     * @param cellCoordinates
+     * @param iteration
+     * @return {*}
+     */
+    function getTraces(cellCoordinates, iteration) {
+        var algorithm = visualizerInstance.algorithm;
+        var superclass = algorithm.getSuperclass();
+
+        var flows = [];
+        visualizerInstance.algorithm.numberOfTracebacks = 0;  // to avoid counting and a cancellation after some reached limit
+        visualizerInstance.output.iteration = iteration;  // the iteration in which the table should be selected
+
+        if (algorithm.getNeighboured !== undefined) {
+            if ($.inArray(algorithm.type, GLOBAL_ALGORITHMS))
+                flows = superclass.getGlobalTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, algorithm.getNeighboured);
+            else if ($.inArray(algorithm.type, LOCAL_ALGORITHMS))
+                flows = superclass.getLocalTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, algorithm.getNeighboured);
+        }
+        else {
+            if ($.inArray(algorithm.type, GLOBAL_ALGORITHMS))
+                flows = superclass.getGlobalTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, superclass.getNeighboured);
+            else if ($.inArray(algorithm.type, LOCAL_ALGORITHMS))
+                flows = superclass.getLocalTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, superclass.getNeighboured)
+        }
+
+        return flows;
     }
 
     /**

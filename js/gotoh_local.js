@@ -11,6 +11,7 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
+    debugger;
     if (loaded === ALGORITHMS.GOTOH_LOCAL) {  // to avoid self execution on a script import
         gotohLocal.startGotohLocal();
         loaded = ALGORITHMS.NONE;
@@ -152,6 +153,7 @@ $(document).ready(function () {
      * Computes the matrix by using the recursion function and the score.
      */
     function computeMatricesAndScore() {
+        gotohInstance.setIO(inputData, outputData);
         var maxValue = 0;
 
         // going through every matrix cell
@@ -161,7 +163,7 @@ $(document).ready(function () {
             for (var j = 1; j < inputData.matrixWidth; j++) {
                 var aChar = inputData.sequenceA[j - 1];
 
-                outputData.matrix[i][j] = gotohInstance.recursionFunction(aChar, bChar, i, j, Math.max, local);
+                outputData.matrix[i][j] = gotohInstance.recursionFunction(aChar, bChar, i, j, Math.max, true);
 
                 // storing maximum
                 if (maxValue < outputData.matrix[i][j])

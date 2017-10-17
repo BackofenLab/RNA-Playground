@@ -20,6 +20,11 @@ and functions which are used to access information are stored in "js/post_proces
 This class is working closely together with the "js/post_processing/input_processor.js" class
 which is handling the input.
 
+Hint:
+Algorithm names have to be eventually added
+into the list of local or global algorithms in the "default.js"
+to make an algorithm visualization work correctly.
+
 /*------------------------------------IMPLEMENTING NEW ALGORITHM FOR VISUALIZATION------------------------------------*/
 -   create a new page "ExampleAlgorithm.html" in "/"
     (use hyphens for the page name or PascalCase https://en.wikipedia.org/wiki/PascalCase)
@@ -75,6 +80,8 @@ The loading of an algorithm-page into a webpage is done in the "loader.js"-file.
 In this file is a function "updateDocumentView(algorithm, view)" which loads the page into a "div".
 If you want add a new algorithm you have to extend this file
 and add the Javascript algorithm name into the structure ALGORITHMS in the file "defaults.js".
+
+Hint: Do also a look into EXTENDING VISUALIZATION!
 
 /*-------------------------------------------------------PATHS--------------------------------------------------------*/
 All Javascript-paths are stored under "js/defaults.js". 

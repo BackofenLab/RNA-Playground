@@ -8,11 +8,13 @@ Author: Alexander Mattheis
 "use strict";
 
 /**
- * Used to store all constants used in the program.
+ * Used to store all constants, structs and lists used in the program.
  * Namespaces, HTML class-names and events like "mouse-over" etc. aren't stored in this file
  * because it would slow down the development process.
  * Multiple constants of same "logic" (for example with similar naming) stored in structures.
  */
+
+/* HINT: alphabetically ordered (also within definitions) and structures afer constants */
 
 // constants
 var ALIGNMENT_WEBTITLE = "Bioinformatics Algorithms";
@@ -400,3 +402,7 @@ var TABLE = {
     DOWNLOAD_NAME: "table.csv",
     TEXT_FILE_ENCODING: "text/csv;charset=utf-8"
 };
+
+// lists
+var GLOBAL_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.WATERMAN_SMITH_BEYER];
+var LOCAL_ALGORITHMS = [ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.SMITH_WATERMAN];
