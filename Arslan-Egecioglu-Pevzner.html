@@ -37,7 +37,7 @@ Author: Alexander Mattheis
 	the <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman</a>
         algorithm is executed iteratively using an iteration-specific scoring-function $s^r$ (see below).
 	In iteration $r>0$, $s^r$ depends on the $\lambda^{r-1}$ estimate of the previous iteration,
-	where $\lamda^0=0$.
+	where $\lambda^{0} = 0$.
 	Given this, the best local alignment $\mathcal{A}^r$ with score $S^r$ using $s^r$ is identified and 
 	the current lambda estimate computed via $\lambda^r= S^r/(⟦\mathcal{A}⟧+L)$.
 	This is iterated until $\lambda$ converges or a certain number of iterations (5) is exceeded.
@@ -154,10 +154,10 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 					</div>
 
 					<div class="parameters">
-						Score $s(\mathscr{A}^5)$:
+						Score $s(\mathcal{A}^5)$:
 						<span data-bind="text: $root.output.score5"></span> <br>
 
-						Length $⟦\mathscr{A}^5⟧$:
+						Length $⟦\mathcal{A}^5⟧$:
 						<span data-bind="text: $root.output.length5"></span> <br>
 
 						Normalized score $\lambda^5$:
@@ -292,10 +292,10 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 					</div>
 
 					<div class="parameters">
-						Score $s(\mathscr{A}^4)$:
+						Score $s(\mathcal{A}^4)$:
 						<span data-bind="text: $root.output.score4"></span> <br>
 
-						Length $⟦\mathscr{A}^4⟧$:
+						Length $⟦\mathcal{A}^4⟧$:
 						<span data-bind="text: $root.output.length4"></span> <br>
 
 						Normalized score $\lambda^4$:
@@ -430,10 +430,10 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 					</div>
 
 					<div class="parameters">
-						Score $s(\mathscr{A}^3)$:
+						Score $s(\mathcal{A}^3)$:
 						<span data-bind="text: $root.output.score3"></span> <br>
 
-						Length $⟦\mathscr{A}^3⟧$:
+						Length $⟦\mathcal{A}^3⟧$:
 						<span data-bind="text: $root.output.length3"></span> <br>
 
 						Normalized score $\lambda^3$:
@@ -568,10 +568,10 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 					</div>
 
 					<div class="parameters">
-						Score $s(\mathscr{A}^2)$:
+						Score $s(\mathcal{A}^2)$:
 						<span data-bind="text: $root.output.score2"></span> <br>
 
-						Length $⟦\mathscr{A}^2⟧$:
+						Length $⟦\mathcal{A}^2⟧$:
 						<span data-bind="text: $root.output.length2"></span> <br>
 
 						Normalized score $\lambda^2$:
@@ -706,10 +706,10 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 					</div>
 
 					<div class="parameters">
-						Score $s(\mathscr{A}^1)$:
+						Score $s(\mathcal{A}^1)$:
 						<span data-bind="text: $root.output.score1"></span> <br>
 
-						Length $⟦\mathscr{A}^1⟧$:
+						Length $⟦\mathcal{A}^1⟧$:
 						<span data-bind="text: $root.output.length1"></span> <br>
 
 						Normalized score $\lambda^1$:
@@ -808,7 +808,7 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 		<!-- ko if: $root.output.maxNumberIterations -->
 		Only first five iterations are computed. <br>
 		<!-- /ko -->
-		Scores $s(\mathscr{A})$ and normalized scores $\lambda$ are rounded to four digits.
+		Scores $s(\mathcal{A})$ and normalized scores $\lambda$ are rounded to four digits.
 	</div>
 
     <div class="download_area">
