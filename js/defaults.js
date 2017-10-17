@@ -77,6 +77,7 @@ var ARROWS = {  // HINT: inner quotes have to be this here: " " or it won't work
 
 var CELL_PERCENT = {
     LINE: 0.2,  // position of a "between-table"-arrow in the Gotoh algorithm
+    LINE_2: 0.1,
     LINE_HEAD_PENETRATION: 0.1  // tells how much a line-head of a long "in-table"-arrow penetrates into a cell
 };
 

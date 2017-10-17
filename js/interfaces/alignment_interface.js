@@ -552,7 +552,7 @@ Author: Alexander Mattheis
                 this.matrix[i] = ko.observableArray(outputData.matrix[i]);
             }
 
-            if (algorithmName === ALGORITHMS.GOTOH) {  // special cases regarding possible algorithms
+            if (algorithmName === ALGORITHMS.GOTOH || algorithmName === ALGORITHMS.GOTOH_LOCAL) {  // special cases regarding possible algorithms
                 this.horizontalGaps = ko.observableArray(outputData.horizontalGaps);
                 this.verticalGaps = ko.observableArray(outputData.verticalGaps);
 
@@ -718,7 +718,7 @@ Author: Alexander Mattheis
      * @return outputData {Object} - Changed output data.
      */
     function edit(algorithmName, inputProcessor, outputData, visualViewmodel) {
-        if (algorithmName === ALGORITHMS.GOTOH) {
+        if (algorithmName === ALGORITHMS.GOTOH || algorithmName === ALGORITHMS.GOTOH_LOCAL) {
             outputData.horizontalGaps = inputProcessor.postEdit(outputData.horizontalGaps, visualViewmodel);
             outputData.verticalGaps = inputProcessor.postEdit(outputData.verticalGaps, visualViewmodel);
         }

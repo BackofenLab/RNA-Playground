@@ -435,9 +435,9 @@ Author: Alexander Mattheis
             lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT.LINE).toString();
             lastTop     =   (lastCell.offsetTop     + cellHeight    * (1-CELL_PERCENT.LINE_HEAD_PENETRATION)).toString();
         } else if (move === MOVE.X_TO_P) {
-            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE).toString();
+            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE_2).toString();
             top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT.LINE).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT.LINE).toString();
+            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT.LINE_2).toString();
             lastTop     =   (lastCell.offsetTop     + cellHeight    * (1 - CELL_PERCENT.LINE)).toString();
         } else if (move === MOVE.X_TO_Q) {
             left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE).toString();

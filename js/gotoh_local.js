@@ -45,18 +45,21 @@ $(document).ready(function () {
      * Computes the optimal, local affine alignment.
      * @constructor
      * @augments Alignment
+     * @see: The superclass "alignmentInstance" have to be created as last instance
+     * or the childInstance in the superclass will be probably wrong!
      */
     function GotohLocal() {
         gotohLocalInstance = this;
 
         // variables
-        this.type = ALGORITHMS.GOTOH;
+        this.type = ALGORITHMS.GOTOH_LOCAL;
         this.numberOfTracebacks = 0;
 
         // inheritance
-        alignmentInstance = new bases.alignment.Alignment(this);
         gotohInstance = new gotoh.Gotoh();
         smithWatermanInstance = new smithWaterman.SmithWaterman();
+
+        alignmentInstance = new bases.alignment.Alignment(this);
 
         // public class methods
         this.getInput = getInput;
