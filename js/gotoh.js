@@ -11,13 +11,16 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
+    if (loaded === ALGORITHMS.GOTOH) {  // to avoid self execution on a script import
         gotoh.startGotoh();
+        loaded = ALGORITHMS.NONE;
+    }
 });
 
 (function () {  // namespace
     // public methods
-    namespace("gotoh", startGotoh, Gotoh, getInput, setInput, compute, getNeighboured, getOutput, setIO, getSuperclass);
+    namespace("gotoh", startGotoh, Gotoh, getInput, setInput, compute,
+        recursionFunction, getNeighboured, getVerticalNeighboured, getHorizontalNeighboured, getOutput, setIO, getSuperclass);
 
     // instances
     var alignmentInstance;
@@ -65,7 +68,10 @@ $(document).ready(function () {
 
         this.setInput = setInput;
         this.compute = compute;
+        this.recursionFunction = recursionFunction;
         this.getNeighboured = getNeighboured;
+        this.getVerticalNeighboured = getVerticalNeighboured;
+        this.getHorizontalNeighboured = getHorizontalNeighboured;
         this.getOutput = getOutput;
 
         this.setIO = setIO;
@@ -123,39 +129,15 @@ $(document).ready(function () {
      * Creates the matrices without initializing them.
      */
     function createMatrices() {
-        createComputationMatrix();
-        createHorizontalGapCostMatrix();
-        createVerticalGapCostMatrix();
-    }
-
-    /**
-     * Creates the default matrix without initializing it.
-     */
-    function createComputationMatrix() {
         outputData.matrix = new Array(inputData.matrixHeight);
-
-        for (var i = 0; i < inputData.matrixHeight; i++)
-            outputData.matrix[i] = new Array(inputData.matrixWidth);
-    }
-
-    /**
-     * Creates the matrix for horizontal gaps without initializing it.
-     */
-    function createHorizontalGapCostMatrix() {
         outputData.horizontalGaps = new Array(inputData.matrixHeight);
-
-        for (var i = 0; i < inputData.matrixHeight; i++)
-            outputData.horizontalGaps[i] = new Array(inputData.matrixWidth);
-    }
-
-    /**
-     * Creates the matrix for vertical gaps without initializing it.
-     */
-    function createVerticalGapCostMatrix() {
         outputData.verticalGaps = new Array(inputData.matrixHeight);
 
-        for (var i = 0; i < inputData.matrixHeight; i++)
+        for (var i = 0; i < inputData.matrixHeight; i++) {
+            outputData.matrix[i] = new Array(inputData.matrixWidth);
+            outputData.horizontalGaps[i] = new Array(inputData.matrixWidth);
             outputData.verticalGaps[i] = new Array(inputData.matrixWidth);
+        }
     }
 
     /**
@@ -216,9 +198,9 @@ $(document).ready(function () {
                 var aChar = inputData.sequenceA[j - 1];
 
                 if (inputData.calculationType === ALIGNMENT_TYPES.DISTANCE)
-                    outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.min);
+                    outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.min, false);
                 else  // inputData.calculationType === ALIGNMENT_TYPES.SIMILARITY
-                    outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.max);
+                    outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.max, false);
             }
         }
 
@@ -235,7 +217,7 @@ $(document).ready(function () {
      * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
      * @return {number} - The value for the cell at position (i,j).
      */
-    function recursionFunction(aChar, bChar, i, j, optimum) {
+    function recursionFunction(aChar, bChar, i, j, optimum, local) {
         var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
 
         // gap recursion-functions
@@ -243,6 +225,14 @@ $(document).ready(function () {
         outputData.verticalGaps[i][j] = verticalOptimum(optimum, i, j);
 
         // default matrix recursion function
+        if (local)
+            return optimum(
+                outputData.horizontalGaps[i][j],
+                outputData.matrix[i - 1][j - 1] + matchOrMismatch,
+                outputData.verticalGaps[i][j],
+                0);
+
+        // else global
         return optimum(
             outputData.horizontalGaps[i][j],
             outputData.matrix[i - 1][j - 1] + matchOrMismatch,
@@ -285,7 +275,7 @@ $(document).ready(function () {
         var lowerRightCorner = new bases.alignment.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
 
         outputData.moreTracebacks = false;
-        outputData.tracebackPaths = alignmentInstance.getTraces([lowerRightCorner], inputData, outputData, -1, getNeighboured);
+        outputData.tracebackPaths = alignmentInstance.getGlobalTraces([lowerRightCorner], inputData, outputData, -1, getNeighboured);
     }
 
     /**

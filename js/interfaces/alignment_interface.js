@@ -94,7 +94,7 @@ Author: Alexander Mattheis
             this.sequence1 = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.SEQUENCE_1);
             this.sequence2 = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.SEQUENCE_2);
 
-            this.calculation = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.CALCULATION);
+            this.calculation = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.CALCULATION);  // needed to ouput correct formulas
 
             // function
             this.deletion = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.DELETION);

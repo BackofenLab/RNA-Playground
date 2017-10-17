@@ -11,9 +11,10 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    debugger;
-    if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
+    if (loaded === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {  // to avoid self execution on a script import
         arslanEgeciougluPevzner.startArslanEgeciougluPevzner();
+        loaded = ALGORITHMS.NONE;
+    }
 });
 
 (function () {  // namespace
@@ -93,13 +94,10 @@ $(document).ready(function () {
         inputData.sequenceA = inputViewmodel.sequence1();
         inputData.sequenceB = inputViewmodel.sequence2();
 
-        inputData.calculationType = inputViewmodel.calculation();
-
         inputData.deletion = inputViewmodel.deletion();
         inputData.insertion = inputViewmodel.insertion();
         inputData.match = inputViewmodel.match();
         inputData.mismatch = inputViewmodel.mismatch();
-        debugger;
         inputData.length = inputViewmodel.length();
 
         inputData.matrixHeight = inputData.sequenceB.length + 1;
@@ -111,7 +109,6 @@ $(document).ready(function () {
      * the Smith-Waterman input with the inputData.
      */
     function compute() {
-        debugger;
         var iterationData = [];
         var currentData = [];
 

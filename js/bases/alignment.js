@@ -9,9 +9,9 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("bases.alignment", Vector, create, getTraces, getNeighboured,
-        Alignment, getInput, setInput, compute, recursionFunction, createAlignments, getOutput, setIO,
-        differenceLowerEpsilon);
+    namespace("bases.alignment", Vector, create,
+        Alignment, getInput, setInput, compute, recursionFunction, getGlobalTraces, getLocalTraces,
+        createAlignments, getOutput, setIO, getNeighboured, differenceLowerEpsilon);
 
     // instances
     var childInstance;
@@ -47,7 +47,8 @@ Author: Alexander Mattheis
 
     /**
      * Contains functions to compute optimal alignments.
-     * It is used by algorithms global and local alignment algorithms as superclass.
+     * It is used by global and local alignment algorithms as superclass
+     * to avoid code duplicates.
      * @param child - The child algorithm which inherits from this class.
      * @constructor
      */
@@ -60,7 +61,8 @@ Author: Alexander Mattheis
         this.setInput = setInput;
         this.compute = compute;
         this.recursionFunction = recursionFunction;
-        this.getTraces = getTraces;
+        this.getGlobalTraces = getGlobalTraces;
+        this.getLocalTraces = getLocalTraces;
         this.getNeighboured = getNeighboured;
         this.createAlignments = createAlignments;
         this.getOutput = getOutput;
@@ -163,7 +165,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Gets tracebacks by starting the traceback procedure
+     * Gets the global tracebacks by starting the traceback procedure
      * with some path containing the first element of the path.
      * @param path {Array} - Array containing the first vector element from which on you want find a path.
      * @param inputData {Object} - Contains all input data.
@@ -172,17 +174,17 @@ Author: Alexander Mattheis
      * The value -1 indicates arbitrarily long paths.
      * @return {Array} - Array of paths.
      */
-    function getTraces(path, inputData, outputData, pathLength, neighbourFunction) {
+    function getGlobalTraces(path, inputData, outputData, pathLength, neighbourFunction) {
         if (childInstance.getTraces !== undefined)
             return childInstance.getTraces(path, inputData, outputData, pathLength, neighbourFunction);
 
         var paths = [];
-        traceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
+        globalTraceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
         return paths;
     }
 
     /**
-     * Computing the traceback and stops after it has found a constant number of tracebacks.
+     * Computing the global traceback and stops after it has found a constant number of tracebacks.
      * It sets a flag "moreTracebacks" in the "outputData", if it has stopped before computing all tracebacks.
      * The traceback algorithm executes a recursive,
      * modified deep-first-search (deleting last found path from memory)
@@ -195,7 +197,7 @@ Author: Alexander Mattheis
      * @param pathLength {number} - Tells after how many edges the procedure should stop.
      * @see It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
-    function traceback(paths, path, inputData, outputData, pathLength, neighbourFunction) {
+    function globalTraceback(paths, path, inputData, outputData, pathLength, neighbourFunction) {
         var currentPosition = path[path.length - 1];
         var neighboured = neighbourFunction(currentPosition, inputData, outputData, childInstance);
 
@@ -218,61 +220,68 @@ Author: Alexander Mattheis
             } else {
                 // executing procedure with a successor
                 path.push(neighboured[i]);
-                traceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
+                globalTraceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
                 path.pop();
             }
         }
     }
 
     /**
-     * Returns the neighbours to which you can go from the current cell position used as input.
-     * @param position {Vector} - Current cell position in matrix.
+     * Gets tracebacks by starting the traceback procedure
+     * with some path containing the first element of the path.
+     * @param path {Array} - Array containing the first vector element from which on you want find a path.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
-     * @param algorithm {Object} - Contains an alignment algorithm.
-     * @return {Array} - Contains neighboured positions as Vector-objects.
-     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     * @param pathLength {number} - Tells after how many edges the procedure should stop.
+     * The value -1 indicates arbitrarily long paths.
+     * @return {Array} - Array of paths.
      */
-    function getNeighboured(position, inputData, outputData, algorithm) {
-        var neighboured = [];
+    function getLocalTraces(path, inputData, outputData, pathLength, neighbourFunction) {
+        var paths = [];
+        localTraceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
+        return paths;
+    }
 
-        var left = position.j - 1;
-        var up = position.i - 1;
+    /**
+     * Computing the local traceback and stops after it has found a constant number of tracebacks.
+     * It sets a flag "moreTracebacks" in the "outputData", if it has stopped before computing all tracebacks.
+     * The traceback algorithm executes a recursive,
+     * modified deep-first-search (deleting last found path from memory)
+     * with special stop criteria on the matrix cells as path-nodes.
+     * @param backtracking {Object} - Allows to call up cell neighbours.
+     * @param paths {Array} - Array of paths.
+     * @param path {Array} - Array containing the first vector element from which on you want find a path.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @param pathLength {number} - Tells after how many edges the procedure should stop.
+     * @see It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     */
+    function localTraceback(paths, path, inputData, outputData, pathLength, neighbourFunction) {
+        var currentPosition = path[path.length - 1];
+        var neighboured = neighbourFunction(currentPosition, inputData, outputData, childInstance);
 
-        // retrieve values
-        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
-        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
+        // going through all successors (initial nodes of possible paths)
+        for (var i = 0; i < neighboured.length; i++) {
+            if (outputData.matrix[neighboured[i].i][neighboured[i].j] === 0  // stop criteria checks
+                || (pathLength !== -1 && path.length >= pathLength)
+                || outputData.moreTracebacks) {
+                path.push(neighboured[i]);
 
-        var currentValue = outputData.matrix[position.i][position.j];
+                // path storage, if MAX_NUMBER_TRACEBACKS is not exceeded
+                if (childInstance.numberOfTracebacks < MAX_NUMBER_TRACEBACKS) {
+                    paths.push(path.slice());  // creating a shallow copy
+                    childInstance.numberOfTracebacks++;
+                } else
+                    outputData.moreTracebacks = true;
 
-        var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
-
-        var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : NaN;
-        var upValue = up >= 0 ? outputData.matrix[up][position.j] : NaN;
-        var leftValue = left >= 0 ? outputData.matrix[position.i][left] : NaN;
-
-        // check
-        var isMatchMismatch = differenceLowerEpsilon(currentValue, diagonalValue + matchOrMismatch, EPSILON);
-        var isDeletion = differenceLowerEpsilon(currentValue, upValue + inputData.deletion, EPSILON);
-        var isInsertion = differenceLowerEpsilon(currentValue, leftValue + inputData.insertion, EPSILON);
-
-        if (algorithm.type === ALGORITHMS.SMITH_WATERMAN) {
-            isMatchMismatch = isMatchMismatch || currentValue === 0 && up >= 0 && left >= 0;
-            isDeletion = isDeletion || currentValue === 0 && up >= 0;
-            isInsertion = isInsertion || currentValue === 0 && left >= 0;
+                path.pop();
+            } else {
+                // executing procedure with a successor
+                path.push(neighboured[i]);
+                localTraceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
+                path.pop();
+            }
         }
-
-        // add
-        if (isMatchMismatch)
-            neighboured.push(new Vector(up, left));
-
-        if (isDeletion)
-            neighboured.push(new Vector(up, position.j));
-
-        if (isInsertion)
-            neighboured.push(new Vector(position.i, left));
-
-        return neighboured;
     }
 
     /**
@@ -359,6 +368,59 @@ Author: Alexander Mattheis
     function setIO(input, output) {
         inputData = input;
         outputData = output;
+    }
+
+    /**
+     * Returns the neighbours to which you can go from the current cell position used as input.
+     * This function is used by Smith-Waterman and Needleman-Wunsch.
+     * Other algorithms specify their neighbour-function within the algorithm.
+     * @param position {Vector} - Current cell position in matrix.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @param algorithm {Object} - Contains an alignment algorithm.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     */
+    function getNeighboured(position, inputData, outputData, algorithm) {
+        var neighboured = [];
+
+        var left = position.j - 1;
+        var up = position.i - 1;
+
+        // retrieve values
+        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
+        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
+
+        var currentValue = outputData.matrix[position.i][position.j];
+
+        var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
+
+        var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : NaN;
+        var upValue = up >= 0 ? outputData.matrix[up][position.j] : NaN;
+        var leftValue = left >= 0 ? outputData.matrix[position.i][left] : NaN;
+
+        // check
+        var isMatchMismatch = differenceLowerEpsilon(currentValue, diagonalValue + matchOrMismatch, EPSILON);
+        var isDeletion = differenceLowerEpsilon(currentValue, upValue + inputData.deletion, EPSILON);
+        var isInsertion = differenceLowerEpsilon(currentValue, leftValue + inputData.insertion, EPSILON);
+
+        if (algorithm.type === ALGORITHMS.SMITH_WATERMAN) {
+            isMatchMismatch = isMatchMismatch || currentValue === 0 && up >= 0 && left >= 0;
+            isDeletion = isDeletion || currentValue === 0 && up >= 0;  // lower 0 -> cut away
+            isInsertion = isInsertion || currentValue === 0 && left >= 0;  // lower 0 -> cut away
+        }
+
+        // add
+        if (isMatchMismatch)
+            neighboured.push(new Vector(up, left));
+
+        if (isDeletion)
+            neighboured.push(new Vector(up, position.j));
+
+        if (isInsertion)
+            neighboured.push(new Vector(position.i, left));
+
+        return neighboured;
     }
 
     /**

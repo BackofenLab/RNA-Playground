@@ -6,6 +6,8 @@ load:
 
   - js/bases/alignment.js
   - js/defaults.js
+  - js/loader.js
+
   - js/arslan_egecioglu_pevzner.js
   - js/gotoh.js
   - js/needleman_wunsch.js

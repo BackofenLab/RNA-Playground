@@ -11,14 +11,17 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
+    if (loaded === ALGORITHMS.SMITH_WATERMAN) {  // to avoid self execution on a script import
         smithWaterman.startSmithWaterman();
+        loaded = ALGORITHMS.NONE;
+    }
 });
 
 (function () {  // namespace
     // public methods
     namespace("smithWaterman", startSmithWaterman, SmithWaterman,
-        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getTraces, getSuperclass);
+        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getAllMaxPositions,
+        getSuperclass);
 
     // instances
     var alignmentInstance;
@@ -69,7 +72,7 @@ $(document).ready(function () {
         this.recursionFunction = recursionFunction;
         this.computeTraceback = computeTraceback;
 
-        this.getTraces = getTraces;
+        this.getAllMaxPositions = getAllMaxPositions;
         this.getSuperclass = getSuperclass;
     }
 
@@ -172,7 +175,7 @@ $(document).ready(function () {
         outputData.moreTracebacks = false;
 
         for (var i = 0; i < backtraceStarts.length; i++) {
-            var tracebackPaths = getTraces([backtraceStarts[i]], inputData, outputData, -1, alignmentInstance.getNeighboured);
+            var tracebackPaths = alignmentInstance.getLocalTraces([backtraceStarts[i]], inputData, outputData, -1, alignmentInstance.getNeighboured);
             outputData.tracebackPaths = outputData.tracebackPaths.concat(tracebackPaths);
         }
     }
@@ -197,65 +200,6 @@ $(document).ready(function () {
         }
 
         return maxPositions;
-    }
-
-    /**
-     * Gets tracebacks by starting the traceback procedure
-     * with some path containing the first element of the path.
-     * @param path {Array} - Array containing the first vector element from which on you want find a path.
-     * @param inputData {Object} - Contains all input data.
-     * @param outputData {Object} - Contains all output data.
-     * @param pathLength {number} - Tells after how many edges the procedure should stop.
-     * The value -1 indicates arbitrarily long paths.
-     * @return {Array} - Array of paths.
-     * @override Alignment.getTraces(...)
-     */
-    function getTraces(path, inputData, outputData, pathLength, neighbourFunction) {
-        var paths = [];
-        traceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
-        return paths;
-    }
-
-    /**
-     * Computing the traceback and stops after it has found a constant number of tracebacks.
-     * It sets a flag "moreTracebacks" in the "outputData", if it has stopped before computing all tracebacks.
-     * The traceback algorithm executes a recursive,
-     * modified deep-first-search (deleting last found path from memory)
-     * with special stop criteria on the matrix cells as path-nodes.
-     * @param backtracking {Object} - Allows to call up cell neighbours.
-     * @param paths {Array} - Array of paths.
-     * @param path {Array} - Array containing the first vector element from which on you want find a path.
-     * @param inputData {Object} - Contains all input data.
-     * @param outputData {Object} - Contains all output data.
-     * @param pathLength {number} - Tells after how many edges the procedure should stop.
-     * @see It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
-     */
-    function traceback(paths, path, inputData, outputData, pathLength, neighbourFunction) {
-        var currentPosition = path[path.length - 1];
-        var neighboured = neighbourFunction(currentPosition, inputData, outputData, smithWatermanInstance);
-
-        // going through all successors (initial nodes of possible paths)
-        for (var i = 0; i < neighboured.length; i++) {
-            if (outputData.matrix[neighboured[i].i][neighboured[i].j] === 0  // stop criteria checks
-                || (pathLength !== -1 && path.length >= pathLength)
-                || outputData.moreTracebacks) {
-                path.push(neighboured[i]);
-
-                // path storage, if MAX_NUMBER_TRACEBACKS is not exceeded
-                if (smithWatermanInstance.numberOfTracebacks < MAX_NUMBER_TRACEBACKS) {
-                    paths.push(path.slice());  // creating a shallow copy
-                    smithWatermanInstance.numberOfTracebacks++;
-                } else
-                    outputData.moreTracebacks = true;
-
-                path.pop();
-            } else {
-                // executing procedure with a successor
-                path.push(neighboured[i]);
-                traceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
-                path.pop();
-            }
-        }
     }
 
     /**

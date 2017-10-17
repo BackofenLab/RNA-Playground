@@ -11,8 +11,10 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
+    if (loaded === ALGORITHMS.NEEDLEMAN_WUNSCH) {  // to avoid self execution on a script import
         needlemanWunsch.startNeedlemanWunsch();
+        loaded = ALGORITHMS.NONE;
+    }
 });
 
 (function () {  // namespace
@@ -170,7 +172,7 @@ $(document).ready(function () {
         
         outputData.moreTracebacks = false;
         outputData.tracebackPaths =
-            alignmentInstance.getTraces([lowerRightCorner], inputData, outputData, -1, alignmentInstance.getNeighboured);
+            alignmentInstance.getGlobalTraces([lowerRightCorner], inputData, outputData, -1, alignmentInstance.getNeighboured);
     }
 
     /**

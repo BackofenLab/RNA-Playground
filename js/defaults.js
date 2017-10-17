@@ -23,16 +23,16 @@ var MAX_NUMBER_ITERATIONS = 5;  // number of iterations in algorithm with conver
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have been updated
 
-var UNIT_TEST_WEBTITLE = "Console Runner";  // title of the Unit-test site
-
 // structs
 /**
  * Stores the implemented algorithm names.
  */
-var ALGORITHMS = {  // contains a list of all implemented algorithms
+var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript names without extension)
 	ARSLAN_EGECIOGLU_PEVZNER: "arslan_egecioglu_pevzner",
     GOTOH: "gotoh",
+    GOTOH_LOCAL: "gotoh_local",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
+    NONE: "none",
     SMITH_WATERMAN: "smith_waterman",
     WATERMAN_SMITH_BEYER: "waterman_smith_beyer"
 };
@@ -257,6 +257,8 @@ var MOVE = {
  * Symbols which are used to be for example globally replaced.
  */
 var MULTI_SYMBOLS = {
+    BRACKET_LEFT: /\(/g,
+    BRACKET_RIGHT: /\)/g,
     D_BIG: /D/g,
     DELIMITER: /-/g,
     G_LITTLE_SPECIAL: /ğ/g,
@@ -283,6 +285,7 @@ var NORMALIZED_ALIGNMENT_DEFAULTS = {
 var PATHS = {
     ALIGNMENT: "js/bases/alignment.js",
     ALIGNMENT_INTERFACE: "js/interfaces/alignment_interface.js",
+    GOTOH: "js/gotoh.js",
     INPUT_PROCESSOR: "js/post_processing/input_processor.js",
     SMITH_WATERMAN: "js/smith_waterman.js",
     SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js",

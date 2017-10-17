@@ -7,12 +7,14 @@ Author: Alexander Mattheis
 
 "use strict";
 
+var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
+
 /**
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
+    // to avoid the execution of the drop down menu
     if (typeof ALIGNMENT_WEBTITLE !== "undefined" && document.title === ALIGNMENT_WEBTITLE) {
-        // to avoid the execution of the drop down menu
     	loader.startLoader();
     } 
 });
@@ -91,20 +93,11 @@ $(document).ready(function () {
         var overlay = e.data.overlay;
         var view = e.data.viewToUpdate;
 
-        removeOverlay(overlay);
         updateDisplay(display, algorithm);
         updateDocumentView(algorithm, view);
 
         menu.hide();
         dropDown.addClass(dropDownName).removeClass(newDropDownName);
-    }
-
-    /**
-     * Removes an overlay.
-     * @param overlay - The overlay you want to remove.
-     */
-    function removeOverlay(overlay) {
-        overlay.empty();
     }
 
     /**
@@ -117,21 +110,40 @@ $(document).ready(function () {
     }
 
     /**
-     * Loads the HTML-page of the algorithm into current document.
+     * Loads the HTML-page of the algorithm into current document
+     * by removing non-characters and replacing symbols in the algorithm name.
      * @param algorithm - The algorithm name without extension you want to load.
      * @param view - The view in which you want load the page.
      */
     function updateDocumentView(algorithm, view) {
-		$("#overlay").empty();
-        var htmlName = algorithm.replace(MULTI_SYMBOLS.G_LITTLE_SPECIAL, SYMBOLS.G_LITTLE);
+        removeOverlay($("#overlay"));
+
+        var htmlName = algorithm
+            .replace(MULTI_SYMBOLS.BRACKET_LEFT, SYMBOLS.EMPTY)
+            .replace(MULTI_SYMBOLS.BRACKET_RIGHT, SYMBOLS.EMPTY)
+            .replace(MULTI_SYMBOLS.G_LITTLE_SPECIAL, SYMBOLS.G_LITTLE)
+            .replace(MULTI_SYMBOLS.SPACE, SYMBOLS.EMPTY);
 
         var javascriptName = algorithm.toLowerCase()
-            .replace(MULTI_SYMBOLS.G_LITTLE_SPECIAL, SYMBOLS.G_LITTLE)
+            .replace(MULTI_SYMBOLS.BRACKET_LEFT, SYMBOLS.EMPTY)
+            .replace(MULTI_SYMBOLS.BRACKET_RIGHT, SYMBOLS.EMPTY)
             .replace(MULTI_SYMBOLS.DELIMITER, SYMBOLS.SEPARATOR)
-            .replace(MULTI_SYMBOLS.SPACE, SYMBOLS.SEPARATOR);  // "-" and " " are replaced with "_"
+            .replace(MULTI_SYMBOLS.G_LITTLE_SPECIAL, SYMBOLS.G_LITTLE)
+            .replace(MULTI_SYMBOLS.SPACE, SYMBOLS.SEPARATOR);
+
+        loaded = javascriptName;
 
         view.load(PATHS.MAIN.PAGES + htmlName + FILE_EXTENSIONS.HYPERTEXT_MARKUP_LANGUAGE, function () {
             $.getScript(PATHS.MAIN.SCRIPTS + javascriptName + FILE_EXTENSIONS.JAVASCRIPT);
         });
     }
+
+    /**
+     * Removes an overlay.
+     * @param overlay - The overlay you want to remove.
+     */
+    function removeOverlay(overlay) {
+        overlay.empty();
+    }
+
 }());
