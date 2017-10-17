@@ -347,9 +347,11 @@ $(document).ready(function () {
      * @return {number} - The matching position. You get back NaN if such position does not exists.
      */
     function searchVerticalMatchPosition(algorithm, currentValue, position, outputData) {
-        for (var k = 1; k < position.i; k++) {
-            if (alignmentInstance.differenceLowerEpsilon(outputData.matrix[position.i - k][position.j] + algorithm.gapFunction(k), currentValue, EPSILON))
-                return position.i - k;
+        if (position.j > 0) {
+            for (var k = 1; k <= position.i; k++) {
+                if (alignmentInstance.differenceLowerEpsilon(outputData.matrix[position.i - k][position.j] + algorithm.gapFunction(k), currentValue, EPSILON))
+                    return position.i - k;
+            }
         }
 
         return Number.NaN;
@@ -364,9 +366,11 @@ $(document).ready(function () {
      * @return {number} - The matching position. You get back NaN if such position does not exists.
      */
     function searchHorizontalMatchPosition(algorithm, currentValue, position, outputData) {
-        for (var k = 1; k < position.j; k++) {
-            if (alignmentInstance.differenceLowerEpsilon(outputData.matrix[position.i][position.j - k] + algorithm.gapFunction(k), currentValue, EPSILON))
-                return position.j - k;
+        if (position.i > 0) {
+            for (var k = 1; k <= position.j; k++) {
+                if (alignmentInstance.differenceLowerEpsilon(outputData.matrix[position.i][position.j - k] + algorithm.gapFunction(k), currentValue, EPSILON))
+                    return position.j - k;
+            }
         }
 
         return Number.NaN;
