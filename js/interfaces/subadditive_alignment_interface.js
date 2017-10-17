@@ -141,7 +141,7 @@ Author: Alexander Mattheis
         if (algorithmName === ALGORITHMS.WATERMAN_SMITH_BEYER)
             return getWatermanSmithBeyerFormula(viewmodel);
 
-        return getGotohFormula(viewmodel, matrix);
+        return getGotohFormula(algorithmName, viewmodel, matrix);
     }
 
     /**
@@ -211,11 +211,12 @@ Author: Alexander Mattheis
 
     /**
      * Returns the LaTeX-code for Gotoh formulas.
+     * @param algorithmName {string} - The name of the algorithm.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
      * @param matrix {string} - The matrix for which you want display the formula.
      * @return {string} - LaTeX code.
      */
-    function getGotohFormula(viewmodel, matrix) {
+    function getGotohFormula(algorithmName, viewmodel, matrix) {
         var string = LATEX.MATH_REGION;  // starting LaTeX math region
 
         // differentiate between formulas and writing code for static one
@@ -228,6 +229,7 @@ Author: Alexander Mattheis
                 break;
             default:
                 string += LATEX.FORMULA.CURRENT;
+
         }
 
         // look if we maximize or minimize
@@ -240,28 +242,37 @@ Author: Alexander Mattheis
         switch (matrix) {
             case MATRICES.VERTICAL:
                 string += LATEX.RECURSION.GOTOH_P;
-                string += getGotohDynamicFormula(viewmodel, matrix);
+                string += getGotohDynamicFormula(algorithmName, viewmodel, matrix);
                 break;
             case MATRICES.HORIZONTAL:
                 string += LATEX.RECURSION.GOTOH_Q;
-                string += getGotohDynamicFormula(viewmodel, matrix);
+                string += getGotohDynamicFormula(algorithmName, viewmodel, matrix);
                 break;
             default:
-                string += LATEX.RECURSION.GOTOH;
-                string += getGotohDynamicFormula(viewmodel, matrix);
+                if (algorithmName === ALGORITHMS.GOTOH)
+                    string += LATEX.RECURSION.GOTOH;
+                else if (algorithmName === ALGORITHMS.GOTOH_LOCAL)
+                    string += LATEX.RECURSION.GOTOH_LOCAL;
+
+                string += getGotohDynamicFormula(algorithmName, viewmodel, matrix);
         }
 
         string += LATEX.MATH_REGION;  // stopping LaTeX math region
+
+        if (algorithmName === ALGORITHMS.GOTOH_LOCAL)
+            string = string.replace(MULTI_SYMBOLS.D_BIG, SYMBOLS.S_BIG);
+
         return string;
     }
 
     /**
      * Returns the dynamic, input-dependant LaTeX-code for Gotoh formulas.
+     * @param algorithmName {string} - The name of the algorithm.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
      * @param matrix {string} - The matrix for which you want display the formula.
      * @return {string} - LaTeX code.
      */
-    function getGotohDynamicFormula(viewmodel, matrix) {
+    function getGotohDynamicFormula(algorithmName, viewmodel, matrix) {
         var string = SYMBOLS.EMPTY;
 
         var gapStart = viewmodel.gapStart();
@@ -306,6 +317,9 @@ Author: Alexander Mattheis
                 string += LATEX.FORMULA.CURRENT_P + LATEX.NEW_LINE;
 
                 string += LATEX.FORMULA.CURRENT_Q;
+
+                if (algorithmName === ALGORITHMS.GOTOH_LOCAL)
+                    string += LATEX.NEW_LINE + LATEX.FORMULA.ZERO;
         }
 
         string += LATEX.END_CASES;  // stopping LaTeX case region

@@ -165,6 +165,14 @@ var LATEX = {
         "Q_{i,j}                                "   +
         "\\end{cases}",
 
+        GOTOH_LOCAL:
+        "\\begin{cases}"                            +
+        "S_{i-1,j-1}	& + & s(a_i,b_j)    \\\\"   +
+        "P_{i,j}                            \\\\"   +
+        "Q_{i,j}                            \\\\"   +
+        "0                                      "   +
+        "\\end{cases}",
+
         GOTOH_P:
         "\\begin{cases}"                            +
         "D_{i-1,j}      & + & g(1)		    \\\\"   +
