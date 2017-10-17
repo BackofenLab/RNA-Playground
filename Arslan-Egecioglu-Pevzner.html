@@ -11,42 +11,41 @@ Author: Alexander Mattheis
         <a href=" https://doi.org/10.1093/bioinformatics/17.4.327">
             Abdullah N. Arslan, Ömer Eğecioğlu and Pavel A. Pevzner (2001)</a>
         computes the best normalized local alignments of two sequences.
-        It identifies the alignment that is best preserved with respect to the length of both sequences.
-        So, it finds the alignment with the highest similarity under the given sequence-lengths
-        of sequences $a$ and $b$.
+        It identifies the local alignment that is best preserved with respect to the length of the aligned subsequences.
         <br>
         <br>
         To find a normalized local alignment,
-        the Fractional Programming Algorithm by
+        the fractional programming algorithm by
         <a href="http://pubsonline.informs.org/doi/abs/10.1287/mnsc.13.7.492">Werner Dinkelbach (1967)</a>
-        is together used with
+        is used in concert with the 'standard' local alignment algorithm by
         <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman (1981)</a>.
-        A Fractional Programming Algorithm is a machine learning algorithm
-        to solve problems in which the Objective Function $ns(\mathscr{A})$ is a fraction.
+        A fractional programming is a machine learning approach
+        to solve problems in which the objective function $ns(\mathcal{A})$ is a fraction.
         <br>
         <br>
         The normalized local alignment algorithm tries
-        to find the alignment $\mathscr{A}$ of two sequences
-        which is producing the highest normalized score
-        $$\lambda^* = ns(\mathscr{A}) = \frac{s(\mathscr{A})}{⟦\mathscr{A}⟧ + L}$$
-        where $⟦\mathscr{A}⟧ = |a_i ... a_j| + |b_k ... b_l|$ is the alignment-length
-        of the subsequences and $L$ is a parameter
-        to control the dependence of the normalized similarity to the alignment-length.
+        to find the alignment $\mathcal{A}$ of two sequences
+        with the highest normalized score
+        $$\quad\lambda^* = ns(\mathcal{A}) = \frac{s(\mathcal{A})}{⟦\mathcal{A}⟧ + L}$$
+        where $⟦\mathcal{A}⟧$ is the length
+        of the aligned subsequences (excluding gaps) and $L$ is a parameter
+        to control the length-dependence of the normalized similarity score.
         <br>
         <br>
-        For computation the <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman</a>
-        algorithm is executed iteratively with different parameters $\lambda$
-        in the modified scoring-function $s'$
-        and thereby the normalized score $\lambda$ is recomputed
-        with <a href="http://pubsonline.informs.org/doi/abs/10.1287/mnsc.13.7.492">Dinkelbach</a>
-        until the value $\lambda$ converges.
+	Given a similarity scoring function $s(a_i,b_j)$ for two sequences $a$ and $b$.
+        To find $\lambda^*$ and the according best normalized alignment $\mathcal{A}$,
+	the <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman</a>
+        algorithm is executed iteratively using an iteration-specific scoring-function $s^r$ (see below).
+	In iteration $r>0$, $s^r$ depends on the $\lambda^{r-1}$ estimate of the previous iteration,
+	where $\lamda^0=0$.
+	Given this, the best local alignment $\mathcal{A}^r$ with score $S^r$ using $s^r$ is identified and 
+	the current lambda estimate computed via $\lambda^r= S^r/(⟦\mathcal{A}⟧+L)$.
+	This is iterated until $\lambda$ converges or a certain number of iterations (5) is exceeded.
         <br>
         <br>
-        The according iteration possibilities
-        (different alignments produce different iterations)
-        can be selected below.
-        For a given input, the according tables and scoring functions for $S$
-        are shown along with a list of according local alignments.
+        For a given input, the according tables and scoring functions
+        are shown for up to 5 iterations (or convergence) along with a list 
+	of according optimal local alignments.
         On table cell selection, optimal traceback options are shown.
         On alignment selection, an according traceback path is visualized in the table.
     </div>
@@ -88,7 +87,7 @@ Author: Alexander Mattheis
         </p>
 
         <p>
-            <label id="recursion_arslan_egecioglu_pevzner">Recursion:</label>
+            <label id="recursion_arslan_egecioglu_pevzner">Recursion<br>of iteration $r$:</label>
             <div class="span_group">
                 <span data-bind="text: $root.input.formula"></span>
                 <br>
@@ -97,7 +96,7 @@ Author: Alexander Mattheis
                 <span data-bind="text: $root.input.subFormula"></span>
                 <br>
                 <br>
-                where $\lambda^1 = 0$
+                where $\lambda^0 = 0$
                 <br>
                 <br>
             </div>
@@ -155,13 +154,13 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 					</div>
 
 					<div class="parameters">
-						Score $s(\mathscr{A})$:
+						Score $s(\mathscr{A}^5)$:
 						<span data-bind="text: $root.output.score5"></span> <br>
 
-						Length $⟦\mathscr{A}⟧$:
+						Length $⟦\mathscr{A}^5⟧$:
 						<span data-bind="text: $root.output.length5"></span> <br>
 
-						Normalized score $\lambda$:
+						Normalized score $\lambda^5$:
 						<span data-bind="text: $root.output.lambda5"></span> <br>
 					</div>
 				</div>
@@ -293,13 +292,13 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 					</div>
 
 					<div class="parameters">
-						Score $s(\mathscr{A})$:
+						Score $s(\mathscr{A}^4)$:
 						<span data-bind="text: $root.output.score4"></span> <br>
 
-						Length $⟦\mathscr{A}⟧$:
+						Length $⟦\mathscr{A}^4⟧$:
 						<span data-bind="text: $root.output.length4"></span> <br>
 
-						Normalized score $\lambda$:
+						Normalized score $\lambda^4$:
 						<span data-bind="text: $root.output.lambda4"></span> <br>
 					</div>
 				</div>
@@ -431,13 +430,13 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 					</div>
 
 					<div class="parameters">
-						Score $s(\mathscr{A})$:
+						Score $s(\mathscr{A}^3)$:
 						<span data-bind="text: $root.output.score3"></span> <br>
 
-						Length $⟦\mathscr{A}⟧$:
+						Length $⟦\mathscr{A}^3⟧$:
 						<span data-bind="text: $root.output.length3"></span> <br>
 
-						Normalized score $\lambda$:
+						Normalized score $\lambda^3$:
 						<span data-bind="text: $root.output.lambda3"></span> <br>
 					</div>
 				</div>
@@ -569,13 +568,13 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 					</div>
 
 					<div class="parameters">
-						Score $s(\mathscr{A})$:
+						Score $s(\mathscr{A}^2)$:
 						<span data-bind="text: $root.output.score2"></span> <br>
 
-						Length $⟦\mathscr{A}⟧$:
+						Length $⟦\mathscr{A}^2⟧$:
 						<span data-bind="text: $root.output.length2"></span> <br>
 
-						Normalized score $\lambda$:
+						Normalized score $\lambda^2$:
 						<span data-bind="text: $root.output.lambda2"></span> <br>
 					</div>
 				</div>
@@ -707,13 +706,13 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 					</div>
 
 					<div class="parameters">
-						Score $s(\mathscr{A})$:
+						Score $s(\mathscr{A}^1)$:
 						<span data-bind="text: $root.output.score1"></span> <br>
 
-						Length $⟦\mathscr{A}⟧$:
+						Length $⟦\mathscr{A}^1⟧$:
 						<span data-bind="text: $root.output.length1"></span> <br>
 
-						Normalized score $\lambda$:
+						Normalized score $\lambda^1$:
 						<span data-bind="text: $root.output.lambda1"></span> <br>
 					</div>
 				</div>
@@ -809,7 +808,7 @@ The "foreach"-binding is strange, but it's the only found way which works withou
 		<!-- ko if: $root.output.maxNumberIterations -->
 		Only first five iterations are computed. <br>
 		<!-- /ko -->
-		Scores $s(\mathscr{A})$ and normalised scores $\lambda$ are rounded to four digits after the decimal point.
+		Scores $s(\mathscr{A})$ and normalized scores $\lambda$ are rounded to four digits.
 	</div>
 
     <div class="download_area">
