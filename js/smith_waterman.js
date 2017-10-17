@@ -31,17 +31,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startSmithWaterman() {
-        imports();
-
         var alignmentInterface = new interfaces.alignmentInterface.AlignmentInterface();
         alignmentInterface.startAlignmentAlgorithm(SmithWaterman, ALGORITHMS.SMITH_WATERMAN);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);
     }
 
     /*---- ALGORITHM ----*/

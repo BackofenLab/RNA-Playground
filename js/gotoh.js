@@ -34,17 +34,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startGotoh() {
-        imports();
-
         var subadditiveAlignmentInterface = new interfaces.subadditiveAlignmentInterface.SubadditiveAlignmentInterface();
         subadditiveAlignmentInterface.startSubadditiveAlignmentAlgorithm(Gotoh, ALGORITHMS.GOTOH);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        $.getScript(PATHS.SUBADDITIVE_ALIGNMENT_INTERFACE);
     }
 
     /*---- ALGORITHM ----*/

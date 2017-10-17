@@ -34,17 +34,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startWatermanSmithBeyer() {
-        imports();
-
         var subadditiveAlignmentInterface = new interfaces.subadditiveAlignmentInterface.SubadditiveAlignmentInterface();
         subadditiveAlignmentInterface.startSubadditiveAlignmentAlgorithm(WatermanSmithBeyer, ALGORITHMS.WATERMAN_SMITH_BEYER);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        $.getScript(PATHS.SUBADDITIVE_ALIGNMENT_INTERFACE);
     }
 
     /*---- ALGORITHM ----*/

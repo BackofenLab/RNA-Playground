@@ -30,18 +30,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startNeedlemanWunsch() {
-        imports();
-
         var alignmentInterface = new interfaces.alignmentInterface.AlignmentInterface();
         alignmentInterface.startAlignmentAlgorithm(NeedlemanWunsch, ALGORITHMS.NEEDLEMAN_WUNSCH);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);
-        //$.getScript(PATHS.ALIGNMENT);
     }
 
     /*---- ALGORITHM ----*/

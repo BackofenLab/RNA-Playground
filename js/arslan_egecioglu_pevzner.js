@@ -35,17 +35,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startArslanEgeciougluPevzner() {
-        imports();
-
         var alignmentInterface = new interfaces.alignmentInterface.AlignmentInterface();
         alignmentInterface.startAlignmentAlgorithm(ArslanEgeciougluPevzner, ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);
     }
 
     /*---- ALGORITHM ----*/
