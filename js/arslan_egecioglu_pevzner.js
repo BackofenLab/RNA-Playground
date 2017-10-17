@@ -43,8 +43,6 @@ $(document).ready(function () {
     /**
      * Computes the optimal, normalized local alignment.
      * @constructor
-     * @see: The superclass "alignmentInstance" have to be created as last instance
-     * or the childInstance in the superclass will be probably wrong!
      */
     function ArslanEgeciougluPevzner() {
         arslanEgeciougluPevznerInstance = this;
@@ -56,9 +54,8 @@ $(document).ready(function () {
         this.lastLambda = Number.POSITIVE_INFINITY;
 
         // inheritance
-        smithWatermanInstance = new smithWaterman.SmithWaterman();
-
         alignmentInstance = new bases.alignment.Alignment(this);
+        smithWatermanInstance = new smithWaterman.SmithWaterman();
 
         // public class methods
         this.getInput = getInput;

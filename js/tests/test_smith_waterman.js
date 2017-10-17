@@ -41,7 +41,7 @@ TestCase("test_smith_waterman", {
 
     /**
      * Multi sequences test.
-     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis
+     * @see: Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_2": function () {
         debugger;
@@ -82,7 +82,7 @@ TestCase("test_smith_waterman", {
 
     /**
      * Long sequences test.
-     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     * @see: Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_3": function () {
         debugger;
