@@ -27,20 +27,20 @@ Author: Alexander Mattheis
         to find the alignment $\mathcal{A}$ of two sequences
         with the highest normalized score
         $$\quad\lambda^* = ns(\mathcal{A}) = \frac{s(\mathcal{A})}{⟦\mathcal{A}⟧ + L}$$
-        where $⟦\mathcal{A}⟧$$ is the length
+        where $⟦\mathcal{A}⟧$ is the length
         of the aligned subsequences (excluding gaps) and $L$ is a parameter
         to control the length-dependence of the normalized similarity score.
         <br>
         <br>
-	Given a similarity scoring function $$s(a_i,b_j)$$ for two sequences $$a$ and $$b$$.
-        To find $$\lambda^*$$ and the according best normalized alignment $$\mathcal{A}$$,
+	Given a similarity scoring function $s(a_i,b_j)$ for two sequences $a$ and $b$.
+        To find $\lambda^*$ and the according best normalized alignment $\mathcal{A}$,
 	the <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman</a>
         algorithm is executed iteratively using an iteration-specific scoring-function $s^r$ (see below).
-	In iteration $$r>0$$, $$s^r$$ depends on the $$\lambda^{r-1}$$ estimate of the previous iteration,
-	where $$\lamda^0=0$$.
-	Given this, the best local alignment $$$\mathcal{A}^r$$ with score $$S^r$$ using $$s^r$$ is identified and 
-	the current lambda estimate computed via $$\lambda^r= S^r/(⟦\mathcal{A}⟧+L)$$.
-	This is iterated until $$\lambda$$ converges or a certain number of iterations (5) is exceeded.
+	In iteration $r>0$, $s^r$ depends on the $\lambda^{r-1}$ estimate of the previous iteration,
+	where $\lamda^0=0$.
+	Given this, the best local alignment $\mathcal{A}^r$ with score $S^r$ using $s^r$ is identified and 
+	the current lambda estimate computed via $\lambda^r= S^r/(⟦\mathcal{A}⟧+L)$.
+	This is iterated until $\lambda$ converges or a certain number of iterations (5) is exceeded.
         <br>
         <br>
         For a given input, the according tables and scoring functions
@@ -87,7 +87,7 @@ Author: Alexander Mattheis
         </p>
 
         <p>
-            <label id="recursion_arslan_egecioglu_pevzner">Recursion<br>of iteration $$r$$:</label>
+            <label id="recursion_arslan_egecioglu_pevzner">Recursion<br>of iteration $r$:</label>
             <div class="span_group">
                 <span data-bind="text: $root.input.formula"></span>
                 <br>
