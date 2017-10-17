@@ -203,9 +203,9 @@ var LATEX = {
 
       SMITH_WATERMAN_MODIFIED:
         "\\begin{cases}"                            +
-        "S_{i-1,j-1}    & + & s'(a_i,b_j)    \\\\"	+
-        "S_{i-1,j}      & + & s'(a_i,-)      \\\\"	+
-        "S_{i,j-1} 		& + & s'(-,b_j)      \\\\"	+
+        "S_{i-1,j-1}    & + & s^r(a_i,b_j)    \\\\"	+
+        "S_{i-1,j}      & + & s^r(a_i,-)      \\\\"	+
+        "S_{i,j-1} 		& + & s^r(-,b_j)      \\\\"	+
         "0"                                         +
         "\\end{cases}",
         WATERMAN_SMITH_BEYER_MIN:
@@ -225,10 +225,10 @@ var LATEX = {
 
     SUB_FORMULAS: {
         ARSLAN_EGECIOGLE_PEVZNER_SCORING:
-        "s'(a_i,b_j) = "                                                    +
+        "s^r(a_i,b_j) = "                                                    +
         "\\begin{cases}"                                                    +
-        "s(a_i,b_j) - 2 \\lambda    &  a_i, b_j \\in \\Sigma     \\\\"      +
-        "s(a_i,b_j) - \\lambda      &  a_i =\\_ \\vee b_j = \\_ "           +
+        "s(a_i,b_j) - 2 \\lambda^{r-1}    &  a_i, b_j \\in \\Sigma     \\\\"      +
+        "s(a_i,b_j) - \\lambda^{r-1}      &  a_i =\\_ \\vee b_j = \\_ "           +
         "\\end{cases}",
 
         GOTOH_GAP_FUNCTION: "g(k) = \\alpha + \\beta \\cdot k"
