@@ -42,14 +42,13 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms
  */
 var ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
-    LENGTH: 10,
-    SEQUENCE_1: "GCATTUGCCUU",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "CTTGACCATU",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "AACG",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "AATCG",  // hint: UPPERCASE letters!
 
     FUNCTION: {
         DELETION: -2,
         INSERTION: -2,
-        MATCH: 3,
+        MATCH: 1,
         MISMATCH: -1
     }
 };
@@ -262,6 +261,20 @@ var MULTI_SYMBOLS = {
     DELIMITER: /-/g,
     G_LITTLE_SPECIAL: /ğ/g,
     SPACE: / /g
+};
+
+var NORMALIZED_ALIGNMENT_DEFAULTS = {
+    CALCULATION: "similarity",
+    LENGTH: 10,
+    SEQUENCE_1: "GCATTUGCCUU",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "CTTGACCATU",  // hint: UPPERCASE letters!
+
+    FUNCTION: {
+        DELETION: -2,
+        INSERTION: -2,
+        MATCH: 3,
+        MISMATCH: -1
+    }
 };
 
 /**

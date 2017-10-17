@@ -90,19 +90,30 @@ Author: Alexander Mattheis
     function InputViewmodel(algorithmName) {
         var viewmodel = this;
 
-        this.sequence1 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_1);
-        this.sequence2 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_2);
+        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
+            this.sequence1 = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.SEQUENCE_1);
+            this.sequence2 = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.SEQUENCE_2);
 
-        this.calculation = ko.observable(ALIGNMENT_DEFAULTS.CALCULATION);
+            this.calculation = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.CALCULATION);
 
-        // function
-        this.deletion = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.DELETION);
-        this.insertion = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.INSERTION);
-        this.match = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
-        this.mismatch = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
+            // function
+            this.deletion = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.DELETION);
+            this.insertion = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.INSERTION);
+            this.match = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
+            this.mismatch = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
+            this.length = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.LENGTH);
+        } else {
+            this.sequence1 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_1);
+            this.sequence2 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_2);
 
-        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
-            this.length = ko.observable(ALIGNMENT_DEFAULTS.LENGTH);
+            this.calculation = ko.observable(ALIGNMENT_DEFAULTS.CALCULATION);
+
+            // function
+            this.deletion = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.DELETION);
+            this.insertion = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.INSERTION);
+            this.match = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
+            this.mismatch = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
+        }
 
         this.formula = ko.computed(
             function getSelectedFormula() {
