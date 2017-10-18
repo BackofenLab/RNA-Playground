@@ -169,11 +169,6 @@ th {
     position: relative;
 }
 
-.entry_marked {
-    background-color: #003592; /* Bioinformatics RNA-Playground blue */
-    color: white;
-}
-
 .group_hint {
     color: gray;
     font-size: smaller;
@@ -300,7 +295,7 @@ th {
 }
 
 .selected {
-    background-color: #8fa9ef;
+    background-color: #5582BC; /* Uni-Freiburg Logo blue */
     color: white;
 }
 
