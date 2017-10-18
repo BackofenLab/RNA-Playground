@@ -17,7 +17,6 @@ Author: Alexander Mattheis
 /* HINT: alphabetically ordered (also within definitions) and structures afer constants */
 
 // constants
-var ALIGNMENT_WEBTITLE = "Bioinformatics Algorithms";
 var EPSILON = 0.000000001;  // some very low number to test against
 var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 
@@ -48,8 +47,7 @@ var ALIGNMENT_DEFAULTS = {
     SEQUENCE_2: "AATCG",  // hint: UPPERCASE letters!
 
     FUNCTION: {
-        DELETION: -2,
-        INSERTION: -2,
+        GAP: -2,
         MATCH: 1,
         MISMATCH: -1
     }
@@ -283,8 +281,7 @@ var NORMALIZED_ALIGNMENT_DEFAULTS = {
     SEQUENCE_2: "CTTGACCATU",  // hint: UPPERCASE letters!
 
     FUNCTION: {
-        DELETION: -2,
-        INSERTION: -2,
+        GAP: -2,
         MATCH: 3,
         MISMATCH: -1
     }

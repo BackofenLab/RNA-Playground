@@ -97,8 +97,7 @@ Author: Alexander Mattheis
             this.calculation = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.CALCULATION);  // needed to ouput correct formulas
 
             // function
-            this.deletion = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.DELETION);
-            this.insertion = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.INSERTION);
+            this.gap = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.GAP);
             this.match = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
             this.mismatch = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
             this.length = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.LENGTH);
@@ -109,8 +108,7 @@ Author: Alexander Mattheis
             this.calculation = ko.observable(ALIGNMENT_DEFAULTS.CALCULATION);
 
             // function
-            this.deletion = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.DELETION);
-            this.insertion = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.INSERTION);
+            this.gap = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.GAP);
             this.match = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
             this.mismatch = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
         }
@@ -179,11 +177,11 @@ Author: Alexander Mattheis
                 string += SYMBOLS.AND + LATEX.FORMULA.MISMATCH + LATEX.NEW_LINE;
 
                 string += LATEX.FORMULA.TOP + LATEX.ALIGNED_PLUS;
-                string += viewmodel.deletion() >= 0 ? LATEX.SPACE + viewmodel.deletion() : viewmodel.deletion();
+                string += viewmodel.gap() >= 0 ? LATEX.SPACE + viewmodel.gap() : viewmodel.gap();
                 string += SYMBOLS.AND + LATEX.FORMULA.DELETION + LATEX.NEW_LINE;
 
                 string += LATEX.FORMULA.LEFT + LATEX.ALIGNED_PLUS;
-                string += viewmodel.insertion() >= 0 ? LATEX.SPACE + viewmodel.insertion() : viewmodel.insertion();
+                string += viewmodel.gap() >= 0 ? LATEX.SPACE + viewmodel.gap() : viewmodel.gap();
                 string += SYMBOLS.AND + LATEX.FORMULA.INSERTION;
 
                 if (algorithmName === ALGORITHMS.SMITH_WATERMAN || algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
@@ -235,8 +233,7 @@ Author: Alexander Mattheis
                 else
                     inputViewmodel.calculation(ALIGNMENT_TYPES.SIMILARITY);
 
-            inputViewmodel.deletion(Number($("#deletion").val()));
-            inputViewmodel.insertion(Number($("#insertion").val()));
+            inputViewmodel.gap(Number($("#gap").val()));
             inputViewmodel.match(Number($("#match").val()));
             inputViewmodel.mismatch(Number($("#mismatch").val()));
 

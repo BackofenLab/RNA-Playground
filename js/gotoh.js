@@ -83,18 +83,8 @@ $(document).ready(function () {
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
-        inputData.sequenceA = inputViewmodel.sequence1();
-        inputData.sequenceB = inputViewmodel.sequence2();
-
-        inputData.calculationType = inputViewmodel.calculation();
-
-        inputData.baseCosts = inputViewmodel.baseCosts();
-        inputData.enlargement = inputViewmodel.enlargement();
-        inputData.match = inputViewmodel.match();
-        inputData.mismatch = inputViewmodel.mismatch();
-
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        alignmentInstance.setIO(inputData, {});
+        alignmentInstance.setSubadditiveAlignmentInput(inputViewmodel);
     }
 
     /**

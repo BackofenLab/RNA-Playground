@@ -51,7 +51,7 @@ $(document).ready(function () {
         // inheritance
         alignmentInstance = new bases.alignment.Alignment(this);
 
-        this.setInput = alignmentInstance.setInput;
+        this.setInput = alignmentInstance.setLinearAlignmentInput;
         this.compute = alignmentInstance.compute;
         this.getOutput = alignmentInstance.getOutput;
 

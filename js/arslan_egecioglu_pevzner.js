@@ -80,19 +80,12 @@ $(document).ready(function () {
      * Sets the algorithm input for an appropriate algorithm
      * which is using the inputViewmodel properties in its computations.
      * @param inputViewmodel {InputViewmodel} - The InputViewmodel of an appropriate algorithm.
+     * @augments Alignment.setLinearAlignmentInput()
      */
     function setInput(inputViewmodel) {
-        inputData.sequenceA = inputViewmodel.sequence1();
-        inputData.sequenceB = inputViewmodel.sequence2();
-
-        inputData.deletion = inputViewmodel.deletion();
-        inputData.insertion = inputViewmodel.insertion();
-        inputData.match = inputViewmodel.match();
-        inputData.mismatch = inputViewmodel.mismatch();
+        alignmentInstance.setIO(inputData, {});
+        alignmentInstance.setLinearAlignmentInput(inputViewmodel);
         inputData.length = inputViewmodel.length();
-
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
     }
 
     /**

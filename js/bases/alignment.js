@@ -10,7 +10,7 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("bases.alignment", Vector, create,
-        Alignment, getInput, setInput, compute, recursionFunction, getGlobalTraces, getLocalTraces,
+        Alignment, getInput, setLinearAlignmentInput, setSubadditiveAlignmentInput, compute, recursionFunction, getGlobalTraces, getLocalTraces,
         createAlignments, getOutput, setIO, getNeighboured, differenceLowerEpsilon);
 
     // instances
@@ -58,7 +58,8 @@ Author: Alexander Mattheis
         // public methods (linking)
         this.getInput = getInput;
 
-        this.setInput = setInput;
+        this.setLinearAlignmentInput = setLinearAlignmentInput;
+        this.setSubadditiveAlignmentInput = setSubadditiveAlignmentInput;
         this.compute = compute;
         this.recursionFunction = recursionFunction;
         this.getGlobalTraces = getGlobalTraces;
@@ -81,19 +82,38 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Sets the algorithm input for an appropriate algorithm
+     * Sets the algorithm input for an appropriate linear alignment algorithm
      * which is using the inputViewmodel properties in its computations.
-     * @param inputViewmodel {Object}
-     * - The InputViewmodel of an appropriate algorithm (Needleman-Wunsch, Smith-Waterman).
+     * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm (NW, SW, AEP).
      */
-    function setInput(inputViewmodel) {
+    function setLinearAlignmentInput(inputViewmodel) {
         inputData.sequenceA = inputViewmodel.sequence1();
         inputData.sequenceB = inputViewmodel.sequence2();
 
         inputData.calculationType = inputViewmodel.calculation();
 
-        inputData.deletion = inputViewmodel.deletion();
-        inputData.insertion = inputViewmodel.insertion();
+        inputData.deletion = inputViewmodel.gap();
+        inputData.insertion = inputViewmodel.gap();
+        inputData.match = inputViewmodel.match();
+        inputData.mismatch = inputViewmodel.mismatch();
+
+        inputData.matrixHeight = inputData.sequenceB.length + 1;
+        inputData.matrixWidth = inputData.sequenceA.length + 1;
+    }
+
+    /**
+     * Sets the algorithm input for an appropriate subadditive alignment algorithm
+     * which is using the inputViewmodel properties in its computations.
+     * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm (G, WSB).
+     */
+    function setSubadditiveAlignmentInput(inputViewmodel) {
+        inputData.sequenceA = inputViewmodel.sequence1();
+        inputData.sequenceB = inputViewmodel.sequence2();
+
+        inputData.calculationType = inputViewmodel.calculation();
+
+        inputData.baseCosts = inputViewmodel.baseCosts();
+        inputData.enlargement = inputViewmodel.enlargement();
         inputData.match = inputViewmodel.match();
         inputData.mismatch = inputViewmodel.mismatch();
 
