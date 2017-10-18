@@ -319,7 +319,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Allows to draw short an long arrows on top of two tables.
+     * Allows to draw short and long arrows on top of tables.
      * @param table {Element} - The current table which is visited.
      * @param posI {number} - The first coordinate.
      * @param posJ {number} - The second coordinate.

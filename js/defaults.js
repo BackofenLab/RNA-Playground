@@ -77,7 +77,7 @@ var ARROWS = {  // HINT: inner quotes have to be this here: " " or it won't work
 
 var CELL_PERCENT = {
     LINE: 0.2,  // position of a "between-table"-arrow in the Gotoh algorithm
-    LINE_2: 0.1,
+    LINE_2: 0.1,  // position of another "between-table"-arrow in the Gotoh algorithm (leads to more clarity)
     LINE_HEAD_PENETRATION: 0.1  // tells how much a line-head of a long "in-table"-arrow penetrates into a cell
 };
 
@@ -86,8 +86,8 @@ var CELL_PERCENT = {
  */
 var CHARACTER = {
     BASE: /[a-zA-Z]/i,
-    BASES: /^[a-zA-Z]+$/,
-    NON_BASES: /[^a-zA-Z]+/g,  // g to replace globally
+    BASES: /^[a-zA-Z-]+$/,
+    NON_BASES: /[^a-zA-Z-]+/g,  // g to replace globally
     NUMBERS: /[-+]?[0-9]+\.[0-9]*/
 };
 

@@ -322,7 +322,6 @@ Author: Alexander Mattheis
      * @param e - Stores data relevant to the event called that function.
      */
     function selectCell(e) {
-        debugger;
         // retrieve data
         var number = e.data.number;
         var mainOutput = e.data.mainOutput[0];
@@ -412,18 +411,7 @@ Author: Alexander Mattheis
      * LaTeX-math is updated or wrong characters are removed.
      */
     function postProcess() {
-        removeWrongBases();
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
-    }
-
-    /**
-     * Removes non-english characters from an input-field.
-     */
-    function removeWrongBases() {
-        var textElements = $(".sequence");
-
-        for (var i = 0; i < textElements.length; i++)
-            textElements[i].value = textElements[i].value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
     }
 
     /**
