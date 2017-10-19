@@ -167,6 +167,7 @@ Author: Alexander Mattheis
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
      * @param table {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
      * @param colorClass {number} - The highlight which should be deleted from the cell.
      * @param flowMode {boolean} - Tells if flows or traceback-paths were drawn.
      */
@@ -271,6 +272,7 @@ Author: Alexander Mattheis
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
      * @param table {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
      * @param colorClass {number} - The highlight which should be added to a cell.
      * @param arrows {boolean} - Tells if arrows should be drawn or not.
      * @param flowMode {boolean} - Tells if flows or traceback-paths are drawn.
@@ -482,6 +484,7 @@ Author: Alexander Mattheis
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
      * @param calculationTable {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
      */
     function showTraceback(traceNumber, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput) {
         var path = visualizerInstance.output.tracebackPaths[traceNumber];

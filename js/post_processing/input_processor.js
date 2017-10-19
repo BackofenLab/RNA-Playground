@@ -59,142 +59,22 @@ Author: Alexander Mattheis
         fixBrowserBugs();
         changeDefaultKeyBehaviour();
 
+        // retrieve parameters
         var algorithmInput = $("#algorithm_input");
         var functionParameters = algorithmInput.find(".fx_parameter");
 
-        var mainOutput = $(".main_output");
-        var calculation = mainOutput.find(".calculation");
-        var calculationHorizontal = mainOutput.find(".calculation_horizontal");
-        var calculationVertical = mainOutput.find(".calculation_vertical");
-        var results = $(".results");
+        var mainOutput = $(".main_output");  // output containing the calculation tables
+        var calculationTable = mainOutput.find(".calculation");
+        var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
+        var calculationVerticalTable = mainOutput.find(".calculation_vertical");
 
         var selectableEntryClass = ".selectable_entry";
 
-        var tableDownload = $(".table_download");
-        var tableVerticalDownload = $(".table_vertical_download");
-        var tableHorizontalDownload = $(".table_horizontal_download");
-
-        // 1st
-        var functionArguments = {"functionParameters": functionParameters};
-        algorithmInput.find(".optimization_type").on("change", functionArguments, negateOptimizationParameters);
-
-        var browserWindow = $(window);
-
-        // 2nd
-        functionParameters.on("focusout keypress", removeCriticalNumbers);
-        algorithmInput.find(".sequence").on("keyup", removeNonAllowedBases);
-
-        // 3rd
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "resultsTable": results,
-            "mainOutput": mainOutput,
-            "selectableEntryClass": selectableEntryClass,
-            "visualViewmodel": visualViewmodel
-        };
-        results.on("click", selectableEntryClass, functionArguments, selectTableEntry);
-
-        // 4th
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "mainOutput": mainOutput,
-            "number": MATRICES.VERTICAL_NUMBER,
-            "selectableEntryClass": selectableEntryClass,
-            "visualViewmodel": visualViewmodel
-        };
-        calculationVertical.on("click", selectableEntryClass, functionArguments, selectCell);
-
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "mainOutput": mainOutput,
-            "number": MATRICES.DEFAULT_NUMBER,
-            "selectableEntryClass": selectableEntryClass,
-            "visualViewmodel": visualViewmodel
-        };
-        calculation.on("click", selectableEntryClass, functionArguments, selectCell);
-
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "mainOutput": mainOutput,
-            "number": MATRICES.HORIZONTAL_NUMBER,
-            "selectableEntryClass": selectableEntryClass,
-            "visualViewmodel": visualViewmodel
-        };
-        calculationHorizontal.on("click", selectableEntryClass, functionArguments, selectCell);
-
-        // 5th
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "number": MATRICES.VERTICAL_NUMBER
-        };
-        tableVerticalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
-
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "number": MATRICES.DEFAULT_NUMBER
-        };
-        tableDownload.on("click", functionArguments, visualViewmodel.downloadTable);
-
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "number": MATRICES.HORIZONTAL_NUMBER
-        };
-        tableHorizontalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
-
-        // 6th
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "mainOutput": mainOutput
-        };
-        browserWindow.on("resize", functionArguments, visualViewmodel.redrawOverlay);
-
-        // 7th
-        mainOutput.on("scroll", functionArguments, visualViewmodel.redrawOverlay);
-
-        // 8th
-        linkIterationDownloadLinks(visualViewmodel);
-    }
-
-    /**
-     * Linking download links with a download function.
-     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
-     */
-    function linkIterationDownloadLinks(visualViewmodel) {
-        for (var i = 0; i < MAX_NUMBER_ITERATIONS; i++) {
-            var currentTableNumber = (i + 1);
-            linkDownloadLink(
-                $(".table_download_"+ currentTableNumber),
-                $(".calculation_" + currentTableNumber),
-                -currentTableNumber,  // iteration numbers are negative in "defaults.js"
-                visualViewmodel);
-        }
-    }
-
-    /**
-     * Linking download link with a download function.
-     * @param download {Element} - The link-element <a>...</a> which is to be linked.
-     * @param table {Element} - The table you want download.
-     * @param number {number} - The table id.
-     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
-     */
-    function linkDownloadLink(download, table, number, visualViewmodel) {
-        download.on("click", {"calculationTable": table, "number": number}, visualViewmodel.downloadTable);
+        // linking (alphabetically sorted)
+        linkBasicInputsBehaviour(algorithmInput, functionParameters);
+        linkDownloadLinks(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable);
+        linkOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
+        linkSelectables(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, selectableEntryClass);
     }
 
     /**
@@ -234,6 +114,19 @@ Author: Alexander Mattheis
             if (e.which === KEY_CODES.ENTER)
                 e.preventDefault();
         });
+    }
+
+    /**
+     * Linking inputs to have some special behaviour (removing non allowed bases).
+     * @param algorithmInput - The input div in which the behaviour is changed.
+     * @param functionParameters - The parameters which should have the given behaviour.
+     */
+    function linkBasicInputsBehaviour(algorithmInput, functionParameters) {
+        var functionArguments = {"functionParameters": functionParameters};
+        algorithmInput.find(".optimization_type").on("change", functionArguments, negateOptimizationParameters);
+
+        functionParameters.on("focusout keypress", removeCriticalNumbers);
+        algorithmInput.find(".sequence").on("keyup", removeNonAllowedBases);
     }
 
     /**
@@ -279,6 +172,149 @@ Author: Alexander Mattheis
     function removeNonAllowedBases() {
         if (!CHARACTER.BASES.test(this.value))
             this.value = this.value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
+    }
+
+    /**
+     * Linking table download links of tables with a download function.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * @param calculationTable {Element} - The default or main table.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     */
+    function linkDownloadLinks(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable) {
+        var tableDownload = $(".table_download");
+        var tableVerticalDownload = $(".table_vertical_download");
+        var tableHorizontalDownload = $(".table_horizontal_download");
+
+        var functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "number": MATRICES.VERTICAL_NUMBER
+        };
+        tableVerticalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
+
+        functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "number": MATRICES.DEFAULT_NUMBER
+        };
+        tableDownload.on("click", functionArguments, visualViewmodel.downloadTable);
+
+        functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "number": MATRICES.HORIZONTAL_NUMBER
+        };
+        tableHorizontalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
+
+        linkIterationDownloadLinks(visualViewmodel);
+    }
+
+    /**
+     * Linking table download links of tables from several iterations with a download function.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     */
+    function linkIterationDownloadLinks(visualViewmodel) {
+        for (var i = 0; i < MAX_NUMBER_ITERATIONS; i++) {
+            var currentTableNumber = (i + 1);
+            linkIterationDownloadLink(
+                $(".table_download_"+ currentTableNumber),
+                $(".calculation_" + currentTableNumber),
+                -currentTableNumber,  // iteration numbers are negative in "defaults.js"
+                visualViewmodel);
+        }
+    }
+
+    /**
+     * Linking table download link of a table generated during an iterative algorithm with a download function.
+     * @param download {Element} - The link-element <a>...</a> which is to be linked.
+     * @param table {Element} - The table you want download.
+     * @param number {number} - The table id.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     */
+    function linkIterationDownloadLink(download, table, number, visualViewmodel) {
+        download.on("click", {"calculationTable": table, "number": number}, visualViewmodel.downloadTable);
+    }
+
+    /**
+     * Allows to redraw an overlay on a scroll or resize event.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * @param calculationTable {Element} - The default or main table.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
+     */
+    function linkOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput) {
+        var browserWindow = $(window);
+
+        var functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "mainOutput": mainOutput
+        };
+        browserWindow.on("resize", functionArguments, visualViewmodel.redrawOverlay);
+        mainOutput.on("scroll", functionArguments, visualViewmodel.redrawOverlay);
+    }
+
+    /**
+     * Linking all elements which can be selected (results, cells, ...).
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param calculationTable {Element} - The default or main table.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
+     * @param selectableEntryClass {Object} - The class name of a selectable entry.
+     */
+    function linkSelectables(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, selectableEntryClass) {
+        var results = $(".results");
+
+        var functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "resultsTable": results,
+            "mainOutput": mainOutput,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+        results.on("click", selectableEntryClass, functionArguments, selectTableEntry);
+
+        var functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "mainOutput": mainOutput,
+            "number": MATRICES.VERTICAL_NUMBER,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+        calculationVerticalTable.on("click", selectableEntryClass, functionArguments, selectCell);
+
+        functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "mainOutput": mainOutput,
+            "number": MATRICES.DEFAULT_NUMBER,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+        calculationTable.on("click", selectableEntryClass, functionArguments, selectCell);
+
+        functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "mainOutput": mainOutput,
+            "number": MATRICES.HORIZONTAL_NUMBER,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+        calculationVerticalTable.on("click", selectableEntryClass, functionArguments, selectCell);
     }
 
     /**
