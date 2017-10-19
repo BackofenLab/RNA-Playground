@@ -32,6 +32,7 @@ Author: Alexander Mattheis
 
         this.lastFlows = [];
         this.lastPath = [];
+        this.lastIterationNumber = -1;
         this.lastRowNumber = -1;
 
         this.input = {};
@@ -118,17 +119,28 @@ Author: Alexander Mattheis
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
      * @param table {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param iterationTablesArray {Array} - An array of tables.
      * @param mainOutput {Element} - The div containing only the calculation tables.
-     * @param iteration {Element} - The iteration from which the table should be selected.
+     * @param iteration {number} - The iteration from which table was selected.
      */
-    function showFlow(cellCoordinates, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, iteration) {
-       var flows = getTraces(cellCoordinates, iteration);
+    function showFlow(cellCoordinates, calculationVerticalTable, table, calculationHorizontalTable,
+                      iterationTablesArray, mainOutput, iteration) {
 
-        for (i = 0; i < visualizerInstance.lastFlows.length; i++)
-            demarkCells(visualizerInstance.lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true);
+        var flows = getTraces(cellCoordinates, iteration);
 
-        for (var i = 0; i < flows.length; i++)
-            markCells(flows[i].reverse(), calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true, true);
+        if (iterationTablesArray !== undefined) {  // if alignment algorithm with iterations
+            removeAllFlows(table);
+
+            for (var i = 0; i < flows.length; i++)
+                markCells(flows[i].reverse(), calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true, true);
+
+        } else {  // in the case of a non-iterative alignment algorithm
+            for (i = 0; i < visualizerInstance.lastFlows.length; i++)
+                demarkCells(visualizerInstance.lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true);
+
+            for (var i = 0; i < flows.length; i++)
+                markCells(flows[i].reverse(), calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true, true);
+        }
 
         visualizerInstance.lastFlows = flows;
     }
@@ -136,32 +148,105 @@ Author: Alexander Mattheis
     /**
      * Returns the right traces for the right algorithm.
      * @param cellCoordinates {Object} - The vector-position of the cell which have been clicked.
-     * @param iteration {Element} - The iteration from which the table should be selected.
+     * @param iteration {number} - The iteration from which table was selected.
      * @return {Array} - The traces which have to be highlighted.
      */
     function getTraces(cellCoordinates, iteration) {
         var algorithm = visualizerInstance.algorithm;
         var superclass = algorithm.getSuperclass();
+        var child = superclass.getLastChild();  // hint: has not to be algorithm
 
         var flows = [];
-        visualizerInstance.algorithm.numberOfTracebacks = 0;  // to avoid counting and a cancellation after some reached limit
-        visualizerInstance.output.iteration = iteration;  // the iteration in which the table should be selected
+        algorithm.numberOfTracebacks = 0;  // to avoid counting and a cancellation after some reached limit
+        child.numberOfTracebacks = 0;
+
+        var input = getTraceComputationInput(algorithm, iteration);
 
         // calling the right neighborhood function
         if (algorithm.getNeighboured !== undefined) {
-            if ($.inArray(algorithm.type, GLOBAL_ALGORITHMS))
-                flows = superclass.getGlobalTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, algorithm.getNeighboured);
-            else if ($.inArray(algorithm.type, LOCAL_ALGORITHMS))
-                flows = superclass.getLocalTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, algorithm.getNeighboured);
+            if ($.inArray(algorithm.type, GLOBAL_ALGORITHMS) >= 0)
+                flows = superclass.getGlobalTraces([cellCoordinates], input, visualizerInstance.output, 1, algorithm.getNeighboured);
+            else if ($.inArray(algorithm.type, LOCAL_ALGORITHMS) >= 0)
+                flows = superclass.getLocalTraces([cellCoordinates], input, visualizerInstance.output, 1, algorithm.getNeighboured);
         }
         else {
-            if ($.inArray(algorithm.type, GLOBAL_ALGORITHMS))
-                flows = superclass.getGlobalTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, superclass.getNeighboured);
-            else if ($.inArray(algorithm.type, LOCAL_ALGORITHMS))
-                flows = superclass.getLocalTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, superclass.getNeighboured)
+            if ($.inArray(algorithm.type, GLOBAL_ALGORITHMS) >= 0)
+                flows = superclass.getGlobalTraces([cellCoordinates], input, visualizerInstance.output, 1, superclass.getNeighboured);
+            else if ($.inArray(algorithm.type, LOCAL_ALGORITHMS) >= 0)
+                flows = superclass.getLocalTraces([cellCoordinates], input, visualizerInstance.output, 1, superclass.getNeighboured);
         }
 
         return flows;
+    }
+
+    /**
+     * Returns the input on which flow is computed.
+     * @param algorithm {Object} - The algorithm for which flow is computed.
+     * @param iteration {number} - The iteration from which table was selected.
+     * @return {Object} - Input data for the algorithm which is used for backtracking.
+     */
+    function getTraceComputationInput(algorithm, iteration) {
+        var input = jQuery.extend(true, {}, visualizerInstance.input);  // deep copy to avoid changes on original values
+
+        if (algorithm.type === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
+            visualizerInstance.output.matrix = visualizerInstance.output.iterationData[0][iteration][8];
+            if (iteration > 0) {  // for computed matrix Smith-Waterman is used with some lambda
+                input.deletion = visualizerInstance.output.iterationData[0][iteration-1][3];  // deletion value with lambda
+                input.insertion = visualizerInstance.output.iterationData[0][iteration-1][4];  // ....
+                input.match = visualizerInstance.output.iterationData[0][iteration-1][5];
+                input.mismatch = visualizerInstance.output.iterationData[0][iteration-1][6];
+            }
+            visualizerInstance.lastIterationNumber = iteration;
+        } else {
+            visualizerInstance.lastIterationNumber = -1;
+        }
+
+        return input;
+    }
+
+    /**
+     * Removes all flows.
+     * @param table {Element} - The table from which flows have to be removed.
+     */
+    function removeAllFlows(table) {
+        for (var i = 1; i < table.rows.length; i++) {
+            for (var j = 1; j < table.rows[i].cells.length; j++) {
+                if (table.rows[i].cells[j].classList.contains("selected"))
+                    removeArrows(table, i, j, true);
+                else
+                    removeArrows(table, i, j, false);
+
+                removeFlowColors(table, i, j);
+            }
+        }
+    }
+
+    /**
+     * Removes short sprite sheet arrows at a specific position in the table.
+     * @param table {Element} - The table from which arrows have to be removed.
+     * @param posI {number} - The first coordinate.
+     * @param posJ {number} - The second coordinate.
+     * @param keepLast {boolean} - Allows to keep last arrow or not.
+     */
+    function removeArrows(table, posI, posJ, keepLast) {
+        var cell = table.rows[posI].cells[posJ];
+        var numChildren = keepLast ? cell.children.length - 1 : cell.children.length;
+
+        for (var k = 0; k < numChildren; k++)
+            cell.children[0].outerHTML = SYMBOLS.EMPTY;
+    }
+
+    /**
+     * Removes flow colors at a specific position in the table.
+     * @param table {Element} - The table from which colors have to be removed.
+     * @param posI {number} - The first coordinate.
+     * @param posJ {number} - The second coordinate.
+     */
+    function removeFlowColors(table, posI, posJ) {
+        table.rows[posI].cells[posJ].classList.remove("selected_light_red");
+        table.rows[posI].cells[posJ].classList.remove("selected_very_light_red");
+        table.rows[posI].cells[posJ].classList.remove("selected_red");
+        table.rows[posI].cells[posJ].classList.remove("selected_green");
     }
 
     /**
@@ -194,11 +279,11 @@ Author: Alexander Mattheis
                             currentTable.rows[posI].cells[posJ].classList.remove("selected");
                             break;
                         default:
-                            removeColors(currentTable, posI, posJ);
+                            removeFlowColors(currentTable, posI, posJ);
                     }
                 }
 
-                removeArrow(currentTable, posI, posJ);
+                removeArrows(currentTable, posI, posJ, false);
             }
         }
 
@@ -225,37 +310,10 @@ Author: Alexander Mattheis
     function getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable) {
         if (path[j].label === MATRICES.VERTICAL)
             return calculationVerticalTable;
-        else if (path[j].label === MATRICES.DEFAULT)
+        else if (path[j].label === MATRICES.HORIZONTAL)
+            return calculationHorizontalTable;
+        else // if (path[j].label === MATRICES.DEFAULT)
             return table;
-        // else if (path[j].label === MATRICES.HORIZONTAL)
-        return calculationHorizontalTable;
-    }
-
-    /**
-     * Removes highlights at a specific position in the table.
-     * @param table {Element} - The table from which colors have to be removed.
-     * @param posI {number} - The first coordinate.
-     * @param posJ {number} - The second coordinate.
-     */
-    function removeColors(table, posI, posJ) {
-        table.rows[posI].cells[posJ].classList.remove("selected_light_red");
-        table.rows[posI].cells[posJ].classList.remove("selected_very_light_red");
-        table.rows[posI].cells[posJ].classList.remove("selected_red");
-        table.rows[posI].cells[posJ].classList.remove("selected_green");
-    }
-
-    /**
-     * Removes short sprite sheet arrows at a specific position in the table.
-     * @param table {Element} - The table from which arrows have to be removed.
-     * @param posI {number} - The first coordinate.
-     * @param posJ {number} - The second coordinate.
-     */
-    function removeArrow(table, posI, posJ) {
-        var cell = table.rows[posI].cells[posJ];
-        var numChildren = cell.children.length;
-
-        for (var k = 0; k < numChildren; k++)
-            cell.children[0].outerHTML = SYMBOLS.EMPTY;
     }
 
     /**
@@ -311,7 +369,7 @@ Author: Alexander Mattheis
             }
 
             if (j === path.length - 1 && colorClass !== -1) {  // start element should be green in a flow visualization
-                removeColors(currentTable, posI, posJ);
+                removeFlowColors(currentTable, posI, posJ);
                 currentTable.rows[posI].cells[posJ].classList.add("selected_green");
             }
 
@@ -675,7 +733,7 @@ Author: Alexander Mattheis
     function redrawOverlay(e) {
         var mainOutput = e.data.mainOutput[0];
         var calculationVerticalTable;
-        var calculation = e.data.calculationTable[0];
+        var calculationTable = e.data.calculationTable[0];
         var calculationHorizontalTable;
 
         if (e.data.calculationVerticalTable !== undefined) {
@@ -683,8 +741,13 @@ Author: Alexander Mattheis
             calculationHorizontalTable = e.data.calculationHorizontalTable[0];
         }
 
+        var iterationTablesArray = e.data.iterationTablesArray;
+
+        if (visualizerInstance.lastIterationNumber >= 0)
+            calculationTable = iterationTablesArray[visualizerInstance.lastIterationNumber][0];  // iteration number are negative in "defaults.js"
+
         removeAllLines();
-        drawAllLines(calculationVerticalTable, calculation, calculationHorizontalTable, mainOutput);
+        drawAllLines(calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
     }
 
     /**
@@ -718,6 +781,7 @@ Author: Alexander Mattheis
 
         var currentTable;
 
+        debugger;
         // going over the whole path and set right-positioned arrows by a recalculation
         for (var j = 0; j < path.length; j++) {
             currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);

@@ -11,7 +11,7 @@ Author: Alexander Mattheis
     // public methods
     namespace("bases.alignment", Vector, create,
         Alignment, getInput, setLinearAlignmentInput, setSubadditiveAlignmentInput, compute, recursionFunction, getGlobalTraces, getLocalTraces,
-        createAlignments, getOutput, setIO, getNeighboured, differenceLowerEpsilon);
+        createAlignments, getOutput, setIO, getLastChild, getNeighboured, differenceLowerEpsilon);
 
     // instances
     var childInstance;
@@ -69,6 +69,7 @@ Author: Alexander Mattheis
         this.getOutput = getOutput;
 
         this.setIO = setIO;
+        this.getLastChild = getLastChild;
 
         this.differenceLowerEpsilon = differenceLowerEpsilon;
     }
@@ -390,6 +391,14 @@ Author: Alexander Mattheis
     function setIO(input, output) {
         inputData = input;
         outputData = output;
+    }
+
+    /**
+     * Returns the child which is has currently worked with that class.
+     * @return {Object} - The child object.
+     */
+    function getLastChild() {
+        return childInstance;
     }
 
     /**

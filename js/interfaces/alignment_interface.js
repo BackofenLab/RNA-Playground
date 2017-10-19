@@ -253,7 +253,9 @@ Author: Alexander Mattheis
     function startProcessing(algorithm, inputViewmodel, visualViewmodel) {
         algorithm.setInput(inputViewmodel);
         var ioData = algorithm.compute();
-        visualViewmodel.shareInformation(algorithm, ioData[0], ioData[1]);
+
+        // deep copy of the output before rounding to avoid information loss
+        visualViewmodel.shareInformation(algorithm, ioData[0], jQuery.extend(true, {}, ioData[1]));
     }
 
     /**
@@ -480,6 +482,7 @@ Author: Alexander Mattheis
     /**
      * Rounds matrix values, scores and other parameters.
      * @param outputData {Object} - Output data which is modified.
+     *
      */
     function roundValues(outputData) {
         if (outputData.iterationData !== undefined) {  // AEP

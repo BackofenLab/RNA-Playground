@@ -68,13 +68,22 @@ Author: Alexander Mattheis
         var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
         var calculationVerticalTable = mainOutput.find(".calculation_vertical");
 
+        var calculationTable1 = mainOutput.find(".calculation_1");  // AEP iterations
+        var calculationTable2 = mainOutput.find(".calculation_2");
+        var calculationTable3 = mainOutput.find(".calculation_3");
+        var calculationTable4 = mainOutput.find(".calculation_4");
+        var calculationTable5 = mainOutput.find(".calculation_5");
+
+        var iterationTablesArray = [calculationTable1, calculationTable2, calculationTable3, calculationTable4, calculationTable5];
+
         var selectableEntryClass = ".selectable_entry";
 
         // linking (alphabetically sorted)
         linkBasicInputsBehaviour(algorithmInput, functionParameters);
         linkDownloadLinks(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable);
-        linkOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
-        linkSelectables(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, selectableEntryClass);
+        linkOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, iterationTablesArray, mainOutput);
+        linkSelectables(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, iterationTablesArray,
+            mainOutput, selectableEntryClass);
     }
 
     /**
@@ -85,7 +94,7 @@ Author: Alexander Mattheis
          BUG-FIX for Firefox:
          Inputs of type "number" doesn't get the focus
          in the Firefox browser if one
-         of the up- or down-button of the inputs
+         of the up- or down-buttons of the number-inputs
          is clicked.
 
          Detected: Firefox 55.0b3 (32-Bit)
@@ -245,12 +254,14 @@ Author: Alexander Mattheis
      * @param calculationTable {Element} - The default or main table.
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param iterationTablesArray {Array} - An array of tables.
      * @param mainOutput {Element} - The div containing only the calculation tables.
      */
-    function linkOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput) {
+    function linkOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, iterationTablesArray, mainOutput) {
         var browserWindow = $(window);
 
         var functionArguments = {
+            "iterationTablesArray": iterationTablesArray,
             "calculationTable": calculationTable,
             "calculationHorizontalTable": calculationHorizontalTable,
             "calculationVerticalTable": calculationVerticalTable,
@@ -266,10 +277,15 @@ Author: Alexander Mattheis
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
      * @param calculationTable {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param iterationTablesArray {Array} - An array of tables.
      * @param mainOutput {Element} - The div containing only the calculation tables.
      * @param selectableEntryClass {Object} - The class name of a selectable entry.
      */
-    function linkSelectables(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, selectableEntryClass) {
+    function linkSelectables(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, iterationTablesArray,
+                             mainOutput, selectableEntryClass) {
+        linkIterationTables(visualViewmodel, calculationVerticalTable, calculationHorizontalTable, iterationTablesArray,
+            mainOutput, selectableEntryClass);
+
         var results = $(".results");
 
         var functionArguments = {
@@ -314,7 +330,85 @@ Author: Alexander Mattheis
             "selectableEntryClass": selectableEntryClass,
             "visualViewmodel": visualViewmodel
         };
-        calculationVerticalTable.on("click", selectableEntryClass, functionArguments, selectCell);
+        calculationHorizontalTable.on("click", selectableEntryClass, functionArguments, selectCell);
+    }
+
+    /**
+     * Linking all elements which can be selected (results, cells, ...).
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param iterationTablesArray {Array} - An array of tables.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
+     * @param selectableEntryClass {Object} - The class name of a selectable entry.
+     */
+    function linkIterationTables(visualViewmodel, calculationVerticalTable, calculationHorizontalTable, iterationTablesArray,
+                                 mainOutput, selectableEntryClass) {
+
+        // first
+        var functionArguments = {
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "iterationTablesArray": iterationTablesArray,
+            "mainOutput": mainOutput,
+            "number": MATRICES.ITERATION_NUMBER_1,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+
+        iterationTablesArray[0].on("click", selectableEntryClass, functionArguments, selectCell);
+
+        // second
+        functionArguments = {
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "iterationTablesArray": iterationTablesArray,
+            "mainOutput": mainOutput,
+            "number": MATRICES.ITERATION_NUMBER_2,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+
+        iterationTablesArray[1].on("click", selectableEntryClass, functionArguments, selectCell);
+
+        // third
+        functionArguments = {
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "iterationTablesArray": iterationTablesArray,
+            "mainOutput": mainOutput,
+            "number": MATRICES.ITERATION_NUMBER_3,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+
+        iterationTablesArray[2].on("click", selectableEntryClass, functionArguments, selectCell);
+
+        // fourth
+        functionArguments = {
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "iterationTablesArray": iterationTablesArray,
+            "mainOutput": mainOutput,
+            "number": MATRICES.ITERATION_NUMBER_4,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+
+        iterationTablesArray[3].on("click", selectableEntryClass, functionArguments, selectCell);
+
+        // fifth
+        functionArguments = {
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "iterationTablesArray": iterationTablesArray,
+            "mainOutput": mainOutput,
+            "number": MATRICES.ITERATION_NUMBER_5,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+
+        iterationTablesArray[4].on("click", selectableEntryClass, functionArguments, selectCell);
     }
 
     /**
@@ -358,37 +452,36 @@ Author: Alexander Mattheis
      * @param e - Stores data relevant to the event called that function.
      */
     function selectCell(e) {
+        debugger;
         // retrieve data
+        var calculationHorizontalTable = e.data.calculationHorizontalTable;
+        var calculationTable = e.data.calculationTable;
+        var calculationVerticalTable = e.data.calculationVerticalTable;
+        var visualViewmodel = e.data.visualViewmodel;
+
         var number = e.data.number;
         var mainOutput = e.data.mainOutput[0];
-        var calculationVerticalTable;
-        var calculationTable = e.data.calculationTable;
-        var calculationHorizontalTable;
+        var iterationTablesArray = e.data.iterationTablesArray;
 
-        if (e.data.calculationVerticalTable !== undefined) {
-            calculationVerticalTable = e.data.calculationVerticalTable;
-            calculationHorizontalTable = e.data.calculationHorizontalTable;
-        }
+        if (iterationTablesArray !== undefined)  // if table from an iteration
+            calculationTable = iterationTablesArray[-(number + 1)];  // iteration number are negative in "defaults.js"
 
         var currentSelectedTable;
         var label;
 
-        if (number === 0) {
+        if (number === MATRICES.VERTICAL_NUMBER) {
             currentSelectedTable = calculationVerticalTable;
             label = MATRICES.VERTICAL;
-        }
-        else if (number === 1) {
-            currentSelectedTable = calculationTable;
-            label = MATRICES.DEFAULT;
-        }
-        else {  // if (number === 2)
+        } else if (number === MATRICES.HORIZONTAL_NUMBER) {
             currentSelectedTable = calculationHorizontalTable;
             label = MATRICES.HORIZONTAL;
+        } else {  // if (number === MATRICES.ITERATION_NUMBER_i || number === MATRICES.DEFAULT)
+            currentSelectedTable = calculationTable;
+            label = MATRICES.DEFAULT;
         }
 
         var selectableEntryClass = e.data.selectableEntryClass;
         var selectableEntries = currentSelectedTable.find(selectableEntryClass);
-        var visualViewmodel = e.data.visualViewmodel;
 
         // compute the selected position in the calculation table
         var selectedColumn = -1;
@@ -414,7 +507,8 @@ Author: Alexander Mattheis
         // some delay without it won't work properly
         setTimeout(function () {
             visualViewmodel.showFlow(cellCoordinates,
-                calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput, number);
+                calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], iterationTablesArray,
+                mainOutput, -(number+1));  // MATRICES.ITERATION_NUMBER_i are negative
         }, REACTION_TIME_HIGHLIGHT);
     }
 

@@ -281,7 +281,7 @@ $(document).ready(function () {
             alignmentLength,
             lambda,
             inputData.deletion - lambda,
-            inputData.deletion - lambda,
+            inputData.insertion - lambda,
             inputData.match - 2 * lambda,
             inputData.mismatch - 2 * lambda,
             alignments.slice(),
