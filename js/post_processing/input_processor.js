@@ -283,7 +283,7 @@ Author: Alexander Mattheis
         };
         results.on("click", selectableEntryClass, functionArguments, selectTableEntry);
 
-        var functionArguments = {
+        functionArguments = {
             "calculationTable": calculationTable,
             "calculationHorizontalTable": calculationHorizontalTable,
             "calculationVerticalTable": calculationVerticalTable,

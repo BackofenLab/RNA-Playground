@@ -14,7 +14,7 @@ Author: Alexander Mattheis
  * Multiple constants of same "logic" (for example with similar naming) stored in structures.
  */
 
-/* HINT: alphabetically ordered (also within definitions) and structures afer constants */
+/* HINT: alphabetically ordered (also within definitions) and structures after constants */
 
 // constants
 var EPSILON = 0.000000001;  // some very low number to test against

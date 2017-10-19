@@ -94,7 +94,7 @@ Author: Alexander Mattheis
             this.sequence1 = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.SEQUENCE_1);
             this.sequence2 = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.SEQUENCE_2);
 
-            this.calculation = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.CALCULATION);  // needed to ouput correct formulas
+            this.calculation = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.CALCULATION);  // needed to output correct formulas
 
             // function
             this.gap = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.GAP);
@@ -134,7 +134,7 @@ Author: Alexander Mattheis
                         MathJax.Hub.Queue(["Typeset", MathJax.Hub])
                     }, REUPDATE_TIMEOUT_MS);
 
-                    return getSubFormula(viewmodel);
+                    return getSubFormula();
                 }
             );
         }
@@ -198,10 +198,9 @@ Author: Alexander Mattheis
 
     /**
      * Returns the LaTeX-code for sub-formulas like gap-functions of subadditive algorithms.
-     * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
      * @return {string} - LaTeX code.
      */
-    function getSubFormula(viewmodel) {
+    function getSubFormula() {
         var string = LATEX.MATH_REGION;
 
         string += LATEX.SUB_FORMULAS.ARSLAN_EGECIOGLE_PEVZNER_SCORING;
@@ -542,7 +541,7 @@ Author: Alexander Mattheis
 
         if (outputData.iterationData !== undefined && outputData.iterationData.length > 0) {  // AEP
             createAEPOutputViewmodel(viewmodel, outputData);
-        } else if (outputData.matrix != undefined) {  // other algorithms
+        } else if (outputData.matrix !== undefined) {  // other algorithms
             this.matrix = ko.observableArray(outputData.matrix);
 
             for (var i = 0; i < outputData.matrix.length; i++) {

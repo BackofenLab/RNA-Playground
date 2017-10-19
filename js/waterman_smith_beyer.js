@@ -77,7 +77,7 @@ $(document).ready(function () {
     /**
      * Sets the algorithm input for an appropriate algorithm
      * which is using the inputViewmodel properties in its computations.
-     * @param inputViewmodel {InputViewmodel} - The InputViewmodel of an appropriate algorithm.
+     * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
         alignmentInstance.setIO(inputData, {});
@@ -270,7 +270,7 @@ $(document).ready(function () {
 
     /**
      * Returns the neighbours to which you can go from the current cell position used as input.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @param algorithm {Object} - Contains an alignment algorithm.
@@ -331,7 +331,7 @@ $(document).ready(function () {
      * Computes the vertical position from which you get to the currentValue.
      * @param algorithm {Object} - Contains an alignment algorithm.
      * @param currentValue - The value from the current cell.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param outputData {Object} - Contains all output data.
      * @return {number} - The matching position. You get back NaN if such position does not exists.
      */
@@ -350,7 +350,7 @@ $(document).ready(function () {
      * Computes the horizontal position from which you get to the currentValue.
      * @param algorithm {Object} - Contains an alignment algorithm.
      * @param currentValue - The value from the current cell.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param outputData {Object} - Contains all output data.
      * @return {number} - The matching position. You get back NaN if such position does not exists.
      */

@@ -118,6 +118,8 @@ Author: Alexander Mattheis
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
      * @param table {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
+     * @param iteration {Element} - The iteration from which the table should be selected.
      */
     function showFlow(cellCoordinates, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, iteration) {
        var flows = getTraces(cellCoordinates, iteration);
@@ -133,9 +135,9 @@ Author: Alexander Mattheis
 
     /**
      * Returns the right traces for the right algorithm.
-     * @param cellCoordinates
-     * @param iteration
-     * @return {*}
+     * @param cellCoordinates {Object} - The vector-position of the cell which have been clicked.
+     * @param iteration {Element} - The iteration from which the table should be selected.
+     * @return {Array} - The traces which have to be highlighted.
      */
     function getTraces(cellCoordinates, iteration) {
         var algorithm = visualizerInstance.algorithm;
@@ -145,6 +147,7 @@ Author: Alexander Mattheis
         visualizerInstance.algorithm.numberOfTracebacks = 0;  // to avoid counting and a cancellation after some reached limit
         visualizerInstance.output.iteration = iteration;  // the iteration in which the table should be selected
 
+        // calling the right neighborhood function
         if (algorithm.getNeighboured !== undefined) {
             if ($.inArray(algorithm.type, GLOBAL_ALGORITHMS))
                 flows = superclass.getGlobalTraces([cellCoordinates], visualizerInstance.input, visualizerInstance.output, 1, algorithm.getNeighboured);
@@ -176,8 +179,8 @@ Author: Alexander Mattheis
 
         var currentTable;
 
-        // go over the whole path
         if (path.length > 0) {
+            // go over the whole path
             for (var j = 0; j < path.length; j++) {
                 currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
 
@@ -186,7 +189,7 @@ Author: Alexander Mattheis
 
                 if (currentTable.rows[posI].cells[posJ] !== undefined) {  // if table has shrinked
 
-                    switch (colorClass) {
+                    switch (colorClass) {  // deselecting by removing the "selected" class from the element
                         case -1:
                             currentTable.rows[posI].cells[posJ].classList.remove("selected");
                             break;
@@ -286,13 +289,14 @@ Author: Alexander Mattheis
 
         var currentTable;
 
+        // go over the whole path
         for (var j = 0; j < path.length; j++) {
             currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
 
             var posI = path[j].i + 1;
             var posJ = path[j].j + 1;
 
-            switch (colorClass) {
+            switch (colorClass) {  // selecting by adding the right color class to the element
                 case 0:
                     currentTable.rows[posI].cells[posJ].classList.add("selected_light_red");
                     break;
@@ -306,12 +310,12 @@ Author: Alexander Mattheis
                     currentTable.rows[posI].cells[posJ].classList.add("selected");
             }
 
-            if (j === path.length - 1 && colorClass !== -1) {
+            if (j === path.length - 1 && colorClass !== -1) {  // start element should be green in a flow visualization
                 removeColors(currentTable, posI, posJ);
                 currentTable.rows[posI].cells[posJ].classList.add("selected_green");
             }
 
-            if (arrows) {
+            if (arrows) {  // draw arrows: YES or NO
                 placeArrow(currentTable, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode);
                 lastPosI = posI;
                 lastPosJ = posJ;
@@ -325,6 +329,7 @@ Author: Alexander Mattheis
      * @param table {Element} - The current table which is visited.
      * @param posI {number} - The first coordinate.
      * @param posJ {number} - The second coordinate.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
      * @param lastTable {Element} - The table that was visited before.
      * @param lastPosI {number} - The last first coordinate.
      * @param lastPosJ {number} - The last second coordinate.
@@ -403,10 +408,10 @@ Author: Alexander Mattheis
      * @param cell {Element} - The current cell which is visited.
      * @param lastCell {Element} - The cell that was visited before.
      * @param move {string} - The type of MOVE {P_TO_X, Q_TO_X, ...}.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
      * @param flowMode {boolean} - Tells if flows or traceback-paths are drawn.
      */
     function drawLine(cell, lastCell, move, mainOutput, flowMode) {
-        debugger;
         var cellHeight = cell.offsetHeight;
         var cellWidth = cell.offsetWidth;
 
@@ -545,7 +550,6 @@ Author: Alexander Mattheis
      * @param e - Stores data relevant to the event called that function.
      */
     function downloadTable(e) {
-        debugger;
         var number = e.data.number;
 
         var matrix = getMatrix(number);
@@ -561,8 +565,8 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Allows to select a matrix by number identifier.
-     * @param number - Table number, allows to select a table {DEFAULT, HORIZONTAL, VERTICAL}.
+     * Allows to select a preprocessed matrix by number identifier.
+     * @param number - Table number, allows to select a table {DEFAULT, HORIZONTAL, VERTICAL, ITERATION_i}.
      * @return {matrix} - The appropriate matrix to the number which was passed.
      */
     function getMatrix(number) {
@@ -585,7 +589,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Replaces LaTeX-infinity-symbols with infinity-values.
+     * Replaces LaTeX-infinity-symbols with infinity-values by going through the whole table.
      * @param matrix {matrix} - The matrix in which you want replace LaTeX-infinity-symbols with infinity-values.
      * @return {matrix} - The appropriate matrix to the number which was passed.
      */
@@ -665,7 +669,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Redraw overlay after a resize-event of the browser window.
+     * Redraw overlay after a resize-, zoom-in- or scrolling-event it the browser window.
      * @param e - Stores data relevant to the event called that function.
      */
     function redrawOverlay(e) {
@@ -684,10 +688,11 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Draw all lines which were previously drawn.
+     * Draw all lines which were previously drawn (before some resize-, zoom-in- or scrolling-event).
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
      * @param table {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
      */
     function drawAllLines(calculationVerticalTable, table, calculationHorizontalTable, mainOutput) {
         drawArrowLines(visualizerInstance.lastPath, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, false);
@@ -703,6 +708,7 @@ Author: Alexander Mattheis
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
      * @param table {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
      * @param flowMode {boolean} - Tells if flows or traceback-paths are drawn.
      */
     function drawArrowLines(path, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, flowMode) {
@@ -712,6 +718,7 @@ Author: Alexander Mattheis
 
         var currentTable;
 
+        // going over the whole path and set right-positioned arrows by a recalculation
         for (var j = 0; j < path.length; j++) {
             currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
 

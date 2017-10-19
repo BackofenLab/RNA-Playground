@@ -222,9 +222,6 @@ $(document).ready(function () {
         var verticalValue = up >= 0 ? outputData.verticalGaps[position.i][position.j] : Number.NaN;
         var horizontalValue = left >= 0 ? outputData.horizontalGaps[position.i][position.j] : Number.NaN;
 
-        var upValue = up >= 0 && position.j === 0 ? outputData.matrix[up][position.j] : Number.NaN;
-        var leftValue = left >= 0 && position.i === 0 ? outputData.matrix[position.i][left] : Number.NaN;
-
         // check
         var isMatchMismatch = currentValue === (diagonalValue + matchOrMismatch);
         var isChangeToP = currentValue === verticalValue;

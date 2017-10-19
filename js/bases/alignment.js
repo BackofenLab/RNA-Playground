@@ -192,6 +192,7 @@ Author: Alexander Mattheis
      * @param outputData {Object} - Contains all output data.
      * @param pathLength {number} - Tells after how many edges the procedure should stop.
      * The value -1 indicates arbitrarily long paths.
+     * @param neighbourFunction {Function} - The function which have to be used to retrieve neighbours.
      * @return {Array} - Array of paths.
      */
     function getGlobalTraces(path, inputData, outputData, pathLength, neighbourFunction) {
@@ -209,12 +210,12 @@ Author: Alexander Mattheis
      * The traceback algorithm executes a recursive,
      * modified deep-first-search (deleting last found path from memory)
      * with special stop criteria on the matrix cells as path-nodes.
-     * @param backtracking {Object} - Allows to call up cell neighbours.
      * @param paths {Array} - Array of paths.
      * @param path {Array} - Array containing the first vector element from which on you want find a path.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @param pathLength {number} - Tells after how many edges the procedure should stop.
+     * @param neighbourFunction {Function} - The function which have to be used to retrieve neighbours.
      * @see It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function globalTraceback(paths, path, inputData, outputData, pathLength, neighbourFunction) {
@@ -254,6 +255,7 @@ Author: Alexander Mattheis
      * @param outputData {Object} - Contains all output data.
      * @param pathLength {number} - Tells after how many edges the procedure should stop.
      * The value -1 indicates arbitrarily long paths.
+     * @param neighbourFunction {Function} - The function which have to be used to retrieve neighbours.
      * @return {Array} - Array of paths.
      */
     function getLocalTraces(path, inputData, outputData, pathLength, neighbourFunction) {
@@ -268,12 +270,12 @@ Author: Alexander Mattheis
      * The traceback algorithm executes a recursive,
      * modified deep-first-search (deleting last found path from memory)
      * with special stop criteria on the matrix cells as path-nodes.
-     * @param backtracking {Object} - Allows to call up cell neighbours.
      * @param paths {Array} - Array of paths.
      * @param path {Array} - Array containing the first vector element from which on you want find a path.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @param pathLength {number} - Tells after how many edges the procedure should stop.
+     * @param neighbourFunction {Function} - The function which have to be used to retrieve neighbours.
      * @see It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function localTraceback(paths, path, inputData, outputData, pathLength, neighbourFunction) {

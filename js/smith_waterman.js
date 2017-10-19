@@ -144,7 +144,7 @@ $(document).ready(function () {
      * @return {number} - Maximum.
      */
     function recursionFunction(diagonalValue, upValue, leftValue) {
-        return Math.max(diagonalValue, upValue, leftValue, 0);;
+        return Math.max(diagonalValue, upValue, leftValue, 0);
     }
 
     /**

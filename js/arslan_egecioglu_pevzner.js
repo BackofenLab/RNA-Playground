@@ -79,7 +79,7 @@ $(document).ready(function () {
     /**
      * Sets the algorithm input for an appropriate algorithm
      * which is using the inputViewmodel properties in its computations.
-     * @param inputViewmodel {InputViewmodel} - The InputViewmodel of an appropriate algorithm.
+     * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      * @augments Alignment.setLinearAlignmentInput()
      */
     function setInput(inputViewmodel) {
@@ -173,7 +173,7 @@ $(document).ready(function () {
             arslanEgeciougluPevznerInstance.lambda = score / (alignmentLength + inputData.length);  // 0/0 = 0 would also make sense
             currentData.push(
                 getDataCopy(score, alignmentLength, arslanEgeciougluPevznerInstance.lambda, alignments,
-                    ioData[1].matrix, ioData[1].tracebackPaths, i, ioData[1].moreTracebacks));
+                    ioData[1].matrix, ioData[1].tracebackPaths, 0, ioData[1].moreTracebacks));
             iterationData.push(currentData.slice());  // shallow copy
             arslanEgeciougluPevznerInstance.numberOfIterations++;
         }
@@ -269,7 +269,10 @@ $(document).ready(function () {
      * @param alignmentLength - The alignment length you want store.
      * @param lambda - The normalized score you want store.
      * @param alignments - The alignments you want store.
-     * @param alignments - The matrix you want store.
+     * @param matrix - The matrix you want store.
+     * @param tracebackPaths - The tracebackPaths you want store.
+     * @param alignmentNumber - The number of the alignment to which parameters like score and lambda are stored.
+     * @param moreTracebacks - Tells if the algorithm has aborted before all alignments were calculated.
      * @return {Object} - [score, lambda, deletion, insertion, match, mismatch, alignments matrix]
      */
     function getDataCopy(score, alignmentLength, lambda, alignments, matrix, tracebackPaths, alignmentNumber, moreTracebacks) {

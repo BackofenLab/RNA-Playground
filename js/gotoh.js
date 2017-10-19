@@ -196,6 +196,7 @@ $(document).ready(function () {
      * @param i {number} - The current vertical position in the matrix.
      * @param j {number} - The current horizontal position in the matrix.
      * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
+     * @param local {boolean} - Tells if the local recursion function should be used.
      * @return {number} - The value for the cell at position (i,j).
      */
     function recursionFunction(aChar, bChar, i, j, optimum, local) {
@@ -261,7 +262,7 @@ $(document).ready(function () {
 
     /**
      * Returns the neighbours to which you can go from the current cell position used as input.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @param algorithm {Object} - Contains an alignment algorithm.
@@ -328,7 +329,7 @@ $(document).ready(function () {
 
     /**
      * Returns the neighbours to which you can go from the current cell position in the matrix for vertical gap costs.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @return {Array} - Contains neighboured positions as Vector-objects.
@@ -366,7 +367,7 @@ $(document).ready(function () {
 
     /**
      * Returns the neighbours to which you can go from the current cell position in the matrix for horizontal gap costs.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @return {Array} - Contains neighboured positions as Vector-objects.
