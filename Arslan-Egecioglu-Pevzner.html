@@ -32,22 +32,21 @@ Author: Alexander Mattheis
         to control the length-dependence of the normalized similarity score.
         <br>
         <br>
-	Given a similarity scoring function $s(a_i,b_j)$ for two sequences $a$ and $b$.
-        To find $\lambda^*$ and the according best normalized alignment $\mathcal{A}$,
-	the <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman</a>
-        algorithm is executed iteratively using an iteration-specific scoring-function $s^r$ (see below).
-	In iteration $r>0$, $s^r$ depends on the $\lambda^{r-1}$ estimate of the previous iteration,
-	where $\lambda^{0} = 0$.
-	Given this, the best local alignment $\mathcal{A}^r$ with score $S^r$ using $s^r$ is identified and 
-	the new lambda estimate $\lambda^r$ is computed by $\lambda^r= S^r/(⟦\mathcal{A}^r⟧+L)$.
-	This is iterated until $\lambda$ converges or a certain number of iterations is exceeded.
+		Given a similarity scoring function $s(a_i,b_j)$ for two sequences $a$ and $b$.
+		To find $\lambda^*$ and the according best normalized alignment $\mathcal{A}$,
+		the <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman</a>
+		algorithm is executed iteratively using an iteration-specific scoring-function $s^r$ (see below).
+		In iteration $r>0$, $s^r$ depends on the $\lambda^{r-1}$ estimate of the previous iteration,
+		where $\lambda^{0} = 0$.
+		Given this, the best local alignment $\mathcal{A}^r$ with score $S^r$ using $s^r$ is identified and
+		the new lambda estimate $\lambda^r$ is computed by $\lambda^r= S^r/(⟦\mathcal{A}^r⟧+L)$.
+		This is iterated until $\lambda$ converges or a certain number of iterations is exceeded.
         <br>
         <br>
         For a given input, the according tables and scoring functions
         are shown for up to 5 iterations (or convergence) along with a list 
-	of according optimal local alignments.
+		of according optimal local alignments.
         On table cell selection, optimal traceback options are shown.
-        On alignment selection, an according traceback path is visualized in the table.
     </div>
 
     <div class="picture">
