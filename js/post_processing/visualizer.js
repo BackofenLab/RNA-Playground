@@ -812,7 +812,6 @@ Author: Alexander Mattheis
 
         var currentTable;
 
-        debugger;
         // going over the whole path and set right-positioned arrows by a recalculation
         for (var j = 0; j < path.length; j++) {
             currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);

@@ -52,8 +52,8 @@ TestCase("test_gotoh_local", {
 
         inputData.calculationType = "similarity";
 
-        inputData.baseCosts = -2;
-        inputData.enlargement = 0;
+        inputData.baseCosts = 0;
+        inputData.enlargement = -2;
         inputData.match = 1;
         inputData.mismatch = -1;
 
@@ -86,8 +86,8 @@ TestCase("test_gotoh_local", {
 
         inputData.calculationType = "similarity";
 
-        inputData.baseCosts = -1;
-        inputData.enlargement = 0;
+        inputData.baseCosts = 0;
+        inputData.enlargement = -1;
         inputData.match = 1;
         inputData.mismatch = 0;
 
@@ -127,8 +127,8 @@ TestCase("test_gotoh_local", {
 
         inputData.calculationType = "similarity";
 
-        inputData.baseCosts = -2;
-        inputData.enlargement = 0;
+        inputData.baseCosts = 0;
+        inputData.enlargement = -2;
         inputData.match = 4;
         inputData.mismatch = -1;
 
