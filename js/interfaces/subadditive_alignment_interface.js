@@ -46,11 +46,8 @@ Author: Alexander Mattheis
      * Handling imports.
      */
     function imports() {
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
         alignmentInterfaceInstance.imports();
-
-        // interfaces
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
     }
 
     /*---- INPUT ----*/

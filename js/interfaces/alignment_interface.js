@@ -47,6 +47,10 @@ Author: Alexander Mattheis
         $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
 
         // design/controls logic
+        /*
+        This two imports are very important!
+        Without an import the classes are not reinitialized correctly for the next algorithm!
+         */
         $.getScript(PATHS.INPUT_PROCESSOR);
         $.getScript(PATHS.VISUALIZER);
     }
