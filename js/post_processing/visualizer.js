@@ -215,7 +215,7 @@ Author: Alexander Mattheis
 
                 if (cell.classList.contains("selected")
                     && cell.innerText !== SMITH_WATERMAN_STOP)  // avoids removing tracebacks
-                    removeArrows(table, i, j, true)
+                    removeArrows(table, i, j, true);
                 else
                     removeArrows(table, i, j, false);
 
@@ -668,9 +668,9 @@ Author: Alexander Mattheis
         if (matrix !== undefined) {
             for (var i = 0; i < matrix.length; i++) {
                 for (var j = 0; j < matrix[0].length; j++) {
-                    if (matrix[i][j] === LATEX.NEGATIVE_INFINITY)
+                    if (matrix[i][j] === Number.NEGATIVE_INFINITY)
                         matrix[i][j] = SYMBOLS.NEGATIVE_INFINITY;
-                    else if (matrix[i][j] === LATEX.POSITIVE_INFINITY)
+                    else if (matrix[i][j] === Number.POSITIVE_INFINITY)
                         matrix[i][j] = SYMBOLS.INFINITY;
                 }
             }
@@ -715,10 +715,28 @@ Author: Alexander Mattheis
             else
                 string += leftString.charAt(i-1) + SYMBOLS.COMMA;
 
-            string += matrix[i] + SYMBOLS.NEW_LINE;  // Hint: it is allowed to have a line break in the last line
+            string += round(matrix[i]) + SYMBOLS.NEW_LINE;  // Hint: it is allowed to have a line break in the last line
         }
 
         return string;
+    }
+
+    /**
+     * Rounds values to four decimal places if it is possible.
+     * @param number {row} - The row of which values are rounded.
+     * @return {number|string} - Rounded value or input value.
+     */
+    function round(row) {
+        var matrixRow = [];
+
+        for (var i = 0; i < row.length; i++) {
+            if (typeof row[i] === "number")
+                matrixRow.push(Math.round(row[i]*10000)/10000);
+            else
+                matrixRow.push(row[i]);
+        }
+
+        return matrixRow;
     }
 
     /**

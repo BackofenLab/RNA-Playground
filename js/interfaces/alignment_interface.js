@@ -517,7 +517,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Rounds a value to one decimal place.
+     * Rounds a value with a given precision.
      * @param number {number} - The number which is rounded.
      * @param decimalPlaces {number} - The number of decimal places you want round to.
      * @return {number} - Rounded value.
