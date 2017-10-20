@@ -762,9 +762,7 @@ Author: Alexander Mattheis
      * @param e - Stores data relevant to the event called that function.
      */
     function redrawOverlay(e) {
-        if (visualizerInstance.algorithm.type === ALGORITHMS.GOTOH
-            || visualizerInstance.algorithm.type === ALGORITHMS.GOTOH_LOCAL
-            || visualizerInstance.algorithm.type === ALGORITHMS.WATERMAN_SMITH_BEYER) {
+        if (visualizerInstance.algorithm.type !== ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
 
             var mainOutput = e.data.mainOutput[0];
             var calculationVerticalTable;
