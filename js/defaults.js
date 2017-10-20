@@ -24,6 +24,8 @@ var MAX_NUMBER_ITERATIONS = 5;  // number of iterations in algorithm with conver
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have been updated
 
+var SMITH_WATERMAN_STOP = "0";
+
 // structs
 /**
  * Stores the implemented algorithm names.

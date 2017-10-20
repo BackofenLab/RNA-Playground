@@ -211,8 +211,11 @@ Author: Alexander Mattheis
     function removeAllFlows(table) {
         for (var i = 1; i < table.rows.length; i++) {
             for (var j = 1; j < table.rows[i].cells.length; j++) {
-                if (table.rows[i].cells[j].classList.contains("selected"))
-                    removeArrows(table, i, j, true);
+                var cell = table.rows[i].cells[j];
+
+                if (cell.classList.contains("selected")
+                    && cell.innerText !== SMITH_WATERMAN_STOP)  // avoids removing tracebacks
+                    removeArrows(table, i, j, true)
                 else
                     removeArrows(table, i, j, false);
 
@@ -547,31 +550,41 @@ Author: Alexander Mattheis
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
      * @param calculationTable {Element} - The default or main table.
      * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param iterationTablesArray {Array} - An array of tables..
      * @param mainOutput {Element} - The div containing only the calculation tables.
      */
-    function showTraceback(traceNumber, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput) {
-        var path = visualizerInstance.output.tracebackPaths[traceNumber];
+    function showTraceback(traceNumber, calculationVerticalTable, calculationTable, calculationHorizontalTable, iterationTablesArray, mainOutput) {
+        if (iterationTablesArray !== undefined) {  // if an iterative alignment algorithm
+            // iterate over rounds
+            for (var i = 0; i < visualizerInstance.output.iterationData[0].length; i++) {
+                var firstPathOfRound = visualizerInstance.output.iterationData[0][i][9][0];
+                markCells(firstPathOfRound, calculationVerticalTable, iterationTablesArray[i][0], calculationHorizontalTable,
+                    mainOutput, -1, true, false);
+            }
+        } else {  // else if a non-iterative algorithm
+            var path = visualizerInstance.output.tracebackPaths[traceNumber];
 
-        // check if you want maybe disable "unhighlight" last drawn path
-        if (visualizerInstance.lastPath.length > 0) {
-            var posI = visualizerInstance.lastPath[0].i + 1;
-            var posJ = visualizerInstance.lastPath[0].j + 1;
-            var tableCell = calculationTable.rows[posI].cells[posJ];
+            // check if you want maybe disable "unhighlight" last drawn path
+            if (visualizerInstance.lastPath.length > 0) {
+                var posI = visualizerInstance.lastPath[0].i + 1;
+                var posJ = visualizerInstance.lastPath[0].j + 1;
+                var tableCell = calculationTable.rows[posI].cells[posJ];
 
-            // check if you want disable "unhighlight" last drawn path (example: clicked second time on same path in results table)
-            if (path === visualizerInstance.lastPath
-                && tableCell !== undefined
-                && tableCell.classList.contains("selected")) {  // case: same path
-                demarkCells(visualizerInstance.lastPath, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, -1, false);
-                visualizerInstance.lastPath = [];
-            } else {  // case: different path (click on a new path)
-                demarkCells(visualizerInstance.lastPath, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, -1, false);
+                // check if you want disable "unhighlight" last drawn path (example: clicked second time on same path in results table)
+                if (path === visualizerInstance.lastPath
+                    && tableCell !== undefined
+                    && tableCell.classList.contains("selected")) {  // case: same path
+                    demarkCells(visualizerInstance.lastPath, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, -1, false);
+                    visualizerInstance.lastPath = [];
+                } else {  // case: different path (click on a new path)
+                    demarkCells(visualizerInstance.lastPath, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, -1, false);
+                    markCells(path, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, -1, true, false);
+                    visualizerInstance.lastPath = path;
+                }
+            } else {  // case: first time selected
                 markCells(path, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, -1, true, false);
                 visualizerInstance.lastPath = path;
             }
-        } else {  // case: first time selected
-            markCells(path, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput, -1, true, false);
-            visualizerInstance.lastPath = path;
         }
     }
 
@@ -731,23 +744,23 @@ Author: Alexander Mattheis
      * @param e - Stores data relevant to the event called that function.
      */
     function redrawOverlay(e) {
-        var mainOutput = e.data.mainOutput[0];
-        var calculationVerticalTable;
-        var calculationTable = e.data.calculationTable[0];
-        var calculationHorizontalTable;
+        if (visualizerInstance.algorithm.type === ALGORITHMS.GOTOH
+            || visualizerInstance.algorithm.type === ALGORITHMS.GOTOH_LOCAL
+            || visualizerInstance.algorithm.type === ALGORITHMS.WATERMAN_SMITH_BEYER) {
 
-        if (e.data.calculationVerticalTable !== undefined) {
-            calculationVerticalTable = e.data.calculationVerticalTable[0];
-            calculationHorizontalTable = e.data.calculationHorizontalTable[0];
+            var mainOutput = e.data.mainOutput[0];
+            var calculationVerticalTable;
+            var calculationTable = e.data.calculationTable[0];
+            var calculationHorizontalTable;
+
+            if (e.data.calculationVerticalTable !== undefined) {
+                calculationVerticalTable = e.data.calculationVerticalTable[0];
+                calculationHorizontalTable = e.data.calculationHorizontalTable[0];
+            }
+
+            removeAllLines();
+            drawAllLines(calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
         }
-
-        var iterationTablesArray = e.data.iterationTablesArray;
-
-        if (visualizerInstance.lastIterationNumber >= 0)
-            calculationTable = iterationTablesArray[visualizerInstance.lastIterationNumber][0];  // iteration number are negative in "defaults.js"
-
-        removeAllLines();
-        drawAllLines(calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
     }
 
     /**
