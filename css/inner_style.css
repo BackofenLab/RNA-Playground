@@ -20,10 +20,6 @@ input[type="number"] {
     width: 35px;
 }
 
-label {
-    padding-top: 2px; /* to align with inputs */
-}
-
 small {
     font-weight: normal;
 }
@@ -121,7 +117,6 @@ th {
 .download_area {
     clear: both;
     line-height: 140%;
-    margin-bottom: 30px;
     padding-top: 10px;
 }
 
@@ -152,7 +147,6 @@ th {
     color: gray;
     font-size: smaller;
     padding-top: 10px;
-    padding-left: 120px;
 }
 
 .group input {
@@ -299,12 +293,6 @@ th {
     color: white;
 }
 
-.span_group {
-    padding-bottom: 15px;
-    padding-left: 120px;
-    margin-bottom: -15px;
-}
-
 /*---- ID STYLING ----*/
 #algorithm_description .description {
     display: inline-block;
@@ -319,42 +307,16 @@ th {
     width: 150px;
 }
 
-#algorithm_input form {
-    padding: 15px 0 15px 15px;
-}
-
-#algorithm_input form p label {
-    display: block;
-    float: left;
-    width: 120px;
+#algorithm_input {
+    margin: 15px 0 15px 15px;
 }
 
 #algorithm_output {
-    padding-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 #length {
     width: 55px;
-}
-
-#recursion_arslan_egecioglu_pevzner {
-    padding-top: 40px;
-}
-
-#recursion_gotoh {
-    padding-top: 14px;
-}
-
-#recursion_needleman_wunsch {
-    padding-top: 32px;
-}
-
-#recursion_smith_waterman {
-    padding-top: 40px;
-}
-
-#recursion_waterman_smith_beyer {
-    padding-top: 40px;
 }
 
 #overlay {

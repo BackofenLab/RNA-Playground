@@ -36,49 +36,59 @@ Author: Alexander Mattheis
 </div>
 
 <div id="algorithm_input">
-    <form>
-        <p>
-            <label>Sequence $a$:</label>
-            <input class="sequence" data-bind="value: input.sequence1" id="sequence_1"
-                   placeholder="EXAMPLE 'ATC'" type="text">
-        </p>
+	<div class="row">
+		<div class="colW100"><label>Sequence $a$:</label></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'" type="text"></div>
+	</div>
 
-        <p>
-            <label>Sequence $b$:</label>
-            <input class="sequence" data-bind="value: input.sequence2" id="sequence_2"
-                   placeholder="EXAMPLE 'AGTC'" type="text">
-        </p>
+	<div class="row">
+		<div class="colW100"><label>Sequence $b$:</label></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'" type="text"></div>
+	</div>
 
-        <p>
-            <label>Optimization of:</label>
+    <div class="row">
+        <div class="colW100"><label>Optimization of:</label></div>
+		<div class="colW400">
             <span class="group">
                 Distance <input class="optimization_type" data-bind="checked: input.calculation" id="distance"
                                 name="calculation" type="radio" value="distance">
                 Similarity <input class="optimization_type" data-bind="checked: input.calculation" id="similarity"
                                   name="calculation" type="radio" value="similarity">
             </span>
-        </p>
+        </div>
+	</div>
 
-        <p>
-            <label>Scoring in $s$:</label>
-            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
-                Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
-                Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
-                Gap <input class="fx_parameter" data-bind="value: input.gap" id="gap" type="number">
-            </span>
-        </p>
+	<div class="row">
+		<div class="colW100"><label>Scoring in $s$:</label></div>
 
-        <p>
-            <label id="recursion_needleman_wunsch">Recursion:</label>
-            <span data-bind="text: $root.input.formula"></span>
+		<div class="colW400">
+			<span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+				Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
+				Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
+				Gap <input class="fx_parameter" data-bind="value: input.gap" id="gap" type="number">
+			</span>
 
-            <div class="group_hint">
-                <b>Hint:</b> <br>
-                For similarity maximization, match scores should be positive and all other scores lower. <br>
+			 <div class="group_hint">
+				<b>Hint:</b> <br>
+				For similarity maximization, <br> match scores should be positive and all other scores lower. <br>
                 For distance minimization the reverse applies.
-            </div>
-        </p>
-    </form>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="colW100">
+            <label>
+                <br>
+                <br>
+                Recursion:
+            </label>
+        </div>
+
+		<div class="colW600">
+			<span data-bind="text: $root.input.formula"></span>
+		</div>
+	</div>
 </div>
 
 <div id="algorithm_output">

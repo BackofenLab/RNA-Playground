@@ -37,11 +37,11 @@ footer {
 }
 
 footer a {
-    color: black;
+    color: black !important; /* overwriting corporate-design.css */
 }
 
 footer a:hover {
-    color: white;
+    color: white !important; /* overwriting corporate-design.css */
     text-decoration: none;
 }
 

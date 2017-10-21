@@ -55,54 +55,61 @@ Author: Alexander Mattheis
 </div>
 
 <div id="algorithm_input">
-    <form>
-        <p>
-            <label>Sequence $a$:</label>
-            <input class="sequence" data-bind="value: input.sequence1" id="sequence_1"
-                   placeholder="EXAMPLE 'ATC'" type="text">
-        </p>
+	<div class="row">
+		<div class="colW100"><label>Sequence $a$:</label></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'" type="text"></div>
+	</div>
 
-        <p>
-            <label>Sequence $b$:</label>
-            <input class="sequence" data-bind="value: input.sequence2" id="sequence_2"
-                   placeholder="EXAMPLE 'AGTC'" type="text">
-        </p>
+	<div class="row">
+		<div class="colW100"><label>Sequence $b$:</label></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'" type="text"></div>
+	</div>
 
-        <p>
-            <label>Scoring in $s$:</label>
-		<span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
-		    Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
-		    Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
-		 	Gap <input class="fx_parameter" data-bind="value: input.gap" id="gap" type="number">
-		</span>
-            <div class="group_hint">
-                <b>Hint:</b> <br>
-                For similarity maximization, match scores should be positive and all other scores lower. <br>
-            </div>
-        </p>
+	<div class="row">
+		<div class="colW100"><label>Scoring in $s$:</label></div>
 
-        <p>
-            <label>Length-scaling $L$:</label>
-            <input class="fx_parameter" data-bind="value: input.length" id="length" type="number">
-        </p>
+		<div class="colW400">
+			<span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+				Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
+				Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
+				Gap <input class="fx_parameter" data-bind="value: input.gap" id="gap" type="number">
+			</span>
 
-        <p>
-            <label id="recursion_arslan_egecioglu_pevzner">Recursion of<br>iteration $r=1$:</label>
-            <div class="span_group">
-                <span data-bind="text: $root.input.formula"></span>
-                <br>
-                <br>
-                with <br>
-                <span data-bind="text: $root.input.subFormula"></span>
-                <br>
-                <br>
-                where $\lambda^0 = 0$
-                <br>
-                <br>
-            </div>
+			<div class="group_hint">
+				<b>Hint:</b> <br>
+				For similarity maximization, <br> match scores should be positive and all other scores lower.
+			</div>
+		</div>
+	</div>
 
-        </p>
-    </form>
+	<div class="row">
+		<div class="colW100"><label>Length-scal. $L$:</label></div>
+		<div class="colW600"><input class="fx_parameter" data-bind="value: input.length" id="length" type="number"></div>
+	</div>
+
+	<div class="row">
+		<div class="colW100">
+			<br>
+			<br>
+			<label>
+				Recursion of
+				<br>iteration $r=1$:
+			</label>
+		</div>
+
+		<div class="colW600">
+			<span data-bind="text: $root.input.formula"></span>
+			<br>
+			<br>
+			with <br>
+			<span data-bind="text: $root.input.subFormula"></span>
+			<br>
+			<br>
+			where $\lambda^0 = 0$
+			<br>
+			<br>
+		</div>
+	</div>
 </div>
 
 <!-- Dynamic creation of iterations didn't work,
