@@ -417,3 +417,18 @@ var TABLE = {
 // lists (used for check ups)
 var GLOBAL_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.WATERMAN_SMITH_BEYER];
 var LOCAL_ALGORITHMS = [ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.SMITH_WATERMAN];
+
+/**
+ * Algorithms which use exactly three tables for their computations.
+ * One table for the horizontal gaps,
+ * one for the vertical gaps and one for matches and mismatches.
+ */
+var MULTI_TABLE_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL];
+
+/**
+ * Algorithms with more than one-step arrows in the traceback!
+ * It is used to automatically activate SVG-redrawing support
+ * when the browser window is resized
+ * or if a table slider is used.
+ */
+var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.WATERMAN_SMITH_BEYER];

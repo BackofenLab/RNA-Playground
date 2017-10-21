@@ -164,15 +164,15 @@ Author: Alexander Mattheis
 
         // calling the right neighborhood function
         if (algorithm.getNeighboured !== undefined) {
-            if ($.inArray(algorithm.type, GLOBAL_ALGORITHMS) >= 0)
+            if (GLOBAL_ALGORITHMS.indexOf(algorithm.type) >= 0)
                 flows = superclass.getGlobalTraces([cellCoordinates], input, visualizerInstance.output, 1, algorithm.getNeighboured);
-            else if ($.inArray(algorithm.type, LOCAL_ALGORITHMS) >= 0)
+            else if (LOCAL_ALGORITHMS.indexOf(algorithm.type) >= 0)
                 flows = superclass.getLocalTraces([cellCoordinates], input, visualizerInstance.output, 1, algorithm.getNeighboured);
         }
         else {
-            if ($.inArray(algorithm.type, GLOBAL_ALGORITHMS) >= 0)
+            if (GLOBAL_ALGORITHMS.indexOf(algorithm.type) >= 0)
                 flows = superclass.getGlobalTraces([cellCoordinates], input, visualizerInstance.output, 1, superclass.getNeighboured);
-            else if ($.inArray(algorithm.type, LOCAL_ALGORITHMS) >= 0)
+            else if (LOCAL_ALGORITHMS.indexOf(algorithm.type) >= 0)
                 flows = superclass.getLocalTraces([cellCoordinates], input, visualizerInstance.output, 1, superclass.getNeighboured);
         }
 

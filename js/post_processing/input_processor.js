@@ -28,7 +28,6 @@ Author: Alexander Mattheis
 
         // variables
         this.inputUpdatesStarted = false;
-        this.avoidFocusOutUpdate = false;
 
         // public class methods
         this.activateInputUpdates = activateInputUpdates;
@@ -59,7 +58,6 @@ Author: Alexander Mattheis
      */
     function linkElements(visualViewmodel) {
         fixBrowserBugs();
-        changeDefaultKeyBehaviour();
 
         // retrieve parameters
         var algorithmInput = $("#algorithm_input");
@@ -98,23 +96,6 @@ Author: Alexander Mattheis
             $("input[type='number']").on("click", function () {
                 $(this).focus();
             });
-        });
-    }
-
-    /**
-     * Redefines what for example should happen
-     * when a specific key is pressed or on a specific action like pasting.
-     */
-    function changeDefaultKeyBehaviour() {
-        var input = $("input");
-        /*
-         If "Enter" is pressed the UI should't update immediately.
-         The time after which the UI is updated is specified
-         with the global default "REUPDATE_TIMEOUT_MS".
-         */
-        input.keypress(function (e) {
-            if (e.which === KEY_CODES.ENTER)
-                e.preventDefault();
         });
     }
 
@@ -192,25 +173,27 @@ Author: Alexander Mattheis
             "calculationTable": calculationTable,
             "calculationHorizontalTable": calculationHorizontalTable,
             "calculationVerticalTable": calculationVerticalTable,
-            "number": MATRICES.VERTICAL_NUMBER
-        };
-        tableVerticalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
-
-        functionArguments = {
-            "calculationTable": calculationTable,
-            "calculationHorizontalTable": calculationHorizontalTable,
-            "calculationVerticalTable": calculationVerticalTable,
             "number": MATRICES.DEFAULT_NUMBER
         };
         tableDownload.on("click", functionArguments, visualViewmodel.downloadTable);
 
-        functionArguments = {
-            "calculationTable": calculationTable,
-            "calculationHorizontalTable": calculationHorizontalTable,
-            "calculationVerticalTable": calculationVerticalTable,
-            "number": MATRICES.HORIZONTAL_NUMBER
-        };
-        tableHorizontalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
+        if (MULTI_TABLE_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
+            functionArguments = {
+                "calculationTable": calculationTable,
+                "calculationHorizontalTable": calculationHorizontalTable,
+                "calculationVerticalTable": calculationVerticalTable,
+                "number": MATRICES.VERTICAL_NUMBER
+            };
+            tableVerticalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
+
+            functionArguments = {
+                "calculationTable": calculationTable,
+                "calculationHorizontalTable": calculationHorizontalTable,
+                "calculationVerticalTable": calculationVerticalTable,
+                "number": MATRICES.HORIZONTAL_NUMBER
+            };
+            tableHorizontalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
+        }
     }
 
     /**
@@ -234,70 +217,19 @@ Author: Alexander Mattheis
             doInitialHighlighting(visualViewmodel, mainOutput, iterationTablesArray);
             linkIterationDownloadLinks(visualViewmodel);
 
-            // first
-            var functionArguments = {
-                "calculationHorizontalTable": [],
-                "calculationVerticalTable": [],
-                "iterationTablesArray": iterationTablesArray,
-                "mainOutput": mainOutput,
-                "number": MATRICES.ITERATION_NUMBER_1,
-                "selectableEntryClass": selectableEntryClass,
-                "visualViewmodel": visualViewmodel
-            };
+            for (var i = 0; i < iterationTablesArray.length; i++) {
+                var functionArguments = {
+                    "calculationHorizontalTable": [],
+                    "calculationVerticalTable": [],
+                    "iterationTablesArray": iterationTablesArray,
+                    "mainOutput": mainOutput,
+                    "number": -(i+1),  // iteration numbers are negative in "defaults.js"
+                    "selectableEntryClass": selectableEntryClass,
+                    "visualViewmodel": visualViewmodel
+                };
 
-            iterationTablesArray[0].on("click", selectableEntryClass, functionArguments, selectCell);
-
-            // second
-            functionArguments = {
-                "calculationHorizontalTable": [],
-                "calculationVerticalTable": [],
-                "iterationTablesArray": iterationTablesArray,
-                "mainOutput": mainOutput,
-                "number": MATRICES.ITERATION_NUMBER_2,
-                "selectableEntryClass": selectableEntryClass,
-                "visualViewmodel": visualViewmodel
-            };
-
-            iterationTablesArray[1].on("click", selectableEntryClass, functionArguments, selectCell);
-
-            // third
-            functionArguments = {
-                "calculationHorizontalTable": [],
-                "calculationVerticalTable": [],
-                "iterationTablesArray": iterationTablesArray,
-                "mainOutput": mainOutput,
-                "number": MATRICES.ITERATION_NUMBER_3,
-                "selectableEntryClass": selectableEntryClass,
-                "visualViewmodel": visualViewmodel
-            };
-
-            iterationTablesArray[2].on("click", selectableEntryClass, functionArguments, selectCell);
-
-            // fourth
-            functionArguments = {
-                "calculationHorizontalTable": [],
-                "calculationVerticalTable": [],
-                "iterationTablesArray": iterationTablesArray,
-                "mainOutput": mainOutput,
-                "number": MATRICES.ITERATION_NUMBER_4,
-                "selectableEntryClass": selectableEntryClass,
-                "visualViewmodel": visualViewmodel
-            };
-
-            iterationTablesArray[3].on("click", selectableEntryClass, functionArguments, selectCell);
-
-            // fifth
-            functionArguments = {
-                "calculationHorizontalTable": [],
-                "calculationVerticalTable": [],
-                "iterationTablesArray": iterationTablesArray,
-                "mainOutput": mainOutput,
-                "number": MATRICES.ITERATION_NUMBER_5,
-                "selectableEntryClass": selectableEntryClass,
-                "visualViewmodel": visualViewmodel
-            };
-
-            iterationTablesArray[4].on("click", selectableEntryClass, functionArguments, selectCell);
+                iterationTablesArray[i].on("click", selectableEntryClass, functionArguments, selectCell);
+            }
         }
     }
 
@@ -349,18 +281,20 @@ Author: Alexander Mattheis
      * @param mainOutput {Element} - The div containing only the calculation tables.
      */
     function linkOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput) {
-        var browserWindow = $(window);
+        if (SVG_ARROW_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {  // algorithm uses SVG-arrows
+            var browserWindow = $(window);
 
-        var functionArguments = {
-            "calculationTable": calculationTable,
-            "calculationHorizontalTable": calculationHorizontalTable,
-            "calculationVerticalTable": calculationVerticalTable,
-            "mainOutput": mainOutput,
-            "visualViewmodel": visualViewmodel
-        };
+            var functionArguments = {
+                "calculationTable": calculationTable,
+                "calculationHorizontalTable": calculationHorizontalTable,
+                "calculationVerticalTable": calculationVerticalTable,
+                "mainOutput": mainOutput,
+                "visualViewmodel": visualViewmodel
+            };
 
-        browserWindow.on("resize", functionArguments, reinitialize);
-        mainOutput.on("scroll", functionArguments, reinitialize);
+            browserWindow.on("resize", functionArguments, reinitialize);
+            mainOutput.on("scroll", functionArguments, reinitialize);
+        }
     }
 
     /**
@@ -370,20 +304,17 @@ Author: Alexander Mattheis
     function reinitialize(e) {
         var visualViewmodel = e.data.visualViewmodel;
 
-        if (visualViewmodel.algorithm.type !== ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
+        var mainOutput = e.data.mainOutput[0];
+        var calculationVerticalTable;
+        var calculationTable = e.data.calculationTable[0];
+        var calculationHorizontalTable;
 
-            var mainOutput = e.data.mainOutput[0];
-            var calculationVerticalTable;
-            var calculationTable = e.data.calculationTable[0];
-            var calculationHorizontalTable;
-
-            if (e.data.calculationVerticalTable !== undefined) {
-                calculationVerticalTable = e.data.calculationVerticalTable[0];
-                calculationHorizontalTable = e.data.calculationHorizontalTable[0];
-            }
-
-            visualViewmodel.redrawOverlay(calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
+        if (e.data.calculationVerticalTable !== undefined) {
+            calculationVerticalTable = e.data.calculationVerticalTable[0];
+            calculationHorizontalTable = e.data.calculationHorizontalTable[0];
         }
+
+        visualViewmodel.redrawOverlay(calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
     }
 
     /**
