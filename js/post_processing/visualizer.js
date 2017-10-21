@@ -761,22 +761,9 @@ Author: Alexander Mattheis
      * Redraw overlay after a resize-, zoom-in- or scrolling-event it the browser window.
      * @param e - Stores data relevant to the event called that function.
      */
-    function redrawOverlay(e) {
-        if (visualizerInstance.algorithm.type !== ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
-
-            var mainOutput = e.data.mainOutput[0];
-            var calculationVerticalTable;
-            var calculationTable = e.data.calculationTable[0];
-            var calculationHorizontalTable;
-
-            if (e.data.calculationVerticalTable !== undefined) {
-                calculationVerticalTable = e.data.calculationVerticalTable[0];
-                calculationHorizontalTable = e.data.calculationHorizontalTable[0];
-            }
-
-            removeAllLines();
-            drawAllLines(calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
-        }
+    function redrawOverlay(calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput) {
+        removeAllLines();
+        drawAllLines(calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
     }
 
     /**
