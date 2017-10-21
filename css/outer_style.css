@@ -53,10 +53,18 @@ footer span {
 }
 
 h1 {
+    background-color: transparent !important;  /* overwriting corporate-design.css */
+    color: #8148B1;
+    font-family: sans-serif !important;  /* overwriting corporate-design.css */
     font-size: 1.8em;
     line-height: 20px;
     margin: 0 25px;
     padding: 3px 40px;
+}
+
+h4 {
+    font-family: sans-serif !important;
+    margin-left: 0;
 }
 
 header {
@@ -64,6 +72,10 @@ header {
     box-shadow: 0 0 5px rgba(50, 50, 50, 0.4);
     height: 49px;
     padding: 5px 25px 0 50px;
+}
+
+table {
+    margin: 0;
 }
 
 /*---- CLASS STYLING ----*/
