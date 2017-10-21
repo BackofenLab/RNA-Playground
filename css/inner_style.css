@@ -118,13 +118,10 @@ th {
     width: 32px;
 }
 
-.download {
-    margin-bottom: 30px;
-}
-
 .download_area {
     clear: both;
     line-height: 140%;
+    margin-bottom: 30px;
     padding-top: 10px;
 }
 
