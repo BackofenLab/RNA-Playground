@@ -30,8 +30,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startNeedlemanWunsch() {
-        var alignmentInterface = new interfaces.alignmentInterface.AlignmentInterface();
-        alignmentInterface.startAlignmentAlgorithm(NeedlemanWunsch, ALGORITHMS.NEEDLEMAN_WUNSCH);
+        var linearAlignmentInterface = new interfaces.linearAlignmentInterface.LinearAlignmentInterface();
+        linearAlignmentInterface.startLinearAlignmentAlgorithm(NeedlemanWunsch, ALGORITHMS.NEEDLEMAN_WUNSCH);
     }
 
     /*---- ALGORITHM ----*/

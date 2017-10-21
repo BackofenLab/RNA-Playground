@@ -31,8 +31,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startSmithWaterman() {
-        var alignmentInterface = new interfaces.alignmentInterface.AlignmentInterface();
-        alignmentInterface.startAlignmentAlgorithm(SmithWaterman, ALGORITHMS.SMITH_WATERMAN);
+        var linearAlignmentInterface = new interfaces.linearAlignmentInterface.LinearAlignmentInterface();
+        linearAlignmentInterface.startLinearAlignmentAlgorithm(SmithWaterman, ALGORITHMS.SMITH_WATERMAN);
     }
 
     /*---- ALGORITHM ----*/

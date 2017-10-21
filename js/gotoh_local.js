@@ -11,7 +11,6 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    debugger;
     if (loaded === ALGORITHMS.GOTOH_LOCAL) {  // to avoid self execution on a script import
         gotohLocal.startGotohLocal();
         loaded = ALGORITHMS.NONE;

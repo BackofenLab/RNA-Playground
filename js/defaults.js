@@ -291,12 +291,15 @@ var NORMALIZED_ALIGNMENT_DEFAULTS = {
 
 /**
  * Stores used class paths and some library paths.
+ * Hint: Reimports are needed when different classes using objects of same class.
+ * Else the objects of this classes are not correctly initialized.
  */
 var PATHS = {
     ALIGNMENT: "js/bases/alignment.js",
     ALIGNMENT_INTERFACE: "js/interfaces/alignment_interface.js",
     GOTOH: "js/gotoh.js",
     INPUT_PROCESSOR: "js/post_processing/input_processor.js",
+    LINEAR_ALIGNMENT_INTERFACE: "js/interfaces/linear_alignment_interface.js",
     SMITH_WATERMAN: "js/smith_waterman.js",
     SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js",
     VISUALIZER: "js/post_processing/visualizer.js",

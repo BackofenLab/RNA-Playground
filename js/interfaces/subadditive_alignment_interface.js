@@ -13,7 +13,7 @@ Author: Alexander Mattheis
 
     // instances
     var alignmentInterfaceInstance;
-    var affineAlignmentInterfaceInstance;
+    var subadditiveAlignmentInterfaceInstance;
 
     /**
      * Is used to work with the input and output (the interface) of an affine alignment algorithm.
@@ -21,7 +21,7 @@ Author: Alexander Mattheis
      * @augments AlignmentInterface
      */
     function SubadditiveAlignmentInterface() {
-        affineAlignmentInterfaceInstance = this;
+        subadditiveAlignmentInterfaceInstance = this;
 
         // inheritance
         alignmentInterfaceInstance = new interfaces.alignmentInterface.AlignmentInterface();
@@ -47,7 +47,8 @@ Author: Alexander Mattheis
      */
     function imports() {
         alignmentInterfaceInstance.imports();
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
+
+        $.getScript(PATHS.ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /*---- INPUT ----*/
@@ -82,7 +83,7 @@ Author: Alexander Mattheis
 
         if (algorithmName === ALGORITHMS.WATERMAN_SMITH_BEYER) {
             this.subadditiveFunction = ko.observable(SUBADDITIVE_ALIGNMENT_DEFAULTS.GAP_FUNCTION);
-        } else {
+        } else {  // if Gotoh or Gotoh (Local)
             this.formulaP = ko.computed(
                 function getSelectedFormula() {
                     setTimeout(function () {
@@ -451,7 +452,7 @@ Author: Alexander Mattheis
 
         viewmodels.output.matrix(outputData.matrix);
 
-        if (viewmodels.output.horizontalGaps !== undefined) {
+        if (viewmodels.output.horizontalGaps !== undefined) {  // if Gotoh or Gotoh (Local)
             viewmodels.output.horizontalGaps(edit(inputProcessor, outputData.horizontalGaps, viewmodels));
             viewmodels.output.verticalGaps(edit(inputProcessor, outputData.verticalGaps, viewmodels));
 
@@ -470,7 +471,7 @@ Author: Alexander Mattheis
                 viewmodels.output.verticalGaps[i](outputData.verticalGaps[i]);
                 viewmodels.output.horizontalGaps[i](outputData.horizontalGaps[i]);
             }
-        } else {
+        } else {  // if Waterman-Smith-Beyer
             for (var i = 0; i < outputData.matrix.length; i++) {
                 if (i > viewmodels.output.matrix.length)
                     viewmodels.output.matrix[i] = new Function();
