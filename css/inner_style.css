@@ -63,7 +63,7 @@ th {
 }
 
 /* HINT: to avoid errors all pictures have to be imported as classes whether they are unique */
-.arrows_d, .arrows_dt, .arrows_l, .arrows_ld, .arrows_ldt, .arrows_lt, .arrows_t {
+.arrows_d, .arrows_l, .arrows_t {
     background: url(../inner_sprites.png) no-repeat;
 }
 
