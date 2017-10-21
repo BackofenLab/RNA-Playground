@@ -235,7 +235,10 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<th>
 								<small>
 									<!-- ko if: $root.output.moreTracebacks5 -->
-										<b>Hint:</b> Only the first ten results are computed.
+										<b>Hint:</b> Only the first ten results are computed. <br>
+									<!-- /ko -->
+									<!-- ko if: $root.output.alignments5().length > 1 && $root.output.maxNumberIterations -->
+										<b>Hint:</b> Not marked alignments aren't used and only listed for completeness.
 									<!-- /ko -->
 								</small>
 							</th>
@@ -371,7 +374,10 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<th>
 								<small>
 									<!-- ko if: $root.output.moreTracebacks4 -->
-										<b>Hint:</b> Only the first ten results are computed.
+										<b>Hint:</b> Only the first ten results are computed. <br>
+									<!-- /ko -->
+									<!-- ko if: $root.output.alignments4().length > 1 && $root.output.alignments5().length > 0 -->
+										<b>Hint:</b> Not marked alignments aren't used and only listed for completeness.
 									<!-- /ko -->
 								</small>
 							</th>
@@ -507,7 +513,10 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<th>
 								<small>
 									<!-- ko if: $root.output.moreTracebacks3 -->
-										<b>Hint:</b> Only the first ten results are computed.
+										<b>Hint:</b> Only the first ten results are computed. <br>
+									<!-- /ko -->
+									<!-- ko if: $root.output.alignments3().length > 1 && $root.output.alignments4().length > 0 -->
+										<b>Hint:</b> Not marked alignments aren't used and only listed for completeness.
 									<!-- /ko -->
 								</small>
 							</th>
@@ -643,7 +652,10 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<th>
 								<small>
 									<!-- ko if: $root.output.moreTracebacks2 -->
-										<b>Hint:</b> Only the first ten results are computed.
+										<b>Hint:</b> Only the first ten results are computed. <br>
+									<!-- /ko -->
+									<!-- ko if: $root.output.alignments2().length > 1 && $root.output.alignments3().length > 0 -->
+										<b>Hint:</b> Not marked alignments aren't used and only listed for completeness.
 									<!-- /ko -->
 								</small>
 							</th>
@@ -779,7 +791,10 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<th>
 								<small>
 									<!-- ko if: $root.output.moreTracebacks1 -->
-										<b>Hint:</b> Only the first ten results are computed.
+										<b>Hint:</b> Only the first ten results are computed. <br>
+									<!-- /ko -->
+									<!-- ko if: $root.output.alignments1().length > 1 && $root.output.alignments2().length > 0 -->
+										<b>Hint:</b> Not marked alignments aren't used and only listed for completeness.
 									<!-- /ko -->
 								</small>
 							</th>
