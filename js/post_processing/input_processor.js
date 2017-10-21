@@ -363,6 +363,10 @@ Author: Alexander Mattheis
         mainOutput.on("scroll", functionArguments, reinitialize);
     }
 
+    /**
+     * Reinitializes overlays after an event wih the browser window or a scrolling event of a table.
+     * @param e - Stores data relevant to the event called that function.
+     */
     function reinitialize(e) {
         var visualViewmodel = e.data.visualViewmodel;
 

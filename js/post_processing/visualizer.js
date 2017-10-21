@@ -253,84 +253,6 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Turns off cell highlights.
-     * @param path {Array} - Array containing the first vector element from which on you want find a path.
-     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
-     * @param table {Element} - The default or main table.
-     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
-     * @param mainOutput {Element} - The div containing only the calculation tables.
-     * @param colorClass {number} - The highlight which should be deleted from the cell.
-     * @param flowMode {boolean} - Tells if flows or traceback-paths were drawn.
-     */
-    function demarkCells(path, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, colorClass, flowMode) {
-        flowMode = flowMode || false;
-
-        var currentTable;
-
-        if (path.length > 0) {
-            // go over the whole path
-            for (var j = 0; j < path.length; j++) {
-                currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
-
-                var posI = path[j].i + 1;
-                var posJ = path[j].j + 1;
-
-                if (currentTable.rows[posI].cells[posJ] !== undefined) {  // if table has shrinked
-
-                    switch (colorClass) {  // deselecting by removing the "selected" class from the element
-                        case -1:
-                            currentTable.rows[posI].cells[posJ].classList.remove("selected");
-                            break;
-                        default:
-                            removeFlowColors(currentTable, posI, posJ);
-                    }
-                }
-
-                removeArrows(currentTable, posI, posJ, false);
-            }
-        }
-
-        removeAllLines();  // below last flows/paths redrawn
-
-        if (flowMode)  // redraw last traceback
-            markCells(visualizerInstance.lastPath, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, -1, true, false);
-        else {  // redraw last flow
-            var lastFlows = visualizerInstance.lastFlows;
-            for (var i = 0; i < lastFlows.length; i++)
-                markCells(lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true, true);
-        }
-    }
-
-    /**
-     * Returns the table of the path element on which is currently looked at.
-     * @param path {Array} - Array containing the first vector element from which on you want find a path.
-     * @param j {number} - Current path element from which the table must be determined.
-     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
-     * @param table {Element} - The default or main table.
-     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
-     * @return {Element} - Default table or table for vertical or horizontal gap costs are returned.
-     */
-    function getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable) {
-        if (path[j].label === MATRICES.VERTICAL)
-            return calculationVerticalTable;
-        else if (path[j].label === MATRICES.HORIZONTAL)
-            return calculationHorizontalTable;
-        else // if (path[j].label === MATRICES.DEFAULT)
-            return table;
-    }
-
-    /**
-     * Removes long SVG arrows in the table.
-     */
-    function removeAllLines() {
-        var line;
-        while ((line = visualizerInstance.cellLines.pop()) !== undefined) {
-            if (visualizerInstance.svg.contains(line))
-                visualizerInstance.svg.removeChild(line);
-        }
-    }
-
-    /**
      * Turns on cell highlights.
      * @param path {Array} - Array containing the first vector element from which on you want find a path.
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
@@ -545,6 +467,84 @@ Author: Alexander Mattheis
     }
 
     /**
+     * Turns off cell highlights.
+     * @param path {Array} - Array containing the first vector element from which on you want find a path.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param table {Element} - The default or main table.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
+     * @param colorClass {number} - The highlight which should be deleted from the cell.
+     * @param flowMode {boolean} - Tells if flows or traceback-paths were drawn.
+     */
+    function demarkCells(path, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, colorClass, flowMode) {
+        flowMode = flowMode || false;
+
+        var currentTable;
+
+        if (path.length > 0) {
+            // go over the whole path
+            for (var j = 0; j < path.length; j++) {
+                currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
+
+                var posI = path[j].i + 1;
+                var posJ = path[j].j + 1;
+
+                if (currentTable.rows[posI].cells[posJ] !== undefined) {  // if table has shrinked
+
+                    switch (colorClass) {  // deselecting by removing the "selected" class from the element
+                        case -1:
+                            currentTable.rows[posI].cells[posJ].classList.remove("selected");
+                            break;
+                        default:
+                            removeFlowColors(currentTable, posI, posJ);
+                    }
+                }
+
+                removeArrows(currentTable, posI, posJ, false);
+            }
+        }
+
+        removeAllLines();  // below last flows/paths redrawn
+
+        if (flowMode)  // redraw last traceback
+            markCells(visualizerInstance.lastPath, calculationVerticalTable, table, calculationHorizontalTable, mainOutput, -1, true, false);
+        else {  // redraw last flow
+            var lastFlows = visualizerInstance.lastFlows;
+            for (var i = 0; i < lastFlows.length; i++)
+                markCells(lastFlows[i], calculationVerticalTable, table, calculationHorizontalTable, mainOutput, i, true, true);
+        }
+    }
+
+    /**
+     * Returns the table of the path element on which is currently looked at.
+     * @param path {Array} - Array containing the first vector element from which on you want find a path.
+     * @param j {number} - Current path element from which the table must be determined.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param table {Element} - The default or main table.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @return {Element} - Default table or table for vertical or horizontal gap costs are returned.
+     */
+    function getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable) {
+        if (path[j].label === MATRICES.VERTICAL)
+            return calculationVerticalTable;
+        else if (path[j].label === MATRICES.HORIZONTAL)
+            return calculationHorizontalTable;
+        else // if (path[j].label === MATRICES.DEFAULT)
+            return table;
+    }
+
+    /**
+     * Removes long SVG arrows in the table.
+     */
+    function removeAllLines() {
+        var line;
+        while ((line = visualizerInstance.cellLines.pop()) !== undefined) {
+            if (visualizerInstance.svg.contains(line))
+                visualizerInstance.svg.removeChild(line);
+        }
+    }
+
+    /**
      * Highlights tracebacks in the matrix.
      * @param traceNumber {number} - The current path which should be drawn.
      * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
@@ -723,8 +723,8 @@ Author: Alexander Mattheis
 
     /**
      * Rounds values to four decimal places if it is possible.
-     * @param number {row} - The row of which values are rounded.
-     * @return {number|string} - Rounded value or input value.
+     * @param row {number} - The row of which values are rounded.
+     * @return {Array} - Row with rounded values and original values.
      */
     function round(row) {
         var matrixRow = [];
@@ -759,7 +759,10 @@ Author: Alexander Mattheis
 
     /**
      * Redraw overlay after a resize-, zoom-in- or scrolling-event it the browser window.
-     * @param e - Stores data relevant to the event called that function.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param calculationTable {Element} - The default or main table.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
      */
     function redrawOverlay(calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput) {
         removeAllLines();
