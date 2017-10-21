@@ -64,7 +64,7 @@ th {
 
 /* HINT: to avoid errors all pictures have to be imported as classes whether they are unique */
 .arrows_d, .arrows_dt, .arrows_l, .arrows_ld, .arrows_ldt, .arrows_lt, .arrows_t {
-    background: url(../sprites.png) no-repeat;
+    background: url(../inner_sprites.png) no-repeat;
 }
 
 .arrows_d, .arrows_l, .arrows_t {
@@ -77,34 +77,16 @@ th {
 }
 
 .arrows_d { /* diagonal */
-    background-position: -50px -112px;
+    background-position: 0px 0px;
 }
 
 .arrows_l { /* left */
-    background-position: -50px -150px;
+    background-position: 0px -38px;
 }
 
 .arrows_t { /* top */
-    background-position: -50px -185px;
+    background-position: 0px -73px;
 }
-
-/* some extra pictures for possible optimizations
-.arrows_dt {
-    background-position: 0 -150px;
-}
-
-.arrows_ld {
-    background-position: 0 -112px;
-}
-
-.arrows_ldt {
-    background-position: 0 -220px;
-}
-
-.arrows_lt {
-    background-position: 0 -185px;
-}
-*/
 
 .calculation, .calculation_horizontal, .calculation_vertical,
 .calculation_1, .calculation_2, .calculation_3, .calculation_4, .calculation_5 {

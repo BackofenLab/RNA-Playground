@@ -69,7 +69,7 @@ header {
 /*---- CLASS STYLING ----*/
 /* HINT: to avoid errors all pictures have to be imported as classes whether they are unique */
 .dropdown_button, .dropdown_button:hover, .dropdown_reversed, .logo {
-    background: url(../sprites.png) no-repeat;
+    background: url(../outer_sprites.png) no-repeat;
 }
 
 .dropdown_button {
