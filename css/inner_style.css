@@ -151,6 +151,7 @@ th {
 .group_hint {
     color: gray;
     font-size: smaller;
+    padding-top: 10px;
     padding-left: 120px;
 }
 
