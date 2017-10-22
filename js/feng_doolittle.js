@@ -123,7 +123,7 @@ $(document).ready(function () {
                 var ioData = computeGotoh(gotohInput, sequenceA, sequenceB);
                 outputData.sequencePairs.push([sequenceA, sequenceB]);
                 outputData.similarities.push(ioData[1].score);
-                outputData.alignmentLengths.push(getAlignmentLength(ioData[1].alignments[0]));
+                outputData.alignmentLengths.push(getAlignmentLength(sequenceA, sequenceB));
                 outputData.gapNumbers.push(getNumberOfGaps(ioData[1].alignments[0]));
             }
         }
@@ -163,20 +163,14 @@ $(document).ready(function () {
     }
 
     /**
-     * Computes the length of the alignment.
-     * @see: The alignment length can be defined differently.
-     * It does not make sense to define it like in the AEP algorithm
-     * as the number of characters of both aligned sequences (without gaps),
-     * because here global alignments are used (GOTOH) and so the alignment length would be
-     * always the length of both sequences (what does not make sense to call it then alignment length).
-     * So, here the MSA-length definition used (because Feng-Doolittle is a MSA algorithm):
-     * length is the number of columns in the global alignment of the sequences.
-     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
-     * - The triple of strings for which the length has to be computed.
+     * Computes the length of the alignment (length of both sequences together without gaps).
+     * Hint: Usually you have to look into the alignment, but in the case of global sequences this is not needed.
+     * @param sequenceA - The first (not aligned) sequence.
+     * @param sequenceB - The second (not aligned) sequence.
      * @return {number} - The length of the alignment.
      */
-    function getAlignmentLength(alignment) {
-        return alignment[0].length;
+    function getAlignmentLength(sequenceA, sequenceB) {
+        return sequenceA.length + sequenceB;
     }
 
     /**
@@ -191,7 +185,8 @@ $(document).ready(function () {
 
     /**
      * Counts the number of gaps in the given sequence.
-     * @param sequence - The sequence for which the number of gaps has to be counted.
+     * @param sequence {string} - The sequence for which the number of gaps has to be counted.
+     * @return {number} - The number of gaps.
      */
     function countNumberOfGaps(sequence) {
         var numGaps = 0;
@@ -211,9 +206,45 @@ $(document).ready(function () {
      * D(a,b) = -ln(S^eff(a,b))
      * where
      * S^eff(a,b) = [S(a,b) - S^rand(a,b)] / [S^max(a,b) - S^rand(a,b)]
+     * @see:
+     * Hint: S^eff(a,b) should scale between [0,1]
+     * where 1 means identical and 0 means totally non-identical,
+     * but in reality S^rand can be bigger as S(a,b) and we can get negative values of S^eff(a,b).
+     * To avoid negative values the approach from this paper is used:
+     * Feng, Da-Fei, and Russell F. Doolittle.
+     * "Converting amino acid alignment scores into measures of evolutionary time:
+     * a simulation study of various relationships." Journal of molecular evolution 44.4 (1997): 361-370.
+     *
+     * The idea:
+     * if [S(a,b) - S^rand(a,b)] < 0
+     * then you set [S(a,b) - S^rand(a,b)] = 0.001
+     *
+     * Hint: for [S(a,b) - S^rand(a,b)] == 0 it was not defined,
+     * but for simplicity we also use [S(a,b) - S^rand(a,b)] = 0.001
      */
     function convertSimilaritiesToDistances() {
         outputData.distances = [];
+
+        // going over all similarities
+        for (var i = 0; i < outputData.similarities.length; i++) {
+            var score = outputData.similarities[i];
+
+            // retrieve parameters
+            var alignmentLength = outputData.alignmentLengths[i];
+            var sequences = outputData.sequencePairs[i];
+            var numOfGaps = outputData.gapNumbers[i];
+
+            var scoreRandom = getExpectedScore(alignmentLength, sequences[0], sequences[1], numOfGaps);
+            var scoreMax = getAverageMaximumScore(sequences[0], sequences[1]);
+
+            var scoreEffective = 0;
+            if (score - scoreRandom > 0)
+                scoreEffective = (score - scoreRandom) / (scoreMax - scoreRandom);
+            else
+                scoreEffective = FENG_DOOLITTLE_CONSTANT / (scoreMax - scoreRandom);
+
+            outputData.distances.push(-Math.log(scoreEffective));  // natural logarithm
+        }
     }
 
     /**
@@ -221,11 +252,12 @@ $(document).ready(function () {
      * by using the approximative formula from 1996 of Feng and Doolittle.
      * Hint: Usually random shuffling is used (1987),
      * but then the algorithm would become non-deterministic and it couldn't be tested.
+     * Hint 2: The formula could be computed more efficient with character frequency tables,
+     * but for their computation usually sets are needed which are not fully implemented in [the here used
+     * version of] Javascript.
      * @param alignmentLength - The length of the alignment (different definitions possible).
-     * @param sequenceA - The first sequence which was aligned.
-     * @param sequenceB - The second sequence which was aligned.
-     * @param charFreqTableA - The frequency table for characters in sequence a.
-     * @param charFreqTableB - The frequency table for characters in sequence b.
+     * @param sequenceA - The first (not aligned) sequence.
+     * @param sequenceB - The second (not aligned) sequence.
      * @param numOfGaps - The number of gaps in the alignment of sequence a and b.
      * @see:
      * Feng, Da-Fei and Doolittle, Russell F. «[21] Progressive alignment of amino
@@ -233,16 +265,74 @@ $(document).ready(function () {
      * enzymology 266 (1996), pp. 368–382
      * @example:
      * S^rand(a,b) = [1/L(a,b)] * [\sum_{i in a} \sum_{j in b} s(i,j) N_a(i) N_b(j)] - N_{a,b}("_")
+     * Hint:
+     * Usually a parameter d is multiplied with N_{a,b}("_") to avoid very high S^rand which
+     * can lead to a negative S^eff(a,b) = [S(a,b) - S^rand(a,b)] / ...
+     * So, the correct formula would be
+     * S^rand(a,b) = [1/L(a,b)] * [\sum_{i in a} \sum_{j in b} s(i,j) N_a(i) N_b(j)] - N_{a,b}("_") * d
+     * but for simplicity this parameter is removed and another approach used.
+     * @return {number} - The expected score.
      */
-    function getExpectedScore(alignmentLength, sequenceA, sequenceB, charFreqTableA, charFreqTableB, numOfGaps) {
+    function getExpectedScore(alignmentLength, sequenceA, sequenceB, numOfGaps) {
+        var doubleSum = 0;
+
+        for (var i = 0; i < sequenceA.length; i++) {
+            for (var j = 0; j < sequenceB.length; j++) {
+                var aChar = sequenceA[i];
+                var bChar = sequenceB[j];
+
+                var similarity = aChar === bChar ? inputData.match : inputData.mismatch;
+                var frequencyInA = getFrequency(aChar, sequenceA);
+                var frequencyInB = getFrequency(bChar, sequenceB);
+                doubleSum += similarity * frequencyInA * frequencyInB;
+            }
+        }
+
+        return (1/alignmentLength) * doubleSum - numOfGaps;  // expected - parameter -> expected score with a shift
+    }
+
+    /**
+     * Returns the absolute frequency of a char in a sequence.
+     * @param char {string} - The char of which the frequency is computed.
+     * @param sequence {string} - The sequence in which is counted.
+     * @return {number} - The absolute frequency.
+     */
+    function getFrequency(char, sequence) {
+        var charFrequency = 0;
+
+        for (var i = 0; i < sequence.length; i++) {
+            if (sequence[i] === char)
+                charFrequency++;
+        }
+
+        return charFrequency;
     }
 
     /**
      * Computes the average score of aligning both sequences with themselves.
+     * @param sequenceA {string} - The first sequence which was aligned.
+     * @param sequenceB {string} - The second sequence which was aligned.
      * @example:
      * S^max(a,b) = [S(a,a) + S(b,b)] / 2
      */
-    function getMaximumScore(sequenceA, sequenceB) {
+    function getAverageMaximumScore(sequenceA, sequenceB) {
+        return (getMaximumScore(sequenceA) + getMaximumScore(sequenceB)) / 2;
+    }
+
+    /**
+     * Returns the maximum score for a sequence.
+     * @param sequence {string} - The sequence for which the maximum score is computed.
+     * @return {number} - The maximum score.
+     * @example: S(a,a)
+     */
+    function getMaximumScore(sequence) {
+        var score = 0;
+
+        for (var i = 0; i < sequence.length; i++) {
+            score += inputData.match;
+        }
+
+        return score;
     }
 
     /**
