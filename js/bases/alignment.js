@@ -323,7 +323,7 @@ Author: Alexander Mattheis
     /**
      * Creates an alignment by going through the path array of vectors.
      * @param path {Array} - Path of vectors which is used to create the alignment.
-     * @return {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]} - The pair of strings which have to be displayed.
+     * @return {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]} - The triple of strings which have to be displayed.
      * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function createAlignment(path) {
