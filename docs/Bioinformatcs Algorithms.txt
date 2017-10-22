@@ -60,7 +60,7 @@ through an instance of the parent class (with the related functions: getInput, g
 
 /*--------------------------------------------------INPUT PROCESSING--------------------------------------------------*/
 The "InputProcessor"-class under "js/post_processing/input_processor.js"
-is used for forwarding input to the algorithms and the visualizer.
+is used for forwarding input to the algorithms and output to the visualizer.
 It removes wrong inputs before data is passed to a algorithm
 and it defines the behaviour of different input types.
 

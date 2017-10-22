@@ -120,14 +120,6 @@ th {
     padding-top: 10px;
 }
 
-.download_table {
-    background: none;
-    border: none;
-    position: relative;
-    text-align: left;
-    top: 8px;
-}
-
 .entry {
     border-bottom: 0;
     font-family: serif;
