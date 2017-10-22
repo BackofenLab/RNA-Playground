@@ -96,7 +96,7 @@ $(document).ready(function () {
      */
     function compute() {
         computePairwiseData();
-        convertSimilaritiesToDistances();
+        computeDistancesFromSimilarities();
         createDistanceMatrix();
         createPhylogeneticTree();
         createProgressiveAlignments();
@@ -202,8 +202,11 @@ $(document).ready(function () {
     /**
      * Converting the pairwise similarities into distances
      * by using the Feng-Doolittle formulas.
+     * Hint: The factor 100 is really
+     * inside the logarithm to scale S^eff(a,b) between (0,100].
+     * Hint 2: The formula is proven with the help of several sources!
      * @example:
-     * D(a,b) = -ln(S^eff(a,b))
+     * D(a,b) = -ln(S^eff(a,b) * 100)
      * where
      * S^eff(a,b) = [S(a,b) - S^rand(a,b)] / [S^max(a,b) - S^rand(a,b)]
      * @see:
@@ -222,7 +225,7 @@ $(document).ready(function () {
      * Hint: for [S(a,b) - S^rand(a,b)] == 0 it was not defined,
      * but for simplicity we also use [S(a,b) - S^rand(a,b)] = 0.001
      */
-    function convertSimilaritiesToDistances() {
+    function computeDistancesFromSimilarities() {
         outputData.distances = [];
 
         // going over all similarities
@@ -336,9 +339,19 @@ $(document).ready(function () {
     }
 
     /**
-     * Creates a distance matrix for computed pairwise scores.
+     * Creates dependency between cluster names and distances.
+     * Hint: The matrix for visualization purposes is created
+     * in the corresponding HTML and the corresponding interface files.
      */
     function createDistanceMatrix() {
+    }
+
+    /**
+     * Returns names for clusters associated with the distance data.
+     */
+    function getClusterNames() {
+        var clusters = [];
+
     }
 
     /**

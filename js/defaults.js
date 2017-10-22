@@ -418,7 +418,13 @@ var TABLE = {
     TEXT_FILE_ENCODING: "text/csv;charset=utf-8"
 };
 
-// lists (used for check ups)
+// lists (used for check ups and more)
+var CLUSTER_NAMES =
+    ["a", "b", "c", "d", "e", "f", "g", "h",
+    "i", "j", "k", "l", "m", "n", "o", "p",
+    "q", "r", "s", "t", "u", "v", "w", "x",
+    "y", "z"];
+
 var GLOBAL_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.WATERMAN_SMITH_BEYER];
 var LOCAL_ALGORITHMS = [ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.SMITH_WATERMAN];
 
