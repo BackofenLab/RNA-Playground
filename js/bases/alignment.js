@@ -55,7 +55,7 @@ Author: Alexander Mattheis
     function Alignment(child) {
         childInstance = child;
 
-        // public methods (linking)
+        // public methods
         this.getInput = getInput;
 
         this.setLinearAlignmentInput = setLinearAlignmentInput;

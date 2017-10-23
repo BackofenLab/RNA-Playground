@@ -36,7 +36,7 @@ Author: Alexander Mattheis
         // inheritance
         childInstance = child;
 
-        // public methods (linking)
+        // public methods
         this.setInput = setInput;
 
         this.compute = compute;
@@ -67,11 +67,10 @@ Author: Alexander Mattheis
         initializeCardinalities(numOfIterations);
 
         for (var i = 0; i < numOfIterations; i++) {
-            var minimum = determineMatrixMinimum();  // minimum = [key, value]
-            var newClusterName = mergeClusters(minimum.clusterName1, minimum.clusterName2);
-            clusteringInstance
-                .treeParts.push([minimum.clusterName1, minimum.clusterName2, newClusterName, minimum.distance / 2]);
-            recomputeDistances(newClusterName);
+            var minimum = determineMatrixMinimum();
+            var newClusterName = mergeClusters(minimum.cluster1Name, minimum.cluster2Name);
+            var subtree = createSubTreePart(minimum.cluster1Name, minimum.cluster2Name, newClusterName, minimum.distance / 2);
+            childInstance.computeDistances(subtree);
         }
 
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
@@ -114,21 +113,21 @@ Author: Alexander Mattheis
 
         // create structure for better understandable access
         var minimum = {};
-        minimum.clusterName1 = minKey[0];
-        minimum.clusterName2 = minKey[1];
+        minimum.cluster1Name = minKey[0];
+        minimum.cluster2Name = minKey[1];
         minimum.distance = minValue;
         return minimum;
     }
 
     /**
      * Computes the union of the two clusters which form the minimum.
-     * @param clusterName1 - The name of the first cluster.
-     * @param clusterName2 - The name of the second cluster.
+     * @param cluster1Name - The name of the first cluster.
+     * @param cluster2Name - The name of the second cluster.
      * @return {string} - The name of the new cluster.
      */
-    function mergeClusters(clusterName1, clusterName2) {
-        var newClusterName = createNewCluster(clusterName1, clusterName2);
-        delete outputData.distanceMatrix[[clusterName1, clusterName2]];  // removing key
+    function mergeClusters(cluster1Name, cluster2Name) {
+        var newClusterName = createNewCluster(cluster1Name, cluster2Name);
+        delete outputData.distanceMatrix[[cluster1Name, cluster2Name]];  // removing key
 
         return newClusterName;
     }
@@ -143,8 +142,8 @@ Author: Alexander Mattheis
     function createNewCluster(clusterName1, clusterName2) {
         var newClusterName = getNextClusterName();
 
-        var firstClusterCardinality = clusteringInstance.cardinalities[clusterName1];
-        var SecondClusterCardinality = clusteringInstance.cardinalities[clusterName2];
+        var firstClusterCardinality = clusteringInstance.cardinalities[cluster1Name];
+        var SecondClusterCardinality = clusteringInstance.cardinalities[cluster2Name];
         clusteringInstance.cardinalities[newClusterName] = firstClusterCardinality + SecondClusterCardinality;
 
         return newClusterName;
@@ -179,11 +178,22 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Recomputes the distance to the other clusters with the approach of the child class.
-     * @param clusterName {string} - The name of the new cluster.
+     * Creates subtree parts from which later on a phylogenetic tree can be created.
+     * @param cluster1Name - The name of the first cluster.
+     * @param cluster2Name - The name of the second cluster.
+     * @param newClusterName {string} - The name of the new cluster.
+     * @param distance - The distance between cluster 1 and cluster 2.
      */
-    function recomputeDistances(clusterName) {
-        childInstance.recomputeDistances(clusterName);
+    function createSubTreePart(cluster1Name, cluster2Name, newClusterName, distance) {
+        var tree = {};
+
+        tree.leftChild = cluster1Name;
+        tree.rightChild = cluster2Name;
+        tree.root = newClusterName;
+        tree.value = distance;
+
+        clusteringInstance.treeParts.push(tree);
+        return clusteringInstance.treeParts[clusteringInstance.treeParts.length-1];
     }
 
     /**
