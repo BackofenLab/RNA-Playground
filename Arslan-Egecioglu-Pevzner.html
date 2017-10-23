@@ -14,15 +14,6 @@ Author: Alexander Mattheis
         It identifies the local alignment that is best preserved with respect to the length of the aligned subsequences.
         <br>
         <br>
-        To find a normalized local alignment,
-        the fractional programming algorithm by
-        <a href="http://pubsonline.informs.org/doi/abs/10.1287/mnsc.13.7.492">Werner Dinkelbach (1967)</a>
-        is used in concert with the 'standard' local alignment algorithm by
-        <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman (1981)</a>.
-        A fractional programming is a machine learning approach
-        to solve problems in which the objective function $ns(\mathcal{A})$ is a fraction.
-        <br>
-        <br>
         The normalized local alignment algorithm tries
         to find the alignment $\mathcal{A}$ of two sequences
         with the highest normalized score
@@ -30,6 +21,15 @@ Author: Alexander Mattheis
         where $⟦\mathcal{A}⟧$ is the length
         of the aligned subsequences (excluding gaps) and $L$ is a parameter
         to control the length-dependence of the normalized similarity score.
+        <br>
+        <br>
+        To find a normalized local alignment,
+        the fractional programming algorithm by
+        <a href="http://pubsonline.informs.org/doi/abs/10.1287/mnsc.13.7.492">Werner Dinkelbach (1967)</a>
+        is used in concert with the 'standard' local alignment algorithm by
+        <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith and Waterman (1981)</a>.
+        Fractional programming is a machine learning approach
+        to solve problems in which the objective function $ns(\mathcal{A})$ is a fraction as given above.
         <br>
         <br>
 		Given a similarity scoring function $s(a_i,b_j)$ for two sequences $a$ and $b$.
