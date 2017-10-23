@@ -340,18 +340,63 @@ $(document).ready(function () {
 
     /**
      * Creates dependency between cluster names and distances.
+     * So, a function dist(a,b) which giving you
+     * for two cluster-names a and b the distance
+     * (needed for the clustering algorithm).
      * Hint: The matrix for visualization purposes is created
      * in the corresponding HTML and the corresponding interface files.
+     * Hint 2: Diagonal is not needed because it is full of zeros and not needed.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function createDistanceMatrix() {
+        var clusterNames = getClusterNames();
+        var nameBySequence = {};
+
+        for (var i = 0; i < clusterNames.length; i++) {
+            nameBySequence[outputData.sequences[i]] = clusterNames[i];
+        }
+
+        outputData.distanceMatrix = {};
+
+        // right half upper diagonal
+        for (var i = 0; i < outputData.distances.length; i++) {
+            var sequencePair = outputData.sequencePairs[i];
+
+            var firstClusterName = nameBySequence[sequencePair[0]];
+            var secondClusterName = nameBySequence[sequencePair[1]];
+
+            outputData.distanceMatrix[[firstClusterName, secondClusterName]] = outputData.distances[i];
+        }
     }
 
     /**
      * Returns names for clusters associated with the distance data.
+     * Hint: After all characters are depleted,
+     * a number is concatenated to the character
+     * to make this function generic.
+     * @example:
+     * CLUSTER NAMES:
+     * a, b, c, ..., z,         FIRST EPISODE
+     * a2, b2, c2, ..., z2,     SECOND EPISODE
+     * a3, b3, ...              THIRD ...
      */
     function getClusterNames() {
-        var clusters = [];
+        var clusterNames = [];
+        var currentEpisode = 1;
 
+        // for every pairwise distance we need a symbol
+        for (var i = 0; i < outputData.distances.length; i++) {
+            if (i < CLUSTER_NAMES.length)
+                clusterNames.push(CLUSTER_NAMES[i]);  // add a, b, c, ..., z
+
+            if (i >= CLUSTER_NAMES.length && i % CLUSTER_NAMES.length === 0)  // out of characters
+                currentEpisode++;  // new episode
+
+            if (i >= CLUSTER_NAMES.length)  // out of characters -> a2, b2, c2, ..., z2, a3, b3, ...
+                clusterNames.push(CLUSTER_NAMES[i % CLUSTER_NAMES.length] + SYMBOLS.EMPTY + currentEpisode);
+        }
+
+        return clusterNames;
     }
 
     /**
