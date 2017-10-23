@@ -20,7 +20,7 @@ $(document).ready(function () {
 (function () {  // namespace
     // public methods
     namespace("smithWaterman", startSmithWaterman, SmithWaterman,
-        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getAllMaxPositions,
+        initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getAllMaxPositions,
         getSuperclass);
 
     // instances
@@ -67,29 +67,10 @@ $(document).ready(function () {
         this.getSuperclass = getSuperclass;
     }
 
-    // inheritance
-    /**
-     * Sets the algorithm input and output for calculation.
-     * @param input {Object} - The input structure.
-     * @param output {Object} - The output structure.
-     * @augments Alignment.setIO(input, output)
-     */
-    function setIO(input, output) {
-        alignmentInstance.setIO(input, output);
-    }
-
-    /**
-     * Starts computation by starting the superclass computation.
-     * @augments Alignment.compute()
-     */
-    function compute() {
-        return alignmentInstance.compute();
-    }
-
     // methods
     /**
      * Initializes the matrix.
-     * @override Alignment.initializeMatrix()
+     * @augments Alignment.initializeMatrix()
      */
     function initializeMatrix() {
         var inputData = alignmentInstance.getInput();

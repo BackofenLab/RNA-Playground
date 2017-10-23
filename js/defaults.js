@@ -41,6 +41,7 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
     NONE: "none",
     SMITH_WATERMAN: "smith_waterman",
+    UPGMA: "upgma",
     WATERMAN_SMITH_BEYER: "waterman_smith_beyer"
 };
 
