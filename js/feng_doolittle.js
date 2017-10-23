@@ -209,14 +209,15 @@ $(document).ready(function () {
      * D(a,b) = -ln(S^eff(a,b) * 100)
      * where
      * S^eff(a,b) = [S(a,b) - S^rand(a,b)] / [S^max(a,b) - S^rand(a,b)]
-     * @see:
-     * Hint: S^eff(a,b) should scale between [0,1]
-     * where 1 means identical and 0 means totally non-identical,
-     * but in reality S^rand can be bigger as S(a,b) and we can get negative values of S^eff(a,b).
-     * To avoid negative values the approach from this paper is used:
+     * @see: https://doi.org/10.1007/PL00006155
      * Feng, Da-Fei, and Russell F. Doolittle.
      * "Converting amino acid alignment scores into measures of evolutionary time:
      * a simulation study of various relationships." Journal of molecular evolution 44.4 (1997): 361-370.
+     *
+     * Hint: S^eff(a,b) should scale between [0,1]
+     * where 1 means identical and 0 means totally non-identical,
+     * but in reality S^rand can be bigger as S(a,b) and we can get negative values of S^eff(a,b).
+     * To avoid negative values the approach from the paper linked above is used.
      *
      * The idea:
      * if [S(a,b) - S^rand(a,b)] < 0
@@ -262,7 +263,7 @@ $(document).ready(function () {
      * @param sequenceA - The first (not aligned) sequence.
      * @param sequenceB - The second (not aligned) sequence.
      * @param numOfGaps - The number of gaps in the alignment of sequence a and b.
-     * @see:
+     * @see: https://doi.org/10.1016/S0076-6879(96)66023-6
      * Feng, Da-Fei and Doolittle, Russell F. «[21] Progressive alignment of amino
      * acid sequences and construction of phylogenetic trees from them». In: Methods in
      * enzymology 266 (1996), pp. 368–382
