@@ -89,6 +89,8 @@ $(document).ready(function () {
         inputData.enlargement = inputViewmodel.enlargement();
         inputData.match = inputViewmodel.match();
         inputData.mismatch = inputViewmodel.mismatch();
+
+        inputData.numOfStartClusters = inputData.sequences.length;
     }
 
     /**

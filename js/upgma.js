@@ -76,7 +76,7 @@ Author: Alexander Mattheis
 
             var quotient = dividendSum / divisorSum;
 
-            outputData.distanceMatrix[remainingClusterNames[i], newClusterName] = quotient;
+            outputData.distanceMatrix[[remainingClusterNames[i], newClusterName]] = quotient;
         }
     }
 

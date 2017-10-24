@@ -30,8 +30,9 @@ Author: Alexander Mattheis
 
         // variables
         this.cardinalities = {};  // needed for computations (for example in UPGMA)
+        this.evolutionaryDistances = {};  // stores evolutionary distances of edges above nodes
         this.nameIndex = 0;
-        this.treeParts = [];  // parts of the hierarchical tree
+        this.tree = [];  // hierarchical tree
 
         // inheritance
         childInstance = child;
@@ -57,19 +58,18 @@ Author: Alexander Mattheis
      * Starts the computation.
      * Hint: Because the distance matrix is changing during the following procedure
      * and it has to be visualized later on, a copy is made which is written back.
-     *
      */
     function compute() {
         var distanceMatrixCopy = jQuery.extend(true, {}, outputData.distanceMatrix);  // deep copy
 
-        var numOfIterations = inputData.sequences.length - 1;  // always lower by one in hierarchical clustering algorithms
+        var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in hierarchical clustering algorithms
 
         initializeCardinalities(numOfIterations);
 
         for (var i = 0; i < numOfIterations; i++) {
             var minimum = determineMatrixMinimum();
             var newClusterName = mergeClusters(minimum.cluster1Name, minimum.cluster2Name);
-            var subtree = createSubTreePart(minimum.cluster1Name, minimum.cluster2Name, newClusterName, minimum.distance / 2);
+            var subtree = appendToTree(minimum.cluster1Name, minimum.cluster2Name, newClusterName, minimum.distance / 2);
             childInstance.computeDistances(subtree);
         }
 
@@ -121,8 +121,8 @@ Author: Alexander Mattheis
 
     /**
      * Computes the union of the two clusters which form the minimum.
-     * @param cluster1Name - The name of the first cluster.
-     * @param cluster2Name - The name of the second cluster.
+     * @param cluster1Name {string} - The name of the first cluster.
+     * @param cluster2Name {string} - The name of the second cluster.
      * @return {string} - The name of the new cluster.
      */
     function mergeClusters(cluster1Name, cluster2Name) {
@@ -134,12 +134,12 @@ Author: Alexander Mattheis
 
     /**
      * Creates the union of the two given clusters.
-     * @param clusterName1 - The name of the first cluster.
-     * @param clusterName2 - The name of the second cluster.
+     * @param cluster1Name {string} - The name of the first cluster.
+     * @param cluster2Name {string} - The name of the second cluster.
      * @return {string} - The name of the new cluster.
      * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
-    function createNewCluster(clusterName1, clusterName2) {
+    function createNewCluster(cluster1Name, cluster2Name) {
         var newClusterName = getNextClusterName();
 
         var firstClusterCardinality = clusteringInstance.cardinalities[cluster1Name];
@@ -178,22 +178,50 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Creates subtree parts from which later on a phylogenetic tree can be created.
-     * @param cluster1Name - The name of the first cluster.
-     * @param cluster2Name - The name of the second cluster.
+     * Appends a node with the given parameters to the hierarchical tree.
+     * @param cluster1Name {string} - The name of the first cluster.
+     * @param cluster2Name {string} - The name of the second cluster.
      * @param newClusterName {string} - The name of the new cluster.
-     * @param distance - The distance between cluster 1 and cluster 2.
+     * @param distance {number} - The distance between cluster 1 and cluster 2.
+     * @return
      */
-    function createSubTreePart(cluster1Name, cluster2Name, newClusterName, distance) {
-        var tree = {};
+    function appendToTree(cluster1Name, cluster2Name, newClusterName, distance) {
+        // create node
+        var node = {};
+        node.leftChild = getNode(cluster1Name, distance);
+        node.rightChild = getNode(cluster2Name, distance);
+        node.name = newClusterName;
+        node.value = distance;  // non-final evolutionary distance for edge above this node
 
-        tree.leftChild = cluster1Name;
-        tree.rightChild = cluster2Name;
-        tree.root = newClusterName;
-        tree.value = distance;
+        clusteringInstance.tree.push(node);
+        return clusteringInstance.tree[clusteringInstance.tree.length-1];
+    }
 
-        clusteringInstance.treeParts.push(tree);
-        return clusteringInstance.treeParts[clusteringInstance.treeParts.length-1];
+    /**
+     * Creates a new node with the given name or uses an existing if it exists.
+     * @param name {string} - The name of the node which have to be created.
+     * @param value {number} - The computed distance value for the node.
+     * @return {Object} - The node with the given parameters.
+     */
+    function getNode(name, value) {
+        var tree = clusteringInstance.tree;
+
+        for (var i = 0; i < tree.length; i++) {
+            if (tree[i].name === name) {
+                var node = tree.splice(i, 1)[0];  // removes and returns the removed element
+                node.value = value - node.value;  // computing final evolutionary distance for edge above the node
+                return node;
+            }
+        }
+
+        // create node
+        var node = {};
+        node.leftChild = undefined;
+        node.rightChild = undefined;
+        node.name = name;
+        node.value = value;  // the value of a edge above a node
+
+        return node;
     }
 
     /**

@@ -5,6 +5,7 @@ load:
   - js/libs/namespace.js
 
   - js/bases/alignment.js
+  - js/bases/clustering.js
   - js/defaults.js
   - js/loader.js
 
@@ -13,6 +14,7 @@ load:
   - js/gotoh_local.js
   - js/needleman_wunsch.js
   - js/smith_waterman.js
+  - js/upgma.js
   - js/waterman_smith_beyer.js
 test:
   - js/tests/test_arslan_egecioglu_pevzner.js
