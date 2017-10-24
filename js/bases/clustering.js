@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("bases.clustering", Clustering, setInput, compute, getOutput, setIO);
+    namespace("bases.clustering", Clustering, setInput, compute, getMatrixKeys, getOutput, setIO);
 
     // instances
     var childInstance;
@@ -29,18 +29,15 @@ Author: Alexander Mattheis
         clusteringInstance = this;
 
         // variables
-        this.cardinalities = {};  // needed for computations (for example in UPGMA)
-        this.evolutionaryDistances = {};  // stores evolutionary distances of edges above nodes
         this.nameIndex = 0;
-        this.tree = [];  // hierarchical tree
 
         // inheritance
         childInstance = child;
 
         // public methods
         this.setInput = setInput;
-
         this.compute = compute;
+        this.getMatrixKeys = getMatrixKeys;
         this.getOutput = getOutput;
 
         this.setIO = setIO;
@@ -64,6 +61,7 @@ Author: Alexander Mattheis
 
         var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in hierarchical clustering algorithms
 
+        initializeStructs();
         initializeCardinalities(numOfIterations);
 
         for (var i = 0; i < numOfIterations; i++) {
@@ -74,7 +72,18 @@ Author: Alexander Mattheis
         }
 
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
+        outputData.newickString = formats.newickFormat.getEncoding(outputData.tree);
         return [inputData, outputData];
+    }
+
+    /**
+     * Initializes structs used in the algorithm.
+     */
+    function initializeStructs() {
+        outputData.cardinalities = {};  // needed for distance computations (for example in UPGMA)
+        outputData.remainingClusterNames = ["a", "b", "c", "d", "e"];  // have to be fixed
+        outputData.removedKeys = [];
+        outputData.tree = [];  // hierarchical tree
     }
 
     /**
@@ -85,7 +94,7 @@ Author: Alexander Mattheis
         clusteringInstance.nameIndex = numOfIterations + 1;  // current cluster-name set-size + 1
 
         for (var i = 0; i < clusteringInstance.nameIndex; i++)
-            clusteringInstance.cardinalities[CLUSTER_NAMES[i]] = 1;
+            outputData.cardinalities[CLUSTER_NAMES[i]] = 1;
     }
 
     /**
@@ -98,7 +107,7 @@ Author: Alexander Mattheis
         var minKey = SYMBOLS.EMPTY;
         var minValue = Number.POSITIVE_INFINITY;
 
-        var keys = Object.keys(outputData.distanceMatrix);
+        var keys = getMatrixKeys(outputData.distanceMatrix);
 
         // searching for minimum by going over all keys
         for (var i = 0; i < keys.length; i++) {
@@ -120,15 +129,32 @@ Author: Alexander Mattheis
     }
 
     /**
+     * Returns the remaining acceptable keys from the matrix.
+     * @param distanceMatrix - The associative array
+     * from which the cluster names should be determined.
+     * @return {Array} - Array of cluster names.
+     */
+    function getMatrixKeys(distanceMatrix) {
+        var keys = Object.keys(distanceMatrix);
+        var remainingKeys = [];
+
+        for (var i = 0; i < keys.length; i++) {
+            if (outputData.removedKeys.indexOf(keys[i]) === -1)  // if (not contained)
+                remainingKeys.push(keys[i]);
+        }
+
+        return remainingKeys;
+    }
+
+    /**
      * Computes the union of the two clusters which form the minimum.
      * @param cluster1Name {string} - The name of the first cluster.
      * @param cluster2Name {string} - The name of the second cluster.
      * @return {string} - The name of the new cluster.
      */
     function mergeClusters(cluster1Name, cluster2Name) {
-        var newClusterName = createNewCluster(cluster1Name, cluster2Name);
-        delete outputData.distanceMatrix[[cluster1Name, cluster2Name]];  // removing key
-
+        var newClusterName = createNewCluster(cluster1Name, cluster2Name)
+        removeEntriesWith(cluster1Name, cluster2Name);
         return newClusterName;
     }
 
@@ -142,11 +168,51 @@ Author: Alexander Mattheis
     function createNewCluster(cluster1Name, cluster2Name) {
         var newClusterName = getNextClusterName();
 
-        var firstClusterCardinality = clusteringInstance.cardinalities[cluster1Name];
-        var SecondClusterCardinality = clusteringInstance.cardinalities[cluster2Name];
-        clusteringInstance.cardinalities[newClusterName] = firstClusterCardinality + SecondClusterCardinality;
+        var firstClusterCardinality = outputData.cardinalities[cluster1Name];
+        var SecondClusterCardinality = outputData.cardinalities[cluster2Name];
+        outputData.cardinalities[newClusterName] = firstClusterCardinality + SecondClusterCardinality;
 
         return newClusterName;
+    }
+
+    /**
+     * Storing distance matrix entries
+     * which are not allowed to use anymore for a minimum value.
+     * Hint: It is not allowed to remove entries
+     * from the distance matrix because it is possible that the entries
+     * will be needed for later calculations (with for example UPGMA).
+     * Because of this, "removed" entries are just stored
+     * and no more used for calculations.
+     * @param cluster1Name {string} - The name of the first cluster.
+     * @param cluster2Name {string} - The name of the second cluster.
+     */
+    function removeEntriesWith(cluster1Name, cluster2Name) {
+        var keys = Object.keys(outputData.distanceMatrix);
+
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i].split(SYMBOLS.COMMA);
+
+            var firstKeyPart = key[0];
+            var secondKeyPart = key[1];
+
+            if (firstKeyPart === cluster1Name || firstKeyPart === cluster2Name
+                || secondKeyPart === cluster1Name || secondKeyPart === cluster2Name)
+                outputData.removedKeys.push(keys[i]);
+        }
+
+        removeFromRemaining(cluster1Name);
+        removeFromRemaining(cluster2Name);
+    }
+
+    /**
+     * Removes cluster name from remaining names.
+     * @param clusterName - The name which should be removed.
+     */
+    function removeFromRemaining(clusterName) {
+        var index = outputData.remainingClusterNames.indexOf(clusterName);
+
+        if (index >= 0)
+            outputData.remainingClusterNames.splice(index, 1);
     }
 
     /**
@@ -193,8 +259,8 @@ Author: Alexander Mattheis
         node.name = newClusterName;
         node.value = distance;  // non-final evolutionary distance for edge above this node
 
-        clusteringInstance.tree.push(node);
-        return clusteringInstance.tree[clusteringInstance.tree.length-1];
+        outputData.tree.push(node);
+        return outputData.tree[outputData.tree.length-1];
     }
 
     /**
@@ -204,11 +270,9 @@ Author: Alexander Mattheis
      * @return {Object} - The node with the given parameters.
      */
     function getNode(name, value) {
-        var tree = clusteringInstance.tree;
-
-        for (var i = 0; i < tree.length; i++) {
-            if (tree[i].name === name) {
-                var node = tree.splice(i, 1)[0];  // removes and returns the removed element
+        for (var i = 0; i < outputData.tree.length; i++) {
+            if (outputData.tree[i].name === name) {
+                var node = outputData.tree.splice(i, 1)[0];  // removes and returns the removed element
                 node.value = value - node.value;  // computing final evolutionary distance for edge above the node
                 return node;
             }

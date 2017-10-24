@@ -363,6 +363,7 @@ var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
     AND: "&",
     BRACKET_LEFT: "(",
     BRACKET_RIGHT: ")",
+    COLON: ":",
     COMMA: ",",
     DUMMY: "/",  // have to be a non-letter
     EMPTY: "",
@@ -372,9 +373,11 @@ var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
     INFINITY: "∞",
     NEGATIVE_INFINITY: "-∞",
     NEW_LINE: "\n",
+    NONE: "#",
     PLUS: "+",
-    S_BIG: "S",
+    SEMICOLON: ";",
     SEPARATOR: "_",
+    S_BIG: "S",
     SPACE: " ",
     STAR: "*",
     VERTICAL_BAR: "|"

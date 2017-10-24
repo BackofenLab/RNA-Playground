@@ -58,26 +58,47 @@ Author: Alexander Mattheis
         var outputData = clusteringInstance.getOutput();
 
         // retrieve values
-        var cluster1Name = subtree.leftChild;
-        var cluster2Name = subtree.rightChild;
-        var newClusterName = subtree.root;
+        var cluster1Name = subtree.leftChild.name;
+        var cluster2Name = subtree.rightChild.name;
+        var newClusterName = subtree.name;
 
         var cluster1Cardinality = outputData.cardinalities[cluster1Name];
         var cluster2Cardinality = outputData.cardinalities[cluster2Name];
 
-        var remainingClusterNames = Object.keys(outputData.distanceMatrix);
+        var clusterNames = outputData.remainingClusterNames;
 
-        for (var i = 0; i < remainingClusterNames.length; i++) {
-            var product1 = cluster1Cardinality * outputData.distanceMatrix[[remainingClusterNames[i], cluster1Name]];
-            var product2 = cluster2Cardinality * outputData.distanceMatrix[[remainingClusterNames[i], cluster2Name]];
+        for (var i = 0; i < clusterNames.length; i++) {
+            var product1 = cluster1Cardinality * getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster1Name);
+            var product2 = cluster2Cardinality * getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster2Name);
 
             var dividendSum = product1 + product2;
             var divisorSum = cluster1Cardinality + cluster2Cardinality;
 
             var quotient = dividendSum / divisorSum;
 
-            outputData.distanceMatrix[[remainingClusterNames[i], newClusterName]] = quotient;
+            outputData.distanceMatrix[[clusterNames[i], newClusterName]] = quotient;  // hint: do not change order of arguments
         }
+
+        outputData.remainingClusterNames.push(newClusterName);
+    }
+
+    /**
+     * Returns the distance matrix value from the given entry.
+     * Hint: Only one half of the matrix is filled.
+     * But the other half is just a mirrored version.
+     * This is why this function is needed.
+     * @param distanceMatrix {Array} - The array from which you want the values.
+     * @param cluster1Name {string} - The name of the first cluster.
+     * @param cluster2Name {string} - The name of the second cluster.
+     * @return {number} - The value
+     */
+    function getMatrixValue(distanceMatrix, cluster1Name, cluster2Name) {
+        var value1 = distanceMatrix[[cluster1Name, cluster2Name]];
+        var value2 = distanceMatrix[[cluster2Name, cluster1Name]];
+
+        if(isNaN(value1))
+            return value2;
+        return value1;
     }
 
     /**
@@ -85,6 +106,6 @@ Author: Alexander Mattheis
      * @return {Object} - Superclass instance.
      */
     function getSuperclass() {
-        return upgmaInstance;
+        return clusteringInstance;
     }
 }());
