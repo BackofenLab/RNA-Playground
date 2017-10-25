@@ -125,7 +125,7 @@ $(document).ready(function () {
                 var ioData = computeGotoh(gotohInput, sequenceA, sequenceB);
                 outputData.sequencePairs.push([sequenceA, sequenceB]);
                 outputData.similarities.push(ioData[1].score);
-                outputData.alignmentLengths.push(getAlignmentLength(a));
+                outputData.alignmentLengths.push(getAlignmentLength(ioData[1].alignments[0]));
                 outputData.gapNumbers.push(getNumberOfGaps(ioData[1].alignments[0]));
             }
         }
