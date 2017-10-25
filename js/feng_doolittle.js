@@ -172,7 +172,7 @@ $(document).ready(function () {
      * @return {number} - The length of the alignment.
      */
     function getAlignmentLength(sequenceA, sequenceB) {
-        return sequenceA.length + sequenceB;
+        return sequenceA.length + sequenceB.length;
     }
 
     /**
