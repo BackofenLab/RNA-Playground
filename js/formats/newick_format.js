@@ -22,7 +22,10 @@ Author: Alexander Mattheis
     function getEncoding(tree) {
         newickString = SYMBOLS.EMPTY;
         postOrder(tree, false);
-        newickString = newickString.slice(0, newickString.length-3) +  SYMBOLS.SEMICOLON;
+
+        // hint: this is working, because value from last cluster is always 0
+        // example: ..[CLUSTER_NAME]:0) -to-> ..[CLUSTER_NAME]
+        newickString = newickString.slice(0, newickString.length-3) + SYMBOLS.SEMICOLON;
         return newickString;
     }
 
