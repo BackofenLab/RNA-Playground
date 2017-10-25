@@ -34,8 +34,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startFengDoolittle() {
-        var subadditiveAlignmentInterface = new interfaces.subadditiveAlignmentInterface.SubadditiveAlignmentInterface();
-        subadditiveAlignmentInterface.startSubadditiveAlignmentAlgorithm(GotohLocal, ALGORITHMS.GOTOH_LOCAL);
+        //var subadditiveAlignmentInterface = new interfaces.subadditiveAlignmentInterface.SubadditiveAlignmentInterface();
+        //subadditiveAlignmentInterface.startSubadditiveAlignmentAlgorithm(GotohLocal, ALGORITHMS.GOTOH_LOCAL);
     }
 
     /*---- ALGORITHM ----*/
@@ -332,13 +332,7 @@ $(document).ready(function () {
      * @example: S(a,a)
      */
     function getMaximumScore(sequence) {
-        var score = 0;
-
-        for (var i = 0; i < sequence.length; i++) {
-            score += inputData.match;
-        }
-
-        return score;
+        return inputData.match * sequence.length;
     }
 
     /**
@@ -352,11 +346,11 @@ $(document).ready(function () {
      * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function createDistanceMatrix() {
-        var clusterNames = getClusterNames();
+        outputData.clusterNames = getClusterNames();
         var nameBySequence = {};
 
-        for (var i = 0; i < clusterNames.length; i++) {
-            nameBySequence[outputData.sequences[i]] = clusterNames[i];
+        for (var i = 0; i < outputData.clusterNames.length; i++) {
+            nameBySequence[outputData.sequences[i]] = outputData.clusterNames[i];
         }
 
         outputData.distanceMatrix = {};

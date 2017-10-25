@@ -74,7 +74,7 @@ TestCase("test_gotoh", {
 
     /**
      * Multi sequences test.
-     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_3": function () {
         var algorithm = new gotoh.Gotoh();

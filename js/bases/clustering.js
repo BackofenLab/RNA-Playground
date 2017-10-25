@@ -30,6 +30,8 @@ Author: Alexander Mattheis
 
         // variables
         this.nameIndex = 0;
+        this.remainingClusterNames = [];
+        this.removedKeys = [];
 
         // inheritance
         childInstance = child;
@@ -68,11 +70,11 @@ Author: Alexander Mattheis
             var minimum = determineMatrixMinimum();
             var newClusterName = mergeClusters(minimum.cluster1Name, minimum.cluster2Name);
             var subtree = appendToTree(minimum.cluster1Name, minimum.cluster2Name, newClusterName, minimum.distance / 2);
-            childInstance.computeDistances(subtree);
+            computeDistances(subtree, i, numOfIterations);
         }
 
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
-        outputData.newickString = formats.newickFormat.getEncoding(outputData.tree);
+        outputData.newickString = formats.newickFormat.getEncoding(outputData.tree[0]);
         return [inputData, outputData];
     }
 
@@ -80,9 +82,9 @@ Author: Alexander Mattheis
      * Initializes structs used in the algorithm.
      */
     function initializeStructs() {
+        clusteringInstance.remainingClusterNames = outputData.clusterNames.slice();  // shallow copy (because they won't be changed)
+
         outputData.cardinalities = {};  // needed for distance computations (for example in UPGMA)
-        outputData.remainingClusterNames = ["a", "b", "c", "d", "e"];  // have to be fixed
-        outputData.removedKeys = [];
         outputData.tree = [];  // hierarchical tree
     }
 
@@ -139,7 +141,7 @@ Author: Alexander Mattheis
         var remainingKeys = [];
 
         for (var i = 0; i < keys.length; i++) {
-            if (outputData.removedKeys.indexOf(keys[i]) === -1)  // if (not contained)
+            if (clusteringInstance.removedKeys.indexOf(keys[i]) === -1)  // if (not contained)
                 remainingKeys.push(keys[i]);
         }
 
@@ -197,7 +199,7 @@ Author: Alexander Mattheis
 
             if (firstKeyPart === cluster1Name || firstKeyPart === cluster2Name
                 || secondKeyPart === cluster1Name || secondKeyPart === cluster2Name)
-                outputData.removedKeys.push(keys[i]);
+                clusteringInstance.removedKeys.push(keys[i]);
         }
 
         removeFromRemaining(cluster1Name);
@@ -209,10 +211,10 @@ Author: Alexander Mattheis
      * @param clusterName - The name which should be removed.
      */
     function removeFromRemaining(clusterName) {
-        var index = outputData.remainingClusterNames.indexOf(clusterName);
+        var index = clusteringInstance.remainingClusterNames.indexOf(clusterName);
 
         if (index >= 0)
-            outputData.remainingClusterNames.splice(index, 1);
+            clusteringInstance.remainingClusterNames.splice(index, 1);
     }
 
     /**
@@ -286,6 +288,25 @@ Author: Alexander Mattheis
         node.value = value;  // the value of a edge above a node
 
         return node;
+    }
+
+    /**
+     * Computes the distance of the new cluster to the other clusters.
+     * Hint: It is really UPGMA and not WPGMA!
+     * Calculated distances in UPGMA are unweighted
+     * with respect to the cluster-sizes. From this the "unweighted"-term results.
+     * @example:
+     * dist(c, k = i union j) = [|i|*dist(c, i) + |j|*dist(c, j)] / [|i|+|j|]
+     * @param subtree {Object} - The subtree for the new cluster.
+     * @param iteration {number} - The subtree for the new cluster.
+     * @param subtree {maxNumIterations} - The subtree for the new cluster.
+     */
+    function computeDistances(subtree, iteration, maxNumIterations) {
+        childInstance.computeDistances(subtree);
+        clusteringInstance.remainingClusterNames.push(subtree.name);
+
+        if (iteration === maxNumIterations-1)
+            subtree.value = 0;
     }
 
     /**

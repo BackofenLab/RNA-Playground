@@ -20,7 +20,7 @@ Author: Alexander Mattheis
      * Computes a clustering with the hierarchical approach
      * unweighted pair group method with arithmetic mean.
      * Hint: It is really UPGMA and not WPGMA!
-     * @see https://en.wikipedia.org/wiki/Robert_R._Sokal
+     * @see
      * Sokal, Robert R. "A statistical method for evaluating systematic relationship."
      * University of Kansas science bulletin 28 (1958): 1409-1438.
      * @constructor
@@ -65,7 +65,7 @@ Author: Alexander Mattheis
         var cluster1Cardinality = outputData.cardinalities[cluster1Name];
         var cluster2Cardinality = outputData.cardinalities[cluster2Name];
 
-        var clusterNames = outputData.remainingClusterNames;
+        var clusterNames = clusteringInstance.remainingClusterNames;
 
         for (var i = 0; i < clusterNames.length; i++) {
             var product1 = cluster1Cardinality * getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster1Name);
@@ -78,8 +78,6 @@ Author: Alexander Mattheis
 
             outputData.distanceMatrix[[clusterNames[i], newClusterName]] = quotient;  // hint: do not change order of arguments
         }
-
-        outputData.remainingClusterNames.push(newClusterName);
     }
 
     /**
