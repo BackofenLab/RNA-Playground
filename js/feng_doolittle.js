@@ -172,7 +172,7 @@ $(document).ready(function () {
      * @return {number} - The length of the alignment.
      */
     function getAlignmentLength(sequenceA, sequenceB) {
-        return sequenceA.length + sequenceB;
+        return sequenceA.length + sequenceB.length;
     }
 
     /**
@@ -276,7 +276,7 @@ $(document).ready(function () {
      * can lead to a negative S^eff(a,b) = [S(a,b) - S^rand(a,b)] / ...
      * So, the correct formula would be
      * S^rand(a,b) = [1/L(a,b)] * [\sum_{i in a} \sum_{j in b} s(i,j) N_a(i) N_b(j)] - N_{a,b}("_") * d
-     * but for simplicity this parameter is removed and another approach used.
+     * but for simplicity we use parameter d=1.
      * @return {number} - The expected score.
      */
     function getExpectedScore(alignmentLength, sequenceA, sequenceB, numOfGaps) {
