@@ -125,7 +125,7 @@ $(document).ready(function () {
                 var ioData = computeGotoh(gotohInput, sequenceA, sequenceB);
                 outputData.sequencePairs.push([sequenceA, sequenceB]);
                 outputData.similarities.push(ioData[1].score);
-                outputData.alignmentLengths.push(getAlignmentLength(sequenceA, sequenceB));
+                outputData.alignmentLengths.push(getAlignmentLength(a));
                 outputData.gapNumbers.push(getNumberOfGaps(ioData[1].alignments[0]));
             }
         }
@@ -165,14 +165,25 @@ $(document).ready(function () {
     }
 
     /**
-     * Computes the length of the alignment (length of both sequences together without gaps).
-     * Hint: Usually you have to look into the alignment, but in the case of global sequences this is not needed.
-     * @param sequenceA - The first (not aligned) sequence.
-     * @param sequenceB - The second (not aligned) sequence.
+     * Computes the length of the alignment.
+     * Hint: The alignment length can be defined differently.
+     * It does not make sense to define it like in the AEP algorithm
+     * as the number of characters of both aligned sequences (without gaps),
+     * because here global alignments are used (GOTOH) and so the alignment length would be
+     * always the length of both sequences (what does not make sense to call it then alignment length).
+     * So, here the MSA-length definition used (Feng-Doolittle is a MSA algorithm):
+     * length is the number of columns in the global alignment of the sequences.
+     * Hint 2: Verified with original paper.
+     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
+     * - The triple of strings for which the length has to be computed.
+     * @see: https://doi.org/10.1016/S0076-6879(96)66023-6
+     * Feng, Da-Fei, and Russell F. Doolittle.
+     * "[21] Progressive alignment of amino acid sequences and construction of phylogenetic trees from them."
+     * Methods in enzymology 266 (1996): 368-382.
      * @return {number} - The length of the alignment.
      */
-    function getAlignmentLength(sequenceA, sequenceB) {
-        return sequenceA.length + sequenceB.length;
+    function getAlignmentLength(alignment) {
+        return alignment[0].length;
     }
 
     /**
@@ -206,7 +217,7 @@ $(document).ready(function () {
      * by using the Feng-Doolittle formulas.
      * Hint: The factor 100 is really
      * inside the logarithm to scale S^eff(a,b) between (0,100].
-     * Hint 2: The formula is proven with the help of several sources!
+     * Hint 2: Verified with original paper and several sources.
      * @example:
      * D(a,b) = -ln(S^eff(a,b) * 100)
      * where
@@ -223,10 +234,10 @@ $(document).ready(function () {
      *
      * The idea:
      * if [S(a,b) - S^rand(a,b)] < 0
-     * then you set [S(a,b) - S^rand(a,b)] = 0.001
+     * then you set [S(a,b) - S^rand(a,b)] = 0.001 (other values are allowed)
      *
      * Hint: for [S(a,b) - S^rand(a,b)] == 0 it was not defined,
-     * but for simplicity we also use [S(a,b) - S^rand(a,b)] = 0.001
+     * but for simplicity it is used [S(a,b) - S^rand(a,b)] = 0.001
      */
     function computeDistancesFromSimilarities() {
         outputData.distances = [];
@@ -240,7 +251,7 @@ $(document).ready(function () {
             var sequences = outputData.sequencePairs[i];
             var numOfGaps = outputData.gapNumbers[i];
 
-            var scoreRandom = getExpectedScore(alignmentLength, sequences[0], sequences[1], numOfGaps);
+            var scoreRandom = getApproximatedRandomScore(alignmentLength, sequences[0], sequences[1], numOfGaps);
             var scoreMax = getAverageMaximumScore(sequences[0], sequences[1]);
 
             var scoreEffective = 0;
@@ -249,43 +260,45 @@ $(document).ready(function () {
             else
                 scoreEffective = FENG_DOOLITTLE_CONSTANT / (scoreMax - scoreRandom);
 
-            outputData.distances.push(-Math.log(scoreEffective));  // natural logarithm
+            outputData.distances.push(-Math.log(scoreEffective * 100));  // natural logarithm
         }
     }
 
     /**
-     * Computes the expected score for aligning two sequences
+     * Computes an approximation of the random score for aligning two sequences
      * by using the approximative formula from 1996 of Feng and Doolittle.
      * Hint: Usually random shuffling is used (1987),
      * but then the algorithm would become non-deterministic and it couldn't be tested.
-     * Hint 2: The formula could be computed more efficient with character frequency tables,
-     * but for their computation usually sets are needed which are not fully implemented in [the here used
-     * version of] Javascript.
      * @param alignmentLength - The length of the alignment (different definitions possible).
      * @param sequenceA - The first (not aligned) sequence.
      * @param sequenceB - The second (not aligned) sequence.
      * @param numOfGaps - The number of gaps in the alignment of sequence a and b.
      * @see: https://doi.org/10.1016/S0076-6879(96)66023-6
      * Feng, Da-Fei and Doolittle, Russell F. «[21] Progressive alignment of amino
-     * acid sequences and construction of phylogenetic trees from them». In: Methods in
-     * enzymology 266 (1996), pp. 368–382
+     * acid sequences and construction of phylogenetic trees from them».
+     * In: Methods in enzymology 266 (1996), pp. 368–382
+     *
+     * Hint: The formula could be computed more efficient with character frequency tables,
+     * but for their efficient computation usually sets are needed which are not fully implemented in
+     * [the here used version of] Javascript and own implementations cannot be fast enough.
+     *
+     * Hint 2: The penalty d is a negated value in the paper!
+     * So, for example a PAM250-matrix has a positive penalty like d=8.
+     *
      * @example:
-     * S^rand(a,b) = [1/L(a,b)] * [\sum_{i in a} \sum_{j in b} s(i,j) N_a(i) N_b(j)] - N_{a,b}("_")
-     * Hint:
-     * Usually a parameter d is multiplied with N_{a,b}("_") to avoid very high S^rand which
-     * can lead to a negative S^eff(a,b) = [S(a,b) - S^rand(a,b)] / ...
-     * So, the correct formula would be
-     * S^rand(a,b) = [1/L(a,b)] * [\sum_{i in a} \sum_{j in b} s(i,j) N_a(i) N_b(j)] - N_{a,b}("_") * d
-     * but for simplicity it is d=1.
+     * S^rand(a,b) = [1/L(a,b)] * [\sum_{i in charTypes(a)} \sum_{j in charTypes(b)} s(i,j) N_a(i) N_b(j)] - N_{a,b}("_") * d
      * @return {number} - The expected score.
      */
-    function getExpectedScore(alignmentLength, sequenceA, sequenceB, numOfGaps) {
+    function getApproximatedRandomScore(alignmentLength, sequenceA, sequenceB, numOfGaps) {
         var doubleSum = 0;
 
-        for (var i = 0; i < sequenceA.length; i++) {
-            for (var j = 0; j < sequenceB.length; j++) {
-                var aChar = sequenceA[i];
-                var bChar = sequenceB[j];
+        var charsA = getChars(sequenceA);
+        var charsB = getChars(sequenceB);
+
+        for (var i = 0; i < charsA.length; i++) {
+            for (var j = 0; j < charsB.length; j++) {
+                var aChar = charsA[i];
+                var bChar = charsB[j];
 
                 var similarity = aChar === bChar ? inputData.match : inputData.mismatch;
                 var frequencyInA = getFrequency(aChar, sequenceA);
@@ -294,7 +307,22 @@ $(document).ready(function () {
             }
         }
 
-        return (1/alignmentLength) * doubleSum - numOfGaps;  // expected - parameter -> expected score with a shift
+        return (1/alignmentLength) * doubleSum - numOfGaps * (-inputData.enlargement);  // numOfGapStarts * (-inputData.baseCosts)
+    }
+
+    /**
+     * Returns unique characters of the sequence.
+     * @param sequence - The sequence in which is counted.
+     */
+    function getUniqueChars(sequence) {
+        var chars = [];
+
+        for (var i = 0; i < sequence.length; i++) {
+            if (chars.indexOf(sequence[i]) === -1)
+                chars.push(sequence[i]);
+        }
+
+        return chars;
     }
 
     /**
