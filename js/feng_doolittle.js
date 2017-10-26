@@ -100,22 +100,25 @@ $(document).ready(function () {
         computePairwiseData();
         computeDistancesFromSimilarities();
         createDistanceMatrix();
-        createProgressiveAlignments(getPhylogeneticTree());
+        createProgressiveAlignment(getPhylogeneticTree());
         return [inputData, outputData];
     }
 
     /**
-     * Computes scores (similarities), the number of gaps and the alignment lengths between all sequences.
+     * Computes scores (similarities),
+     * the number of gaps, the alignment lengths
+     * and so on between all sequences.
      */
     function computePairwiseData() {
         var gotohInput = {};
         initializeInput(gotohInput);
 
-        outputData.sequencePairs = [];
-        outputData.similarities = [];
         outputData.alignmentLengths = [];
+        outputData.alignmentsAndScores = [];
         outputData.gapNumbers = [];
         outputData.gapStarts = [];
+        outputData.sequencePairs = [];
+        outputData.similarities = [];
 
         for (var i = 1; i < inputData.sequences.length; i++) {
             for (var j = 0; j < i; j++) {
@@ -123,11 +126,13 @@ $(document).ready(function () {
                 var sequenceB = inputData.sequences[i];
 
                 var ioData = computeGotoh(gotohInput, sequenceA, sequenceB);
-                outputData.sequencePairs.push([sequenceA, sequenceB]);
-                outputData.similarities.push(ioData[1].score);
+                outputData.alignmentsAndScores[sequenceA, sequenceB] = [ioData[1].alignments[0], ioData[1].score];  // for faster access
+
                 outputData.alignmentLengths.push(getAlignmentLength(ioData[1].alignments[0]));
                 outputData.gapNumbers.push(getNumberOfGaps(ioData[1].alignments[0]));
-                outputData.gapStarts.push();
+                outputData.gapStarts.push(getNumberOfGapsStarts(ioData[1].alignments[0]));
+                outputData.sequencePairs.push([sequenceA, sequenceB]);
+                outputData.similarities.push(ioData[1].score);
             }
         }
     }
@@ -164,6 +169,7 @@ $(document).ready(function () {
 
         return gotohInstance.compute();
     }
+
 
     /**
      * Computes the length of the alignment.
@@ -406,10 +412,11 @@ $(document).ready(function () {
      */
     function createDistanceMatrix() {
         outputData.clusterNames = getClusterNames();
-        var nameBySequence = {};
+
+        var names = {};
 
         for (var i = 0; i < outputData.clusterNames.length; i++) {
-            nameBySequence[outputData.sequences[i]] = outputData.clusterNames[i];
+            names[outputData.sequences[i]] = outputData.clusterNames[i];
         }
 
         outputData.distanceMatrix = {};
@@ -418,8 +425,8 @@ $(document).ready(function () {
         for (var i = 0; i < outputData.distances.length; i++) {
             var sequencePair = outputData.sequencePairs[i];
 
-            var firstClusterName = nameBySequence[sequencePair[0]];
-            var secondClusterName = nameBySequence[sequencePair[1]];
+            var firstClusterName = names[sequencePair[0]];
+            var secondClusterName = names[sequencePair[1]];
 
             outputData.distanceMatrix[[firstClusterName, secondClusterName]] = outputData.distances[i];
         }
@@ -435,6 +442,7 @@ $(document).ready(function () {
      * a, b, c, ..., z,         FIRST EPISODE
      * a2, b2, c2, ..., z2,     SECOND EPISODE
      * a3, b3, ...              THIRD ...
+     * @return {Array} - The cluster names.
      */
     function getClusterNames() {
         var clusterNames = [];
@@ -474,28 +482,126 @@ $(document).ready(function () {
      * This is why just an iteration through the branches is done.
      * @param treeBranches {Object} - The tree branches which are defining the order for the merging process.
      * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
-     * Hint: The following procedure does not do
-     * any difference between block alignment
-     * and the alignment of two sequences.
      */
-    function createProgressiveAlignments(treeBranches) {
+    function createProgressiveAlignment(treeBranches) {
+        initializeGroups();
+
         for (var i = 0; i < treeBranches.length; i++) {
             var treeBranch = treeBranches[i];
 
             var leftChildName = treeBranch.leftChild.name;
             var rightChildName = treeBranch.rightChild.name;
             var groupName = treeBranch.name;
+
+            alignGroups(leftChildName, rightChildName, groupName);
+        }
+
+        var alignmentWithPlaceholders = outputData.groups[outputData.groups.length-1];
+        outputData.progressiveAlignment = alignmentWithPlaceholders.replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
+    }
+
+    /**
+     * Initializes the groups-structure,
+     * which is storing the created groups during progressive alignment
+     * with the start sequences.
+     */
+    function initializeGroups() {
+        outputData.groups = {};
+
+        for (var i = 0; i < outputData.groups.length; i++) {
+            outputData.groups[outputData.clusterNames[i]] = [outputData.sequences[i]];
         }
     }
 
     /**
      * Aligns two groups or sequences to each other.
-     * @param leftChildName - The name of the left group or sequence.
-     * @param rightChildName - The name of the right group or sequence
-     * @param groupName - The name of the new group.
+     * Groups are aligned by aligning every member of the one group
+     * with very member of the other group.
+     * Afterwards the best alignment is chosen and used as a guide alignment
+     * to which the other group members are added,
+     * such that characters which were aligned before in the group block,
+     * are still together.
+     * After the two groups were merged together,
+     * all gaps "_" are replaced with a placeholder element "#",
+     * to preserve the gap (avoid gap movement).
+     * @param leftChildName {string} - The name of the left child group or sequence.
+     * @param rightChildName {string} - The name of the right child group or sequence
+     * @param groupName {string} - The name of the new group.
+     * Hint: For the sequence alignment the previously computed sequence-scores are used.
      */
     function alignGroups(leftChildName, rightChildName, groupName) {
-        
+        var group1Sequences = getGroupSequences(leftChildName);
+        var group2Sequences = getGroupSequences(rightChildName);
+
+        var bestAlignment = getBestAlignment(group1Sequences, group2Sequences);
+        outputData.groups[groupName] = createGroup(group1Sequences, group2Sequences, bestAlignment);
+    }
+
+    /**
+     * Returns the sequences of a group.
+     * @param groupName {string} - The name of the group.
+     */
+    function getGroupSequences(groupName) {
+        return outputData.groups[groupName];
+    }
+
+    /**
+     * Returns the best alignment (with the highest score) after
+     * a pair-wise alignment of the group sequences of both groups
+     * or after a look-up in the previously computed alignments for the start-sequences.
+     * @param group1Sequences {string} - The sequences of the first group.
+     * @param group2Sequences {string} - The sequences of the second group.
+     */
+    function getBestAlignment(group1Sequences, group2Sequences) {
+        if (group1Sequences.length === 1 && group2Sequences.length === 1)  // if alignment of initial sequences
+            return getInitialAlignment(group1Sequences[0], group2Sequences[0])[0];
+
+        for (var i = 0; i < group1Sequences.length; i++) {
+            var sequence1 = group1Sequences[i];
+
+            for (var j = 0; j < group2Sequences.length; j++) {
+                var sequence2 = group1Sequences[j];
+                var asData = getAlignmentAndScore(sequence1, sequence2);
+            }
+        }
+    }
+
+    /**
+     * Returns the initial previously computed alignment of the both sequences.
+     * It avoids a time-intensive recomputation.
+     * @param sequence1 {string} - The first sequence.
+     * @param sequence2 {string} - The second sequence.
+     * @return {string} - The initial alignment.
+     */
+    function getInitialAlignment(sequence1, sequence2) {
+        return outputData.alignmentsAndScores[[sequence1, sequence2]];
+    }
+
+    /**
+     * Returns the alignment and score.
+     * @param sequence1 {string} - The first sequence.
+     * @param sequence2 {string} - The second sequence.
+     * @return {string} - The alignment.
+     */
+    function getAlignmentAndScore(sequence1, sequence2) {
+        var alignmentAndScore = outputData.alignmentsAndScores[[sequence1, sequence2]];  // constant time!
+
+        if (alignmentAndScore !== undefined)
+            return alignmentAndScore;
+
+        // compute with Gotoh score and alignment
+
+    }
+
+    /**
+     * Creates a group out of the sequences
+     * and replaces all gaps "_" with the placeholder symbol "#".
+     * @param group1Sequences {string} - The sequences of the first group.
+     * @param group2Sequences {string} - The sequences of the second group.
+     * @param guideAlignment {Object} - The alignment which is used to align the other group members.
+     * @return {Object} - The MSA group (MSA alignment).
+     */
+    function createGroup(group1Sequences, group2Sequences, guideAlignment) {
     }
 
     /**

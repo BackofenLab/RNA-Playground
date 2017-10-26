@@ -278,6 +278,7 @@ var MULTI_SYMBOLS = {
     D_BIG: /D/g,
     DELIMITER: /-/g,
     G_LITTLE_SPECIAL: /ğ/g,
+    NONE: /#/g,
     SPACE: / /g
 };
 
