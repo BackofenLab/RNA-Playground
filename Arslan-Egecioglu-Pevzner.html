@@ -9,7 +9,7 @@ Author: Alexander Mattheis
     <div class="description">
         The dynamic programming approach by
         <a href=" https://doi.org/10.1093/bioinformatics/17.4.327">
-            Abdullah N. Arslan, Ömer Eğecioğlu and Pavel A. Pevzner (2001)</a>
+            Abdullah N. Arslan, &Ouml;mer E&gbreve;ecio&gbreve;lu and Pavel A. Pevzner (2001)</a>
         computes the best normalized local alignments of two sequences.
         It identifies the local alignment that is best preserved with respect to the length of the aligned subsequences.
         <br>
@@ -17,8 +17,8 @@ Author: Alexander Mattheis
         The normalized local alignment algorithm tries
         to find the alignment $\mathcal{A}$ of two sequences
         with the highest normalized score
-        $$\quad\lambda^* = ns(\mathcal{A}) = \frac{s(\mathcal{A})}{⟦\mathcal{A}⟧ + L}$$
-        where $⟦\mathcal{A}⟧$ is the length
+        $$\quad\lambda^* = ns(\mathcal{A}) = \frac{s(\mathcal{A})}{[\![\mathcal{A}]\!] + L}$$
+        where $[\![\mathcal{A}]\!]$ is the length
         of the aligned subsequences (excluding gaps) and $L$ is a parameter
         to control the length-dependence of the normalized similarity score.
         <br>
@@ -39,7 +39,7 @@ Author: Alexander Mattheis
 		In iteration $r>0$, $s^r$ depends on the $\lambda^{r-1}$ estimate of the previous iteration,
 		where $\lambda^{0} = 0$.
 		Given this, the best local alignment $\mathcal{A}^r$ with score $S^r$ using $s^r$ is identified and
-		the new lambda estimate $\lambda^r$ is computed by $\lambda^r= S^r/(⟦\mathcal{A}^r⟧+L)$.
+		the new lambda estimate $\lambda^r$ is computed by $\lambda^r= S^r/([\![\mathcal{A}^r]\!]+L)$.
 		This is iterated until $\lambda$ converges or a certain number of iterations is exceeded.
         <br>
         <br>
@@ -160,7 +160,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 					Score $s(\mathcal{A}^5)$:
 					<span data-bind="text: $root.output.score5"></span> <br>
 
-					Length $⟦\mathcal{A}^5⟧$:
+					Length $[\![\mathcal{A}^5]\!]$:
 					<span data-bind="text: $root.output.length5"></span> <br>
 
 					Normalized score $\lambda^5$:
@@ -299,7 +299,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 					Score $s(\mathcal{A}^4)$:
 					<span data-bind="text: $root.output.score4"></span> <br>
 
-					Length $⟦\mathcal{A}^4⟧$:
+					Length $[\![\mathcal{A}^4]\!]$:
 					<span data-bind="text: $root.output.length4"></span> <br>
 
 					Normalized score $\lambda^4$:
@@ -438,7 +438,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 					Score $s(\mathcal{A}^3)$:
 					<span data-bind="text: $root.output.score3"></span> <br>
 
-					Length $⟦\mathcal{A}^3⟧$:
+					Length $[\![\mathcal{A}^3]\!]$:
 					<span data-bind="text: $root.output.length3"></span> <br>
 
 					Normalized score $\lambda^3$:
@@ -577,7 +577,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 					Score $s(\mathcal{A}^2)$:
 					<span data-bind="text: $root.output.score2"></span> <br>
 
-					Length $⟦\mathcal{A}^2⟧$:
+					Length $[\![\mathcal{A}^2]\!]$:
 					<span data-bind="text: $root.output.length2"></span> <br>
 
 					Normalized score $\lambda^2$:
@@ -716,7 +716,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 					Score $s(\mathcal{A}^1)$:
 					<span data-bind="text: $root.output.score1"></span> <br>
 
-					Length $⟦\mathcal{A}^1⟧$:
+					Length $[\![\mathcal{A}^1]\!]$:
 					<span data-bind="text: $root.output.length1"></span> <br>
 
 					Normalized score $\lambda^1$:
