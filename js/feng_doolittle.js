@@ -100,8 +100,7 @@ $(document).ready(function () {
         computePairwiseData();
         computeDistancesFromSimilarities();
         createDistanceMatrix();
-        createPhylogeneticTree();
-        createProgressiveAlignments();
+        createProgressiveAlignments(getPhylogeneticTree());
         return [inputData, outputData];
     }
 
@@ -116,6 +115,7 @@ $(document).ready(function () {
         outputData.similarities = [];
         outputData.alignmentLengths = [];
         outputData.gapNumbers = [];
+        outputData.gapStarts = [];
 
         for (var i = 1; i < inputData.sequences.length; i++) {
             for (var j = 0; j < i; j++) {
@@ -127,6 +127,7 @@ $(document).ready(function () {
                 outputData.similarities.push(ioData[1].score);
                 outputData.alignmentLengths.push(getAlignmentLength(ioData[1].alignments[0]));
                 outputData.gapNumbers.push(getNumberOfGaps(ioData[1].alignments[0]));
+                outputData.gapStarts.push();
             }
         }
     }
@@ -213,6 +214,36 @@ $(document).ready(function () {
     }
 
     /**
+     * Returns the number of gap starts in the alignment.
+     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
+     * - The triple of strings for which the number of gaps has to be computed.
+     * @return {number} - The number of gaps in the alignment.
+     */
+    function getNumberOfGapsStarts(alignment) {
+        return countNumberOfGapsStarts(alignment[0]) + countNumberOfGapsStarts(alignment[2]);
+    }
+
+    /**
+     * Counts the number of gap starts in the given sequence.
+     * @param sequence {string} - The sequence for which the number of gaps has to be counted.
+     * @return {number} - The number of gaps.
+     */
+    function countNumberOfGapsStarts(sequence) {
+        var numGapsStarts = 0;
+
+        for (var i = 0; i < sequence.length; i++) {
+            if (sequence[i] === SYMBOLS.GAP) {
+                numGapsStarts++;
+
+                while (sequence[i] === SYMBOLS.GAP && i < sequence.length)  // iterate to the gap end
+                    i++;
+            }
+        }
+
+        return numGapsStarts;
+    }
+
+    /**
      * Converting the pairwise similarities into distances
      * by using the Feng-Doolittle formulas.
      * Hint: The factor 100 is really
@@ -292,8 +323,8 @@ $(document).ready(function () {
     function getApproximatedRandomScore(alignmentLength, sequenceA, sequenceB, numOfGaps) {
         var doubleSum = 0;
 
-        var charsA = getChars(sequenceA);
-        var charsB = getChars(sequenceB);
+        var charsA = getUniqueChars(sequenceA);
+        var charsB = getUniqueChars(sequenceB);
 
         for (var i = 0; i < charsA.length; i++) {
             for (var j = 0; j < charsB.length; j++) {
@@ -307,7 +338,7 @@ $(document).ready(function () {
             }
         }
 
-        return (1/alignmentLength) * doubleSum - numOfGaps * (-inputData.enlargement);  // numOfGapStarts * (-inputData.baseCosts)
+        return (1/alignmentLength) * doubleSum - numOfGaps * (-inputData.enlargement) - numOfGapStarts * (-inputData.baseCosts);
     }
 
     /**
@@ -426,17 +457,45 @@ $(document).ready(function () {
 
     /**
      * Using a clustering algorithm like UPGMA (Group Average)
-     * the algorithm computes a visualization of the distance matrix
-     * in form of a binary guide tree.
+     * the algorithm returns the binary guide tree branches in creation order.
+     * @return {Object} - The tree branches.
      */
-    function createPhylogeneticTree() {
+    function getPhylogeneticTree() {
+        var clustering = new upgma.Upgma();
+        clustering.setIO(inputData, outputData);
+        var ioData = clustering.compute();
+        return ioData[1].treeBranches;
     }
 
     /**
-     * By going through a guide tree,
+     * By going through the guide tree branches (in correct merging order),
      * the algorithm generates progressive alignments.
+     * Hint: A repeated post order traversal of the tree would be less efficient.
+     * This is why just an iteration through the branches is done.
+     * @param treeBranches {Object} - The tree branches which are defining the order for the merging process.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     * Hint: The following procedure does not do
+     * any difference between block alignment
+     * and the alignment of two sequences.
      */
-    function createProgressiveAlignments() {
+    function createProgressiveAlignments(treeBranches) {
+        for (var i = 0; i < treeBranches.length; i++) {
+            var treeBranch = treeBranches[i];
+
+            var leftChildName = treeBranch.leftChild.name;
+            var rightChildName = treeBranch.rightChild.name;
+            var groupName = treeBranch.name;
+        }
+    }
+
+    /**
+     * Aligns two groups or sequences to each other.
+     * @param leftChildName - The name of the left group or sequence.
+     * @param rightChildName - The name of the right group or sequence
+     * @param groupName - The name of the new group.
+     */
+    function alignGroups(leftChildName, rightChildName, groupName) {
+        
     }
 
     /**

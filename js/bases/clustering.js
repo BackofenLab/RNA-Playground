@@ -32,6 +32,7 @@ Author: Alexander Mattheis
         this.nameIndex = 0;
         this.remainingClusterNames = [];
         this.removedKeys = [];
+        this.treeParts = [];  // storing the current incurred tree parts
 
         // inheritance
         childInstance = child;
@@ -74,7 +75,7 @@ Author: Alexander Mattheis
         }
 
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
-        outputData.newickString = formats.newickFormat.getEncoding(outputData.tree[0]);
+        outputData.newickString = formats.newickFormat.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
         return [inputData, outputData];
     }
 
@@ -85,7 +86,11 @@ Author: Alexander Mattheis
         clusteringInstance.remainingClusterNames = outputData.clusterNames.slice();  // shallow copy (because they won't be changed)
 
         outputData.cardinalities = {};  // needed for distance computations (for example in UPGMA)
-        outputData.tree = [];  // hierarchical tree
+
+        // stores the created tree branches in the order
+        // in which they were created to avoid a repeated tree traversal during the progressive alignment
+        // and for possible step by step visualizations of tree-growthment with libraries
+        outputData.treeBranches = [];
     }
 
     /**
@@ -261,8 +266,9 @@ Author: Alexander Mattheis
         node.name = newClusterName;
         node.value = distance;  // non-final evolutionary distance for edge above this node
 
-        outputData.tree.push(node);
-        return outputData.tree[outputData.tree.length-1];
+        outputData.treeBranches.push(node);
+        clusteringInstance.treeParts.push(node);
+        return clusteringInstance.treeParts[clusteringInstance.treeParts.length-1];
     }
 
     /**
@@ -272,9 +278,9 @@ Author: Alexander Mattheis
      * @return {Object} - The node with the given parameters.
      */
     function getNode(name, value) {
-        for (var i = 0; i < outputData.tree.length; i++) {
-            if (outputData.tree[i].name === name) {
-                var node = outputData.tree.splice(i, 1)[0];  // removes and returns the removed element
+        for (var i = 0; i < clusteringInstance.treeParts.length; i++) {
+            if (clusteringInstance.treeParts[i].name === name) {
+                var node = clusteringInstance.treeParts.splice(i, 1)[0];  // removes and returns the removed element
                 node.value = value - node.value;  // computing final evolutionary distance for edge above the node
                 return node;
             }
