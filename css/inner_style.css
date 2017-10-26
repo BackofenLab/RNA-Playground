@@ -8,7 +8,6 @@ Author: Alexander Mattheis
 /* HINT: alphabetically ordered (also within definitions) */
 
 /*---- TAG STYLING ----*/
-
 form input {
     user-focus: ignore;
 }
@@ -19,10 +18,6 @@ input[type="text"] {
 
 input[type="number"] {
     width: 35px;
-}
-
-label {
-    padding-top: 2px; /* to align with inputs */
 }
 
 small {
@@ -58,9 +53,14 @@ th {
 }
 
 /*---- CLASS STYLING ----*/
+.ancillary_output {
+    clear: left;
+    float: left;
+}
+
 /* HINT: to avoid errors all pictures have to be imported as classes whether they are unique */
-.arrows_d, .arrows_dt, .arrows_l, .arrows_ld, .arrows_ldt, .arrows_lt, .arrows_t {
-    background: url(../sprites.png) no-repeat;
+.arrows_d, .arrows_l, .arrows_t {
+    background: url(../inner_sprites.png) no-repeat;
 }
 
 .arrows_d, .arrows_l, .arrows_t {
@@ -73,51 +73,72 @@ th {
 }
 
 .arrows_d { /* diagonal */
-    background-position: -50px -112px;
+    background-position: 0px 0px;
 }
 
 .arrows_l { /* left */
-    background-position: -50px -150px;
+    background-position: 0px -38px;
 }
 
 .arrows_t { /* top */
-    background-position: -50px -185px;
+    background-position: 0px -73px;
 }
 
-/* Some extra pictures for possible optimizations
-.arrows_dt {
-    background-position: 0 -150px;
+.calculation, .calculation_horizontal, .calculation_vertical,
+.calculation_1, .calculation_2, .calculation_3, .calculation_4, .calculation_5 {
+    border: solid 1px #a0a0a0;
+    border-spacing: 0;
+    border-width: 0 1px 0 0;
 }
 
-.arrows_ld {
-    background-position: 0 -112px;
+/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
+.calculation td, .calculation th,
+.calculation_horizontal td, .calculation_horizontal th,
+.calculation_vertical td, .calculation_vertical th,
+.calculation_1 td, .calculation_1 th,
+.calculation_2 td, .calculation_2 th,
+.calculation_3 td, .calculation_3 th,
+.calculation_4 td, .calculation_4 th,
+.calculation_5 td, .calculation_5 th
+{
+    border: solid 1px #a0a0a0;
+    border-width: 1px 0 1px 1px;
+    /*
+    min- and max values avoid cell shrinking when the table is growing
+     */
+    height: 24px;
+    max-height: 24px;
+    max-width: 32px;
+    min-height: 24px;
+    min-width: 32px;
+    width: 32px;
 }
 
-.arrows_ldt {
-    background-position: 0 -220px;
+.download_area {
+    clear: both;
+    line-height: 140%;
+    padding-top: 10px;
 }
 
-.arrows_lt {
-    background-position: 0 -185px;
-}
-*/
-
-.download {
-    padding-bottom: 30px;
-}
-
-.download_table {
-    background: none;
-    border: none;
+.entry {
+    border-bottom: 0;
+    font-family: serif;
+    font-size: 1.1em;
     position: relative;
-    text-align: left;
-    top: 8px;
+}
+
+.entry_start {
+    border-bottom: 1px;
+    border-top: 0;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
 }
 
 .group_hint {
     color: gray;
     font-size: smaller;
-    padding-left: 120px;
+    padding-top: 10px;
 }
 
 .group input {
@@ -129,6 +150,97 @@ th {
     border-width: 1px;
     padding-left: 8px;
     text-align: left;
+}
+
+.iteration {
+    clear: both;
+    padding-bottom: 30px;
+}
+
+.iteration_footer {
+    background-color: #ebebeb; /* Uni-Freiburg standard */
+    clear: both;
+    font-size: smaller;
+    padding: 5px;
+}
+
+.iteration_header h4 {
+    background-color: #ebebeb; /* Uni-Freiburg standard */
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.main_output {
+    max-width: 600px;
+    overflow: auto;
+}
+
+.non_selectable_entry {
+    border-bottom: 0;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
+}
+
+.outcome {
+    display: inline-block;
+    padding-left: 30px;
+}
+
+.output {
+    float: left;
+}
+
+.parameters {
+    line-height: 180%;
+    padding-bottom: 30px;
+}
+
+.results {
+    border: none;
+    clear: left;
+    float: left;
+    max-height: 200px;
+    max-width: 160px;
+    overflow-y: scroll;
+    vertical-align: top;
+}
+
+.results td, .results th {
+    border-left: none;
+    border-right: none; /* other possibilities does not look bug-like on tablets/smartphone browsers */
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 150px;
+}
+
+.results_footer {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+.results_footer td, .results_footer th,
+.results_header td, .results_header th {
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 150px;
+}
+
+.results_header {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+.results_with_scrollbar {
+    border-left: 1px solid #a0a0a0;
+    border-right: 1px solid #a0a0a0;
+    clear: left;
+    float: left;
+    width: 161px;
 }
 
 .selectable_entry {
@@ -149,7 +261,7 @@ th {
 }
 
 .selected {
-    background-color: #8fa9ef;
+    background-color: #5582BC; /* Uni-Freiburg Logo blue */
     color: white;
 }
 
@@ -173,11 +285,6 @@ th {
     color: white;
 }
 
-.span_group {
-    padding-bottom: 15px;
-    padding-left: 120px;
-}
-
 /*---- ID STYLING ----*/
 #algorithm_description .description {
     display: inline-block;
@@ -192,128 +299,16 @@ th {
     width: 150px;
 }
 
-#algorithm_input form {
-    padding: 15px 0 15px 15px;
-}
-
-#algorithm_input form p label {
-    display: block;
-    float: left;
-    width: 120px;
+#algorithm_input {
+    margin: 15px 0 15px 15px;
 }
 
 #algorithm_output {
-    padding-bottom: 30px;
+    margin-bottom: 15px;
 }
 
-#algorithm_view {
-    padding: 30px;
-    z-index: 1;
-}
-
-#ancillary_output {
-    float: left;
-    padding-left: 30px;
-}
-
-#calculation, #calculation_horizontal, #calculation_vertical {
-    border: solid 1px #a0a0a0;
-    border-spacing: 0;
-    border-width: 0 1px 0 0;
-}
-
-/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
-#calculation td, #calculation th,
-#calculation_horizontal td, #calculation_horizontal th,
-#calculation_vertical td, #calculation_vertical th {
-    border: solid 1px #a0a0a0;
-    border-width: 1px 0 1px 1px;
-    /*
-    min- and max values avoid cell shrinking when the table is growing
-     */
-    height: 24px;
-    max-height: 24px;
-    max-width: 32px;
-    min-height: 24px;
-    min-width: 32px;
-    width: 32px;
-}
-
-#main_output {
-    max-width: 600px;
-    overflow: auto;
-}
-
-#output {
-    float: left;
-}
-
-#recursion_gotoh {
-    padding-top: 16px;
-}
-
-#recursion_needleman_wunsch {
-    padding-top: 32px;
-}
-
-#recursion_smith_waterman {
-    padding-top: 40px;
-}
-
-#recursion_waterman_smith_beyer {
-    padding-top: 40px;
-}
-
-#results {
-    border: none;
-    clear: left;
-    float: left;
-    max-height: 200px;
-    max-width: 160px;
-    overflow-y: scroll;
-    vertical-align: top;
-}
-
-#results_footer {
-    clear: left;
-    float: left;
-    vertical-align: top;
-}
-
-#results_header {
-    clear: left;
-    float: left;
-    vertical-align: top;
-}
-
-#results_with_scrollbar {
-    border-left: 1px solid #a0a0a0;
-    border-right: 1px solid #a0a0a0;
-    clear: left;
-    float: left;
-    width: 161px;
-}
-
-#results td, #results th {
-    border-left: none;
-    border-right: none; /* other possibilities does not look bug-like on tablets/smartphone browsers */
-    height: 24px;
-    padding-left: 10px;
-    text-align: left;
-    width: 150px;
-}
-
-#results_footer td, #results_footer th,
-#results_header td, #results_header th {
-    height: 24px;
-    padding-left: 10px;
-    text-align: left;
-    width: 150px;
-}
-
-#outcome {
-    clear: left;
-    float: left;
+#length {
+    width: 55px;
 }
 
 #overlay {

@@ -11,9 +11,10 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    debugger;
-    if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
+    if (loaded === ALGORITHMS.WATERMAN_SMITH_BEYER) {  // to avoid self execution on a script import
         watermanSmithBeyer.startWatermanSmithBeyer();
+        loaded = ALGORITHMS.NONE;
+    }
 });
 
 (function () {  // namespace
@@ -33,17 +34,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startWatermanSmithBeyer() {
-        imports();
-
         var subadditiveAlignmentInterface = new interfaces.subadditiveAlignmentInterface.SubadditiveAlignmentInterface();
         subadditiveAlignmentInterface.startSubadditiveAlignmentAlgorithm(WatermanSmithBeyer, ALGORITHMS.WATERMAN_SMITH_BEYER);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        $.getScript(PATHS.SUBADDITIVE_ALIGNMENT_INTERFACE);
     }
 
     /*---- ALGORITHM ----*/
@@ -61,6 +53,7 @@ $(document).ready(function () {
         // inheritance
         alignmentInstance = new bases.alignment.Alignment(this);
 
+        // public class methods
         this.getInput = getInput;
 
         this.setInput = setInput;
@@ -84,29 +77,18 @@ $(document).ready(function () {
     /**
      * Sets the algorithm input for an appropriate algorithm
      * which is using the inputViewmodel properties in its computations.
-     * @param inputViewmodel {InputViewmodel} - The InputViewmodel of an appropriate algorithm.
+     * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
-        inputData.sequenceA = inputViewmodel.sequence1();
-        inputData.sequenceB = inputViewmodel.sequence2();
-
-        inputData.calculationType = inputViewmodel.calculation();
-
-        inputData.baseCosts = inputViewmodel.baseCosts();
-        inputData.enlargement = inputViewmodel.enlargement();
-        inputData.match = inputViewmodel.match();
-        inputData.mismatch = inputViewmodel.mismatch();
+        alignmentInstance.setIO(inputData, {});
+        alignmentInstance.setSubadditiveAlignmentInput(inputViewmodel);
         inputData.subadditiveFunction = inputViewmodel.subadditiveFunction();
-
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
     }
 
     /**
      * Starts the computation.
      */
     function compute() {
-        debugger;
         initializeMatrix();
         computeMatrixAndScore();
         computeTraceback();
@@ -283,12 +265,12 @@ $(document).ready(function () {
 
         outputData.moreTracebacks = false;
         outputData.tracebackPaths =
-            alignmentInstance.getTraces([lowerRightCorner], inputData, outputData, -1, getNeighboured);
+            alignmentInstance.getGlobalTraces([lowerRightCorner], inputData, outputData, -1, getNeighboured);
     }
 
     /**
      * Returns the neighbours to which you can go from the current cell position used as input.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @param algorithm {Object} - Contains an alignment algorithm.
@@ -315,7 +297,7 @@ $(document).ready(function () {
         var leftValue = left >= 0 && position.i === 0 ? outputData.matrix[position.i][left] : Number.NaN;
 
         // check
-        var isMatchMismatch = currentValue === (diagonalValue + matchOrMismatch);
+        var isMatchMismatch = alignmentInstance.differenceLowerEpsilon(currentValue, diagonalValue + matchOrMismatch, EPSILON);
         var isHorizontal = !isNaN(horizontalK);  // if a position exists to which we can horizontally jump
         var isVertical = !isNaN(verticalK);  // if a position exists to which we can vertically jump
 
@@ -349,45 +331,35 @@ $(document).ready(function () {
      * Computes the vertical position from which you get to the currentValue.
      * @param algorithm {Object} - Contains an alignment algorithm.
      * @param currentValue - The value from the current cell.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param outputData {Object} - Contains all output data.
      * @return {number} - The matching position. You get back NaN if such position does not exists.
      */
     function searchVerticalMatchPosition(algorithm, currentValue, position, outputData) {
-        for (var k = 1; k < position.i; k++) {
-            if (differenceLowerEpsilon(outputData.matrix[position.i - k][position.j] + algorithm.gapFunction(k), currentValue, EPSILON))
-                return position.i - k;
+        if (position.j > 0) {
+            for (var k = 1; k <= position.i; k++) {
+                if (alignmentInstance.differenceLowerEpsilon(outputData.matrix[position.i - k][position.j] + algorithm.gapFunction(k), currentValue, EPSILON))
+                    return position.i - k;
+            }
         }
 
         return Number.NaN;
     }
 
     /**
-     * Tests if the difference between to values is lower some parameter Epsilon.
-     * Hint: It would maybe work without this function. So, this function is only for security reasons.
-     * @param value1 - The first value.
-     * @param value2 - The second value.
-     * @param epsilon - The small number you test against.
-     * @return {boolean} - The
-     */
-    function differenceLowerEpsilon(value1, value2, epsilon) {
-        var difference = value1 - value2;
-
-        return Math.abs(difference) < epsilon;
-    }
-
-    /**
      * Computes the horizontal position from which you get to the currentValue.
      * @param algorithm {Object} - Contains an alignment algorithm.
      * @param currentValue - The value from the current cell.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param outputData {Object} - Contains all output data.
      * @return {number} - The matching position. You get back NaN if such position does not exists.
      */
     function searchHorizontalMatchPosition(algorithm, currentValue, position, outputData) {
-        for (var k = 1; k < position.j; k++) {
-            if (differenceLowerEpsilon(outputData.matrix[position.i][position.j - k] + algorithm.gapFunction(k), currentValue, EPSILON))
-                return position.j - k;
+        if (position.i > 0) {
+            for (var k = 1; k <= position.j; k++) {
+                if (alignmentInstance.differenceLowerEpsilon(outputData.matrix[position.i][position.j - k] + algorithm.gapFunction(k), currentValue, EPSILON))
+                    return position.j - k;
+            }
         }
 
         return Number.NaN;

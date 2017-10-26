@@ -7,37 +7,26 @@ Author: Alexander Mattheis
 
 <div id="algorithm_description">
     <div class="description">
-        The algorithm by <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Osamu Gotoh (1982)</a>
-        computes the optimal global alignment of two sequences when using an affine gap scoring.
-        Here, the scoring of a long consecutive gap (insertion/deletion) is favored over
-        a collection of small gaps with the same combined length.
-        This incorporates the assumption that a single large insertion/deletion event is 
-        biologically more likely to happen compared to many small insertions/deletions.
-        While sophisticated gap scoring models can be applied in the generic algorithm by
-        <a href="https://doi.org/10.1016/0001-8708(76)90202-4">Waterman-Smith-Beyer (1976)</a>,
-        affine gap scoring used in Gotoh's algorithm enables a reasonable gap model with 
-        reduced runtime.
+        The algorithms <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">Gotoh</a>
+        and <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Smith-Waterman">Smith-Waterman</a>
+        combined into one approach.
+        It computes the local affine alignment of two sequences when using an affine gap scoring.
         <br>
         <br>
-        Under the assumption that both input sequences $a$ and $b$ stem from the same origin,
-        a global alignment tries to identify matching parts and the 
-        changes needed to transfer one sequence into the other.
-        The changes are scored and an optimal set of changes is identified, which defines an alignment.
-        Gotoh's dynamic programming approach tabularizes optimal subsolutions in matrices $D,P$ and $Q$.
-        An entry $D_{i,j}$ represents the best score for the alignment of the 
-        prefixes $a_{1..i}$ with $b_{1..j}$, while an entry $P_{i,j}/Q_{i,j}$ provides the best score
-        under the additional constraint that the alignment ends in a gap within sequence $b/a$, respectively.
-        The according recursions and the used affine gap function $g$ are shown below. 
+        In order to find such a local alignment, the global affince alignment algorithm by
+        <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Osamu Gotoh (1982)</a>
+        is extended with an additional case '0' in the recursion function for the matrix $S$.
+        This lower bound on the similarity score excludes alignments with scores less than zero.
         <br>
         <br>
-        For the given input, the according tables $D,P$ and $Q$ are provided along with a list 
+        For the given input, the according tables $S,P$ and $Q$ are provided along with a list
         of according optimal alignments. 
         On table cell selection, optimal traceback options are shown.
         On alignment selection, an according traceback path is visualized in the table.
     </div>
 
     <div class="picture">
-        <img src="Gotoh-120x90.png">
+        <img src="GotohLocal-120x90.png">
     </div>
 </div>
 
@@ -50,18 +39,6 @@ Author: Alexander Mattheis
 	<div class="row">
 		<div class="colW100"><label>Sequence $b$:</label></div>
 		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'" type="text"></div>
-	</div>
-
-    <div class="row">
-		<div class="colW100"><label>Optimization of:</label></div>
-		<div class="colW400">
-            <span class="group">
-                Distance <input class="optimization_type" data-bind="checked: input.calculation" id="distance"
-                                name="calculation" type="radio" value="distance">
-                Similarity <input class="optimization_type" data-bind="checked: input.calculation" id="similarity"
-                                  name="calculation" type="radio" value="similarity">
-            </span>
-        </div>
 	</div>
 
     <div class="row">
@@ -86,8 +63,7 @@ Author: Alexander Mattheis
 
             <div class="group_hint">
 				<b>Hint:</b> <br>
-				For similarity maximization, <br> match scores should be positive and all other scores lower. <br>
-                For distance minimization the reverse applies.
+				For similarity maximization, <br> match scores should be positive and all other scores lower.
 			</div>
 		</div>
     </div>

@@ -5,12 +5,46 @@ Supervisor: Martin Raden
 Author: Alexander Mattheis
 */
 
-TestCase("test_smith_waterman", {
+TestCase("test_gotoh_local", {
+    /**
+     * Short sequences test.
+     * @see Test sequences are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     */
     /**
      * Initial sequences test.
      */
     "test_1": function () {
-        var algorithm = new smithWaterman.SmithWaterman();
+        var algorithm = new gotohLocal.GotohLocal();
+
+        var inputData = {};
+        inputData.sequenceA = "CCGA";
+        inputData.sequenceB = "CG";
+
+        inputData.calculationType = "similarity";
+
+        inputData.baseCosts = -3;
+        inputData.enlargement = -1;
+        inputData.match = 1;
+        inputData.mismatch = -1;
+
+        inputData.matrixHeight = inputData.sequenceB.length + 1;
+        inputData.matrixWidth = inputData.sequenceA.length + 1;
+
+        algorithm.setIO(inputData, {});
+
+        var ioData = algorithm.compute();
+        var outputData = ioData[1];
+
+        assertEquals(2, outputData.score);
+        assertEquals("CG", outputData.alignments[0][0]);
+        assertEquals("CG", outputData.alignments[0][2]);
+    },
+
+    /**
+     * Simulating Smith-Waterman to test correctness.
+     */
+    "test_2": function () {
+        var algorithm = new gotohLocal.GotohLocal();
 
         var inputData = {};
         inputData.sequenceA = "AACG";
@@ -18,8 +52,8 @@ TestCase("test_smith_waterman", {
 
         inputData.calculationType = "similarity";
 
-        inputData.deletion = -2;
-        inputData.insertion = -2;
+        inputData.baseCosts = 0;
+        inputData.enlargement = -2;
         inputData.match = 1;
         inputData.mismatch = -1;
 
@@ -41,11 +75,10 @@ TestCase("test_smith_waterman", {
 
     /**
      * Multi sequences test.
-     * @see: Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     * Simulating Smith-Waterman to test correctness.
      */
-    "test_2": function () {
-        debugger;
-        var algorithm = new smithWaterman.SmithWaterman();
+    "test_3": function () {
+        var algorithm = new gotohLocal.GotohLocal();
 
         var inputData = {};
         inputData.sequenceA = "TCCGA";
@@ -53,8 +86,8 @@ TestCase("test_smith_waterman", {
 
         inputData.calculationType = "similarity";
 
-        inputData.deletion = -1;
-        inputData.insertion = -1;
+        inputData.baseCosts = 0;
+        inputData.enlargement = -1;
         inputData.match = 1;
         inputData.mismatch = 0;
 
@@ -82,11 +115,11 @@ TestCase("test_smith_waterman", {
 
     /**
      * Long sequences test.
+     * Simulating Smith-Waterman to test correctness.
      * @see: Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
-    "test_3": function () {
-        debugger;
-        var algorithm = new smithWaterman.SmithWaterman();
+    "test_4": function () {
+        var algorithm = new gotohLocal.GotohLocal();
 
         var inputData = {};
         inputData.sequenceA = "CCCCGCGACTCGGGTTCAAGGG";
@@ -94,8 +127,8 @@ TestCase("test_smith_waterman", {
 
         inputData.calculationType = "similarity";
 
-        inputData.deletion = -2;
-        inputData.insertion = -2;
+        inputData.baseCosts = 0;
+        inputData.enlargement = -2;
         inputData.match = 4;
         inputData.mismatch = -1;
 

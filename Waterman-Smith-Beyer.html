@@ -42,81 +42,95 @@ Author: Alexander Mattheis
 </div>
 
 <div id="algorithm_input">
-    <form>
-        <p>
-            <label>Sequence $a$:</label>
-            <input class="sequence" data-bind="value: input.sequence1" id="sequence_1"
-                   placeholder="EXAMPLE 'ATC'" type="text">
-        </p>
+    <div class="row">
+		<div class="colW100"><label>Sequence $a$:</label></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'" type="text"></div>
+	</div>
 
-        <p>
-            <label>Sequence $b$:</label>
-            <input class="sequence" data-bind="value: input.sequence2" id="sequence_2"
-                   placeholder="EXAMPLE 'AGTC'" type="text">
-        </p>
+	<div class="row">
+		<div class="colW100"><label>Sequence $b$:</label></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'" type="text"></div>
+	</div>
 
-        <p>
-            <label>Optimization of:</label>
+    <div class="row">
+		<div class="colW100"><label>Optimization of:</label></div>
+		<div class="colW400">
             <span class="group">
                 Distance <input class="optimization_type" data-bind="checked: input.calculation" id="distance"
                                 name="calculation" type="radio" value="distance">
                 Similarity <input class="optimization_type" data-bind="checked: input.calculation" id="similarity"
                                   name="calculation" type="radio" value="similarity">
             </span>
-        </p>
+        </div>
+	</div>
 
-        <p>
-            <label>Scoring in $s$:</label>
+    <div class="row">
+		<div class="colW100"><label>Scoring in $s$:</label></div>
+
+		<div class="colW400">
             <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
                 Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
                 Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
             </span>
-        </p>
+		</div>
+    </div>
 
-        <p>
-            <label>Gap function $g$:</label>
-            <div class="span_group">
-                <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+    <div class="row">
+        <div class="colW100"><label>Gap function $g$:</label></div>
+
+        <div class="colW400">
+            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
                     Affine <input class="gap_function_type" data-bind="checked: input.subadditiveFunction" id="affine"
                                   name="functionGroup" type="radio" value="affine">
 
                     Logarithmic <input class="gap_function_type" data-bind="checked: input.subadditiveFunction" id="logarithmic"
                                        name="functionGroup" type="radio" value="logarithmic">
-    
+
                     Quadratic <input class="gap_function_type" data-bind="checked: input.subadditiveFunction" id="quadratic"
                                      name="functionGroup" type="radio" value="quadratic">
-                </span>
-                <br>
-                <br>
-                <span data-bind="text: $root.input.gapFunction"></span>
-                <br>
-                <br>
-                <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
-                    Gap opening $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
-                    Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
-                </span>
-            </div>
-        </p>
+            </span>
 
-        <p>
-            <label id="recursion_waterman_smith_beyer">Recursion:</label>
-            <div class="span_group">
-                <span data-bind="text: $root.input.formula"></span>
-            </div>
+            <br>
+            <br>
+
+            <span data-bind="text: $root.input.gapFunction"></span>
+
+            <br>
+            <br>
+
+            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                Gap opening $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
+                Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
+            </span>
+        </div>
+    </div>
+
+    <div class="row">
+		<div class="colW100">
+            <br>
+            <label>
+                <br>
+                <br>
+                Recursion:
+            </label>
+        </div>
+
+		<div class="colW600">
+			<span data-bind="text: $root.input.formula"></span>
 
             <div class="group_hint">
                 <b>Hint:</b> <br>
-                For similarity maximization, match scores should be positive and all other scores lower. <br>
+                For similarity maximization, <br> match scores should be positive and all other scores lower. <br>
                 For distance minimization the reverse applies.
             </div>
-        </p>
-    </form>
+		</div>
+	</div>
 </div>
 
 <div id="algorithm_output">
-    <div id="output">
-        <div id="main_output">
-            <table id="calculation">
+    <div class="output">
+        <div class="main_output">
+            <table class="calculation">
                 <thead>
 					<tr>
 						<th>$D$</th>
@@ -146,7 +160,7 @@ Author: Alexander Mattheis
                     <!-- /ko -->
 
 					<tr>
-						<th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
+						<th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
 							<small>
 								<b>Score:</b> <span data-bind="text: $root.output.score"></span>
 							</small>
@@ -156,22 +170,14 @@ Author: Alexander Mattheis
             </table>
         </div>
 
-        <div class="download">
-            <table>
-                <tfoot>
-                <tr>
-                    <td class="download_table" colspan=100%>
-                        <a class="table_download" href="#">Download Table</a>
-                    </td>
-                </tr>
-                </tfoot>
-            </table>
+        <div class="download_area">
+            <a class="table_download" href="#">Download Table</a>
         </div>
     </div>
 
-    <div id="ancillary_output">
-        <div id ="outcome">
-            <table id="results_header">
+    <div class="outcome">
+        <div class ="ancillary_output">
+            <table class="results_header">
                 <thead>
 					<tr>
 						<th>
@@ -184,41 +190,41 @@ Author: Alexander Mattheis
                 </thead>
             </table>
 
-            <div id="results_with_scrollbar">
-                <table id="results">
+            <div class="results_with_scrollbar">
+                <table class="results">
                     <tbody>
-                    <!-- ko foreach: $root.output.alignments -->
-                        <!-- ko if: $index() < 10 -->
-                            <!-- ko if: $index() == 0 -->
-                                <tr>
-                                    <td class="selectable_entry selectable_entry_start">
-                                        <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                        <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
-                                        <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
-                                    </td>
-                                </tr>
-                            <!-- /ko -->
-                            <!-- ko if: $index() != 0 -->
-                                <tr>
-                                    <td class="selectable_entry">
-                                        <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                        <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
-                                        <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
-                                    </td>
-                                </tr>
+                        <!-- ko foreach: $root.output.alignments -->
+                            <!-- ko if: $index() < 10 -->
+                                <!-- ko if: $index() == 0 -->
+                                    <tr>
+                                        <td class="selectable_entry selectable_entry_start">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
+                                <!-- ko if: $index() != 0 -->
+                                    <tr>
+                                        <td class="selectable_entry">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
                             <!-- /ko -->
                         <!-- /ko -->
-                    <!-- /ko -->
                     </tbody>
                 </table>
             </div>
 
-            <table id="results_footer">
+            <table class="results_footer">
                 <tr>
                     <th>
                         <small>
                             <!-- ko if: $root.output.moreTracebacks -->
-                            <b>Hint:</b> Only the first ten results are computed.
+                                <b>Hint:</b> Only the first ten results are computed.
                             <!-- /ko -->
                         </small>
                     </th>

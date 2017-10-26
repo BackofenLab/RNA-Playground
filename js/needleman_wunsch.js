@@ -11,14 +11,16 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
+    if (loaded === ALGORITHMS.NEEDLEMAN_WUNSCH) {  // to avoid self execution on a script import
         needlemanWunsch.startNeedlemanWunsch();
+        loaded = ALGORITHMS.NONE;
+    }
 });
 
 (function () {  // namespace
     // public methods
     namespace("needlemanWunsch", startNeedlemanWunsch, NeedlemanWunsch,
-        setIO, compute, initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getSuperclass);
+        initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getSuperclass);
 
     // instances
     var alignmentInstance;
@@ -28,18 +30,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startNeedlemanWunsch() {
-        imports();
-
-        var alignmentInterface = new interfaces.alignmentInterface.AlignmentInterface();
-        alignmentInterface.startAlignmentAlgorithm(NeedlemanWunsch, ALGORITHMS.NEEDLEMAN_WUNSCH);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);
-        //$.getScript(PATHS.ALIGNMENT);
+        var linearAlignmentInterface = new interfaces.linearAlignmentInterface.LinearAlignmentInterface();
+        linearAlignmentInterface.startLinearAlignmentAlgorithm(NeedlemanWunsch, ALGORITHMS.NEEDLEMAN_WUNSCH);
     }
 
     /*---- ALGORITHM ----*/
@@ -58,13 +50,13 @@ $(document).ready(function () {
         // inheritance
         alignmentInstance = new bases.alignment.Alignment(this);
 
-        this.setInput = alignmentInstance.setInput;
+        this.setInput = alignmentInstance.setLinearAlignmentInput;
         this.compute = alignmentInstance.compute;
         this.getOutput = alignmentInstance.getOutput;
 
         this.setIO = alignmentInstance.setIO;
 
-        // public methods (linking)
+        // public class methods
         this.initializeMatrix = initializeMatrix;
         this.computeMatrixAndScore = computeMatrixAndScore;
         this.recursionFunction = recursionFunction;
@@ -72,29 +64,10 @@ $(document).ready(function () {
         this.getSuperclass = getSuperclass;
     }
 
-    // inheritance
-    /**
-     * Sets the algorithm input and output for calculation.
-     * @param input {Object} - The input structure.
-     * @param output {Object} - The output structure.
-     * @augments Alignment.setIO(input, output)
-     */
-    function setIO(input, output) {
-        alignmentInstance.setIO(input, output);
-    }
-
-    /**
-     * Starts computation by starting the superclass computation.
-     * @augments Alignment.compute()
-     */
-    function compute() {
-        return alignmentInstance.compute();
-    }
-
     // methods
     /**
      * Initializes the matrix.
-     * @override Alignment.initializeMatrix()
+     * @augments Alignment.initializeMatrix()
      */
     function initializeMatrix() {
         var inputData = alignmentInstance.getInput();
@@ -170,7 +143,7 @@ $(document).ready(function () {
         
         outputData.moreTracebacks = false;
         outputData.tracebackPaths =
-            alignmentInstance.getTraces([lowerRightCorner], inputData, outputData, -1, alignmentInstance.getNeighboured);
+            alignmentInstance.getGlobalTraces([lowerRightCorner], inputData, outputData, -1, alignmentInstance.getNeighboured);
     }
 
     /**

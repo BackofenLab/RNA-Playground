@@ -17,18 +17,19 @@ Author: Alexander Mattheis
 
     /**
      * Does all the post-processing
-     * like removing/updating wrong inputs
-     * and it defines how different
-     * input types behave.
+     * like removing/updating wrong inputs.
+     * It defines how different
+     * input types behave and
+     * it is also used for forwarding input
+     * to the algorithms and the visualizer.
      */
     function InputProcessor() {
         inputProcessorInstance = this;
 
         // variables
         this.inputUpdatesStarted = false;
-        this.avoidFocusOutUpdate = false;
 
-        // public methods (linking)
+        // public class methods
         this.activateInputUpdates = activateInputUpdates;
         this.inputUpdatesActivated = inputUpdatesActivated;
         this.linkElements = linkElements;
@@ -57,115 +58,25 @@ Author: Alexander Mattheis
      */
     function linkElements(visualViewmodel) {
         fixBrowserBugs();
-        changeDefaultKeyBehaviour();
 
+        // retrieve parameters
         var algorithmInput = $("#algorithm_input");
         var functionParameters = algorithmInput.find(".fx_parameter");
 
-        var mainOutput = $("#main_output");
-        var calculation = mainOutput.find("#calculation");
-        var calculationHorizontal = mainOutput.find("#calculation_horizontal");
-        var calculationVertical = mainOutput.find("#calculation_vertical");
-        var results = $("#results");
+        var mainOutput = $(".main_output");  // output containing the calculation tables
+        var calculationTable = mainOutput.find(".calculation");
+        var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
+        var calculationVerticalTable = mainOutput.find(".calculation_vertical");
 
         var selectableEntryClass = ".selectable_entry";
 
-        var tableDownload = $(".table_download");
-        var tableVerticalDownload = $(".table_vertical_download");
-        var tableHorizontalDownload = $(".table_horizontal_download");
-
-        // 1st
-        var functionArguments = {"functionParameters": functionParameters};
-        algorithmInput.find(".optimization_type").on("change", functionArguments, negateOptimizationParameters);
-
-        var browserWindow = $(window);
-
-        // 2nd
-        functionParameters.on("focusout keypress", removeCriticalNumbers);
-        algorithmInput.find(".sequence").on("keyup", removeNonAllowedBases);
-
-        // 3rd
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "resultsTable": results,
-            "mainOutput": mainOutput,
-            "selectableEntryClass": selectableEntryClass,
-            "visualViewmodel": visualViewmodel
-        };
-        results.on("click", selectableEntryClass, functionArguments, selectTableEntry);
-
-        // 4th
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "mainOutput": mainOutput,
-            "number": MATRICES.VERTICAL_NUMBER,
-            "selectableEntryClass": selectableEntryClass,
-            "visualViewmodel": visualViewmodel
-        };
-        calculationVertical.on("click", selectableEntryClass, functionArguments, selectCell);
-
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "mainOutput": mainOutput,
-            "number": MATRICES.DEFAULT_NUMBER,
-            "selectableEntryClass": selectableEntryClass,
-            "visualViewmodel": visualViewmodel
-        };
-        calculation.on("click", selectableEntryClass, functionArguments, selectCell);
-
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "mainOutput": mainOutput,
-            "number": MATRICES.HORIZONTAL_NUMBER,
-            "selectableEntryClass": selectableEntryClass,
-            "visualViewmodel": visualViewmodel
-        };
-        calculationHorizontal.on("click", selectableEntryClass, functionArguments, selectCell);
-
-        // 5th
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "number": MATRICES.VERTICAL_NUMBER
-        };
-        tableVerticalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
-
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "number": MATRICES.DEFAULT_NUMBER
-        };
-        tableDownload.on("click", functionArguments, visualViewmodel.downloadTable);
-
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "number": MATRICES.HORIZONTAL_NUMBER
-        };
-        tableHorizontalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
-
-        // 6th
-        functionArguments = {
-            "calculationTable": calculation,
-            "calculationHorizontalTable": calculationHorizontal,
-            "calculationVerticalTable": calculationVertical,
-            "mainOutput": mainOutput
-        };
-        browserWindow.on("resize", functionArguments, visualViewmodel.redrawOverlay);
-
-        // 7th
-        mainOutput.on("scroll", functionArguments, visualViewmodel.redrawOverlay);
+        // linking (alphabetically sorted)
+        linkBasicInputsBehaviour(algorithmInput, functionParameters);
+        linkDownloadLinks(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable);
+        linkIterationTables(visualViewmodel);
+        linkOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
+        linkSelectables(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable,
+            mainOutput, selectableEntryClass);
     }
 
     /**
@@ -173,13 +84,13 @@ Author: Alexander Mattheis
      */
     function fixBrowserBugs() {
         /*
-         BUG-FIX for Firefox:
+         BUG-FIX for Mozilla:
          Inputs of type "number" doesn't get the focus
-         in the Firefox browser if one
-         of the up- or down-button of the inputs
+         in the Mozilla browser if one
+         of the up- or down-buttons of the number-inputs
          is clicked.
 
-         Detected: Firefox 55.0b3 (32-Bit)
+         Detected: Mozilla Firefox 55.0b3 (32-Bit)
          */
         $(function () {
             $("input[type='number']").on("click", function () {
@@ -189,22 +100,16 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Redefines what for example should happen
-     * when a specific key is pressed or on a specific action like pasting.
+     * Linking inputs to get some special behaviour (removing non allowed bases).
+     * @param algorithmInput - The input div in which the behaviour is changed.
+     * @param functionParameters - The parameters which should have the given behaviour.
      */
-    function changeDefaultKeyBehaviour() {
-        var input = $("input");
-        /*
-         If "Enter" is pressed the UI should't update immediately.
-         The time after which the UI is updated is specified
-         with the global default "REUPDATE_TIMEOUT_MS".
-         */
-        input.keypress(function (e) {
-            // Hint: Better would be a tabulator behaviour,
-            // but the implementation of that is too complex.
-            if (e.which === KEY_CODES.ENTER)
-                e.preventDefault();
-        });
+    function linkBasicInputsBehaviour(algorithmInput, functionParameters) {
+        var functionArguments = {"functionParameters": functionParameters};
+        algorithmInput.find(".optimization_type").on("change", functionArguments, negateOptimizationParameters);
+
+        functionParameters.on("focusout keypress", removeCriticalNumbers);
+        algorithmInput.find(".sequence").on("keyup", removeNonAllowedBases);
     }
 
     /**
@@ -231,8 +136,15 @@ Author: Alexander Mattheis
             this.value = Math.round(this.value);
 
         if (e.which === KEY_CODES.ENTER || e.type === "focusout") {
-            this.value = this.value >= INPUT.MIN ? this.value : INPUT.MIN;
-            this.value = this.value <= INPUT.MAX ? this.value : INPUT.MAX;
+            if (this.id === "length") {
+                this.value = this.value >= INPUT.LENGTH_MIN ? this.value : INPUT.LENGTH_MIN;
+                this.value = this.value <= INPUT.LENGTH_MAX ? this.value : INPUT.LENGTH_MAX;
+            }
+            else
+            {
+                this.value = this.value >= INPUT.MIN ? this.value : INPUT.MIN;
+                this.value = this.value <= INPUT.MAX ? this.value : INPUT.MAX;
+            }
         }
     }
 
@@ -243,6 +155,226 @@ Author: Alexander Mattheis
     function removeNonAllowedBases() {
         if (!CHARACTER.BASES.test(this.value))
             this.value = this.value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
+    }
+
+    /**
+     * Linking table download links of tables with a download function.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * @param calculationTable {Element} - The default or main table.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     */
+    function linkDownloadLinks(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable) {
+        var tableDownload = $(".table_download");
+        var tableVerticalDownload = $(".table_vertical_download");
+        var tableHorizontalDownload = $(".table_horizontal_download");
+
+        var functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "number": MATRICES.DEFAULT_NUMBER
+        };
+        tableDownload.on("click", functionArguments, visualViewmodel.downloadTable);
+
+        if (MULTI_TABLE_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
+            functionArguments = {
+                "calculationTable": calculationTable,
+                "calculationHorizontalTable": calculationHorizontalTable,
+                "calculationVerticalTable": calculationVerticalTable,
+                "number": MATRICES.VERTICAL_NUMBER
+            };
+            tableVerticalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
+
+            functionArguments = {
+                "calculationTable": calculationTable,
+                "calculationHorizontalTable": calculationHorizontalTable,
+                "calculationVerticalTable": calculationVerticalTable,
+                "number": MATRICES.HORIZONTAL_NUMBER
+            };
+            tableHorizontalDownload.on("click", functionArguments, visualViewmodel.downloadTable);
+        }
+    }
+
+    /**
+     * Linking everything with tables for iterative algorithms.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * @see Used for AEP.
+     */
+    function linkIterationTables(visualViewmodel) {
+        if (visualViewmodel.algorithm.type === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
+            var mainOutput = $(".main_output");  // output containing the calculation tables
+
+            var calculationTable1 = mainOutput.find(".calculation_1");  // AEP iterations
+            var calculationTable2 = mainOutput.find(".calculation_2");
+            var calculationTable3 = mainOutput.find(".calculation_3");
+            var calculationTable4 = mainOutput.find(".calculation_4");
+            var calculationTable5 = mainOutput.find(".calculation_5");
+
+            var iterationTablesArray = [calculationTable1, calculationTable2, calculationTable3, calculationTable4, calculationTable5];
+            var selectableEntryClass = ".selectable_entry";
+
+            doInitialHighlighting(visualViewmodel, mainOutput, iterationTablesArray);
+            linkIterationDownloadLinks(visualViewmodel);
+
+            for (var i = 0; i < iterationTablesArray.length; i++) {
+                var functionArguments = {
+                    "calculationHorizontalTable": [],
+                    "calculationVerticalTable": [],
+                    "iterationTablesArray": iterationTablesArray,
+                    "mainOutput": mainOutput,
+                    "number": -(i+1),  // iteration numbers are negative in "defaults.js"
+                    "selectableEntryClass": selectableEntryClass,
+                    "visualViewmodel": visualViewmodel
+                };
+
+                iterationTablesArray[i].on("click", selectableEntryClass, functionArguments, selectCell);
+            }
+        }
+    }
+
+    /**
+     * Some algorithms has some initial highlighting.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * @param iterationTablesArray {Array} - An array of tables.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
+     */
+    function doInitialHighlighting(visualViewmodel, mainOutput, iterationTablesArray) {
+        // the tables exist after just after the display has updated, but the event is triggered before and so a delay is needed
+        setTimeout(function () {
+            visualViewmodel.showTraceback(0, undefined, undefined, undefined, iterationTablesArray, mainOutput[0]);
+        }, REACTION_TIME_HIGHLIGHT);
+    }
+
+    /**
+     * Linking table download links of tables from several iterations with a download function.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     */
+    function linkIterationDownloadLinks(visualViewmodel) {
+        for (var i = 0; i < MAX_NUMBER_ITERATIONS; i++) {
+            var currentTableNumber = (i + 1);
+            linkIterationDownloadLink(
+                $(".table_download_"+ currentTableNumber),
+                $(".calculation_" + currentTableNumber),
+                -currentTableNumber,  // iteration numbers are negative in "defaults.js"
+                visualViewmodel);
+        }
+    }
+
+    /**
+     * Linking table download link of a table generated during an iterative algorithm with a download function.
+     * @param download {Element} - The link-element <a>...</a> which is to be linked.
+     * @param table {Element} - The table you want download.
+     * @param number {number} - The table id.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     */
+    function linkIterationDownloadLink(download, table, number, visualViewmodel) {
+        download.on("click", {"calculationTable": table, "number": number}, visualViewmodel.downloadTable);
+    }
+
+    /**
+     * Allows to redraw an overlay on a scroll or resize event.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param calculationTable {Element} - The default or main table.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
+     */
+    function linkOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput) {
+        if (SVG_ARROW_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {  // algorithm uses SVG-arrows
+            var browserWindow = $(window);
+
+            var functionArguments = {
+                "calculationTable": calculationTable,
+                "calculationHorizontalTable": calculationHorizontalTable,
+                "calculationVerticalTable": calculationVerticalTable,
+                "mainOutput": mainOutput,
+                "visualViewmodel": visualViewmodel
+            };
+
+            browserWindow.on("resize", functionArguments, reinitialize);
+            mainOutput.on("scroll", functionArguments, reinitialize);
+        }
+    }
+
+    /**
+     * Reinitializes overlays after an event wih the browser window or a scrolling event of a table.
+     * @param e - Stores data relevant to the event called that function.
+     */
+    function reinitialize(e) {
+        var visualViewmodel = e.data.visualViewmodel;
+
+        var mainOutput = e.data.mainOutput[0];
+        var calculationVerticalTable;
+        var calculationTable = e.data.calculationTable[0];
+        var calculationHorizontalTable;
+
+        if (e.data.calculationVerticalTable !== undefined) {
+            calculationVerticalTable = e.data.calculationVerticalTable[0];
+            calculationHorizontalTable = e.data.calculationHorizontalTable[0];
+        }
+
+        visualViewmodel.redrawOverlay(calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
+    }
+
+    /**
+     * Linking all elements which can be selected (results, cells, ...).
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param calculationTable {Element} - The default or main table.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
+     * @param selectableEntryClass {Object} - The class name of a selectable entry.
+     */
+    function linkSelectables(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable,
+                             mainOutput, selectableEntryClass) {
+
+        var results = $(".results");
+
+        var functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "resultsTable": results,
+            "mainOutput": mainOutput,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+        results.on("click", selectableEntryClass, functionArguments, selectTableEntry);
+
+        functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "mainOutput": mainOutput,
+            "number": MATRICES.VERTICAL_NUMBER,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+        calculationVerticalTable.on("click", selectableEntryClass, functionArguments, selectCell);
+
+        functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "mainOutput": mainOutput,
+            "number": MATRICES.DEFAULT_NUMBER,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+        calculationTable.on("click", selectableEntryClass, functionArguments, selectCell);
+
+        functionArguments = {
+            "calculationTable": calculationTable,
+            "calculationHorizontalTable": calculationHorizontalTable,
+            "calculationVerticalTable": calculationVerticalTable,
+            "mainOutput": mainOutput,
+            "number": MATRICES.HORIZONTAL_NUMBER,
+            "selectableEntryClass": selectableEntryClass,
+            "visualViewmodel": visualViewmodel
+        };
+
+        calculationHorizontalTable.on("click", selectableEntryClass, functionArguments, selectCell);
     }
 
     /**
@@ -273,11 +405,9 @@ Author: Alexander Mattheis
                 selectedRow = i;
         }
 
-        // some delay without it won't work properly
-        setTimeout(function () {
-            visualViewmodel.highlight(selectedRow, resultsTable[0]);
-            visualViewmodel.showTraceback(selectedRow, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
-        }, REACTION_TIME_HIGHLIGHT);
+        visualViewmodel.highlight(selectedRow, resultsTable[0]);
+        visualViewmodel.showTraceback(selectedRow, calculationVerticalTable, calculationTable, calculationHorizontalTable,
+            undefined, mainOutput);
     }
 
     /**
@@ -287,36 +417,34 @@ Author: Alexander Mattheis
      */
     function selectCell(e) {
         // retrieve data
+        var calculationHorizontalTable = e.data.calculationHorizontalTable;
+        var calculationTable = e.data.calculationTable;
+        var calculationVerticalTable = e.data.calculationVerticalTable;
+        var visualViewmodel = e.data.visualViewmodel;
+
         var number = e.data.number;
         var mainOutput = e.data.mainOutput[0];
-        var calculationVerticalTable;
-        var calculationTable = e.data.calculationTable;
-        var calculationHorizontalTable;
+        var iterationTablesArray = e.data.iterationTablesArray;
 
-        if (e.data.calculationVerticalTable !== undefined) {
-            calculationVerticalTable = e.data.calculationVerticalTable;
-            calculationHorizontalTable = e.data.calculationHorizontalTable;
-        }
+        if (iterationTablesArray !== undefined)  // if table from an iteration
+            calculationTable = iterationTablesArray[-(number + 1)];  // iteration number are negative in "defaults.js"
 
         var currentSelectedTable;
         var label;
 
-        if (number === 0) {
+        if (number === MATRICES.VERTICAL_NUMBER) {
             currentSelectedTable = calculationVerticalTable;
             label = MATRICES.VERTICAL;
-        }
-        else if (number === 1) {
-            currentSelectedTable = calculationTable;
-            label = MATRICES.DEFAULT;
-        }
-        else {  // if (number === 2)
+        } else if (number === MATRICES.HORIZONTAL_NUMBER) {
             currentSelectedTable = calculationHorizontalTable;
             label = MATRICES.HORIZONTAL;
+        } else {  // if (number === MATRICES.ITERATION_NUMBER_i || number === MATRICES.DEFAULT)
+            currentSelectedTable = calculationTable;
+            label = MATRICES.DEFAULT;
         }
 
         var selectableEntryClass = e.data.selectableEntryClass;
         var selectableEntries = currentSelectedTable.find(selectableEntryClass);
-        var visualViewmodel = e.data.visualViewmodel;
 
         // compute the selected position in the calculation table
         var selectedColumn = -1;
@@ -339,11 +467,9 @@ Author: Alexander Mattheis
         var cellCoordinates = new bases.alignment.Vector(selectedRow, selectedColumn);
         cellCoordinates.label = label;
 
-        // some delay without it won't work properly
-        setTimeout(function () {
-            visualViewmodel.showFlow(cellCoordinates,
-                calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput);
-        }, REACTION_TIME_HIGHLIGHT);
+        visualViewmodel.showFlow(cellCoordinates,
+            calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], iterationTablesArray,
+            mainOutput, -(number+1));  // MATRICES.ITERATION_NUMBER_i are negative
     }
 
     /**
@@ -359,34 +485,13 @@ Author: Alexander Mattheis
         inputs.on({
             keypress: function (e) {
                 if (e.which === KEY_CODES.ENTER)
-                    updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput);
+                    update(algorithm, viewmodels, processInput, changeOutput);
             },
 
             change: function () {
-                updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput);
-                postProcess();
+                update(algorithm, viewmodels, processInput, changeOutput);
             }
         });
-    }
-
-    /**
-     * Does post processing after some kind of input by keyboard or mouse.
-     * @example
-     * LaTeX-math is updated or wrong characters are removed.
-     */
-    function postProcess() {
-        removeWrongBases();
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
-    }
-
-    /**
-     * Removes non-english characters from an input-field.
-     */
-    function removeWrongBases() {
-        var textElements = $(".sequence");
-
-        for (var i = 0; i < textElements.length; i++)
-            textElements[i].value = textElements[i].value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
     }
 
     /**
@@ -396,12 +501,21 @@ Author: Alexander Mattheis
      * @param processInput {Function} - Function from the algorithm which should process the input.
      * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
      */
-    function updateAfterTimeout(algorithm, viewmodels, processInput, changeOutput) {
-        setTimeout(function () {  // to avoid using not updated values
-            processInput(algorithm, inputProcessorInstance, viewmodels.input, viewmodels.visual);
-            changeOutput(algorithm.getOutput(), inputProcessorInstance, viewmodels);
-            postProcess();
-        }, REUPDATE_TIMEOUT_MS);
+    function update(algorithm, viewmodels, processInput, changeOutput) {
+        processInput(algorithm, inputProcessorInstance, viewmodels.input, viewmodels.visual);
+        changeOutput(algorithm.getOutput(), inputProcessorInstance, viewmodels);
+        postProcess(viewmodels);
+    }
+
+    /**
+     * Does post processing after some kind of input by keyboard or mouse.
+     * LaTeX-math is updated or wrong characters are removed.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @see MathJax has to be executed as last one!
+     */
+    function postProcess(viewmodels) {
+        linkIterationTables(viewmodels.visual);  // iterative tables are not existing from the beginning and so they have to be relinked
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
     }
 
     /**

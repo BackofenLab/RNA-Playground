@@ -11,7 +11,6 @@ TestCase("test_waterman_smith_beyer", {
      * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_1": function () {
-        debugger;
         var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
 
         var inputData = {};
@@ -147,5 +146,133 @@ TestCase("test_waterman_smith_beyer", {
 
         assertEquals("ACCT", outputData.alignments[1][0]);
         assertEquals("CC__", outputData.alignments[1][2])
+    },
+
+    /**
+     * Simulating Needleman-Wunsch to test correctness.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     */
+    "test_5": function () {
+        var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
+
+        var inputData = {};
+        inputData.sequenceA = "AGTC";
+        inputData.sequenceB = "ATC";
+
+        inputData.calculationType = "similarity";
+
+        inputData.baseCosts = -2;
+        inputData.enlargement = 0;
+        inputData.match = 1;
+        inputData.mismatch = -1;
+        inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
+
+        inputData.matrixHeight = inputData.sequenceB.length + 1;
+        inputData.matrixWidth = inputData.sequenceA.length + 1;
+
+        algorithm.setIO(inputData, {});
+
+        var ioData = algorithm.compute();
+        var outputData = ioData[1];
+
+        assertEquals(1, outputData.score);
+        assertEquals("AGTC", outputData.alignments[0][0]);
+        assertEquals("A_TC", outputData.alignments[0][2]);
+    },
+
+    /**
+     * Simulating Needleman-Wunsch to test correctness.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     */
+    "test_6": function () {
+        var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
+
+        var inputData = {};
+        inputData.sequenceA = "CCCCGCGACTCGGGTTCAAGGG";
+        inputData.sequenceB = "GGGTGAGACCCCAGTTCAACCC";
+
+        inputData.calculationType = "similarity";
+
+        inputData.baseCosts = 0;
+        inputData.enlargement = -2;
+        inputData.match = 4;
+        inputData.mismatch = -1;
+        inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
+
+        inputData.matrixHeight = inputData.sequenceB.length + 1;
+        inputData.matrixWidth = inputData.sequenceA.length + 1;
+
+        algorithm.setIO(inputData, {});
+
+        var ioData = algorithm.compute();
+        var outputData = ioData[1];
+
+        assertEquals(33, outputData.score);
+        assertEquals("CCCCGCGACTCGGGTTCAAGGG", outputData.alignments[0][0]);
+        assertEquals("GGGTGAGACCCCAGTTCAACCC", outputData.alignments[0][2]);
+    },
+
+    /**
+     * Simulating Needleman-Wunsch to test correctness.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     */
+    "test_7": function () {
+        var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
+
+        var inputData = {};
+        inputData.sequenceA = "TCCGA";
+        inputData.sequenceB = "TACGCGC";
+
+        inputData.calculationType = "similarity";
+
+        inputData.baseCosts = 0;
+        inputData.enlargement = -1;
+        inputData.match = 1;
+        inputData.mismatch = 0;
+        inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
+
+        inputData.matrixHeight = inputData.sequenceB.length + 1;
+        inputData.matrixWidth = inputData.sequenceA.length + 1;
+
+        algorithm.setIO(inputData, {});
+
+        var ioData = algorithm.compute();
+        var outputData = ioData[1];
+
+        assertEquals(2, outputData.score);
+        assertEquals("T_C_CGA", outputData.alignments[0][0]);
+        assertEquals("TACGCGC", outputData.alignments[0][2]);
+    },
+
+    /**
+     * Simulating Needleman-Wunsch to test correctness.
+     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     */
+    "test_8": function () {
+        var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
+
+        var inputData = {};
+        inputData.sequenceA = "AACG";
+        inputData.sequenceB = "AATCG";
+
+        inputData.calculationType = "similarity";
+
+        inputData.baseCosts = 0;
+        inputData.enlargement = -2;
+        inputData.match = 1;
+        inputData.mismatch = -1;
+        inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
+
+        inputData.matrixHeight = inputData.sequenceB.length + 1;
+        inputData.matrixWidth = inputData.sequenceA.length + 1;
+
+        algorithm.setIO(inputData, {});
+
+        var ioData = algorithm.compute();
+        var outputData = ioData[1];
+
+        assertEquals(2, outputData.score);
+        assertEquals("AA_CG", outputData.alignments[0][0]);
+        assertEquals("AATCG", outputData.alignments[0][2]);
     }
 });

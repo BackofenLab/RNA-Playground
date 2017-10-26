@@ -11,13 +11,16 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    if (document.title !== UNIT_TEST_WEBTITLE)  // to avoid the execution of the algorithm interfaces during a Unit-Test
+    if (loaded === ALGORITHMS.GOTOH) {  // to avoid self execution on a script import
         gotoh.startGotoh();
+        loaded = ALGORITHMS.NONE;
+    }
 });
 
 (function () {  // namespace
     // public methods
-    namespace("gotoh", startGotoh, Gotoh, getInput, setInput, compute, getNeighboured, getOutput, setIO, getSuperclass);
+    namespace("gotoh", startGotoh, Gotoh, getInput, setInput, compute,
+        recursionFunction, getNeighboured, getVerticalNeighboured, getHorizontalNeighboured, getOutput, setIO, getSuperclass);
 
     // instances
     var alignmentInstance;
@@ -31,17 +34,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startGotoh() {
-        imports();
-
         var subadditiveAlignmentInterface = new interfaces.subadditiveAlignmentInterface.SubadditiveAlignmentInterface();
         subadditiveAlignmentInterface.startSubadditiveAlignmentAlgorithm(Gotoh, ALGORITHMS.GOTOH);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        $.getScript(PATHS.SUBADDITIVE_ALIGNMENT_INTERFACE);
     }
 
     /*---- ALGORITHM ----*/
@@ -60,11 +54,15 @@ $(document).ready(function () {
         // inheritance
         alignmentInstance = new bases.alignment.Alignment(this);
 
+        // public class methods
         this.getInput = getInput;
 
         this.setInput = setInput;
         this.compute = compute;
+        this.recursionFunction = recursionFunction;
         this.getNeighboured = getNeighboured;
+        this.getVerticalNeighboured = getVerticalNeighboured;
+        this.getHorizontalNeighboured = getHorizontalNeighboured;
         this.getOutput = getOutput;
 
         this.setIO = setIO;
@@ -85,18 +83,8 @@ $(document).ready(function () {
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
-        inputData.sequenceA = inputViewmodel.sequence1();
-        inputData.sequenceB = inputViewmodel.sequence2();
-
-        inputData.calculationType = inputViewmodel.calculation();
-
-        inputData.baseCosts = inputViewmodel.baseCosts();
-        inputData.enlargement = inputViewmodel.enlargement();
-        inputData.match = inputViewmodel.match();
-        inputData.mismatch = inputViewmodel.mismatch();
-
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        alignmentInstance.setIO(inputData, {});
+        alignmentInstance.setSubadditiveAlignmentInput(inputViewmodel);
     }
 
     /**
@@ -122,39 +110,15 @@ $(document).ready(function () {
      * Creates the matrices without initializing them.
      */
     function createMatrices() {
-        createComputationMatrix();
-        createHorizontalGapCostMatrix();
-        createVerticalGapCostMatrix();
-    }
-
-    /**
-     * Creates the default matrix without initializing it.
-     */
-    function createComputationMatrix() {
         outputData.matrix = new Array(inputData.matrixHeight);
-
-        for (var i = 0; i < inputData.matrixHeight; i++)
-            outputData.matrix[i] = new Array(inputData.matrixWidth);
-    }
-
-    /**
-     * Creates the matrix for horizontal gaps without initializing it.
-     */
-    function createHorizontalGapCostMatrix() {
         outputData.horizontalGaps = new Array(inputData.matrixHeight);
-
-        for (var i = 0; i < inputData.matrixHeight; i++)
-            outputData.horizontalGaps[i] = new Array(inputData.matrixWidth);
-    }
-
-    /**
-     * Creates the matrix for vertical gaps without initializing it.
-     */
-    function createVerticalGapCostMatrix() {
         outputData.verticalGaps = new Array(inputData.matrixHeight);
 
-        for (var i = 0; i < inputData.matrixHeight; i++)
+        for (var i = 0; i < inputData.matrixHeight; i++) {
+            outputData.matrix[i] = new Array(inputData.matrixWidth);
+            outputData.horizontalGaps[i] = new Array(inputData.matrixWidth);
             outputData.verticalGaps[i] = new Array(inputData.matrixWidth);
+        }
     }
 
     /**
@@ -215,9 +179,9 @@ $(document).ready(function () {
                 var aChar = inputData.sequenceA[j - 1];
 
                 if (inputData.calculationType === ALIGNMENT_TYPES.DISTANCE)
-                    outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.min);
+                    outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.min, false);
                 else  // inputData.calculationType === ALIGNMENT_TYPES.SIMILARITY
-                    outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.max);
+                    outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.max, false);
             }
         }
 
@@ -232,9 +196,10 @@ $(document).ready(function () {
      * @param i {number} - The current vertical position in the matrix.
      * @param j {number} - The current horizontal position in the matrix.
      * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
+     * @param local {boolean} - Tells if the local recursion function should be used.
      * @return {number} - The value for the cell at position (i,j).
      */
-    function recursionFunction(aChar, bChar, i, j, optimum) {
+    function recursionFunction(aChar, bChar, i, j, optimum, local) {
         var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
 
         // gap recursion-functions
@@ -242,6 +207,14 @@ $(document).ready(function () {
         outputData.verticalGaps[i][j] = verticalOptimum(optimum, i, j);
 
         // default matrix recursion function
+        if (local)
+            return optimum(
+                outputData.horizontalGaps[i][j],
+                outputData.matrix[i - 1][j - 1] + matchOrMismatch,
+                outputData.verticalGaps[i][j],
+                0);
+
+        // else global
         return optimum(
             outputData.horizontalGaps[i][j],
             outputData.matrix[i - 1][j - 1] + matchOrMismatch,
@@ -284,12 +257,12 @@ $(document).ready(function () {
         var lowerRightCorner = new bases.alignment.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
 
         outputData.moreTracebacks = false;
-        outputData.tracebackPaths = alignmentInstance.getTraces([lowerRightCorner], inputData, outputData, -1, getNeighboured);
+        outputData.tracebackPaths = alignmentInstance.getGlobalTraces([lowerRightCorner], inputData, outputData, -1, getNeighboured);
     }
 
     /**
      * Returns the neighbours to which you can go from the current cell position used as input.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @param algorithm {Object} - Contains an alignment algorithm.
@@ -356,7 +329,7 @@ $(document).ready(function () {
 
     /**
      * Returns the neighbours to which you can go from the current cell position in the matrix for vertical gap costs.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @return {Array} - Contains neighboured positions as Vector-objects.
@@ -394,7 +367,7 @@ $(document).ready(function () {
 
     /**
      * Returns the neighbours to which you can go from the current cell position in the matrix for horizontal gap costs.
-     * @param position {Vector} - Current cell position in matrix.
+     * @param position {Object} - Current cell position in matrix.
      * @param inputData {Object} - Contains all input data.
      * @param outputData {Object} - Contains all output data.
      * @return {Array} - Contains neighboured positions as Vector-objects.

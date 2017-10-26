@@ -13,7 +13,7 @@ Author: Alexander Mattheis
 
     // instances
     var alignmentInterfaceInstance;
-    var affineAlignmentInterfaceInstance;
+    var subadditiveAlignmentInterfaceInstance;
 
     /**
      * Is used to work with the input and output (the interface) of an affine alignment algorithm.
@@ -21,12 +21,12 @@ Author: Alexander Mattheis
      * @augments AlignmentInterface
      */
     function SubadditiveAlignmentInterface() {
-        affineAlignmentInterfaceInstance = this;
+        subadditiveAlignmentInterfaceInstance = this;
 
         // inheritance
         alignmentInterfaceInstance = new interfaces.alignmentInterface.AlignmentInterface();
 
-        // public methods (linking)
+        // public class methods
         this.startSubadditiveAlignmentAlgorithm = startSubadditiveAlignmentAlgorithm;
     }
 
@@ -46,11 +46,9 @@ Author: Alexander Mattheis
      * Handling imports.
      */
     function imports() {
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
         alignmentInterfaceInstance.imports();
 
-        // interfaces
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);
+        $.getScript(PATHS.ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /*---- INPUT ----*/
@@ -85,7 +83,7 @@ Author: Alexander Mattheis
 
         if (algorithmName === ALGORITHMS.WATERMAN_SMITH_BEYER) {
             this.subadditiveFunction = ko.observable(SUBADDITIVE_ALIGNMENT_DEFAULTS.GAP_FUNCTION);
-        } else {
+        } else {  // if Gotoh or Gotoh (Local)
             this.formulaP = ko.computed(
                 function getSelectedFormula() {
                     setTimeout(function () {
@@ -141,7 +139,7 @@ Author: Alexander Mattheis
         if (algorithmName === ALGORITHMS.WATERMAN_SMITH_BEYER)
             return getWatermanSmithBeyerFormula(viewmodel);
 
-        return getGotohFormula(viewmodel, matrix);
+        return getGotohFormula(algorithmName, viewmodel, matrix);
     }
 
     /**
@@ -211,11 +209,12 @@ Author: Alexander Mattheis
 
     /**
      * Returns the LaTeX-code for Gotoh formulas.
+     * @param algorithmName {string} - The name of the algorithm.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
      * @param matrix {string} - The matrix for which you want display the formula.
      * @return {string} - LaTeX code.
      */
-    function getGotohFormula(viewmodel, matrix) {
+    function getGotohFormula(algorithmName, viewmodel, matrix) {
         var string = LATEX.MATH_REGION;  // starting LaTeX math region
 
         // differentiate between formulas and writing code for static one
@@ -228,6 +227,7 @@ Author: Alexander Mattheis
                 break;
             default:
                 string += LATEX.FORMULA.CURRENT;
+
         }
 
         // look if we maximize or minimize
@@ -240,28 +240,37 @@ Author: Alexander Mattheis
         switch (matrix) {
             case MATRICES.VERTICAL:
                 string += LATEX.RECURSION.GOTOH_P;
-                string += getGotohDynamicFormula(viewmodel, matrix);
+                string += getGotohDynamicFormula(algorithmName, viewmodel, matrix);
                 break;
             case MATRICES.HORIZONTAL:
                 string += LATEX.RECURSION.GOTOH_Q;
-                string += getGotohDynamicFormula(viewmodel, matrix);
+                string += getGotohDynamicFormula(algorithmName, viewmodel, matrix);
                 break;
             default:
-                string += LATEX.RECURSION.GOTOH;
-                string += getGotohDynamicFormula(viewmodel, matrix);
+                if (algorithmName === ALGORITHMS.GOTOH)
+                    string += LATEX.RECURSION.GOTOH;
+                else if (algorithmName === ALGORITHMS.GOTOH_LOCAL)
+                    string += LATEX.RECURSION.GOTOH_LOCAL;
+
+                string += getGotohDynamicFormula(algorithmName, viewmodel, matrix);
         }
 
         string += LATEX.MATH_REGION;  // stopping LaTeX math region
+
+        if (algorithmName === ALGORITHMS.GOTOH_LOCAL)
+            string = string.replace(MULTI_SYMBOLS.D_BIG, SYMBOLS.S_BIG);
+
         return string;
     }
 
     /**
      * Returns the dynamic, input-dependant LaTeX-code for Gotoh formulas.
+     * @param algorithmName {string} - The name of the algorithm.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
      * @param matrix {string} - The matrix for which you want display the formula.
      * @return {string} - LaTeX code.
      */
-    function getGotohDynamicFormula(viewmodel, matrix) {
+    function getGotohDynamicFormula(algorithmName, viewmodel, matrix) {
         var string = SYMBOLS.EMPTY;
 
         var gapStart = viewmodel.gapStart();
@@ -306,6 +315,9 @@ Author: Alexander Mattheis
                 string += LATEX.FORMULA.CURRENT_P + LATEX.NEW_LINE;
 
                 string += LATEX.FORMULA.CURRENT_Q;
+
+                if (algorithmName === ALGORITHMS.GOTOH_LOCAL)
+                    string += LATEX.NEW_LINE + LATEX.FORMULA.ZERO;
         }
 
         string += LATEX.END_CASES;  // stopping LaTeX case region
@@ -344,7 +356,7 @@ Author: Alexander Mattheis
      * @return {string} - LaTeX code.
      */
     function getGapFunction(algorithmName, viewmodel) {
-        var finalFunction = LATEX.RECURSION.GOTOH_GAP_FUNCTION;
+        var finalFunction = LATEX.SUB_FORMULAS.GOTOH_GAP_FUNCTION;
 
         if (algorithmName === ALGORITHMS.WATERMAN_SMITH_BEYER) {
             switch (viewmodel.subadditiveFunction()) {
@@ -436,11 +448,11 @@ Author: Alexander Mattheis
     function changeOutput(outputData, inputProcessor, viewmodels) {
         if (viewmodels.input.subadditiveFunction !== undefined
             && viewmodels.input.subadditiveFunction() === SUBADDITIVE_FUNCTIONS.LOGARITHMIC)
-            roundValues(outputData);
+            alignmentInterfaceInstance.roundValues(outputData);
 
         viewmodels.output.matrix(outputData.matrix);
 
-        if (viewmodels.output.horizontalGaps !== undefined) {
+        if (viewmodels.output.horizontalGaps !== undefined) {  // if Gotoh or Gotoh (Local)
             viewmodels.output.horizontalGaps(edit(inputProcessor, outputData.horizontalGaps, viewmodels));
             viewmodels.output.verticalGaps(edit(inputProcessor, outputData.verticalGaps, viewmodels));
 
@@ -459,7 +471,7 @@ Author: Alexander Mattheis
                 viewmodels.output.verticalGaps[i](outputData.verticalGaps[i]);
                 viewmodels.output.horizontalGaps[i](outputData.horizontalGaps[i]);
             }
-        } else {
+        } else {  // if Waterman-Smith-Beyer
             for (var i = 0; i < outputData.matrix.length; i++) {
                 if (i > viewmodels.output.matrix.length)
                     viewmodels.output.matrix[i] = new Function();
@@ -471,26 +483,6 @@ Author: Alexander Mattheis
         viewmodels.output.alignments(outputData.alignments);
         viewmodels.output.score(outputData.score);
         viewmodels.output.moreTracebacks(outputData.moreTracebacks);
-    }
-
-    /**
-     * Rounds the matrix values and the score to one decimal place.
-     * @param outputData - Output data which is modified.
-     */
-    function roundValues(outputData) {
-        for (var i = 0; i < outputData.matrix.length; i++)
-            for (var j = 0; j < outputData.matrix[0].length; j++)
-                outputData.matrix[i][j] = roundToOneDecimalPlace(outputData.matrix[i][j]);
-
-        outputData.score = roundToOneDecimalPlace(outputData.score);
-    }
-
-    /**
-     * Rounds a value to one decimal place.
-     * @param number - The number which is rounded.
-     */
-    function roundToOneDecimalPlace(number) {
-        return Math.round(number*10)/10;
     }
 
     /**

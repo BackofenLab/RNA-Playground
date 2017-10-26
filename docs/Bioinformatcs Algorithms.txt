@@ -20,15 +20,29 @@ and functions which are used to access information are stored in "js/post_proces
 This class is working closely together with the "js/post_processing/input_processor.js" class
 which is handling the input.
 
+Hint:
+Algorithm names have to be eventually added
+into the list of local or global algorithms in the "default.js"
+to make an algorithm visualization work correctly.
+
 /*------------------------------------IMPLEMENTING NEW ALGORITHM FOR VISUALIZATION------------------------------------*/
--   create a new page "example_algorithm.html" in "/"
-    (use underscores for the page name to make "loader.js" recognizing the new page)
+-   create a new page "ExampleAlgorithm.html" in "/"
+    (use hyphens for the page name or PascalCase https://en.wikipedia.org/wiki/PascalCase)
 -   create a new script "example_algorithm.js" in "js/"
+    (use underscores for the script name and lowercase letters)
 -   go into "index.html" and enter your algorithm name (without underscores) in the algorithm menu area:
 
     <div id="algorithm_menu">
         <ul>
-            <li><a href="#">Example Algorithm</a></li>
+            <li><a href="#">Example-Algorithm</a></li>
+        </ul>
+    </div>
+
+    or
+
+    <div id="algorithm_menu">
+        <ul>
+            <li><a href="#">ExampleAlgorithm</a></li>
         </ul>
     </div>
 
@@ -46,7 +60,7 @@ through an instance of the parent class (with the related functions: getInput, g
 
 /*--------------------------------------------------INPUT PROCESSING--------------------------------------------------*/
 The "InputProcessor"-class under "js/post_processing/input_processor.js"
-is used for forwarding input to the algorithms and the visualizer.
+is used for forwarding input to the algorithms and output to the visualizer.
 It removes wrong inputs before data is passed to a algorithm
 and it defines the behaviour of different input types.
 
@@ -58,22 +72,21 @@ Example:    Result selection
 
 /*-----------------------------------------------------INTERFACES-----------------------------------------------------*/
 Interfaces under "js/interfaces/" are used to work with the input and output (the interface) of the algorithm.
-Such interfaces are bind to specific algorithms
-and the "InputProcessor" is executing interfaces to get an algorithm output.
+Such interfaces are bind to specific algorithms.
+The "InputProcessor" is executing interfaces to get an algorithm output.
 
 /*------------------------------------------------------LOADING-------------------------------------------------------*/
-The loading of an algorithm-page into the "alignment.html" is done in the "loader.js"-file.
-In this file is a function "updateDocumentView(algorithm, view)" which loads the page into the "div" with
-id = "algorithm_view".
+The loading of an algorithm-page into a webpage is done in the "loader.js"-file.
+In this file is a function "updateDocumentView(algorithm, view)" which loads the page into a "div".
+If you want add a new algorithm you have to extend this file
+and add the Javascript algorithm name into the structure ALGORITHMS in the file "defaults.js".
+
+Hint: Do also a look into EXTENDING VISUALIZATION!
 
 /*-------------------------------------------------------PATHS--------------------------------------------------------*/
 All Javascript-paths are stored under "js/defaults.js". 
 
-Hint:	If you want change file-paths, then you have also to change paths in the "alignment.html".
-
-/*-----------------------------------------------------PROCEDURES-----------------------------------------------------*/
-To save loading time, the number of files which are sequentially loaded is limited
-by storing all algorithms which are used by multiple algorithms in one file under "js/procedures/".
+Hint:	If you want change file-paths, then you have also to change paths in the "alignment.html" or your webpage.
 
 /*-------------------------------------------------------TESTS--------------------------------------------------------*/
 Unit-Tests are stored under "js/tests/". The file "UnitTests.jstd" is specifying Unit-Test file paths.
