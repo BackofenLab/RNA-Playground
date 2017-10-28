@@ -22,8 +22,8 @@ var EPSILON = 0.000000001;  // some very low number to test against
 var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant
 
 var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
-
 var MAX_NUMBER_ITERATIONS = 5;  // number of iterations in algorithm with convergence
+
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have been updated
 
@@ -277,6 +277,7 @@ var MULTI_SYMBOLS = {
     BRACKET_RIGHT: /\)/g,
     D_BIG: /D/g,
     DELIMITER: /-/g,
+    GAP: /_/g,
     G_LITTLE_SPECIAL: /ğ/g,
     NONE: /#/g,
     SPACE: / /g

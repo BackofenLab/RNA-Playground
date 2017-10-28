@@ -91,6 +91,8 @@ Author: Alexander Mattheis
         // in which they were created to avoid a repeated tree traversal during the progressive alignment
         // and for possible step by step visualizations of tree-growthment with libraries
         outputData.treeBranches = [];
+
+        outputData.allClusterNames = outputData.clusterNames.slice();;
     }
 
     /**
@@ -162,6 +164,7 @@ Author: Alexander Mattheis
     function mergeClusters(cluster1Name, cluster2Name) {
         var newClusterName = createNewCluster(cluster1Name, cluster2Name)
         removeEntriesWith(cluster1Name, cluster2Name);
+        outputData.allClusterNames.push(newClusterName);
         return newClusterName;
     }
 

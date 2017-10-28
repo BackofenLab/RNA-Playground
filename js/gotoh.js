@@ -83,6 +83,7 @@ $(document).ready(function () {
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
+        inputData.computeOneAlignment = false;  // extension to speed up Feng-Doolittle, default value is false
         alignmentInstance.setIO(inputData, {});
         alignmentInstance.setSubadditiveAlignmentInput(inputViewmodel);
     }
@@ -201,6 +202,7 @@ $(document).ready(function () {
      */
     function recursionFunction(aChar, bChar, i, j, optimum, local) {
         var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
+        if (aChar === SYMBOLS.NONE || bChar === SYMBOLS.NONE) matchOrMismatch = 0;  // extension for Feng-Doolittle
 
         // gap recursion-functions
         outputData.horizontalGaps[i][j] = horizontalOptimum(optimum, i, j);
@@ -288,6 +290,7 @@ $(document).ready(function () {
         var currentValue = outputData.matrix[position.i][position.j];
 
         var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
+        if (aChar === SYMBOLS.NONE || bChar === SYMBOLS.NONE) matchOrMismatch = 0;  // extension for Feng-Doolittle
 
         var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : Number.NaN;
         var verticalValue = up >= 0 ? outputData.verticalGaps[position.i][position.j] : Number.NaN;

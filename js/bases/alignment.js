@@ -14,6 +14,7 @@ Author: Alexander Mattheis
         createAlignments, getOutput, setIO, getLastChild, getNeighboured, differenceLowerEpsilon);
 
     // instances
+    var alignmentInstance;
     var childInstance;
 
     // shared variables
@@ -53,6 +54,7 @@ Author: Alexander Mattheis
      * @constructor
      */
     function Alignment(child) {
+        alignmentInstance = this;
         childInstance = child;
 
         // public methods
@@ -197,6 +199,8 @@ Author: Alexander Mattheis
      * @return {Array} - Array of paths.
      */
     function getGlobalTraces(path, inputData, outputData, pathLength, neighbourFunction) {
+        alignmentInstance.stopTraceback = false;
+
         if (childInstance.getTraces !== undefined)
             return childInstance.getTraces(path, inputData, outputData, pathLength, neighbourFunction);
 
@@ -227,7 +231,14 @@ Author: Alexander Mattheis
         for (var i = 0; i < neighboured.length; i++) {
             if ((neighboured[i].i === 0 && neighboured[i].j === 0)  // stop criteria checks
                 || (pathLength !== -1 && path.length >= pathLength)
-                || outputData.moreTracebacks) {
+                || outputData.moreTracebacks
+                || alignmentInstance.stopTraceback) {
+
+                if (alignmentInstance.stopTraceback)
+                    break;
+
+                if (inputData.computeOneAlignment) // extension to speed up Feng-Doolittle
+                    alignmentInstance.stopTraceback = true;
 
                 path.push(neighboured[i]);
 
