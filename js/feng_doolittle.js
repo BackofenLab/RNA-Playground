@@ -86,12 +86,14 @@ $(document).ready(function () {
     function setInput(inputViewmodel) {
         inputData.sequences = inputViewmodel.sequences();
 
-        inputData.calculationType = inputViewmodel.calculationType();
+        inputData.calculationType = inputViewmodel.calculation();
 
         inputData.baseCosts = inputViewmodel.baseCosts();
         inputData.enlargement = inputViewmodel.enlargement();
         inputData.match = inputViewmodel.match();
         inputData.mismatch = inputViewmodel.mismatch();
+
+        debugger;
     }
 
     /**

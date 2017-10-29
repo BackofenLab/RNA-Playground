@@ -22,7 +22,7 @@ Author: Alexander Mattheis
         with <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">Gotoh</a>
         to compute the similarity-scores,
         this altered <a href="10.1016/s0076-6879(96)66023-6">Feng-Doolittle (1996)</a> approach
-        uses our for affine alignment modified similarity-to-distance transformation-formula
+        uses our, for affine alignment modified similarity-to-distance transformation-formula
 
         $$\quad D(a,b) = -ln(S^{eff}_{a,b} \cdot f)$$
 
@@ -71,22 +71,22 @@ Author: Alexander Mattheis
 
         <div class="row">
             <div class="colW150">$s(i,k | i = k \wedge k \in \mathbb{A}(b))$</div>
-            <div class="colW400">similarity between matching characters $i$ and $k$</div>
+            <div class="colW400">similarity-score for matching characters $i$ and $k$</div>
         </div>
 
         <div class="row">
             <div class="colW150">$N_a(i), N_b(j)$</div>
-            <div class="colW400">frequency of characters $i$ and $j$ in sequences $a$ and $b$</div>
+            <div class="colW400">absolute frequency of characters $i$ and $j$ in sequences $a$ and $b$</div>
         </div>
 
         <div class="row">
             <div class="colW150">$N_{a,b}(\_^e)$</div>
-            <div class="colW400">frequency of gaps (enlargements)</div>
+            <div class="colW400">absolute frequency of gaps (enlargements)</div>
         </div>
 
         <div class="row">
             <div class="colW150">$N_{a,b}(\_^s)$</div>
-            <div class="colW400">frequency of gap starts</div>
+            <div class="colW400">absolute frequency of gap starts (our extension)</div>
         </div>
 
         The distances computed with the given formula are then used
@@ -125,5 +125,52 @@ Author: Alexander Mattheis
 
     <div class="picture">
         <img src="Feng-Doolittle-120x90.png">
+    </div>
+</div>
+
+<div id="algorithm_input">
+    <!-- ko foreach: $root.input.sequences -->
+        <div class="row">
+            <div class="colW100">
+                <label>
+                    Sequence <span data-bind="text: $root.input.clusterNames()[$index()]"></span>:
+                </label>
+            </div>
+
+            <div class="colW200">
+                <input class="sequence" data-bind="value: $data" placeholder="EXAMPLE 'ATC'" type="text">
+            </div>
+        </div>
+    <!-- /ko -->
+
+    <div class="row">
+		<div class="colW100"><label>Scoring in $s$:</label></div>
+
+		<div class="colW400">
+            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
+                Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
+            </span>
+		</div>
+    </div>
+
+    <div class="row">
+		<div class="colW100"><label>Scoring in $g$:</label></div>
+
+		<div class="colW400">
+            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                Gap opening $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
+                Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
+            </span>
+            <br>
+            <br>
+            <span data-bind="text: $root.input.gapFunction"></span>
+
+            <div class="group_hint">
+				<b>Hint:</b> <br>
+				For similarity maximization, <br> match scores should be positive and all other scores lower. <br>
+                For distance minimization the reverse applies.
+			</div>
+		</div>
     </div>
 </div>

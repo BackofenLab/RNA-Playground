@@ -141,6 +141,7 @@ var LATEX = {
     POSITIVE_INFINITY: "$\\infty$",
     POW2: "^2",
     SPACE: "\\phantom{-}",
+    SUBORDINATE: "_",
 
     FORMULA: {
         CURRENT: "D_{i,j}",

@@ -118,31 +118,33 @@ Author: Alexander Mattheis
      */
     function OutputViewmodel(algorithmName, outputData) {
         var viewmodel = this;
-        roundValues(outputData);
+        if (algorithmName !== ALGORITHMS.FENG_DOOLITTLE) {
+            roundValues(outputData);
 
-        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
-            createAEPOutputViewmodel(viewmodel, outputData);
-        } else if (outputData.matrix !== undefined) {  // other algorithms
-            this.matrix = ko.observableArray(outputData.matrix);
-
-            for (var i = 0; i < outputData.matrix.length; i++) {
-                this.matrix[i] = ko.observableArray(outputData.matrix[i]);
-            }
-
-            if (algorithmName === ALGORITHMS.GOTOH || algorithmName === ALGORITHMS.GOTOH_LOCAL) {  // special cases regarding possible algorithms
-                this.horizontalGaps = ko.observableArray(outputData.horizontalGaps);
-                this.verticalGaps = ko.observableArray(outputData.verticalGaps);
+            if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
+                createAEPOutputViewmodel(viewmodel, outputData);
+            } else if (outputData.matrix !== undefined) {  // other algorithms
+                this.matrix = ko.observableArray(outputData.matrix);
 
                 for (var i = 0; i < outputData.matrix.length; i++) {
-                    this.horizontalGaps[i] = ko.observableArray(outputData.horizontalGaps[i]);
-                    this.verticalGaps[i] = ko.observableArray(outputData.verticalGaps[i]);
+                    this.matrix[i] = ko.observableArray(outputData.matrix[i]);
                 }
+
+                if (algorithmName === ALGORITHMS.GOTOH || algorithmName === ALGORITHMS.GOTOH_LOCAL) {  // special cases regarding possible algorithms
+                    this.horizontalGaps = ko.observableArray(outputData.horizontalGaps);
+                    this.verticalGaps = ko.observableArray(outputData.verticalGaps);
+
+                    for (var i = 0; i < outputData.matrix.length; i++) {
+                        this.horizontalGaps[i] = ko.observableArray(outputData.horizontalGaps[i]);
+                        this.verticalGaps[i] = ko.observableArray(outputData.verticalGaps[i]);
+                    }
+                }
+
+                this.alignments = ko.observableArray(outputData.alignments);
+
+                this.score = ko.observable(outputData.score);
+                this.moreTracebacks = ko.observable(outputData.moreTracebacks);
             }
-
-            this.alignments = ko.observableArray(outputData.alignments);
-
-            this.score = ko.observable(outputData.score);
-            this.moreTracebacks = ko.observable(outputData.moreTracebacks);
         }
     }
 

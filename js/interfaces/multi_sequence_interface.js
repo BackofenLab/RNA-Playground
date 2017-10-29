@@ -73,6 +73,14 @@ Author: Alexander Mattheis
         this.match = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH);
         this.mismatch = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH);
 
+        this.clusterNames = ko.computed(
+            function () {
+                return getClusterNames(viewmodel.sequences().length);
+            }
+        );
+
+
+
         // displayed dynamic formulas
         this.gapStart = ko.computed(
             function () {
@@ -89,6 +97,42 @@ Author: Alexander Mattheis
                 return getSubformula(viewmodel);
             }
         );
+    }
+
+    /**
+     * Returns names for clusters.
+     * Hint: After all characters are depleted,
+     * a number is concatenated to the character
+     * to make this function generic.
+     * @param number {number} - The number of cluster names which should be generated.
+     * @example:
+     * CLUSTER NAMES:
+     * a, b, c, ..., z,         FIRST EPISODE
+     * a2, b2, c2, ..., z2,     SECOND EPISODE
+     * a3, b3, ...              THIRD ...
+     * @return {Array} - The cluster names.
+     */
+    function getClusterNames(number) {
+        var clusterNames = [];
+        var currentEpisode = 1;
+
+        // for every pairwise distance we need a symbol
+        for (var i = 0; i < number; i++) {
+            if (i < CLUSTER_NAMES.length)
+                clusterNames.push(LATEX.MATH_REGION + CLUSTER_NAMES[i] + LATEX.MATH_REGION);  // add a, b, c, ..., z
+
+            if (i >= CLUSTER_NAMES.length && i % CLUSTER_NAMES.length === 0)  // out of characters
+                currentEpisode++;  // new episode
+
+            if (i >= CLUSTER_NAMES.length)  // out of characters -> a2, b2, c2, ..., z2, a3, b3, ...
+                clusterNames.push(
+                    LATEX.MATH_REGION
+                    + CLUSTER_NAMES[i % CLUSTER_NAMES.length] + LATEX.SUBORDINATE + currentEpisode +
+                    LATEX.MATH_REGION);
+        }
+
+        debugger;
+        return clusterNames;
     }
 
     /**
