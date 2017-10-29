@@ -79,7 +79,21 @@ Author: Alexander Mattheis
             }
         );
 
+        this.addRow = function() {
+            setTimeout(function () {
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+            }, REUPDATE_TIMEOUT_MS);
 
+            viewmodel.sequences.push(SYMBOLS.EMPTY);
+        };
+
+        this.removeRow = function() {
+            setTimeout(function () {
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+            }, REUPDATE_TIMEOUT_MS);
+
+            viewmodel.sequences.pop();
+        };
 
         // displayed dynamic formulas
         this.gapStart = ko.computed(

@@ -140,6 +140,11 @@ Author: Alexander Mattheis
             <div class="colW200">
                 <input class="sequence" data-bind="value: $data" placeholder="EXAMPLE 'ATC'" type="text">
             </div>
+
+            <!-- ko if: $index() == $root.input.clusterNames().length-1 -->
+                <button data-bind="click: $root.input.addRow" type="button" >Add</button>
+                <button data-bind="click: $root.input.removeRow" type="button" >Remove</button>
+            <!-- /ko -->
         </div>
     <!-- /ko -->
 
