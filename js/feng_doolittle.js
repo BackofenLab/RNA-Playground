@@ -34,8 +34,8 @@ $(document).ready(function () {
      * Function managing objects.
      */
     function startFengDoolittle() {
-        //var subadditiveAlignmentInterface = new interfaces.subadditiveAlignmentInterface.SubadditiveAlignmentInterface();
-        //subadditiveAlignmentInterface.startSubadditiveAlignmentAlgorithm(GotohLocal, ALGORITHMS.GOTOH_LOCAL);
+        var multiSequenceInterface = new interfaces.multiSequenceInterface.MultiSequenceInterface();
+        multiSequenceInterface.startMultiSequenceInterface(FengDoolittle, ALGORITHMS.FENG_DOOLITTLE);
     }
 
     /*---- ALGORITHM ----*/
@@ -85,6 +85,8 @@ $(document).ready(function () {
      */
     function setInput(inputViewmodel) {
         inputData.sequences = inputViewmodel.sequences();
+
+        inputData.calculationType = inputViewmodel.calculationType();
 
         inputData.baseCosts = inputViewmodel.baseCosts();
         inputData.enlargement = inputViewmodel.enlargement();
@@ -146,7 +148,7 @@ $(document).ready(function () {
         input.match = inputData.match;
         input.mismatch = inputData.mismatch;
 
-        input.calculationType = ALIGNMENT_TYPES.SIMILARITY;
+        input.calculationType = inputData.calculationType;
     }
 
     /**

@@ -16,7 +16,7 @@ Author: Alexander Mattheis
     var subadditiveAlignmentInterfaceInstance;
 
     /**
-     * Is used to work with the input and output (the interface) of an affine alignment algorithm.
+     * Is used to work with the input and output (the interface) of a subadditive alignment algorithm.
      * @constructor
      * @augments AlignmentInterface
      */

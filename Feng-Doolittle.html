@@ -12,64 +12,78 @@ Author: Alexander Mattheis
         computes a multi-sequence-alignment (MSA) of a set of sequences.
         This algorithm shows an approximative alignment approach,
         which finds considerable solutions in a reasonable time.
-        Optimal multi-sequence-alignment approaches like the one of
-        <a href="10.1073/pnas.82.10.3073">Michio Murata, Jane S. Richardson, Joel L. Sussman (1985)</a>
-        are just a generalization of the basic alignment approaches for two sequences
-        (in this case <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a>)
-        and they cannot be used for a big amount of data,
-        because of an exponential space and time-complexity
-        of $O(n^k)$ for $k$ sequences of length $n$.
         <br>
         <br>
         The below implemented version of this algorithm is a
-        combination of several approaches of Feng and Doolittle in the years
-        <a href="doi.org/10.1016/S0076-6879(96)66023-6">1996</a>, <a href="10.1007/PL00006155">1997</a>
-        and the affine alignment approach
+        combination of several Feng-Doolittle approaches and the affine alignment approach
         by <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Osamu Gotoh (1982)</a>.
+        <br>
         After a pairwise alignment of all input sequences
-        with <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Gotoh</a>
+        with <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">Gotoh</a>
         to compute the similarity-scores,
-        this modified <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle</a> approach
-        uses an altered formula to transform similarities into distances
-        $$D(a,b) = -ln(S^eff(a,b) * k)$$,
-        where $k = 1$ (in the original paper $k = 100$).
-        This modification is needed because of the changed problem setup;
-        Feng-Doolittle was developed to align long protein-sequences with the help of
-        a substitution cost-matrix like PAM250 or BLOSUM62.
-        Without this modification, distances would become for short sequences and low match-scoring possibly negative,
-        because of the logarithm in the formula, which is negative or zero for values between $(0,1]$
-        and positive for values $>1$.
-        But, the main problem is that 'random' part $S^rand(a,b)$ of the formula
-        $$S^eff_{a,b} = \frac{S(a,b) - S^rand_{a,b}}{S^max_{a,b} - S^rand_{a,b}}$$
+        this altered <a href="10.1016/s0076-6879(96)66023-6">Feng-Doolittle (1996)</a> approach
+        uses a modified formula to transform similarities into distances
 
-        where $S^max_{a,b} = \frac{S(a,a)+S(b,b)}{2}$ is the average score of aligning both sequences with themselves
-        and the computation of $S^rand_{a,b}$ in the original paper
-        <a href="https://doi.org/10.1007/BF02603120">Da-Fei Feng, Russell F. Doolittle (1987)</a>
-        was done by random shuffling of the two sequences $a,b$ in the argument.
-        For longer sequences, about hundreds and thousands shufflings were needed,
-        what lead to very long runtimes.
-        And so
-        <a href="doi.org/10.1016/S0076-6879(96)66023-6">Da-Fei Feng, Russell F. Doolittle (1996)</a>
-        came up with an approximate formula for the computation of the 'random' part of the formula
-        to speed up the whole process and make it more consistent (every sub-formula computable by an own formula).
-        This formula for the 'random' part has been adapted, because in this extended implementation
-        no more <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a> is used
-        for the alignment of sequences, but <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Gotoh</a>.
+        $$\quad d_{a,b} = -ln(s^{eff}_{a,b} \cdot f)$$
+
+        where $f = 1$ (originally $f = 100$)
+        <br>
+        and
+        $$\quad s^{eff}_{a,b} = \frac{s_{a,b} - s^{rand}_{a,b}}{s^{max}_{a,b} - s^{rand}_{a,b}}$$
+
+        where <br>
+        <div class="row">
+            <div class="colW150"> $s^{max}_{a,b} = \cfrac{s_{a,a}+s_{b,b}}{2}$</div>
+            <div class="colW400">average score of aligning both sequences with themselves</div>
+	    </div>
+
+        The computation of $s^{rand}_{a,b}$ is done with an approximate formula
+        which has been adapted, <br>
+        because of the fusion with <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Gotoh</a>.
         The new formula is therefore
         $$
-        \frac{1}{L(a,b)} \cdot \sum_{i \in $\mathsrc{A}(a) \sum_{j \in $\mathsrc{A}(b) s(i,k | i = k \wedge k \in \mathsrc(b)) \cdot N_a(i) \cdot N_b(j)
-        + N_{a,b}(_^e) \cdot \beta
-        + N_{a,b}(_^s) \cdot \alpha
+        \quad
+        \frac{1}{L_{a,b}}
+        \bigg(
+        \sum_{i \in \mathbb{A}(a)} \sum_{j \in \mathbb{A}(b)}
+        s \Big(i,k | i = k \wedge k \in \mathbb{A}(b) \Big)
+        \cdot N_a(i) \cdot N_b(j)
+        \bigg)
+        + N_{a,b}(\_^e) \cdot \beta
+        + N_{a,b}(\_^s) \cdot \alpha
         $$
 
         where <br>
-        $L(a,b)$ is the number of columns in the alignment of $a,b$ <br>
-        $\mathsrc{A}(a), $\mathsrc{A}(b)$ are the sets of characters of sequences $a$ and $b$<br>
-        $s(i,k | i = k \wedge k \in \mathsrc{A}(b))$ is the similarity between matching characters $i$ and $k$ <br>
-        and $N_a(i), N_b(j)$ are counting how often characters $i$ and $j$ have been seen in sequences $a$ and $b$. <br>
-        $N_{a,b}(_^e)$ counts the total number of gaps and $N_{a,b}(_^s)$
-        is counting the number of gap starts. The parameters $\alpha$ and $\beta$ can be looked up here
-        <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">Gotoh</a>.
+        <div class="row">
+            <div class="colW150">$L_{a,b}$</div>
+            <div class="colW400">number of columns in the alignment of $a,b$</div>
+	    </div>
+
+        <div class="row">
+            <div class="colW150">$\mathbb{A}(a), \mathbb{A}(b)$</div>
+            <div class="colW400">alphabet-sets of sequences $a$ and $b$</div>
+        </div>
+
+        <div class="row">
+            <div class="colW150">$s(i,k | i = k \wedge k \in \mathbb{A}(b))$</div>
+            <div class="colW400">similarity between matching characters $i$ and $k$</div>
+        </div>
+
+        <div class="row">
+            <div class="colW150">$N_a(i), N_b(j)$</div>
+            <div class="colW400">frequency of characters $i$ and $j$ in sequences $a$ and $b$</div>
+        </div>
+
+        <div class="row">
+            <div class="colW150">$N_{a,b}(\_^e)$</div>
+            <div class="colW400">frequency of gaps</div>
+        </div>
+
+        <div class="row">
+            <div class="colW150">$N_{a,b}(\_^s)$</div>
+            <div class="colW400">frequency of gap starts</div>
+        </div>
+
         After all similarities have been translated into distances with the given formula,
         a hierarchical clustering algorithm is used to create phylogenetic tree.
         In the original approach, the algorithm

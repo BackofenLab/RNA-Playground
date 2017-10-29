@@ -269,6 +269,19 @@ var MOVE = {
     X_TO_Q: "xToQ"
 };
 
+var MULTI_SEQUENCE_DEFAULTS = {
+    CALCULATION: "similarity",
+    GAP_FUNCTION: "affine",
+    SEQUENCES: ["ACGT", "AT", "GCC"],
+
+    FUNCTION: {
+        BASE_COSTS: 0,
+        ENLARGEMENT: -2,
+        MATCH: 1,
+        MISMATCH: -1
+    }
+};
+
 /**
  * Symbols which are used to be for example globally replaced.
  */

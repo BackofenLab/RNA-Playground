@@ -16,6 +16,8 @@ TestCase("test_feng_doolittle", {
         var inputData = {};
         inputData.sequences = ["ACGT", "AT", "GCC"];
 
+        inputData.calculationType = "similarity";
+
         inputData.baseCosts = 0;
         inputData.enlargement = -2;
         inputData.match = 1;
