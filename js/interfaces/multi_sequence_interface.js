@@ -86,18 +86,17 @@ Author: Alexander Mattheis
                     MathJax.Hub.Queue(["Typeset", MathJax.Hub])
                 }, REUPDATE_TIMEOUT_MS);
 
-                return getSubformula(algorithmName, viewmodel);
+                return getSubformula(viewmodel);
             }
         );
     }
 
     /**
      * Returns the LaTeX-code for sub-formulas like gap-functions of subadditive algorithms.
-     * @param algorithmName {string} - The name of the algorithm.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
      * @return {string} - LaTeX code.
      */
-    function getSubformula(algorithmName, viewmodel) {
+    function getSubformula(viewmodel) {
         var string = LATEX.MATH_REGION;
 
         string += LATEX.SUB_FORMULAS.GOTOH_GAP_FUNCTION;
