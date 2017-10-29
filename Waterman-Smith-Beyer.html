@@ -11,13 +11,13 @@ Author: Alexander Mattheis
         <a href="https://doi.org/10.1016/0001-8708(76)90202-4">
             Michael S. Waterman, Temple F. Smith and William A. Beyer (1976)</a>
         computes optimal global alignments for two sequences and 
-        allows for an arbitrary scoring of consecutive gaps (insertions/deletions).
+        allows an arbitrary scoring of consecutive gaps (insertions/deletions).
         Thus, it can incorporate the assumption that a single large insertion/deletion event is 
         biologically more likely to happen compared to many small insertions/deletions by 
         using e.g. a logarithmic or affine gap scoring function.
         <br>
         <br>
-        To this end, all possible gap lengths are explicitely considered within the recursion,
+        To this end, all possible gap lengths are explicitly considered within the recursion,
         which increases the time complexity from $O(n^2)$ to $O(n^3)$ when compared to the approach by
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman and Wunsch (1970)</a>
         that applies a linear gap scoring.

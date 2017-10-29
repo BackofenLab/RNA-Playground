@@ -257,9 +257,11 @@ $(document).ready(function () {
      * D(a,b) = -ln(S^eff(a,b) * 100)
      * where
      * S^eff(a,b) = [S(a,b) - S^rand(a,b)] / [S^max(a,b) - S^rand(a,b)]
+     *
      * Hint: The factor 100 was omitted in the computation,
-     * because it works only with very big S^max(a,b) (very long sequences)
-     * and only if substitution matrices were used.
+     * because it works only with very big S^max(a,b) (very long sequences).
+     * Also, for the real Feng-Doolittle uses substitution matrices instead of a simple scoring-function.
+     *
      * @see: https://doi.org/10.1007/PL00006155
      * Feng, Da-Fei, and Russell F. Doolittle.
      * "Converting amino acid alignment scores into measures of evolutionary time:
