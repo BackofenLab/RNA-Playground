@@ -120,7 +120,7 @@ Author: Alexander Mattheis
             <li>phylogenetic tree</li>
             <li>merging</li>
         </ul>
-        are calculated and represented in reverse order below.
+        are calculated and represented in reverse order below. <br>
     </div>
 
     <div class="picture">
@@ -137,13 +137,23 @@ Author: Alexander Mattheis
                 </label>
             </div>
 
-            <div class="colW200">
+            <div class="colW175">
                 <input class="sequence" data-bind="value: $data" placeholder="EXAMPLE 'ATC'" type="text">
+
+                <!-- ko if: $index() == $root.input.clusterNames().length-1 -->
+                    <div class="group_hint">
+                        <b>Hint:</b> <br>
+                        The "+" and "-" buttons can be used to add or remove sequences.
+                    </div>
+                <!-- /ko -->
             </div>
 
             <!-- ko if: $index() == $root.input.clusterNames().length-1 -->
-                <button data-bind="click: $root.input.addRow" type="button" >Add</button>
-                <button data-bind="click: $root.input.removeRow" type="button" >Remove</button>
+                <button class="add_remove" data-bind="click: $root.input.addRow" title="Add Sequence" type="button">+</button>
+            <!-- /ko -->
+
+            <!-- ko if: $index() == $root.input.clusterNames().length-1 && $root.input.clusterNames().length > 2 -->
+                <button class="add_remove" data-bind="click: $root.input.removeRow" title="Remove Sequence" type="button">-</button>
             <!-- /ko -->
         </div>
     <!-- /ko -->
@@ -174,7 +184,6 @@ Author: Alexander Mattheis
             <div class="group_hint">
 				<b>Hint:</b> <br>
 				For similarity maximization, <br> match scores should be positive and all other scores lower. <br>
-                For distance minimization the reverse applies.
 			</div>
 		</div>
     </div>

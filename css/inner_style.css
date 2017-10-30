@@ -52,7 +52,24 @@ th {
     color: gray;
 }
 
+/* MIXED CLASS/TAG STYLING */
+div.colW175 {  /* altered from corporate-design.css */
+    width: 175px;
+    display: inline-block;
+    margin-left: 20px;
+    vertical-align:top;
+    *zoom: 1;
+    *display: inline;
+}
+
 /*---- CLASS STYLING ----*/
+.add_remove {
+    height: 22px;
+    padding: 0px;
+    text-align: center;
+    width: 22px;
+}
+
 .ancillary_output {
     clear: left;
     float: left;
@@ -345,4 +362,11 @@ _:-moz-tree-row(hover), input[type="number"]:focus {
 
 _:-moz-tree-row(hover), input[type="text"]:focus {
     outline: black solid 1px;
+}
+
+input::-moz-focus-inner /* remove button padding */
+{
+    border: 0;
+    margin: 0;
+    padding: 0;
 }

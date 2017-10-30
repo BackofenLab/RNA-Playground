@@ -80,7 +80,7 @@ Author: Alexander Mattheis
         );
 
         this.addRow = function() {
-            setTimeout(function () {
+            setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
                 MathJax.Hub.Queue(["Typeset", MathJax.Hub])
             }, REUPDATE_TIMEOUT_MS);
 
@@ -88,7 +88,7 @@ Author: Alexander Mattheis
         };
 
         this.removeRow = function() {
-            setTimeout(function () {
+            setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
                 MathJax.Hub.Queue(["Typeset", MathJax.Hub])
             }, REUPDATE_TIMEOUT_MS);
 
@@ -104,7 +104,7 @@ Author: Alexander Mattheis
 
         this.gapFunction = ko.computed(
             function getSelectedFormula() {
-                setTimeout(function () {
+                setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
                     MathJax.Hub.Queue(["Typeset", MathJax.Hub])
                 }, REUPDATE_TIMEOUT_MS);
 
@@ -114,7 +114,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Returns names for clusters.
+     * Returns LaTeX-formatted names for clusters.
      * Hint: After all characters are depleted,
      * a number is concatenated to the character
      * to make this function generic.
@@ -124,7 +124,7 @@ Author: Alexander Mattheis
      * a, b, c, ..., z,         FIRST EPISODE
      * a2, b2, c2, ..., z2,     SECOND EPISODE
      * a3, b3, ...              THIRD ...
-     * @return {Array} - The cluster names.
+     * @return {Array} - The LaTeX-formatted cluster names.
      */
     function getClusterNames(number) {
         var clusterNames = [];
@@ -145,7 +145,6 @@ Author: Alexander Mattheis
                     LATEX.MATH_REGION);
         }
 
-        debugger;
         return clusterNames;
     }
 
