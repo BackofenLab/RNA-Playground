@@ -83,7 +83,6 @@ $(document).ready(function () {
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
-        debugger;
         inputData.sequences = inputViewmodel.sequences();
 
         inputData.calculationType = inputViewmodel.calculation();
@@ -127,15 +126,26 @@ $(document).ready(function () {
                 var sequenceB = inputData.sequences[i];
 
                 var ioData = computeGotoh(gotohInput, sequenceA, sequenceB);
-                outputData.alignmentsAndScores[[sequenceA, sequenceB]] = [ioData[1].alignments[0], ioData[1].score];  // for faster access
+                var alignment = getAlignment(ioData);
 
-                outputData.alignmentLengths.push(getAlignmentLength(ioData[1].alignments[0]));
-                outputData.gapNumbers.push(getNumberOfGaps(ioData[1].alignments[0]));
-                outputData.gapStarts.push(getNumberOfGapsStarts(ioData[1].alignments[0]));
+                outputData.alignmentsAndScores[[sequenceA, sequenceB]] = [alignment, ioData[1].score];  // for faster access
+
+                outputData.alignmentLengths.push(getAlignmentLength(alignment));
+                outputData.gapNumbers.push(getNumberOfGaps(alignment));
+                outputData.gapStarts.push(getNumberOfGapsStarts(alignment));
                 outputData.sequencePairs.push([sequenceA, sequenceB]);
                 outputData.similarities.push(ioData[1].score);
             }
         }
+    }
+
+    /**
+     * Returns the alignment given the input/output data object.
+     * @param ioData {Object} - The input/output object
+     * @return {Object} - The alignment.
+     */
+    function getAlignment(ioData) {
+        return ioData[1].alignments[0] !== undefined ? ioData[1].alignments[0] : EMPTY_ALIGNMENT;
     }
 
     /**

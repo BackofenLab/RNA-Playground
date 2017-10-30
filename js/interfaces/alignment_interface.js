@@ -70,7 +70,7 @@ Author: Alexander Mattheis
             output: outputViewmodel
         };
 
-        linkInputWithOutput(algorithm, viewmodels, inputProcessor, processInput, changeOutput);
+        inputProcessor.linkElements(algorithm, viewmodels, processInput, changeOutput);
 
         ko.applyBindings(viewmodels, document.getElementById("algorithm_view"));
     }
@@ -90,20 +90,6 @@ Author: Alexander Mattheis
         }
 
         return outputData;
-    }
-
-    /**
-     * Binding Viewmodel-functions to InputProcessor elements.
-     * This allows for example to highlight a selected entry from a table.
-     * @param algorithm {Object} - The algorithm used to update the user interface.
-     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
-     * @param inputProcessor {Object} - The unit processing the input.
-     * @param processInput {Function} - Function from the algorithm which should process the input.
-     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
-     */
-    function linkInputWithOutput(algorithm, viewmodels, inputProcessor, processInput, changeOutput) {
-        inputProcessor.linkElements(viewmodels.visual);
-        inputProcessor.updateGUI(algorithm, viewmodels, processInput, changeOutput);
     }
 
     /*---- OUTPUT ----*/
