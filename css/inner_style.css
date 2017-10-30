@@ -363,10 +363,3 @@ _:-moz-tree-row(hover), input[type="number"]:focus {
 _:-moz-tree-row(hover), input[type="text"]:focus {
     outline: black solid 1px;
 }
-
-input::-moz-focus-inner /* remove button padding */
-{
-    border: 0;
-    margin: 0;
-    padding: 0;
-}
