@@ -51,7 +51,7 @@ $(document).ready(function () {
         this.type = ALGORITHMS.GOTOH;
         this.numberOfTracebacks = 0;
 
-        // inheritance
+        // instances
         alignmentInstance = new bases.alignment.Alignment(this);
 
         // public class methods

@@ -184,6 +184,8 @@ Author: Alexander Mattheis
      * Processing the input from the user.
      * This function is executed by the Input-Processor
      * and it is dependant on the algorithm.
+     * It is needed by the algorithm
+     * to read in the current and not the last values.
      * @param algorithm {Object} - Algorithm used to update the user interface.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
@@ -234,7 +236,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix.length)
                     viewmodels.output.matrix[i] = new Function();
 
@@ -261,7 +263,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix1.length)
                     viewmodels.output.matrix1[i] = new Function();
 
@@ -294,7 +296,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix2.length)
                     viewmodels.output.matrix2[i] = new Function();
 
@@ -327,7 +329,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix3.length)
                     viewmodels.output.matrix3[i] = new Function();
 
@@ -360,7 +362,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix4.length)
                     viewmodels.output.matrix4[i] = new Function();
 
@@ -393,7 +395,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix5.length)
                     viewmodels.output.matrix5[i] = new Function();
 

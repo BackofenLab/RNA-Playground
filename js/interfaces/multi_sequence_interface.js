@@ -13,15 +13,15 @@ Author: Alexander Mattheis
 
     // instances
     var alignmentInterfaceInstance;
-    var subadditiveAlignmentInterfaceInstance;
+    var multiSequenceInterfaceInstance;
 
     /**
-     * Is used to work with the input and output (the interface) of an affine alignment algorithm.
+     * Is used to work with the input and output (the interface) of a multi-sequence algorithm.
      * @constructor
      * @augments AlignmentInterface
      */
     function MultiSequenceInterface() {
-        subadditiveAlignmentInterfaceInstance = this;
+        multiSequenceInterfaceInstance = this;
 
         // inheritance
         alignmentInterfaceInstance = new interfaces.alignmentInterface.AlignmentInterface();
@@ -175,6 +175,8 @@ Author: Alexander Mattheis
      * Processing the input from the user.
      * This function is executed by the Input-Processor
      * and it is dependant on the algorithm.
+     * It is needed by the algorithm
+     * to read in the current and not the last values.
      * @param algorithm {Object} - Algorithm used to update the user interface.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
@@ -185,7 +187,7 @@ Author: Alexander Mattheis
 
         // when page was loaded the inputs have not to be updated or you get wrong inputs
         if (inputProcessor.inputUpdatesActivated()) {
-            // read out dynamically created inputs
+            inputViewmodel.sequences(getSequencesArray(inputViewmodel));
 
             inputViewmodel.baseCosts(Number($("#base_costs").val()));
             inputViewmodel.enlargement(Number($("#enlargement").val()));
@@ -198,11 +200,40 @@ Author: Alexander Mattheis
     }
 
     /**
+     * Returns the sequences of dynamically created inputs.
+     * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
+     * @return {Array} - The array of dynamically created inputs.
+     */
+    function getSequencesArray(inputViewmodel) {
+        var sequenceArray = [];
+
+        for (var i = 0; i < inputViewmodel.sequences().length; i++) {
+            sequenceArray.push($(".sequence")[i].value.toUpperCase());
+        }
+
+        return sequenceArray;
+    }
+
+    /**
      * Changes the output after processing the input.
      * @param outputData {Object} - Contains all output data.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
+        alignmentInterfaceInstance.processMatrixData(outputData);  // creates a visually representable distance matrix
+
+        viewmodels.output.distanceMatrix(outputData.matrix);
+
+        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
+            // new variables (rows) are not automatically functions
+            // and so we have to convert new variables manually into functions
+            // or we get the following error
+            // 'Uncaught TypeError: viewmodels.output.distanceMatrix[i] is not a function'
+            if (i > viewmodels.output.distanceMatrix.length)
+                viewmodels.output.distanceMatrix[i] = new Function();
+
+            viewmodels.output.distanceMatrix[i](outputData.distanceMatrix[i]);
+        }
     }
 }());

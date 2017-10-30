@@ -48,7 +48,7 @@ Author: Alexander Mattheis
                 var index = values[1];
 
                 if (character !== undefined)
-                    element.innerHTML = character.toUpperCase() + SUB.START_TAG + index + SUB.END_TAG;
+                    element.innerHTML = character + SUB.START_TAG + index + SUB.END_TAG;
             }
         };
 

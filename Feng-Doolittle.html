@@ -188,3 +188,37 @@ Author: Alexander Mattheis
 		</div>
     </div>
 </div>
+
+<div id="algorithm_output">
+    <div class="output">
+        <div class="main_output">
+            <table class="calculation">
+                <thead>
+					<tr>
+						<th></th>
+                        <!-- ko foreach: input.clusterNames -->
+							<th data-bind="drawChar: [$data, $index()+1]"></th>
+                        <!-- /ko -->
+					</tr>
+                </thead>
+
+                <tbody>
+					<!-- ko foreach: output.distanceMatrix --> <!-- to get i-indexes = $parentContext.$index() -->
+						<tr>
+                            <th data-bind="drawChar: [$root.input.clusterNames()[$index()], $index()+1]"></th>
+
+                            <!-- ko foreach: $root.output.distanceMatrix[0] --> <!-- to get j-indexes = $index() -->
+								<td class="selectable_entry"
+                                    data-bind="text: $root.output.distanceMatrix()[$parentContext.$index()][$index()]"></td>
+                            <!-- /ko -->
+						</tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="download_area">
+            <a class="distance_table_download" href="#">Download Table</a>
+        </div>
+    </div>
+</div>

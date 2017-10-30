@@ -53,7 +53,7 @@ $(document).ready(function () {
         this.lambda = 0;
         this.lastLambda = Number.POSITIVE_INFINITY;
 
-        // inheritance
+        // instances (do not change order)
         alignmentInstance = new bases.alignment.Alignment(this);
         smithWatermanInstance = new smithWaterman.SmithWaterman();
 

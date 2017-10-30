@@ -54,7 +54,7 @@ $(document).ready(function () {
         this.type = ALGORITHMS.GOTOH_LOCAL;
         this.numberOfTracebacks = 0;
 
-        // inheritance
+        // instances (do not change order)
         gotohInstance = new gotoh.Gotoh();
         smithWatermanInstance = new smithWaterman.SmithWaterman();
 

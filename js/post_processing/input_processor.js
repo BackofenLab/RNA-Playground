@@ -480,9 +480,9 @@ Author: Alexander Mattheis
      * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
      */
     function updateGUI(algorithm, viewmodels, processInput, changeOutput) {
-        var inputs = $("#algorithm_input").find("input");
+        var input = $("#algorithm_input");
 
-        inputs.on({
+        input.on({
             keypress: function (e) {
                 if (e.which === KEY_CODES.ENTER)
                     update(algorithm, viewmodels, processInput, changeOutput);
@@ -502,6 +502,7 @@ Author: Alexander Mattheis
      * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
      */
     function update(algorithm, viewmodels, processInput, changeOutput) {
+        debugger;
         processInput(algorithm, inputProcessorInstance, viewmodels.input, viewmodels.visual);
         changeOutput(algorithm.getOutput(), inputProcessorInstance, viewmodels);
         postProcess(viewmodels);

@@ -50,7 +50,7 @@ $(document).ready(function () {
         this.type = ALGORITHMS.WATERMAN_SMITH_BEYER;
         this.numberOfTracebacks = 0;
 
-        // inheritance
+        // instances
         alignmentInstance = new bases.alignment.Alignment(this);
 
         // public class methods

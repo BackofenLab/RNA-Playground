@@ -10,7 +10,7 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("interfaces.alignmentInterface", AlignmentInterface,
-        imports, sharedInterfaceOperations, roundValues, startProcessing);
+        imports, sharedInterfaceOperations, roundValues, processMatrixData, startProcessing);
 
     // instances
     var alignmentInterfaceInstance;
@@ -27,8 +27,9 @@ Author: Alexander Mattheis
         // public class methods
         this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
-        this.startProcessing = startProcessing;
         this.roundValues = roundValues;
+        this.processMatrixData = processMatrixData;
+        this.startProcessing = startProcessing;
     }
 
     /**
@@ -118,33 +119,18 @@ Author: Alexander Mattheis
      */
     function OutputViewmodel(algorithmName, outputData) {
         var viewmodel = this;
-        if (algorithmName !== ALGORITHMS.FENG_DOOLITTLE) {
+
+        if (GLOBAL_ALGORITHMS.indexOf(algorithmName) >= 0
+            || LOCAL_ALGORITHMS.indexOf(algorithmName) >= 0) {  // if basic local or global algorithm
             roundValues(outputData);
 
-            if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
+            if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {  // if AEP
                 createAEPOutputViewmodel(viewmodel, outputData);
             } else if (outputData.matrix !== undefined) {  // other algorithms
-                this.matrix = ko.observableArray(outputData.matrix);
-
-                for (var i = 0; i < outputData.matrix.length; i++) {
-                    this.matrix[i] = ko.observableArray(outputData.matrix[i]);
-                }
-
-                if (algorithmName === ALGORITHMS.GOTOH || algorithmName === ALGORITHMS.GOTOH_LOCAL) {  // special cases regarding possible algorithms
-                    this.horizontalGaps = ko.observableArray(outputData.horizontalGaps);
-                    this.verticalGaps = ko.observableArray(outputData.verticalGaps);
-
-                    for (var i = 0; i < outputData.matrix.length; i++) {
-                        this.horizontalGaps[i] = ko.observableArray(outputData.horizontalGaps[i]);
-                        this.verticalGaps[i] = ko.observableArray(outputData.verticalGaps[i]);
-                    }
-                }
-
-                this.alignments = ko.observableArray(outputData.alignments);
-
-                this.score = ko.observable(outputData.score);
-                this.moreTracebacks = ko.observable(outputData.moreTracebacks);
+                createOutputViewmodel(algorithmName, viewmodel, outputData);
             }
+        } else {  // if multi-sequence alignment algorithm
+            createMultiSequenceOutputViewmodel(viewmodel, outputData);
         }
     }
 
@@ -197,8 +183,8 @@ Author: Alexander Mattheis
 
     /**
      * Creates the AEP OutputViewmodel.
-     * @param viewmodel - The output viewmodel container which should be filled.
-     * @param outputData - The data which is used to fill the viewmodel.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
      * @see Not nice without array, but the only found way it's working without any bugs!
      */
     function createAEPOutputViewmodel(viewmodel, outputData) {
@@ -333,6 +319,112 @@ Author: Alexander Mattheis
         }
 
         viewmodel.maxNumberIterations = ko.observable(outputData.maxNumberIterations);
+    }
+
+    /**
+     * Creates the OutputViewmodel for some local and global alignment algorithms.
+     * @param algorithmName {string} - The name of the algorithm which is executed.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     */
+    function createOutputViewmodel(algorithmName, viewmodel, outputData) {
+        viewmodel.matrix = ko.observableArray(outputData.matrix);
+
+        for (var i = 0; i < outputData.matrix.length; i++) {
+            viewmodel.matrix[i] = ko.observableArray(outputData.matrix[i]);
+        }
+
+        if (algorithmName === ALGORITHMS.GOTOH || algorithmName === ALGORITHMS.GOTOH_LOCAL) {  // special cases regarding possible algorithms
+            viewmodel.horizontalGaps = ko.observableArray(outputData.horizontalGaps);
+            viewmodel.verticalGaps = ko.observableArray(outputData.verticalGaps);
+
+            for (var i = 0; i < outputData.matrix.length; i++) {
+                viewmodel.horizontalGaps[i] = ko.observableArray(outputData.horizontalGaps[i]);
+                viewmodel.verticalGaps[i] = ko.observableArray(outputData.verticalGaps[i]);
+            }
+        }
+
+        viewmodel.alignments = ko.observableArray(outputData.alignments);
+
+        viewmodel.score = ko.observable(outputData.score);
+        viewmodel.moreTracebacks = ko.observable(outputData.moreTracebacks);
+    }
+
+    /**
+     * Creates the OutputViewmodel for multi-sequence alignment algorithms.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     */
+    function createMultiSequenceOutputViewmodel(viewmodel, outputData) {
+        processMatrixData(outputData);
+
+        viewmodel.distanceMatrix =  ko.observableArray(outputData.distanceMatrix);
+
+        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
+            viewmodel.distanceMatrix[i] = ko.observableArray(outputData.distanceMatrix[i]);
+        }
+    }
+
+    /**
+     * The distance matrix is an "associative array" and this has to be converted
+     * into a 2D-array which is displayable.
+     * Hint: "Associative arrays" do not have a defined order (browser-dependant).
+     * @param outputData {Object} - The outputData in which the distance-matrix should be translated into a table form.
+     */
+    function processMatrixData(outputData) {
+        var matrix = createMatrix(outputData.clusterNames.length);
+        var matrixKeys = Object.keys(outputData.distanceMatrix);
+
+        for (var i = 0; i < matrix.length; i++) {
+            for (var j = 0; j < matrix.length; j++) {
+                if (i === j)
+                    matrix[i][j] = 0;
+                else {
+                    var key = matrixKeys[j];
+                    var cluster1Position = getPositionByName(key[0]);
+                    var cluster2Position = getPositionByName(key[2]);
+                    var value = outputData.distanceMatrix[key];
+
+                    matrix[cluster1Position][cluster2Position] = value;
+                }
+            }
+        }
+
+        outputData.distanceMatrix = matrix;
+    }
+
+    /**
+     * Creates a matrix with the given size.
+     * @param size - The width and height of the matrix.
+     */
+    function createMatrix (size) {
+        var matrix = new Array(size);
+
+        for (var i = 0; i < size; i++) {
+            matrix[i] = [];
+        }
+
+        return matrix;
+    }
+
+    /**
+     * Returns for a cluster-name, its position in the distance matrix.
+     * @param clusterName {string} - The name of the cluster.
+     */
+    function getPositionByName(clusterName) {
+        var clusterCharacter = clusterName.replace(MULTI_SYMBOLS.NUMBERS, SYMBOLS.EMPTY);
+        var clusterNumber = Number(clusterName.replace(MULTI_SYMBOLS.STRINGS, SYMBOLS.EMPTY));
+
+        var position = -1;
+
+        for (var i = 0; i < CLUSTER_NAMES.length; i++) {
+            if (clusterCharacter === CLUSTER_NAMES[i]) {
+                position = i;
+                break;
+            }
+        }
+
+        return position + clusterNumber * CLUSTER_NAMES.length;
     }
 
     /**

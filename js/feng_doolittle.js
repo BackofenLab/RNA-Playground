@@ -53,11 +53,10 @@ $(document).ready(function () {
 
         // variables
         this.type = ALGORITHMS.FENG_DOOLITTLE;
-        this.numberOfTracebacks = 0;  // DO NOT DELETE THAT!
 
-        // inheritance
-        gotohInstance = new gotoh.Gotoh();
+        // instances (do not change order)
         alignmentInstance = new bases.alignment.Alignment(this);
+        gotohInstance = new gotoh.Gotoh();
 
         // public class methods
         this.getInput = getInput;
@@ -84,6 +83,7 @@ $(document).ready(function () {
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
+        debugger;
         inputData.sequences = inputViewmodel.sequences();
 
         inputData.calculationType = inputViewmodel.calculation();
@@ -92,8 +92,6 @@ $(document).ready(function () {
         inputData.enlargement = inputViewmodel.enlargement();
         inputData.match = inputViewmodel.match();
         inputData.mismatch = inputViewmodel.mismatch();
-
-        debugger;
     }
 
     /**

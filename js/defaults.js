@@ -294,6 +294,8 @@ var MULTI_SYMBOLS = {
     GAP: /_/g,
     G_LITTLE_SPECIAL: /ğ/g,
     NONE: /#/g,
+    NUMBERS: /[0-9]/g,
+    STRINGS: /[^0-9]/g,
     SPACE: / /g
 };
 
