@@ -84,6 +84,7 @@ $(document).ready(function () {
      */
     function setInput(inputViewmodel) {
         inputData.sequences = inputViewmodel.sequences();
+        inputData.arrayPositionsOfRemovedSequences = getDuplicatePositions(inputData.sequences);
 
         inputData.calculationType = inputViewmodel.calculation();
 
@@ -91,6 +92,63 @@ $(document).ready(function () {
         inputData.enlargement = inputViewmodel.enlargement();
         inputData.match = inputViewmodel.match();
         inputData.mismatch = inputViewmodel.mismatch();
+    }
+
+    /**
+     * Returns the non-first position of sequences which are multiple times in the sequences.
+     * @param sequences - The sequences which are checked for duplicates.
+     */
+    function getDuplicatePositions(sequences) {
+        var positions = {};
+        var duplicatePositions = [];
+        var uniqueSequences = getUniqueElements(sequences);
+
+        for (var i = 0; i < uniqueSequences.length; i++) {
+            positions[uniqueSequences[i]] = getAllPositions(uniqueSequences[i], sequences);
+
+            if (positions[uniqueSequences[i]].length > 1) {  // if a sequence contained multiple times in sequences
+                // removing first position, because it's not needed (not removed)
+                // and copy the other positions into duplicatePositions (to remove the associated sequences later)
+                var nonFirstPositions = positions[uniqueSequences[i]].slice(1);  // first position removed and rest is copied
+                duplicatePositions = duplicatePositions.concat(nonFirstPositions)
+            }
+        }
+
+        debugger;
+        return duplicatePositions;
+    }
+
+    /**
+     * Returns unique elements.
+     * @param array {Array} - The sequence in which is counted.
+     * @return {Array} - The input array without duplicates.
+     */
+    function getUniqueElements(array) {
+        var elements = [];
+
+        for (var i = 0; i < array.length; i++) {
+            if (elements.indexOf(array[i]) === -1)
+                elements.push(array[i]);
+        }
+
+        return elements;
+    }
+
+    /**
+     * Returns all positions of a given sequence in the sequences.
+     * @param sequence {string} - The sequence to search for.
+     * @param sequences {Array} - The array of sequences in which is searched.
+     * @return {Array} - The array of all positions of the sequence in the sequence array.
+     */
+    function getAllPositions(sequence, sequences) {
+        var positions = [];
+
+        for (var i = 0; i < sequences.length; i++) {
+            if (sequence === sequences[i])
+                positions.push(i);
+        }
+
+        return positions;
     }
 
     /**
@@ -121,20 +179,22 @@ $(document).ready(function () {
         outputData.similarities = [];
 
         for (var i = 1; i < inputData.sequences.length; i++) {
-            for (var j = 0; j < i; j++) {
-                var sequenceA = inputData.sequences[j];
-                var sequenceB = inputData.sequences[i];
+            if (inputData.arrayPositionsOfRemovedSequences.indexOf(i) === -1) {  // only if the sequence is not a duplicate
+                for (var j = 0; j < i; j++) {
+                    var sequenceA = inputData.sequences[j];
+                    var sequenceB = inputData.sequences[i];
 
-                var ioData = computeGotoh(gotohInput, sequenceA, sequenceB);
-                var alignment = getAlignment(ioData);
+                    var ioData = computeGotoh(gotohInput, sequenceA, sequenceB);
+                    var alignment = getAlignment(ioData);
 
-                outputData.alignmentsAndScores[[sequenceA, sequenceB]] = [alignment, ioData[1].score];  // for faster access
+                    outputData.alignmentsAndScores[[sequenceA, sequenceB]] = [alignment, ioData[1].score];  // for faster access
 
-                outputData.alignmentLengths.push(getAlignmentLength(alignment));
-                outputData.gapNumbers.push(getNumberOfGaps(alignment));
-                outputData.gapStarts.push(getNumberOfGapsStarts(alignment));
-                outputData.sequencePairs.push([sequenceA, sequenceB]);
-                outputData.similarities.push(ioData[1].score);
+                    outputData.alignmentLengths.push(getAlignmentLength(alignment));
+                    outputData.gapNumbers.push(getNumberOfGaps(alignment));
+                    outputData.gapStarts.push(getNumberOfGapsStarts(alignment));
+                    outputData.sequencePairs.push([sequenceA, sequenceB]);
+                    outputData.similarities.push(ioData[1].score);
+                }
             }
         }
     }
@@ -377,7 +437,8 @@ $(document).ready(function () {
 
     /**
      * Returns unique characters of the sequence.
-     * @param sequence - The sequence in which is counted.
+     * @param sequence {string} - The sequence in which is counted.
+     * @return {Array} - Array of characters without duplicates.
      */
     function getUniqueChars(sequence) {
         var chars = [];
@@ -443,8 +504,12 @@ $(document).ready(function () {
 
         var names = {};
 
-        for (var i = 0; i < outputData.clusterNames.length; i++) {
-            names[inputData.sequences[i]] = outputData.clusterNames[i];
+        var currentNamePos = 0;
+        for (var i = 0; i < inputData.sequences.length; i++) {
+            if (inputData.arrayPositionsOfRemovedSequences.indexOf(i) === -1) {  // if sequence is a used sequence
+                names[inputData.sequences[i]] = outputData.clusterNames[currentNamePos];
+                currentNamePos++;
+            }
         }
 
         outputData.distanceMatrix = {};
@@ -458,6 +523,8 @@ $(document).ready(function () {
 
             outputData.distanceMatrix[[firstClusterName, secondClusterName]] = outputData.distances[i];
         }
+        debugger;
+        outputData.distanceMatrixLength = inputData.sequences.length;
     }
 
     /**
@@ -465,6 +532,8 @@ $(document).ready(function () {
      * Hint: After all characters are depleted,
      * a number is concatenated to the character
      * to make this function generic.
+     * Hint: Duplicates do not get a name
+     * by checking the array of removed positions (if not removed, then create name).
      * @example:
      * CLUSTER NAMES:
      * a, b, c, ..., z,         FIRST EPISODE
@@ -477,17 +546,19 @@ $(document).ready(function () {
         var currentEpisode = 1;
 
         // for every pairwise distance we need a symbol
-        for (var i = 0; i < outputData.distances.length; i++) {
-            if (i < CLUSTER_NAMES.length)
+        for (var i = 0; i < inputData.sequences.length; i++) {
+            if (i < CLUSTER_NAMES.length && inputData.arrayPositionsOfRemovedSequences.indexOf(i) === -1)
                 clusterNames.push(CLUSTER_NAMES[i]);  // add a, b, c, ..., z
 
             if (i >= CLUSTER_NAMES.length && i % CLUSTER_NAMES.length === 0)  // out of characters
                 currentEpisode++;  // new episode
 
-            if (i >= CLUSTER_NAMES.length)  // out of characters -> a2, b2, c2, ..., z2, a3, b3, ...
+            // out of characters -> a2, b2, c2, ..., z2, a3, b3, ...
+            if (i >= CLUSTER_NAMES.length && inputData.arrayPositionsOfRemovedSequences.indexOf(i) === -1)
                 clusterNames.push(CLUSTER_NAMES[i % CLUSTER_NAMES.length] + SYMBOLS.EMPTY + currentEpisode);
         }
 
+        debugger;
         return clusterNames;
     }
 
@@ -497,7 +568,7 @@ $(document).ready(function () {
      * @return {Object} - The tree branches.
      */
     function getPhylogeneticTree() {
-        inputData.numOfStartClusters = inputData.sequences.length;
+        inputData.numOfStartClusters = inputData.sequences.length - inputData.arrayPositionsOfRemovedSequences.length;
 
         var clustering = new upgma.Upgma();
         clustering.setIO(inputData, outputData);
@@ -538,8 +609,13 @@ $(document).ready(function () {
     function initializeGroups() {
         outputData.groups = {};
 
-        for (var i = 0; i < outputData.clusterNames.length; i++) {
-            outputData.groups[outputData.clusterNames[i]] = [inputData.sequences[i]];
+        debugger;
+        var currentNamePos = 0;
+        for (var i = 0; i < inputData.sequences.length; i++) {
+            if (inputData.arrayPositionsOfRemovedSequences.indexOf(i) === -1) {
+                outputData.groups[outputData.clusterNames[currentNamePos]] = [inputData.sequences[i]];
+                currentNamePos++;
+            }
         }
     }
 

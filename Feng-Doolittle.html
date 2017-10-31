@@ -129,7 +129,7 @@ Author: Alexander Mattheis
 </div>
 
 <div id="algorithm_input">
-    <!-- ko foreach: $root.input.sequences -->
+    <!-- ko foreach: $root.input.sequences() -->
         <div class="row">
             <div class="colW100">
                 <label>
@@ -196,20 +196,24 @@ Author: Alexander Mattheis
                 <thead>
 					<tr>
 						<th></th>
-                        <!-- ko foreach: input.clusterNames -->
-							<th data-bind="drawChar: [$data, $index()+1]"></th>
+                        <!-- ko foreach: input.clusterNames() -->
+                            <!-- ko if: $index() < $root.output.distanceMatrix()[0].length -->
+							    <th data-bind="drawChar: [$data, undefined]"></th>
+                            <!-- /ko -->
                         <!-- /ko -->
 					</tr>
                 </thead>
 
                 <tbody>
-					<!-- ko foreach: output.distanceMatrix --> <!-- to get i-indexes = $parentContext.$index() -->
+					<!-- ko foreach: $root.output.distanceMatrix() --> <!-- to get i-indexes = $parentContext.$index() -->
 						<tr>
-                            <th data-bind="drawChar: [$root.input.clusterNames()[$index()], $index()+1]"></th>
+                            <!-- ko if: $index() < $root.output.distanceMatrix()[0].length --> <!-- works because of a symmetric matrix -->
+                                <th data-bind="drawChar: [$root.input.clusterNames()[$index()], undefined]"></th>
 
-                            <!-- ko foreach: $root.output.distanceMatrix[0] --> <!-- to get j-indexes = $index() -->
-								<td class="selectable_entry"
-                                    data-bind="text: $root.output.distanceMatrix()[$parentContext.$index()][$index()]"></td>
+                                <!-- ko foreach: $root.output.distanceMatrix()[0] --> <!-- to get j-indexes = $index() -->
+                                    <td class="selectable_entry"
+                                        data-bind="text: $root.output.distanceMatrix()[$parentContext.$index()][$index()]"></td>
+                                <!-- /ko -->
                             <!-- /ko -->
 						</tr>
                     <!-- /ko -->

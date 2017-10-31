@@ -187,7 +187,9 @@ Author: Alexander Mattheis
 
         // when page was loaded the inputs have not to be updated or you get wrong inputs
         if (inputProcessor.inputUpdatesActivated()) {
-            inputViewmodel.sequences(getSequencesArray(inputViewmodel));
+            var sequenceArray = getSequencesArray(inputViewmodel);
+            inputViewmodel.sequences.removeAll();
+            inputViewmodel.sequences(sequenceArray);
 
             inputViewmodel.baseCosts(Number($("#base_costs").val()));
             inputViewmodel.enlargement(Number($("#enlargement").val()));
@@ -223,13 +225,13 @@ Author: Alexander Mattheis
     function changeOutput(outputData, inputProcessor, viewmodels) {
         alignmentInterfaceInstance.processMatrixData(outputData);  // creates a visually representable distance matrix
 
-        viewmodels.output.distanceMatrix(outputData.matrix);
+        viewmodels.output.distanceMatrix(outputData.distanceMatrix);
 
         for (var i = 0; i < outputData.distanceMatrix.length; i++) {
             // new variables (rows) are not automatically functions
             // and so we have to convert new variables manually into functions
             // or we get the following error
-            // 'Uncaught TypeError: viewmodels.output.distanceMatrix[i] is not a function'
+            // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
             if (i > viewmodels.output.distanceMatrix.length)
                 viewmodels.output.distanceMatrix[i] = new Function();
 

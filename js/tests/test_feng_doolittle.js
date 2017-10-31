@@ -17,6 +17,7 @@ TestCase("test_feng_doolittle", {
         inputData.sequences = ["ACGT", "AT", "GCC"];
 
         inputData.calculationType = "similarity";
+        inputData.arrayPositionsOfRemovedSequences = [];
 
         inputData.baseCosts = 0;
         inputData.enlargement = -2;

@@ -47,8 +47,12 @@ Author: Alexander Mattheis
                 var character = values[0];
                 var index = values[1];
 
-                if (character !== undefined)
-                    element.innerHTML = character + SUB.START_TAG + index + SUB.END_TAG;
+                if (character !== undefined) {
+                    element.innerHTML = character;
+
+                    if (index !== undefined)
+                        element.innerHTML += SUB.START_TAG + index + SUB.END_TAG;
+                }
             }
         };
 

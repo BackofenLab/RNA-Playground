@@ -355,25 +355,29 @@ Author: Alexander Mattheis
      * The distance matrix is an "associative array" and this has to be converted
      * into a 2D-array which is displayable.
      * Hint: "Associative arrays" do not have a defined order (browser-dependant).
-     * @param outputData {Object} - The outputData in which the distance-matrix should be translated into a table form.
+     * @param outputData {Object} - The output data in which the distance-matrix should be translated into a table form.
      */
     function processMatrixData(outputData) {
-        var matrix = createMatrix(outputData.clusterNames.length);
-        var matrixKeys = Object.keys(outputData.distanceMatrix);
+        var matrix = createMatrix(outputData.distanceMatrixLength);
+        var matrixKeys = Object.keys(outputData.distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...
 
+        debugger;
+        // fill diagonals with zero
         for (var i = 0; i < matrix.length; i++) {
             for (var j = 0; j < matrix.length; j++) {
                 if (i === j)
                     matrix[i][j] = 0;
-                else {
-                    var key = matrixKeys[j];
-                    var cluster1Position = getPositionByName(key[0]);
-                    var cluster2Position = getPositionByName(key[2]);
-                    var value = outputData.distanceMatrix[key];
-
-                    matrix[cluster1Position][cluster2Position] = value;
-                }
             }
+        }
+
+        // fill right upper half
+        for (var j = 0; j < matrixKeys.length; j++) {
+            var key = matrixKeys[j];
+            var cluster1Position = getPositionByName(key[0]);
+            var cluster2Position = getPositionByName(key[2]);
+            var value = outputData.distanceMatrix[key];
+
+            matrix[cluster1Position][cluster2Position] = value;
         }
 
         outputData.distanceMatrix = matrix;

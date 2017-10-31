@@ -100,7 +100,7 @@ Author: Alexander Mattheis
      * @param numOfIterations - The number of iterations the algorithm will do.
      */
     function initializeCardinalities(numOfIterations) {
-        clusteringInstance.nameIndex = numOfIterations + 1;  // current cluster-name set-size + 1
+        clusteringInstance.nameIndex = inputData.sequences.length;  // do not change that!
 
         for (var i = 0; i < clusteringInstance.nameIndex; i++)
             outputData.cardinalities[CLUSTER_NAMES[i]] = 1;
