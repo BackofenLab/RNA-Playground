@@ -6,7 +6,7 @@ Author: Alexander Mattheis
 */
 
 The DNA-Icon in the Bioinformatics Algorithms Logo
-(look into "alignment.html" and the "sprites.png")
+(look into "alignment.html" and the "outer_sprites.png")
 was created with Inkscape 0.48
 
 Icon coloring based on this image:

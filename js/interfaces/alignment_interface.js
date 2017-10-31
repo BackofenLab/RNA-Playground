@@ -349,6 +349,8 @@ Author: Alexander Mattheis
         for (var i = 0; i < outputData.distanceMatrix.length; i++) {
             viewmodel.distanceMatrix[i] = ko.observableArray(outputData.distanceMatrix[i]);
         }
+
+        viewmodel.newickString = ko.observable(outputData.newickString);
     }
 
     /**

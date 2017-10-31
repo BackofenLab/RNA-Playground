@@ -192,11 +192,8 @@ div.colW175 {  /* altered from corporate-design.css */
     overflow: auto;
 }
 
-.non_selectable_entry {
-    border-bottom: 0;
-    font-family: serif;
-    font-size: 1.1em;
-    position: relative;
+.newick_tree {
+    margin-bottom: 10px;
 }
 
 .outcome {
@@ -258,6 +255,38 @@ div.colW175 {  /* altered from corporate-design.css */
     clear: left;
     float: left;
     width: 161px;
+}
+
+.results_newick {
+    max-width: 600px;
+    overflow-x: scroll;
+    width: 598px;
+}
+
+.results_newick td, .results_newick th {
+    border-left: none;
+    border-right: none; /* other possibilities does not look bug-like on tablets/smartphone browsers */
+}
+
+.results_newick_header,
+.results_newick_footer {
+    vertical-align: top;
+    width: 600px;
+}
+
+.results_newick td, .results_newick th,
+.results_newick_footer td, .results_newick_footer th,
+.results_newick_header td, .results_newick_header th {
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 598px;
+}
+
+.results_newick_with_scrollbar {
+    border-left: 1px solid #a0a0a0;
+    border-right: 1px solid #a0a0a0;
+    width: 598px;
 }
 
 .selectable_entry {

@@ -191,6 +191,40 @@ Author: Alexander Mattheis
 
 <div id="algorithm_output">
     <div class="output">
+        <div class="newick_tree">
+            <table class="results_newick_header">
+                <thead>
+					<tr>
+						<th>
+                            Newick Tree <br>
+						</th>
+					</tr>
+                </thead>
+            </table>
+
+            <div class="results_newick_with_scrollbar">
+                <table class="results_newick">
+                    <tbody>
+                        <tr>
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.newickString()"></code>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="results_newick_footer">
+                <tr>
+                    <th>
+                        <small>
+                            <b>Hint:</b> Duplicate sequences were removed.
+                        </small>
+                    </th>
+                </tr>
+            </table>
+        </div>
+
         <div class="main_output">
             <table class="calculation">
                 <thead>
@@ -211,7 +245,7 @@ Author: Alexander Mattheis
                                 <th data-bind="drawChar: [$root.input.clusterNames()[$index()], undefined]"></th>
 
                                 <!-- ko foreach: $root.output.distanceMatrix()[0] --> <!-- to get j-indexes = $index() -->
-                                    <td class="selectable_entry"
+                                    <td class="non_selectable_entry"
                                         data-bind="text: $root.output.distanceMatrix()[$parentContext.$index()][$index()]"></td>
                                 <!-- /ko -->
                             <!-- /ko -->

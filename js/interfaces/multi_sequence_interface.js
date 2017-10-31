@@ -237,5 +237,7 @@ Author: Alexander Mattheis
 
             viewmodels.output.distanceMatrix[i](outputData.distanceMatrix[i]);
         }
+
+        viewmodels.output.newickString(outputData.newickString);
     }
 }());
