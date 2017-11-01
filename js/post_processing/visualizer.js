@@ -11,7 +11,7 @@ Author: Alexander Mattheis
     // public methods
     namespace("postProcessing.visualizer", Visualizer,
         shareInformation, showFlow,
-        showTraceback, highlight, downloadTable, replaceInfinityStrings, redrawOverlay, drawTree, redrawTree, removeAllContents);
+        showTraceback, highlight, downloadTable, replaceInfinityStrings, redrawOverlay, drawTree, removeAllContents);
 
     // instances
     var visualizerInstance;
@@ -67,7 +67,6 @@ Author: Alexander Mattheis
         this.replaceInfinityStrings = replaceInfinityStrings;
         this.redrawOverlay = redrawOverlay;
         this.drawTree = drawTree;
-        this.redrawTree = redrawTree;
         this.removeAllContents = removeAllContents;
     }
 
@@ -823,28 +822,14 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Draws a phylogenetic tree using jsPhyloSVG-library.
-     */
-    function drawTree() {
-        if (visualizerInstance.phylogeneticTree === undefined)
-            visualizerInstance.phylogeneticTree
-                = new Smits.PhyloCanvas(visualizerInstance.output.newickString,
-                PHYLOGENETIC_TREE.SVG_CANVAS_NAME,
-                PHYLOGENETIC_TREE.SVG_WIDTH,
-                PHYLOGENETIC_TREE.SVG_HEIGHT);
-        else
-            redrawTree();
-    }
-
-    /**
-     * Redraws a phylogenetic tree from jsPhyloSVG-library.
-     * @see: Bugfix for https://jsphylosvg.uservoice.com/forums/55902-general/suggestions/7252947-clear-and-reload-tree
-     * Original code was taken from
+     * Draws a phylogenetic tree from jsPhyloSVG-library.
+     * @see: Bugfix-code for https://jsphylosvg.uservoice.com/forums/55902-general/suggestions/7252947-clear-and-reload-tree
+     * was taken from
      * https://stackoverflow.com/questions/30667884/why-is-the-bottom-of-the-figure-cut-off
      * https://pastebin.com/9w4PXtLQ
      * and has been optimized + commented.
      */
-    function redrawTree() {
+    function drawTree() {
         $("#phylogenetic_tree").remove();  // remove from container
         $(".tree_container").append(PHYLOGENETIC_TREE.SVG_CANVAS);  // add again
 
