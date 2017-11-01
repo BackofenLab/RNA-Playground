@@ -71,6 +71,7 @@ Author: Alexander Mattheis
         };
 
         inputProcessor.linkElements(algorithm, viewmodels, processInput, changeOutput);
+        executeAlgorithmInterfaceCode(algorithm, viewmodels);
 
         ko.applyBindings(viewmodels, document.getElementById("algorithm_view"));
     }
@@ -90,6 +91,16 @@ Author: Alexander Mattheis
         }
 
         return outputData;
+    }
+
+    /**
+     * Executes code for specific algorithm interfaces.
+     * @param algorithm {Object} - The algorithm for which interface specific code is executed.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     */
+    function executeAlgorithmInterfaceCode(algorithm, viewmodels) {
+        if (algorithm.type === ALGORITHMS.FENG_DOOLITTLE)
+            viewmodels.visual.drawTree();
     }
 
     /*---- OUTPUT ----*/
@@ -344,14 +355,23 @@ Author: Alexander Mattheis
     function createMultiSequenceOutputViewmodel(viewmodel, outputData) {
         processMatrixData(outputData);
 
+        // distance matrix
         viewmodel.distanceMatrix =  ko.observableArray(outputData.distanceMatrix);
 
         for (var i = 0; i < outputData.distanceMatrix.length; i++) {
             viewmodel.distanceMatrix[i] = ko.observableArray(outputData.distanceMatrix[i]);
         }
 
+        // merge steps
+        viewmodel.guideAlignments = ko.observable(outputData.guideAlignments);
+        viewmodel.firstGroups = ko.observable(outputData.firstGroups);
+        viewmodel.secondGroups = ko.observable(outputData.secondGroups);
+        viewmodel.joinedGroups = ko.observable(outputData.joinedGroups);
+        viewmodel.joinedGroupNames = ko.observable(outputData.joinedGroupNames);
+
+        // tree and final output
         viewmodel.newickString = ko.observable(outputData.newickString);
-        viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment.reverse());
+        viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
     }
 
     /**

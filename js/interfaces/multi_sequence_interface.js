@@ -225,6 +225,7 @@ Author: Alexander Mattheis
     function changeOutput(outputData, inputProcessor, viewmodels) {
         alignmentInterfaceInstance.processMatrixData(outputData);  // creates a visually representable distance matrix
 
+        // distance matrix
         viewmodels.output.distanceMatrix(outputData.distanceMatrix);
 
         for (var i = 0; i < outputData.distanceMatrix.length; i++) {
@@ -238,7 +239,17 @@ Author: Alexander Mattheis
             viewmodels.output.distanceMatrix[i](outputData.distanceMatrix[i]);
         }
 
+        // merge steps
+        viewmodels.output.guideAlignments(outputData.guideAlignments);
+        viewmodels.output.firstGroups(outputData.firstGroups);
+        viewmodels.output.secondGroups(outputData.secondGroups);
+        viewmodels.output.joinedGroups(outputData.joinedGroups);
+        viewmodels.output.joinedGroupNames(outputData.joinedGroupNames);
+
+        // tree and final output
         viewmodels.output.newickString(outputData.newickString);
-        viewmodels.output.progressiveAlignment(outputData.progressiveAlignment.reverse());
+        viewmodels.output.progressiveAlignment(outputData.progressiveAlignment);
+
+        viewmodels.visual.drawTree();
     }
 }());

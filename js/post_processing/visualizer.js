@@ -11,7 +11,7 @@ Author: Alexander Mattheis
     // public methods
     namespace("postProcessing.visualizer", Visualizer,
         shareInformation, showFlow,
-        showTraceback, highlight, downloadTable, replaceInfinityStrings, redrawOverlay, removeAllContents);
+        showTraceback, highlight, downloadTable, replaceInfinityStrings, redrawOverlay, drawTree, redrawTree, removeAllContents);
 
     // instances
     var visualizerInstance;
@@ -40,6 +40,8 @@ Author: Alexander Mattheis
 
         this.svg = createSVG();
 
+        this.phylogeneticTree = undefined;
+
         // bindings
         ko.bindingHandlers.drawChar = {
             update: function (element, valueAccessor) {
@@ -64,6 +66,8 @@ Author: Alexander Mattheis
         this.downloadTable = downloadTable;
         this.replaceInfinityStrings = replaceInfinityStrings;
         this.redrawOverlay = redrawOverlay;
+        this.drawTree = drawTree;
+        this.redrawTree = redrawTree;
         this.removeAllContents = removeAllContents;
     }
 
@@ -815,6 +819,90 @@ Author: Alexander Mattheis
             lastPosI = posI;
             lastPosJ = posJ;
             lastTable = currentTable;
+        }
+    }
+
+    /**
+     * Draws a phylogenetic tree using jsPhyloSVG-library.
+     */
+    function drawTree() {
+        if (visualizerInstance.phylogeneticTree === undefined)
+            visualizerInstance.phylogeneticTree
+                = new Smits.PhyloCanvas(visualizerInstance.output.newickString,
+                PHYLOGENETIC_TREE.SVG_CANVAS_NAME,
+                PHYLOGENETIC_TREE.SVG_WIDTH,
+                PHYLOGENETIC_TREE.SVG_HEIGHT);
+        else
+            redrawTree();
+    }
+
+    /**
+     * Redraws a phylogenetic tree from jsPhyloSVG-library.
+     * @see: Bugfix for https://jsphylosvg.uservoice.com/forums/55902-general/suggestions/7252947-clear-and-reload-tree
+     * Original code was taken from
+     * https://stackoverflow.com/questions/30667884/why-is-the-bottom-of-the-figure-cut-off
+     * https://pastebin.com/9w4PXtLQ
+     * and has been optimized + commented.
+     */
+    function redrawTree() {
+        $("#phylogenetic_tree").remove();  // remove from container
+        $(".tree_container").append(PHYLOGENETIC_TREE.SVG_CANVAS);  // add again
+
+        visualizerInstance.phylogeneticTree
+            = new Smits.PhyloCanvas(visualizerInstance.output.newickString,
+            PHYLOGENETIC_TREE.SVG_CANVAS_NAME,
+            PHYLOGENETIC_TREE.SVG_WIDTH,
+            PHYLOGENETIC_TREE.SVG_HEIGHT);
+
+        var svgPaths = $("svg path");
+        var svgTexts = $("svg text");
+
+        var currentSvgY = parseInt($("svg")[0].attributes.getNamedItem("height").value);
+
+        // search for maximum y in the defined SVG
+        var definedMaxY = 0;
+
+        // go through each path (in SVG figures defined as paths)
+        for (var i = 0; i < svgPaths.length; i++){
+            var path = svgPaths[i].attributes.getNamedItem("d").value.split(",");
+
+            // go through each element of the path
+            for (var j = 1; j < path.length; j++){
+                var currentY = parseInt(path[j].split("L")[0]);
+
+                if(definedMaxY < currentY)
+                    definedMaxY = currentY;
+            }
+        }
+
+        if (definedMaxY > currentSvgY) {  // if (SVG has moved)
+            var heightAdjustment = definedMaxY - (currentSvgY - 20);  // compute difference between true value and desired value
+
+            // adjust figures-heights
+            // go through each path
+            for (var i = 0; i < svgPaths.length; i++) {
+                var path = svgPaths[i].attributes.getNamedItem("d").value.split(SYMBOLS.COMMA);
+
+                var correctedPath = SYMBOLS.EMPTY + path[0];
+
+                // go through each element of the path and adjust the y-value
+                for (var j = 1; j < path.length; j++) {
+                    var currentY = path[j].split("L");
+
+                    // adjustment
+                    if(currentY.length !== 1)
+                        correctedPath = correctedPath + SYMBOLS.COMMA + (parseInt(currentY[0]) - heightAdjustment).toString() + "L" + currentY[1];
+                    else
+                        correctedPath = correctedPath + SYMBOLS.COMMA + (parseInt(currentY[0]) - heightAdjustment).toString();
+                }
+
+                svgPaths[i].setAttribute("d", correctedPath);
+            }
+
+            // adjust text-heights
+            for( var i = 0; i < svgTexts.length; i++ ){
+                svgTexts[i].setAttribute("y", (parseInt(svgTexts[i].attributes.getNamedItem("y").value) - heightAdjustment).toString());
+            }
         }
     }
 

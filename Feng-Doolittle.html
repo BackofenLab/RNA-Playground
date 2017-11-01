@@ -115,7 +115,7 @@ Author: Alexander Mattheis
         <br>
         For a given input, the stated computation steps
         <ul>
-            <li>pairwise alignments</li>
+            <li>pairwise alignment-data</li>
             <li>distance matrix</li>
             <li>phylogenetic tree</li>
             <li>merging</li>
@@ -147,7 +147,8 @@ Author: Alexander Mattheis
                         <br>
                         <br>
                         <b>Hint 2:</b> <br>
-                        Duplicate Sequences are removed.
+                        Duplicates of sequences <br>
+                        are excluded from computations.
                     </div>
                 <!-- /ko -->
             </div>
@@ -241,41 +242,58 @@ Author: Alexander Mattheis
                     <thead>
                         <tr>
                             <th>
-                                Group 1
+                                <small><b>Group 1</b></small>
                             </th>
 
                             <th>
-                                Group 2
+                                <small><b>Group 2</b></small>
                             </th>
 
                             <th>
-                                Guide Alignment
+                                <small><b>Guide Alignment</b></small>
                             </th>
 
                             <th>
-                                Result
+                                 <small><b>Result</b></small>
                             </th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        <tr>
-                            <td class="entry entry_start">
-                                <code>...</code>
-                            </td>
+                        <!-- ko foreach: $root.output.guideAlignments() -->
+                            <tr>
+                                <td class="entry entry_start">
+                                    <!-- ko foreach: $root.output.firstGroups()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br>
+                                    <!-- /ko -->
+                                </td>
 
-                            <td class="entry entry_start">
-                                <code>...</code>
-                            </td>
+                                <td class="entry entry_start">
+                                    <!-- ko foreach: $root.output.secondGroups()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br>
+                                    <!-- /ko -->
+                                </td>
 
-                            <td class="entry entry_start">
-                                <code>...</code>
-                            </td>
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][0]"></code> <br>
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][1]"></code> <br>
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][2]"></code>
+                                </td>
 
-                             <td class="entry entry_start">
-                                <code>...</code>
-                            </td>
-                        </tr>
+                                 <td class="entry entry_start">
+                                     <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>:
+                                     <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
+                                        <!-- ko if: $index() == 0 -->
+                                            <code data-bind="text: $data"></code> <br>
+                                        <!-- /ko -->
+
+                                        <!-- ko if: $index() != 0 -->
+                                            <code>  </code><code data-bind="text: $data"></code> <br>
+                                        <!-- /ko -->
+                                     <!-- /ko -->
+                                </td>
+                            </tr>
+                         <!-- /ko -->
                     </tbody>
                 </table>
             </div>
@@ -309,7 +327,24 @@ Author: Alexander Mattheis
             </div>
         </div>
 
-        <div class="main_output">
+        <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+            <div id="phylogenetic_tree"></div>
+        </div>
+
+        <div class="group_hint">
+            <b>Visualization done with</b> <br>
+            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br>
+            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br>
+            <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+            </a>
+        </div>
+
+        <div class="intermediate_result_header">
+            <h4 class="subresult">Distance Table</h4>
+        </div>
+
+        <div class="distance_table">
             <table class="calculation">
                 <thead>
                     <tr>

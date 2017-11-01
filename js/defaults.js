@@ -338,6 +338,13 @@ var PATHS = {
     }
 };
 
+var PHYLOGENETIC_TREE = {
+    SVG_CANVAS: '<div id=\"phylogenetic_tree\"></div>',
+    SVG_CANVAS_NAME: "phylogenetic_tree",
+    SVG_HEIGHT: 600,
+    SVG_WIDTH: 600,
+};
+
 /**
  * Stores HTML sub-tags.
  */

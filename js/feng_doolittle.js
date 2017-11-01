@@ -617,6 +617,13 @@ $(document).ready(function () {
                 currentNamePos++;
             }
         }
+
+        // needed for visualization
+        outputData.firstGroups = [];
+        outputData.secondGroups = [];
+        outputData.guideAlignments = [];
+        outputData.joinedGroups = [];
+        outputData.joinedGroupNames = [];
     }
 
     /**
@@ -640,7 +647,15 @@ $(document).ready(function () {
         var group2Sequences = getGroupSequences(rightChildName);
 
         var bestAlignment = getBestAlignment(group1Sequences, group2Sequences);
+
         outputData.groups[groupName] = createGroup(group1Sequences, group2Sequences, bestAlignment);
+
+        // for visualization of steps
+        outputData.guideAlignments.push(bestAlignment);
+        outputData.firstGroups.push(group1Sequences);
+        outputData.secondGroups.push(group2Sequences);
+        outputData.joinedGroups.push(outputData.groups[groupName]);
+        outputData.joinedGroupNames.push(groupName);
     }
 
     /**
