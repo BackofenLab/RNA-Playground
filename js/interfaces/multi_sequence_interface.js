@@ -239,5 +239,6 @@ Author: Alexander Mattheis
         }
 
         viewmodels.output.newickString(outputData.newickString);
+        viewmodels.output.progressiveAlignment(outputData.progressiveAlignment.reverse());
     }
 }());

@@ -351,6 +351,7 @@ Author: Alexander Mattheis
         }
 
         viewmodel.newickString = ko.observable(outputData.newickString);
+        viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment.reverse());
     }
 
     /**

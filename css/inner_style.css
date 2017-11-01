@@ -131,6 +131,11 @@ div.colW175 {  /* altered from corporate-design.css */
     width: 32px;
 }
 
+.distance_table_header {
+    padding-left: 10px;
+    text-align: left;
+}
+
 .download_area {
     clear: both;
     line-height: 140%;
@@ -150,6 +155,43 @@ div.colW175 {  /* altered from corporate-design.css */
     font-family: serif;
     font-size: 1.1em;
     position: relative;
+}
+
+.final {
+    margin-bottom: 10px;
+}
+
+.final_result {
+    max-width: 246px;
+    overflow-x: scroll;
+    width: 244px;
+}
+
+.final_result td, .final_result th {
+    border-left: none;
+    border-right: none;
+    height: 24px;
+    padding-left: 10px;
+    width: 246px;
+}
+
+.final_result_header {
+    width: 246px;
+    vertical-align: top;
+}
+
+.final_result_header td, .final_result_header th {
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 246px;
+}
+
+.final_result_with_scrollbar {
+    border-bottom: 1px solid #a0a0a0;
+    border-left: 1px solid #a0a0a0;
+    border-right: 1px solid #a0a0a0;
+    width: 244px;
 }
 
 .group_hint {
@@ -181,15 +223,20 @@ div.colW175 {  /* altered from corporate-design.css */
     padding: 5px;
 }
 
-.iteration_header h4 {
+.intermediate_result_header h4 {
     background-color: #ebebeb; /* Uni-Freiburg standard */
     margin-bottom: 5px;
     padding: 5px;
+    width: 790px;
 }
 
 .main_output {
     max-width: 600px;
     overflow: auto;
+}
+
+.merge_steps {
+    margin-bottom: 10px;
 }
 
 .newick_tree {
@@ -208,6 +255,56 @@ div.colW175 {  /* altered from corporate-design.css */
 .parameters {
     line-height: 180%;
     padding-bottom: 30px;
+}
+
+.result {
+    max-width: 800px;
+    overflow-x: scroll;
+    width: 798px;
+}
+
+.result td, .result th {
+    border-left: none;
+    border-right: none; /* other possibilities does not look bug-like on tablets/smartphone browsers */
+}
+
+.result td, .result th,
+.result_header td, .result_header th {
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 798px;
+}
+
+.result_categories {
+    max-width: 800px;
+    overflow-x: scroll;
+    width: 798px;
+}
+
+.result_categories td,
+.result_categories th {
+    border: none;
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 798px;
+}
+
+.result_categories th {
+    border-bottom: 1px solid #a0a0a0;
+}
+
+.result_header {
+    vertical-align: top;
+    width: 800px;
+}
+
+.result_with_scrollbar {
+    border-bottom: 1px solid #a0a0a0;
+    border-left: 1px solid #a0a0a0;
+    border-right: 1px solid #a0a0a0;
+    width: 798px;
 }
 
 .results {
@@ -257,38 +354,6 @@ div.colW175 {  /* altered from corporate-design.css */
     width: 161px;
 }
 
-.results_newick {
-    max-width: 600px;
-    overflow-x: scroll;
-    width: 598px;
-}
-
-.results_newick td, .results_newick th {
-    border-left: none;
-    border-right: none; /* other possibilities does not look bug-like on tablets/smartphone browsers */
-}
-
-.results_newick_header,
-.results_newick_footer {
-    vertical-align: top;
-    width: 600px;
-}
-
-.results_newick td, .results_newick th,
-.results_newick_footer td, .results_newick_footer th,
-.results_newick_header td, .results_newick_header th {
-    height: 24px;
-    padding-left: 10px;
-    text-align: left;
-    width: 598px;
-}
-
-.results_newick_with_scrollbar {
-    border-left: 1px solid #a0a0a0;
-    border-right: 1px solid #a0a0a0;
-    width: 598px;
-}
-
 .selectable_entry {
     border-bottom: 0;
     cursor: pointer;
@@ -329,6 +394,10 @@ div.colW175 {  /* altered from corporate-design.css */
 .selected_very_light_red {
     background-color: #FFEFEC;
     color: white;
+}
+
+.subresult {
+    color: gray;
 }
 
 /*---- ID STYLING ----*/

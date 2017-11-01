@@ -144,6 +144,10 @@ Author: Alexander Mattheis
                     <div class="group_hint">
                         <b>Hint:</b> <br>
                         The "+" and "-" buttons can be used to add or remove sequences.
+                        <br>
+                        <br>
+                        <b>Hint 2:</b> <br>
+                        Duplicate Sequences are removed.
                     </div>
                 <!-- /ko -->
             </div>
@@ -191,19 +195,109 @@ Author: Alexander Mattheis
 
 <div id="algorithm_output">
     <div class="output">
-        <div class="newick_tree">
-            <table class="results_newick_header">
+        <div class="final">
+            <table class="final_result_header">
                 <thead>
 					<tr>
 						<th>
-                            Newick Tree <br>
+                            Final result
 						</th>
 					</tr>
                 </thead>
             </table>
 
-            <div class="results_newick_with_scrollbar">
-                <table class="results_newick">
+            <div class="final_result_with_scrollbar">
+                <table class="final_result">
+                    <tbody>
+                        <tr>
+                            <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.progressiveAlignment() -->
+                                    <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br>
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="intermediate_result_header">
+            <h4>Intermediate Results</h4>
+        </div>
+
+        <div class="merge_steps">
+            <table class="result_header">
+                <thead>
+					<tr>
+						<th>
+                            Merge steps
+						</th>
+					</tr>
+                </thead>
+            </table>
+
+            <div class="result_with_scrollbar">
+                <table class="result_categories">
+                    <thead>
+                        <tr>
+                            <th>
+                                Group 1
+                            </th>
+
+                            <th>
+                                Group 2
+                            </th>
+
+                            <th>
+                                Guide Alignment
+                            </th>
+
+                            <th>
+                                Result
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td class="entry entry_start">
+                                <code>...</code>
+                            </td>
+
+                            <td class="entry entry_start">
+                                <code>...</code>
+                            </td>
+
+                            <td class="entry entry_start">
+                                <code>...</code>
+                            </td>
+
+                             <td class="entry entry_start">
+                                <code>...</code>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="intermediate_result_header">
+            <h4 class="subresult">Phylogenetic Tree</h4>
+        </div>
+
+        <div class="newick_tree">
+            <table class="result_header">
+                <thead>
+					<tr>
+						<th>
+                            Newick Tree
+						</th>
+					</tr>
+                </thead>
+            </table>
+
+            <div class="result_with_scrollbar">
+                <table class="result">
                     <tbody>
                         <tr>
                             <td class="entry entry_start">
@@ -213,21 +307,17 @@ Author: Alexander Mattheis
                     </tbody>
                 </table>
             </div>
-
-            <table class="results_newick_footer">
-                <tr>
-                    <th>
-                        <small>
-                            <b>Hint:</b> Duplicate sequences were removed.
-                        </small>
-                    </th>
-                </tr>
-            </table>
         </div>
 
         <div class="main_output">
             <table class="calculation">
                 <thead>
+                    <tr>
+                        <th class="distance_table_header" colspan=100%>
+                            Distance Table
+                        </th>
+                    </tr>
+
 					<tr>
 						<th></th>
                         <!-- ko foreach: input.clusterNames() -->
