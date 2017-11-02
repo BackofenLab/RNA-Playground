@@ -407,10 +407,6 @@ $(document).ready(function () {
      * acid sequences and construction of phylogenetic trees from them».
      * In: Methods in enzymology 266 (1996), pp. 368–382
      *
-     * Hint: The formula could be computed more efficient with character frequency tables,
-     * but for their efficient computation usually sets are needed which are not fully implemented in
-     * [the here used version of] Javascript and own implementations cannot be fast enough.
-     *
      * Hint 2: The penalty is a negated value in the paper!
      * So, for example a PAM250-matrix has a positive penalty like d=8.
      * This is the reason for writing a "+" instead of "-" in the formula:
@@ -418,7 +414,7 @@ $(document).ready(function () {
      *
      * @example:
      * S^rand(a,b)
-     * = [1/L(a,b)] * [\sum_{i in A(a,b)} \sum_{j in A(b)}  s(i,i) N_a(i) N_b(j)]
+     * = [1/L(a,b)] * [\sum_{i in A(a)} \sum_{j in A(b)} s(i,i) N_a(i) N_b(j)]
      * + N_{a,b}(gaps) * beta
      * + N_{a,b}(gap-starts) * alpha
      * @return {number} - The expected score.
@@ -426,15 +422,15 @@ $(document).ready(function () {
     function getApproximatedRandomScore(alignmentLength, sequenceA, sequenceB, numOfGaps, numOfGapStarts) {
         var doubleSum = 0;
 
-        var uniqueChars = getUnique(sequenceA, sequenceB);
+        var aChars = getUniqueChars(sequenceA);
         var bChars = getUniqueChars(sequenceB);
 
         debugger;
-        for (var i = 0; i < uniqueChars.length; i++) {
-            var char = uniqueChars[i];
+        for (var i = 0; i < aChars.length; i++) {
+            var char = aChars[i];
 
             for (var j = 0; j < bChars.length; j++) {
-                var bChar = uniqueChars[j];
+                var bChar = aChars[j];
 
                 var similarity = inputData.match;
                 var frequencyInA = getFrequency(char, sequenceA);
@@ -448,29 +444,7 @@ $(document).ready(function () {
 
     /**
      * Returns unique characters of both sequences.
-     * @param sequenceA {string} - The first sequence in which is searched.
-     * @param sequenceB {string} - The second sequence in which is searched.
-     * @return {Array} - Array of characters without duplicates.
-     */
-    function getUnique(sequenceA, sequenceB) {
-        var chars = [];
-
-        for (var i = 0; i < sequenceA.length; i++) {
-            if (chars.indexOf(sequenceA[i]) === -1)
-                chars.push(sequenceA[i]);
-        }
-
-        for (var i = 0; i < sequenceB.length; i++) {
-            if (chars.indexOf(sequenceB[i]) === -1)
-                chars.push(sequenceB[i]);
-        }
-
-        return chars;
-    }
-
-    /**
-     * Returns unique characters of the sequence.
-     * @param sequence {string} - The sequence in which is counted.
+     * @param sequence {string} - The first sequence in which is searched.
      * @return {Array} - Array of characters without duplicates.
      */
     function getUniqueChars(sequence) {
