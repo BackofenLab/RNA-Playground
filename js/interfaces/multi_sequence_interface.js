@@ -188,7 +188,7 @@ Author: Alexander Mattheis
         // when page was loaded the inputs have not to be updated or you get wrong inputs
         if (inputProcessor.inputUpdatesActivated()) {
             var sequenceArray = getSequencesArray(inputViewmodel);
-            inputViewmodel.sequences.removeAll();
+            MULTI_SEQUENCE_DEFAULTS.SEQUENCES = inputViewmodel.sequences.removeAll();  // avoids changing on the as constant defined value
             inputViewmodel.sequences(sequenceArray);
 
             inputViewmodel.baseCosts(Number($("#base_costs").val()));
