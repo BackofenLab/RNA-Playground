@@ -248,7 +248,6 @@ Author: Alexander Mattheis
      * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
      */
     function update(algorithm, viewmodels, processInput, changeOutput) {
-        debugger;
         processInput(algorithm, inputProcessorInstance, viewmodels.input, viewmodels.visual);
         changeOutput(algorithm.getOutput(), inputProcessorInstance, viewmodels);
         postProcess(algorithm, viewmodels, processInput, changeOutput);

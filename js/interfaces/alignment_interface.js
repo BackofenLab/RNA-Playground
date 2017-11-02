@@ -391,7 +391,6 @@ Author: Alexander Mattheis
         var matrix = createMatrix(outputData.distanceMatrixLength);
         var matrixKeys = Object.keys(outputData.distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...
 
-        debugger;
         // fill diagonals with zero
         for (var i = 0; i < matrix.length; i++) {
             for (var j = 0; j < matrix.length; j++) {

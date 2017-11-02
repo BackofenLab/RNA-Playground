@@ -11,7 +11,6 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    debugger;
     if (loaded === ALGORITHMS.FENG_DOOLITTLE) {  // to avoid self execution on a script import
         fengDoolittle.startFengDoolittle();
         loaded = ALGORITHMS.NONE;
@@ -115,7 +114,6 @@ $(document).ready(function () {
             }
         }
 
-        debugger;
         return duplicatePositions;
     }
 
@@ -431,7 +429,6 @@ $(document).ready(function () {
         var aChars = getUniqueChars(sequenceA);
         var bChars = getUniqueChars(sequenceB);
 
-        debugger;
         for (var i = 0; i < aChars.length; i++) {
             var char = aChars[i];
 
@@ -538,7 +535,7 @@ $(document).ready(function () {
             outputData.distanceMatrix[[firstClusterName, secondClusterName]] = outputData.distances[i];
             outputData.sequencePairNames.push([firstClusterName, secondClusterName]);
         }
-        debugger;
+
         outputData.distanceMatrixLength = inputData.sequences.length;
     }
 
@@ -573,7 +570,6 @@ $(document).ready(function () {
                 clusterNames.push(CLUSTER_NAMES[i % CLUSTER_NAMES.length] + SYMBOLS.EMPTY + currentEpisode);
         }
 
-        debugger;
         return clusterNames;
     }
 
@@ -624,7 +620,6 @@ $(document).ready(function () {
     function initializeGroups() {
         outputData.groups = {};
 
-        debugger;
         var currentNamePos = 0;
         for (var i = 0; i < inputData.sequences.length; i++) {
             if (inputData.arrayPositionsOfRemovedSequences.indexOf(i) === -1) {
