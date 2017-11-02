@@ -8,54 +8,36 @@ Author: Alexander Mattheis
 <div id="algorithm_description">
     <div class="description">
         The progressive alignment approach by
-        <a href="https://doi.org/10.1007/BF02603120">Da-Fei Feng, Russell F. Doolittle (1987)</a>
-        computes a multi-sequence-alignment (MSA) of a set of sequences.
-        This algorithm shows an approximative alignment approach,
-        which finds considerable solutions in a reasonable time.
+        <a href="https://doi.org/10.1007/BF02603120">Da-Fei Feng and Russell F. Doolittle (1987)</a>
+        computes a multi-sequence-alignment (MSA) of a set of sequences based on pairwise alignments.
+        This approximative approach identifies good MSA solutions in reasonable time.
         <br>
         <br>
-        The further below implemented version of this algorithm is a
-        combination of several Feng-Doolittle approaches and the affine alignment approach
-        by <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Osamu Gotoh (1982)</a>.
+	First, all pairwise alignments with maximal similarity of all input sequence pairs are computed.
+        To this end, we use  <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Osamu Gotoh's (1982)</a>
+	approach available in 
+	<a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">our Gotoh implementation</a>.
         <br>
-        After a pairwise alignment of all input sequences
-        with <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">Gotoh</a>
-        to compute the similarity-scores,
-        this altered <a href="10.1016/s0076-6879(96)66023-6">Feng-Doolittle (1996)</a> approach
-        uses our, for affine alignment modified similarity-to-distance transformation-formula
+        In order to build a guide tree to generate the MSA, 
+	observed similarity scores $S(a,b)$ of sequence pairs $a,b$ are converted into distances using
+        $D(a,b) = -ln(S^{eff}_{a,b} \cdot f)$, where we set the scaling factor $f=1$ (originally $f = 100$). 
+        The 'effective' similarity score $S^{eff}$ is computed by $S^{eff}_{a,b} = (S(a,b) - S^{rand}_{a,b})/(S^{max}_{a,b} - S^{rand}_{a,b})$
+        where $S^{max}_{a,b} = (S(a,a)+S(b,b))/2$ provides the best alignment score for both sequences.
+	$S^{rand}$ provides a kind of 'expected score' that can be obtained via sequence randomization. 
+	Here, we use an alternative approach introduced in
+	<a href="https://doi.org/10.1016/s0076-6879(96)66023-6">(Feng&amp;Doolittle, 1996)</a> 
+	using the approximate formula for a given optimal alignment of $a$ and $b$:
 
-        $$\quad D(a,b) = -ln(S^{eff}_{a,b} \cdot f)$$
-
-        where $f = 1$ (originally $f = 100$)
-        <br>
-        and
-        $$\quad S^{eff}_{a,b} = \frac{S(a,b) - S^{rand}_{a,b}}{S^{max}_{a,b} - S^{rand}_{a,b}}$$
-
-        where <br>
-        <div class="row">
-            <div class="colW150">$S(a,b)$</div>
-            <div class="colW400">observed score from the alignment of sequence $a$ with sequence $b$</div>
-	    </div>
-
-        <div class="row">
-            <div class="colW150"> $S^{max}_{a,b} = \cfrac{S(a,a)+S(b,b)}{2}$</div>
-            <div class="colW400">average score from the alignment of both sequences with themselves</div>
-	    </div>
-
-        The computation of $S^{rand}_{a,b}$ is done with an approximate formula
-        which has been adapted, <br>
-        because of the fusion with <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Gotoh</a>.
-        The new formula is therefore
         $$
         \quad
         S^{rand}_{a,b} =
         \frac{1}{L_{a,b}}
         \bigg(
-        \sum_{i \in \mathbb{A}(a)} \sum_{j \in \mathbb{A}(b)}
-        s(i,i) \cdot N_a(i) \cdot N_b(j)
+        \sum_{x \in \bigcup_{a}} \sum_{y \in \bigcup_{b}}
+        s(x,y) \cdot N_a(x) \cdot N_b(y)
         \bigg)
-        + N_{a,b}(\_^e) \cdot \beta
-        + N_{a,b}(\_^s) \cdot \alpha
+        + N_{a,b}^{e} \cdot \beta
+        + N_{a,b}^{o} \cdot \alpha
         $$
 
         where <br>
@@ -65,27 +47,27 @@ Author: Alexander Mattheis
 	    </div>
 
         <div class="row">
-            <div class="colW150">$\mathbb{A}(a), \mathbb{A}(b)$</div>
-            <div class="colW400">alphabet-sets of sequences $a$ and $b$</div>
+            <div class="colW150">$\bigcup_{a}, \bigcup_{b}$</div>
+            <div class="colW400">characters present in $a$ and $b$</div>
         </div>
 
         <div class="row">
-            <div class="colW150">$s(i,i)$</div>
-            <div class="colW400">similarity-score for a match with character $i$</div>
+            <div class="colW150">$s(x,y)$</div>
+            <div class="colW400">similarity-score for aligning the characters $x$ and $y$</div>
         </div>
 
         <div class="row">
-            <div class="colW150">$N_a(i), N_b(j)$</div>
-            <div class="colW400">number of characters $i$ and $j$ in sequences $a$ and $b$</div>
+            <div class="colW150">$N_a(x), N_b(y)$</div>
+            <div class="colW400">number of characters $x$ and $y$ in sequences $a$ and $b$, resp.</div>
         </div>
 
         <div class="row">
-            <div class="colW150">$N_{a,b}(\_^e)$</div>
+            <div class="colW150">$N_{a,b}^{e}$</div>
             <div class="colW400">number of gaps (enlargements)</div>
         </div>
 
         <div class="row">
-            <div class="colW150">$N_{a,b}(\_^s)$</div>
+            <div class="colW150">$N_{a,b}^{o}$</div>
             <div class="colW400">number of gap openings (adaptation for Gotoh)</div>
         </div>
 
@@ -97,38 +79,28 @@ Author: Alexander Mattheis
             </div>
         </div>
 
-        The distances computed with the given formula are then used
-        to create a phylogenetic tree with a hierarchical clustering algorithm.
-        In the original
-        <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle</a>
-        approach, the clustering algorithm
-        of <a href="10.1126/science.155.3760.279">Walter M. Fitch and Emanuel Margoliash (1967)</a>
-        has been used.
+        The resulting distances are then used
+        to create a phylogenetic tree that guides the generation of the MSA, i.e. more related (similar) sequences are fused first.
+        Here, the UPGMA algorithm envisioned
+        by <a href="https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902">Robert R. Sokal and Charles D. Michener (1958)</a> is applied.
         <br>
-        But, our implementation instead utilizes the UPGMA algorithm
-        by Robert R. Sokal and Charles D. Michener (1958) from the article
-        "A statistical method for evaluating systematic relationship". <!-- couldn't found DOI-link -->
-        <br>
-        Once the phylogenetic tree is computed,
-        it tells the order in which sequences or groups of sequences
-        have to be aligned together to create a multi-sequence-alignment (MSA).
-        <br>
-        In this connection the "once a gap, always a gap"-rule is applied
-        by substituting gaps in groups of sequences
-        with a neutral symbol $\#$ before aligning them ($s(\cdot,\#) = s(\#,\cdot) = 0$).
-        <br>
-        The rule ensures that before made gaps in some subgroup
-        of sequences are preserved.
+	The tree defines the order in which sequences or groups of sequences
+        have to be fused to create a multi-sequence-alignment (MSA). 
+	The fusion is done based on the best pairwise alignment between members of the groups to be aligned.
+        To simplify the fusion, the 'once a gap, always a gap'-strategy is applied, 
+	i.e. once a gap is introduced in a subalignment it is preserved within all subsequent fusions.
+        To this end, gaps in subalignments are replaced with 
+        a neutral symbol $\#$ before aligning them (i.e. $s(\cdot,\#) = s(\#,\cdot) = 0$).
         <br>
         <br>
-        For a given input, the stated computation steps
+        For a given input, the stated computation steps generate
         <ul>
-            <li>pairwise alignment-data</li>
+            <li>pairwise alignments</li>
             <li>distance matrix</li>
             <li>phylogenetic tree</li>
-            <li>merging</li>
+            <li>MSA via fusions</li>
         </ul>
-        are calculated and represented in reverse order below. <br>
+        and are represented in reverse order below. <br>
     </div>
 
     <div class="picture">
@@ -136,6 +108,7 @@ Author: Alexander Mattheis
     </div>
 </div>
 
+<h2>Input</h2>
 <div id="algorithm_input">
     <!-- ko foreach: $root.input.sequences() -->
         <div class="row">
