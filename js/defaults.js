@@ -278,6 +278,11 @@ var MULTI_SEQUENCE_DEFAULTS = {
         "YRMPGPIKCQFFQDRA",
         "YYRMPTSLTQDRAD",
         "NSLVKKSEDPRD"],
+    SEQUENCES_COPY: [
+        "YYRMAPCYVGCQRAD",
+        "YRMPGPIKCQFFQDRA",
+        "YYRMPTSLTQDRAD",
+        "NSLVKKSEDPRD"],  /* some bugfix */
 
     FUNCTION: {
         BASE_COSTS: -5,

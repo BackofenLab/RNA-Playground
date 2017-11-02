@@ -211,7 +211,9 @@ Author: Alexander Mattheis
             sequenceArray.push($(".sequence")[i].value.toUpperCase());
         }
 
-        MULTI_SEQUENCE_DEFAULTS.SEQUENCES = inputViewmodel.sequences.removeAll();  // avoids changing on the as constant defined value
+        /* bug-fix for a Knockout-problem -> dynamically generated inputs get wrong values after typing in something */
+        MULTI_SEQUENCE_DEFAULTS.SEQUENCES = MULTI_SEQUENCE_DEFAULTS.SEQUENCES_COPY.slice();
+        inputViewmodel.sequences.removeAll();  // avoids changing on the as constant defined value
 
         return sequenceArray;
     }
