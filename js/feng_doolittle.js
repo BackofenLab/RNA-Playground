@@ -412,9 +412,11 @@ $(document).ready(function () {
      * This is the reason for writing a "+" instead of "-" in the formula:
      * ... + N_{a,b}(gaps) * \beta
      *
+     * Hint 3: Mismatches s(i,j) have been really omitted in the original formula!
+     *
      * @example:
      * S^rand(a,b)
-     * = [1/L(a,b)] * [\sum_{i in A(a)} \sum_{j in A(b)} s(i,i) N_a(i) N_b(j)]
+     * = [1/L(a,b)] * [\sum_{i in A(a,b)} \sum_{j in A(b)} s(i,i) N_a(i) N_b(j)]
      * + N_{a,b}(gaps) * beta
      * + N_{a,b}(gap-starts) * alpha
      * @return {number} - The expected score.
@@ -422,6 +424,10 @@ $(document).ready(function () {
     function getApproximatedRandomScore(alignmentLength, sequenceA, sequenceB, numOfGaps, numOfGapStarts) {
         var doubleSum = 0;
 
+        // Hint: \sum_{i in A(a,b)} is replaceable with \sum_{i in A(a)}
+        // it's not needed to iterate over common unique chars of sequence A and sequence B
+        // because if the char of A and the char of b are not matching,
+        // then one of the frequencies will be zero and so the double sum is not changing
         var aChars = getUniqueChars(sequenceA);
         var bChars = getUniqueChars(sequenceB);
 
