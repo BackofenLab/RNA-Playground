@@ -251,5 +251,12 @@ Author: Alexander Mattheis
         viewmodels.output.progressiveAlignment(outputData.progressiveAlignment);
 
         viewmodels.visual.drawTree();
+
+        // pairwise data
+        viewmodels.output.sequencePairNames(outputData.sequencePairNames);
+        viewmodels.output.alignmentLengths(outputData.alignmentLengths);
+        viewmodels.output.similarities(outputData.similarities);
+        viewmodels.output.gapNumbers(outputData.gapNumbers);
+        viewmodels.output.gapStarts(outputData.gapStarts);
     }
 }());

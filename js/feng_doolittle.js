@@ -331,9 +331,9 @@ $(document).ready(function () {
      * where
      * S^eff(a,b) = [S(a,b) - S^rand(a,b)] / [S^max(a,b) - S^rand(a,b)]
      *
-     * Hint: The factor 100 was omitted in the computation,
+     * Hint: The factor 100 was omitted in the computation (to avoid negative distances),
      * because it works only with very big S^max(a,b) (very long sequences).
-     * Also, for the real Feng-Doolittle uses substitution matrices instead of a simple scoring-function.
+     * Also, the real Feng-Doolittle uses substitution matrices instead of a simple scoring-function.
      *
      * @see: https://doi.org/10.1007/PL00006155
      * Feng, Da-Fei, and Russell F. Doolittle.
@@ -526,6 +526,7 @@ $(document).ready(function () {
         }
 
         outputData.distanceMatrix = {};
+        outputData.sequencePairNames = [];
 
         // right half upper diagonal
         for (var i = 0; i < outputData.distances.length; i++) {
@@ -535,6 +536,7 @@ $(document).ready(function () {
             var secondClusterName = names[sequencePair[1]];
 
             outputData.distanceMatrix[[firstClusterName, secondClusterName]] = outputData.distances[i];
+            outputData.sequencePairNames.push([firstClusterName, secondClusterName]);
         }
         debugger;
         outputData.distanceMatrixLength = inputData.sequences.length;

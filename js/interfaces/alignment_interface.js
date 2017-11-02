@@ -372,6 +372,13 @@ Author: Alexander Mattheis
         // tree and final output
         viewmodel.newickString = ko.observable(outputData.newickString);
         viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
+
+        // pairwise data
+        viewmodel.sequencePairNames = ko.observable(outputData.sequencePairNames);
+        viewmodel.alignmentLengths = ko.observable(outputData.alignmentLengths);
+        viewmodel.similarities = ko.observable(outputData.similarities);
+        viewmodel.gapNumbers = ko.observable(outputData.gapNumbers);
+        viewmodel.gapStarts = ko.observable(outputData.gapStarts);
     }
 
     /**

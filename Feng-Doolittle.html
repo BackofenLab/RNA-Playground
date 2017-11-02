@@ -76,17 +76,17 @@ Author: Alexander Mattheis
 
         <div class="row">
             <div class="colW150">$N_a(i), N_b(j)$</div>
-            <div class="colW400">absolute frequency of characters $i$ and $j$ in sequences $a$ and $b$</div>
+            <div class="colW400">number of characters $i$ and $j$ in sequences $a$ and $b$</div>
         </div>
 
         <div class="row">
             <div class="colW150">$N_{a,b}(\_^e)$</div>
-            <div class="colW400">absolute frequency of gaps (enlargements)</div>
+            <div class="colW400">number of gaps (enlargements)</div>
         </div>
 
         <div class="row">
             <div class="colW150">$N_{a,b}(\_^s)$</div>
-            <div class="colW400">absolute frequency of gap starts (adaptation for Gotoh)</div>
+            <div class="colW400">number of gap openings (adaptation for Gotoh)</div>
         </div>
 
         <div class="row">
@@ -96,7 +96,6 @@ Author: Alexander Mattheis
                 <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">Gotoh</a> algorithm
             </div>
         </div>
-
 
         The distances computed with the given formula are then used
         to create a phylogenetic tree with a hierarchical clustering algorithm.
@@ -359,12 +358,6 @@ Author: Alexander Mattheis
         <div class="distance_table">
             <table class="calculation">
                 <thead>
-                    <tr>
-                        <th class="distance_table_header" colspan=100%>
-                            Distance Table
-                        </th>
-                    </tr>
-
 					<tr>
 						<th></th>
                         <!-- ko foreach: input.clusterNames() -->
@@ -394,6 +387,68 @@ Author: Alexander Mattheis
 
         <div class="download_area">
             <a class="distance_table_download" href="#">Download Table</a>
+        </div>
+
+        <div class="intermediate_result_header">
+            <h4 class="subresult">Pairwise Data</h4>
+        </div>
+
+        <div class="pairwise_data">
+            <div class="result_with_scrollbar">
+                <table class="result_categories top_border">
+                    <thead>
+                        <tr>
+                            <th>
+                                <small><b>Sequence Pair</b></small>
+                            </th>
+
+                            <th>
+                                <small><b>Length $L$</b></small>
+                            </th>
+
+                            <th>
+                                <small><b>Score $S$</b></small>
+                            </th>
+
+                            <th>
+                                <small><b>Gaps $N(\_^e)$</b></small>
+                            </th>
+
+                            <th>
+                                <small><b>Gap openings $N(\_^s)$</b></small>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- ko foreach: $root.output.sequencePairNames() -->
+                            <tr>
+                                <td class="entry entry_start">
+                                    <code>(</code><code data-bind="text: $data[0]"></code><code>,</code>
+                                    <code data-bind="text: $data[1]"></code><code>)</code>
+                                    <br>
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.alignmentLengths()[$index()]"></code> <br>
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.similarities()[$index()]"></code> <br>
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.gapNumbers()[$index()]"></code> <br>
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.gapStarts()[$index()]"></code> <br>
+                                </td>
+                            </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
