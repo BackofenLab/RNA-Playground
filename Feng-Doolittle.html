@@ -20,7 +20,7 @@ Author: Alexander Mattheis
         <br>
         In order to build a guide tree to generate the MSA, 
 	observed similarity scores $S(a,b)$ of sequence pairs $a,b$ are converted into distances using
-        $D(a,b) = -ln(S^{eff}_{a,b} \cdot f)$, where we set the scaling factor $f=1$ (originally $f = 100$). 
+        $D(a,b) = -ln(S^{eff}_{a,b} \cdot f)$, where we set the scaling factor $f=1$ (originally $f = 100$). <br>
         The 'effective' similarity score $S^{eff}$ is computed by $S^{eff}_{a,b} = (S(a,b) - S^{rand}_{a,b})/(S^{max}_{a,b} - S^{rand}_{a,b})$
         where $S^{max}_{a,b} = (S(a,a)+S(b,b))/2$ provides the best alignment score for both sequences.
 	$S^{rand}$ provides a kind of 'expected score' that can be obtained via sequence randomization. 
@@ -84,11 +84,11 @@ Author: Alexander Mattheis
         Here, the UPGMA algorithm envisioned
         by <a href="https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902">Robert R. Sokal and Charles D. Michener (1958)</a> is applied.
         <br>
-	The tree defines the order in which sequences or groups of sequences
+	    The tree defines the order in which sequences or groups of sequences
         have to be fused to create a multi-sequence-alignment (MSA). 
-	The fusion is done based on the best pairwise alignment between members of the groups to be aligned.
+	    The fusion is done based on the best pairwise alignment between members of the groups to be aligned.
         To simplify the fusion, the 'once a gap, always a gap'-strategy is applied, 
-	i.e. once a gap is introduced in a subalignment it is preserved within all subsequent fusions.
+	    i.e. once a gap is introduced in a subalignment it is preserved within all subsequent fusions.
         To this end, gaps in subalignments are replaced with 
         a neutral symbol $\#$ before aligning them (i.e. $s(\cdot,\#) = s(\#,\cdot) = 0$).
         <br>
@@ -108,7 +108,7 @@ Author: Alexander Mattheis
     </div>
 </div>
 
-<h2>Input</h2>
+<h2 class="header">Input:</h2>
 <div id="algorithm_input">
     <!-- ko foreach: $root.input.sequences() -->
         <div class="row">
@@ -177,6 +177,8 @@ Author: Alexander Mattheis
 		</div>
     </div>
 </div>
+
+<h2 class="header">Output:</h2>
 
 <div id="algorithm_output">
     <div class="output">
@@ -384,11 +386,11 @@ Author: Alexander Mattheis
                             </th>
 
                             <th>
-                                <small><b>Gaps $N(\_^e)$</b></small>
+                                <small><b>Gaps $N^e$</b></small>
                             </th>
 
                             <th>
-                                <small><b>Gap openings $N(\_^s)$</b></small>
+                                <small><b>Gap openings $N^o$</b></small>
                             </th>
                         </tr>
                     </thead>
