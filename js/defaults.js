@@ -273,12 +273,16 @@ var MOVE = {
 var MULTI_SEQUENCE_DEFAULTS = {
     CALCULATION: "similarity",
     GAP_FUNCTION: "affine",
-    SEQUENCES: ["ACGT", "AT", "GCC"],
+    SEQUENCES: [
+        "YYRMAPCYVGCQRAD",
+        "YRMPGPIKCQFFQDRA",
+        "YYRMPTSLTQDRAD",
+        "NSLVKKSEDPRD"],
 
     FUNCTION: {
-        BASE_COSTS: 0,
-        ENLARGEMENT: -2,
-        MATCH: 1,
+        BASE_COSTS: -5,
+        ENLARGEMENT: -1,
+        MATCH: 3,
         MISMATCH: -1
     }
 };
