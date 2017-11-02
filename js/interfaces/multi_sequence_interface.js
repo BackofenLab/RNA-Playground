@@ -187,9 +187,7 @@ Author: Alexander Mattheis
 
         // when page was loaded the inputs have not to be updated or you get wrong inputs
         if (inputProcessor.inputUpdatesActivated()) {
-            var sequenceArray = getSequencesArray(inputViewmodel);
-            MULTI_SEQUENCE_DEFAULTS.SEQUENCES = inputViewmodel.sequences.removeAll();  // avoids changing on the as constant defined value
-            inputViewmodel.sequences(sequenceArray);
+            inputViewmodel.sequences(getSequencesArray(inputViewmodel));
 
             inputViewmodel.baseCosts(Number($("#base_costs").val()));
             inputViewmodel.enlargement(Number($("#enlargement").val()));
@@ -212,6 +210,8 @@ Author: Alexander Mattheis
         for (var i = 0; i < inputViewmodel.sequences().length; i++) {
             sequenceArray.push($(".sequence")[i].value.toUpperCase());
         }
+
+        MULTI_SEQUENCE_DEFAULTS.SEQUENCES = inputViewmodel.sequences.removeAll();  // avoids changing on the as constant defined value
 
         return sequenceArray;
     }
