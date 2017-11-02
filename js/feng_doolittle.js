@@ -349,12 +349,19 @@ $(document).ready(function () {
      * if [S(a,b) - S^rand(a,b)] < 0
      * then you set [S(a,b) - S^rand(a,b)] = 0.001 (other values are allowed)
      *
-     * Hint: for [S(a,b) - S^rand(a,b)] == 0 was not defined,
-     * but for simplicity it is used [S(a,b) - S^rand(a,b)] = 0.001
+     * Hint: for [S(a,b) - S^rand(a,b)] == 0, it was not defined,
+     * but for simplicity it is used [S(a,b) - S^rand(a,b)] FENG_DOOLITTLE_CONSTANT
      *
      * Hint 2: If there are no restriction of parameters,
      * it would hold that [S^max(a,b) - S^rand(a,b)] <= 0 is possible (if match-scores are negative, gaps positive).
      * This cases have to be disallowed, because Feng-Doolittle is not defined for this cases.
+     *
+     * Hint 3: for [S^max(a,b) - S^rand(a,b)] == 0, it was not defined,
+     * but for simplicity it is used [S^max(a,b) - S^rand(a,b)] = FENG_DOOLITTLE_CONSTANT
+     *
+     * Hint 4: Because of floating point errors,
+     * it is also maybe possible, that [S^max(a,b) - S^rand(a,b)] < 0.
+     * In this case [S^max(a,b) - S^rand(a,b)] is set to FENG_DOOLITTLE_CONSTANT
      */
     function computeDistancesFromSimilarities() {
         outputData.distances = [];
@@ -372,11 +379,14 @@ $(document).ready(function () {
             var scoreRandom = getApproximatedRandomScore(alignmentLength, sequences[0], sequences[1], numOfGaps, numOfGapStarts);
             var scoreMax = getAverageMaximumScore(sequences[0], sequences[1]);
 
+            var dividend = score - scoreRandom;
+            var divisor = scoreMax - scoreRandom;
+
             var scoreEffective = 0;
-            if (score - scoreRandom > 0)
-                scoreEffective = (score - scoreRandom) / (scoreMax - scoreRandom);
-            else
-                scoreEffective = FENG_DOOLITTLE_CONSTANT / (scoreMax - scoreRandom);
+            if (dividend <= 0) dividend = FENG_DOOLITTLE_CONSTANT;
+            if (divisor <= 0) divisor = FENG_DOOLITTLE_CONSTANT;
+
+            scoreEffective = dividend / divisor;
 
             outputData.distances.push(Math.round(-Math.log(scoreEffective)));  // natural logarithm
         }
@@ -408,7 +418,7 @@ $(document).ready(function () {
      *
      * @example:
      * S^rand(a,b)
-     * = [1/L(a,b)] * [\sum_{i in A(a)} \sum_{j in A(b)} s(i,k |i = k & k in A(b)) N_a(i) N_b(j)]
+     * = [1/L(a,b)] * [\sum_{i in A(a,b)} \sum_{j in A(b)}  s(i,i) N_a(i) N_b(j)]
      * + N_{a,b}(gaps) * beta
      * + N_{a,b}(gap-starts) * alpha
      * @return {number} - The expected score.
@@ -416,24 +426,46 @@ $(document).ready(function () {
     function getApproximatedRandomScore(alignmentLength, sequenceA, sequenceB, numOfGaps, numOfGapStarts) {
         var doubleSum = 0;
 
-        var charsA = getUniqueChars(sequenceA);
-        var charsB = getUniqueChars(sequenceB);
+        var uniqueChars = getUnique(sequenceA, sequenceB);
+        var bChars = getUniqueChars(sequenceB);
 
-        for (var i = 0; i < charsA.length; i++) {
-            for (var j = 0; j < charsB.length; j++) {
-                var aChar = charsA[i];
-                var bChar = charsB[j];
+        debugger;
+        for (var i = 0; i < uniqueChars.length; i++) {
+            var char = uniqueChars[i];
 
-                for (var k = 0; k < charsB.length; k++) {
-                    var similarity = aChar === charsB[k] ? inputData.match : 0;
-                    var frequencyInA = getFrequency(aChar, sequenceA);
-                    var frequencyInB = getFrequency(bChar, sequenceB);
-                    doubleSum += similarity * frequencyInA * frequencyInB;
-                }
+            for (var j = 0; j < bChars.length; j++) {
+                var bChar = uniqueChars[j];
+
+                var similarity = inputData.match;
+                var frequencyInA = getFrequency(char, sequenceA);
+                var frequencyInB = getFrequency(bChar, sequenceB);
+                doubleSum += similarity * frequencyInA * frequencyInB;
             }
         }
 
         return (1/alignmentLength) * doubleSum + numOfGaps * inputData.enlargement + numOfGapStarts * inputData.baseCosts;
+    }
+
+    /**
+     * Returns unique characters of both sequences.
+     * @param sequenceA {string} - The first sequence in which is searched.
+     * @param sequenceB {string} - The second sequence in which is searched.
+     * @return {Array} - Array of characters without duplicates.
+     */
+    function getUnique(sequenceA, sequenceB) {
+        var chars = [];
+
+        for (var i = 0; i < sequenceA.length; i++) {
+            if (chars.indexOf(sequenceA[i]) === -1)
+                chars.push(sequenceA[i]);
+        }
+
+        for (var i = 0; i < sequenceB.length; i++) {
+            if (chars.indexOf(sequenceB[i]) === -1)
+                chars.push(sequenceB[i]);
+        }
+
+        return chars;
     }
 
     /**

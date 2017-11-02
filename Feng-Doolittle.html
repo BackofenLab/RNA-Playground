@@ -50,9 +50,8 @@ Author: Alexander Mattheis
         \quad
         \frac{1}{L_{a,b}}
         \bigg(
-        \sum_{i \in \mathbb{A}(a)} \sum_{j \in \mathbb{A}(b)}
-        s \Big(i,k | i = k \wedge k \in \mathbb{A}(b) \Big)
-        \cdot N_a(i) \cdot N_b(j)
+        \sum_{i \in \mathbb{A}(a,b)} \sum_{j \in \mathbb{A}(b)}
+        s(i,i) \cdot N_a(i) \cdot N_b(j)
         \bigg)
         + N_{a,b}(\_^e) \cdot \beta
         + N_{a,b}(\_^s) \cdot \alpha
@@ -65,13 +64,18 @@ Author: Alexander Mattheis
 	    </div>
 
         <div class="row">
-            <div class="colW150">$\mathbb{A}(a), \mathbb{A}(b)$</div>
-            <div class="colW400">alphabet-sets of sequences $a$ and $b$</div>
+            <div class="colW150">$\mathbb{A}(a,b)$</div>
+            <div class="colW400">alphabet-set of sequences $a$ and $b$</div>
         </div>
 
         <div class="row">
-            <div class="colW150">$s(i,k | i = k \wedge k \in \mathbb{A}(b))$</div>
-            <div class="colW400">similarity-score for matching characters $i$ and $k$</div>
+            <div class="colW150">$\mathbb{A}(b)$</div>
+            <div class="colW400">alphabet-set of sequence $b$</div>
+        </div>
+
+        <div class="row">
+            <div class="colW150">$s(i,i)$</div>
+            <div class="colW400">similarity-score for a match with character $i$</div>
         </div>
 
         <div class="row">
