@@ -10,7 +10,7 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("interfaces.alignmentInterface", AlignmentInterface,
-        imports, sharedInterfaceOperations, roundValues, processMatrixData, startProcessing);
+        imports, sharedInterfaceOperations, roundValues, getDistanceTable, startProcessing);
 
     // instances
     var alignmentInterfaceInstance;
@@ -28,7 +28,7 @@ Author: Alexander Mattheis
         this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
         this.roundValues = roundValues;
-        this.processMatrixData = processMatrixData;
+        this.getDistanceTable = getDistanceTable;
         this.startProcessing = startProcessing;
     }
 
@@ -353,7 +353,8 @@ Author: Alexander Mattheis
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
     function createMultiSequenceOutputViewmodel(viewmodel, outputData) {
-        processMatrixData(outputData);
+        outputData.distanceMatrices = getDistanceTables(outputData);
+        outputData.distanceMatrix = getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength);
 
         // distance matrix
         viewmodel.distanceMatrix =  ko.observableArray(outputData.distanceMatrix);
@@ -381,15 +382,26 @@ Author: Alexander Mattheis
         viewmodel.gapStarts = ko.observable(outputData.gapStarts);
     }
 
+    function getDistanceTables(outputData) {
+        var matrixLength = outputData.distanceMatrixLength;  // start length
+
+        // in each round the matrix gets smaller by one, because two matrices are merged
+        for (var i = 0; i < outputData.distanceMatrices; i++) {
+            outputData.distanceMatrices[i] = getDistanceTable(outputData.distanceMatrices[i], matrixLength-(i+1));
+        }
+
+        return outputData.distanceMatrices;
+    }
+
     /**
      * The distance matrix is an "associative array" and this has to be converted
      * into a 2D-array which is displayable.
      * Hint: "Associative arrays" do not have a defined order (browser-dependant).
      * @param outputData {Object} - The output data in which the distance-matrix should be translated into a table form.
      */
-    function processMatrixData(outputData) {
-        var matrix = createMatrix(outputData.distanceMatrixLength);
-        var matrixKeys = Object.keys(outputData.distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...
+    function getDistanceTable(distanceMatrix, distanceMatrixLength) {
+        var matrix = createMatrix(distanceMatrixLength);
+        var matrixKeys = Object.keys(distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...
 
         // fill diagonals with zero
         for (var i = 0; i < matrix.length; i++) {
@@ -404,12 +416,12 @@ Author: Alexander Mattheis
             var key = matrixKeys[j];
             var cluster1Position = getPositionByName(key[0]);
             var cluster2Position = getPositionByName(key[2]);
-            var value = outputData.distanceMatrix[key];
+            var value = distanceMatrix[key];
 
             matrix[cluster1Position][cluster2Position] = value;
         }
 
-        outputData.distanceMatrix = matrix;
+        return matrix;
     }
 
     /**

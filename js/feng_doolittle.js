@@ -348,7 +348,7 @@ $(document).ready(function () {
      * then you set [S(a,b) - S^rand(a,b)] = 0.001 (other values are allowed)
      *
      * Hint: for [S(a,b) - S^rand(a,b)] == 0, it was not defined,
-     * but for simplicity it is used [S(a,b) - S^rand(a,b)] FENG_DOOLITTLE_CONSTANT
+     * but for simplicity it is used [S(a,b) - S^rand(a,b)] = FENG_DOOLITTLE_CONSTANT
      *
      * Hint 2: If there are no restriction of parameters,
      * it would hold that [S^max(a,b) - S^rand(a,b)] <= 0 is possible (if match-scores are negative, gaps positive).

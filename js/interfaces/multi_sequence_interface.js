@@ -225,7 +225,8 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
-        alignmentInterfaceInstance.processMatrixData(outputData);  // creates a visually representable distance matrix
+        // creates a visually representable distance matrix
+        outputData.distanceMatrix = alignmentInterfaceInstance.getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength);
 
         // distance matrix
         viewmodels.output.distanceMatrix(outputData.distanceMatrix);

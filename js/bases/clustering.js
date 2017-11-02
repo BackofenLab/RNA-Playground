@@ -92,7 +92,8 @@ Author: Alexander Mattheis
         // and for possible step by step visualizations of tree-growthment with libraries
         outputData.treeBranches = [];
 
-        outputData.allClusterNames = outputData.clusterNames.slice();;
+        outputData.allClusterNames = outputData.clusterNames.slice();
+        outputData.distanceMatrices = [];
     }
 
     /**
@@ -316,6 +317,8 @@ Author: Alexander Mattheis
 
         if (iteration === maxNumIterations-1)
             subtree.value = 0;
+
+        outputData.distanceMatrices.push(jQuery.extend(true, {}, outputData.distanceMatrix));  // only for visualization the matrix of each round is stored
     }
 
     /**
