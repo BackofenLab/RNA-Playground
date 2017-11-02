@@ -48,6 +48,7 @@ Author: Alexander Mattheis
         The new formula is therefore
         $$
         \quad
+        S^{rand}_{a,b} =
         \frac{1}{L_{a,b}}
         \bigg(
         \sum_{i \in \mathbb{A}(a)} \sum_{j \in \mathbb{A}(b)}
@@ -85,8 +86,17 @@ Author: Alexander Mattheis
 
         <div class="row">
             <div class="colW150">$N_{a,b}(\_^s)$</div>
-            <div class="colW400">absolute frequency of gap starts (our extension)</div>
+            <div class="colW400">absolute frequency of gap starts (adaptation for Gotoh)</div>
         </div>
+
+        <div class="row">
+            <div class="colW150">$\alpha, \beta$</div>
+            <div class="colW400">
+                parameters from
+                <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">Gotoh</a> algorithm
+            </div>
+        </div>
+
 
         The distances computed with the given formula are then used
         to create a phylogenetic tree with a hierarchical clustering algorithm.
