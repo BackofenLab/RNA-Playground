@@ -208,10 +208,13 @@ Author: Alexander Mattheis
      * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
      */
     function linkDynamicallyCreatedButtons(algorithm, viewmodels, processInput, changeOutput) {
-        if (MULTI_SEQUENCE_ALGORITHMS.indexOf(algorithm.type) >= 0)  // only multi-sequence algorithms have dynamic buttons
+        if (MULTI_SEQUENCE_ALGORITHMS.indexOf(algorithm.type) >= 0) {  // only multi-sequence algorithms have dynamic buttons
+            $(document).off("click", "**"); // remove delegated event handlers like the one below before reassignment
+
             $(document).on("click", ".add_remove", function () {
                 update(algorithm, viewmodels, processInput, changeOutput);
-            })
+            });
+        }
     }
 
     /**
