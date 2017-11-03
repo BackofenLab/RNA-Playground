@@ -93,7 +93,9 @@ Author: Alexander Mattheis
         outputData.treeBranches = [];
 
         outputData.allClusterNames = outputData.clusterNames.slice();
+        outputData.remainingClusters = [jQuery.extend(true, [], clusteringInstance.remainingClusterNames)];
         outputData.distanceMatrices = [];
+        outputData.keys = [];
     }
 
     /**
@@ -152,6 +154,9 @@ Author: Alexander Mattheis
             if (clusteringInstance.removedKeys.indexOf(keys[i]) === -1)  // if (not contained)
                 remainingKeys.push(keys[i]);
         }
+
+        outputData.distanceMatrices.push(jQuery.extend(true, {}, outputData.distanceMatrix));  // only for visualization the matrix of each round is stored
+        outputData.keys.push(remainingKeys);
 
         return remainingKeys;
     }
@@ -306,7 +311,7 @@ Author: Alexander Mattheis
      * Calculated distances in UPGMA are unweighted
      * with respect to the cluster-sizes. From this the "unweighted"-term results.
      * @example:
-     * dist(c, k = i union j) = [|i|*dist(c, i) + |j|*dist(c, j)] / [|i|+|j|]
+     * dist(c, k = i union j) = [|i|* dist(c, i) + |j|* dist(c, j)] / [|i|+|j|]
      * @param subtree {Object} - The subtree for the new cluster.
      * @param iteration {number} - The subtree for the new cluster.
      * @param subtree {maxNumIterations} - The subtree for the new cluster.
@@ -318,7 +323,7 @@ Author: Alexander Mattheis
         if (iteration === maxNumIterations-1)
             subtree.value = 0;
 
-        outputData.distanceMatrices.push(jQuery.extend(true, {}, outputData.distanceMatrix));  // only for visualization the matrix of each round is stored
+        outputData.remainingClusters.push(jQuery.extend(true, [], clusteringInstance.remainingClusterNames));  // for visualization
     }
 
     /**

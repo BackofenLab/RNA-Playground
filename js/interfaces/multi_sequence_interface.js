@@ -226,7 +226,9 @@ Author: Alexander Mattheis
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
         // creates a visually representable distance matrix
-        outputData.distanceMatrix = alignmentInterfaceInstance.getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength);
+        outputData.distanceMatrix
+            = alignmentInterfaceInstance.getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength,
+            outputData.remainingClusters[0], undefined);
 
         // distance matrix
         viewmodels.output.distanceMatrix(outputData.distanceMatrix);
@@ -235,11 +237,34 @@ Author: Alexander Mattheis
             // new variables (rows) are not automatically functions
             // and so we have to convert new variables manually into functions
             // or we get the following error
-            // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
+            // 'Uncaught TypeError: viewmodels.output.distanceMatrix[i] is not a function'
             if (i > viewmodels.output.distanceMatrix.length)
                 viewmodels.output.distanceMatrix[i] = new Function();
 
             viewmodels.output.distanceMatrix[i](outputData.distanceMatrix[i]);
+        }
+
+        // distance matrices
+        outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData);
+
+        viewmodels.output.distanceMatrices(outputData.distanceMatrices);
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.distanceMatrices.length)
+                viewmodels.output.distanceMatrices[i] = new Function();
+
+            viewmodels.output.distanceMatrices[i](outputData.distanceMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.distanceMatrices[i].length)
+                    viewmodels.output.distanceMatrices[i][j] = new Function();
+
+                viewmodels.output.distanceMatrices[i][j](outputData.distanceMatrices[i][j]);
+            }
         }
 
         // merge steps

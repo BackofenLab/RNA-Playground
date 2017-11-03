@@ -11,6 +11,7 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
+    debugger;
     if (loaded === ALGORITHMS.FENG_DOOLITTLE) {  // to avoid self execution on a script import
         fengDoolittle.startFengDoolittle();
         loaded = ALGORITHMS.NONE;

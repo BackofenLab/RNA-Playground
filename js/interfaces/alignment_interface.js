@@ -10,7 +10,7 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("interfaces.alignmentInterface", AlignmentInterface,
-        imports, sharedInterfaceOperations, roundValues, getDistanceTable, startProcessing);
+        imports, sharedInterfaceOperations, roundValues, getDistanceTable, getDistanceTables, startProcessing);
 
     // instances
     var alignmentInterfaceInstance;
@@ -29,6 +29,7 @@ Author: Alexander Mattheis
         this.sharedInterfaceOperations = sharedInterfaceOperations;
         this.roundValues = roundValues;
         this.getDistanceTable = getDistanceTable;
+        this.getDistanceTables = getDistanceTables;
         this.startProcessing = startProcessing;
     }
 
@@ -353,14 +354,31 @@ Author: Alexander Mattheis
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
     function createMultiSequenceOutputViewmodel(viewmodel, outputData) {
-        outputData.distanceMatrices = getDistanceTables(outputData);
-        outputData.distanceMatrix = getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength);
+        debugger;
 
         // distance matrix
+        outputData.distanceMatrix
+            = getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined);
+
         viewmodel.distanceMatrix =  ko.observableArray(outputData.distanceMatrix);
 
         for (var i = 0; i < outputData.distanceMatrix.length; i++) {
             viewmodel.distanceMatrix[i] = ko.observableArray(outputData.distanceMatrix[i]);
+        }
+
+        // distance matrices
+        outputData.distanceMatrices = getDistanceTables(outputData);
+
+        viewmodel.distanceMatrices = ko.observable(outputData.distanceMatrices);
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            viewmodel.distanceMatrices[i] = ko.observable(outputData.distanceMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
+                viewmodel.distanceMatrices[i][j] = ko.observable(outputData.distanceMatrices[i][j]);
+            }
         }
 
         // merge steps
@@ -386,8 +404,9 @@ Author: Alexander Mattheis
         var matrixLength = outputData.distanceMatrixLength;  // start length
 
         // in each round the matrix gets smaller by one, because two matrices are merged
-        for (var i = 0; i < outputData.distanceMatrices; i++) {
-            outputData.distanceMatrices[i] = getDistanceTable(outputData.distanceMatrices[i], matrixLength-(i+1));
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            outputData.distanceMatrices[i]
+                = getDistanceTable(outputData.distanceMatrices[i], matrixLength-i, outputData.remainingClusters[i], outputData.keys[i]);
         }
 
         return outputData.distanceMatrices;
@@ -397,11 +416,11 @@ Author: Alexander Mattheis
      * The distance matrix is an "associative array" and this has to be converted
      * into a 2D-array which is displayable.
      * Hint: "Associative arrays" do not have a defined order (browser-dependant).
-     * @param outputData {Object} - The output data in which the distance-matrix should be translated into a table form.
      */
-    function getDistanceTable(distanceMatrix, distanceMatrixLength) {
+    function getDistanceTable(distanceMatrix, distanceMatrixLength, remainingClusters, matrixKeys) {
         var matrix = createMatrix(distanceMatrixLength);
-        var matrixKeys = Object.keys(distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...
+        if (matrixKeys === undefined)
+            matrixKeys = Object.keys(distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...
 
         // fill diagonals with zero
         for (var i = 0; i < matrix.length; i++) {
@@ -414,8 +433,8 @@ Author: Alexander Mattheis
         // fill right upper half
         for (var j = 0; j < matrixKeys.length; j++) {
             var key = matrixKeys[j];
-            var cluster1Position = getPositionByName(key[0]);
-            var cluster2Position = getPositionByName(key[2]);
+            var cluster1Position = getPositionByName(key[0], remainingClusters);
+            var cluster2Position = getPositionByName(key[2], remainingClusters);
             var value = distanceMatrix[key];
 
             matrix[cluster1Position][cluster2Position] = value;
@@ -442,14 +461,14 @@ Author: Alexander Mattheis
      * Returns for a cluster-name, its position in the distance matrix.
      * @param clusterName {string} - The name of the cluster.
      */
-    function getPositionByName(clusterName) {
+    function getPositionByName(clusterName, remainingClusterNames) {
         var clusterCharacter = clusterName.replace(MULTI_SYMBOLS.NUMBERS, SYMBOLS.EMPTY);
         var clusterNumber = Number(clusterName.replace(MULTI_SYMBOLS.STRINGS, SYMBOLS.EMPTY));
 
         var position = -1;
 
-        for (var i = 0; i < CLUSTER_NAMES.length; i++) {
-            if (clusterCharacter === CLUSTER_NAMES[i]) {
+        for (var i = 0; i < remainingClusterNames.length; i++) {
+            if (clusterCharacter === remainingClusterNames[i]) {
                 position = i;
                 break;
             }
