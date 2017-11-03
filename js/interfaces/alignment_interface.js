@@ -159,6 +159,21 @@ Author: Alexander Mattheis
                 }
             }
 
+        } else if (outputData.distanceMatrices !== undefined) {  // if Feng-Doolittle or UPGMA
+            // iterate over each distance matrix
+            for (var k = 1; k < outputData.distanceMatrices.length; k++) {  // k=1: because the values of first table already rounded
+
+                // iterate over each row
+                for (var i = 0; i < outputData.distanceMatrices[k].length; i++) {
+
+                    // iterate over each entry
+                    for (var j = 0; j < outputData.distanceMatrices[k][i].length; j++) {
+                        if (j > i)  // only the values upper the diagonal
+                            outputData.distanceMatrices[k][i][j]
+                                = round(outputData.distanceMatrices[k][i][j], 1);
+                    }
+                }
+            }
         } else { // other algorithms
             for (var i = 0; i < outputData.matrix.length; i++)
                 for (var j = 0; j < outputData.matrix[0].length; j++)
@@ -354,8 +369,6 @@ Author: Alexander Mattheis
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
     function createMultiSequenceOutputViewmodel(viewmodel, outputData) {
-        debugger;
-
         // distance matrix
         outputData.distanceMatrix
             = getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined);
@@ -369,17 +382,21 @@ Author: Alexander Mattheis
         // distance matrices
         outputData.distanceMatrices = getDistanceTables(outputData);
 
-        viewmodel.distanceMatrices = ko.observable(outputData.distanceMatrices);
+        roundValues(outputData);
+
+        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices);
 
         // iteration over each matrix
         for (var i = 0; i < outputData.distanceMatrices.length; i++) {
-            viewmodel.distanceMatrices[i] = ko.observable(outputData.distanceMatrices[i]);
+            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]);
 
             // iteration over each row of the matrix
             for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
-                viewmodel.distanceMatrices[i][j] = ko.observable(outputData.distanceMatrices[i][j]);
+                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]);
             }
         }
+
+        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters);
 
         // merge steps
         viewmodel.guideAlignments = ko.observable(outputData.guideAlignments);
@@ -398,6 +415,12 @@ Author: Alexander Mattheis
         viewmodel.similarities = ko.observable(outputData.similarities);
         viewmodel.gapNumbers = ko.observable(outputData.gapNumbers);
         viewmodel.gapStarts = ko.observable(outputData.gapStarts);
+
+        viewmodel.showMatrices = ko.observable(false);
+
+        viewmodel.toggleVisibility = function() {
+            viewmodel.showMatrices(!viewmodel.showMatrices());
+        };
     }
 
     function getDistanceTables(outputData) {

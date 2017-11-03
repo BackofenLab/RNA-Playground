@@ -335,24 +335,22 @@ Author: Alexander Mattheis
                 <thead>
 					<tr>
 						<th></th>
-                        <!-- ko foreach: input.clusterNames() -->
+                        <!-- ko foreach: $root.output.remainingClusters()[0] -->
                             <!-- ko if: $index() < $root.output.distanceMatrix()[0].length -->
-							    <th data-bind="drawChar: [$data, undefined]"></th>
+                                <th data-bind="drawChar: [$data, undefined]"></th>
                             <!-- /ko -->
                         <!-- /ko -->
 					</tr>
                 </thead>
 
                 <tbody>
-					<!-- ko foreach: $root.output.distanceMatrix() --> <!-- to get i-indexes = $parentContext.$index() -->
+					<!-- ko foreach: $root.output.distanceMatrix()[0]--> <!-- to get i-indexes = $parentContext.$index() -->
 						<tr>
-                            <!-- ko if: $index() < $root.output.distanceMatrix()[0].length --> <!-- works because of a symmetric matrix -->
-                                <th data-bind="drawChar: [$root.input.clusterNames()[$index()], undefined]"></th>
+                            <th data-bind="drawChar: [$root.output.remainingClusters()[0][$index()], undefined]"></th>
 
-                                <!-- ko foreach: $root.output.distanceMatrix()[0] --> <!-- to get j-indexes = $index() -->
+                            <!-- ko foreach: $root.output.distanceMatrix()[0] --> <!-- to get j-indexes = $index() -->
                                     <td class="non_selectable_entry"
                                         data-bind="text: $root.output.distanceMatrix()[$parentContext.$index()][$index()]"></td>
-                                <!-- /ko -->
                             <!-- /ko -->
 						</tr>
                     <!-- /ko -->
@@ -360,8 +358,42 @@ Author: Alexander Mattheis
             </table>
         </div>
 
-        <div class="download_area">
-            <a class="distance_table_download" href="#">Download Table</a>
+        <button data-bind="click: $root.output.toggleVisibility">UPGMA Iterations</button>
+
+        <div class="matrices" data-bind="visible: $root.output.showMatrices">
+            <!-- ko foreach: $root.output.distanceMatrices() -->
+                <!-- ko if: $index() > 0 -->
+                    <div class="intermediate_result_header">
+                        <h4 class="header subresult">Iteration <span data-bind="text: $index()"></span>:</h4>
+                    </div>
+
+                    <div class="distance_table">
+                        <table class="calculation">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <!-- ko foreach: $root.output.remainingClusters()[$index()] -->
+                                        <th data-bind="drawChar: [$data, undefined]"></th>
+                                    <!-- /ko -->
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <!-- ko foreach: $root.output.distanceMatrices()[$index()] --> <!-- to get i-indexes = $parentContext.$index() -->
+                                    <tr>
+                                        <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
+                                        <!-- ko foreach: $root.output.distanceMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
+                                            <td class="non_selectable_entry"
+                                                data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                            </td>
+                                        <!-- /ko -->
+                                    </tr>
+                                <!-- /ko -->
+                            </tbody>
+                        </table>
+                    </div>
+                <!-- /ko -->
+            <!-- /ko -->
         </div>
 
         <div class="intermediate_result_header">

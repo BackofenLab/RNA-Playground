@@ -537,7 +537,7 @@ $(document).ready(function () {
             outputData.sequencePairNames.push([firstClusterName, secondClusterName]);
         }
 
-        outputData.distanceMatrixLength = inputData.sequences.length;
+        outputData.distanceMatrixLength = inputData.sequences.length - inputData.arrayPositionsOfRemovedSequences.length;
     }
 
     /**

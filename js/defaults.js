@@ -29,6 +29,7 @@ var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight traceba
 
 var SMITH_WATERMAN_STOP = "0";
 
+
 // structs
 /**
  * Stores the implemented algorithm names.

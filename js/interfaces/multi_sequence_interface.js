@@ -247,6 +247,8 @@ Author: Alexander Mattheis
         // distance matrices
         outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData);
 
+        alignmentInterfaceInstance.roundValues(outputData);
+
         viewmodels.output.distanceMatrices(outputData.distanceMatrices);
 
         // iteration over each matrix
@@ -266,6 +268,8 @@ Author: Alexander Mattheis
                 viewmodels.output.distanceMatrices[i][j](outputData.distanceMatrices[i][j]);
             }
         }
+
+        viewmodels.output.remainingClusters(outputData.remainingClusters);
 
         // merge steps
         viewmodels.output.guideAlignments(outputData.guideAlignments);
