@@ -26,6 +26,7 @@ TestCase("test_feng_doolittle", {
 
         algorithm.setIO(inputData, {});
 
+        debugger;
         var ioData = algorithm.compute();
         var outputData = ioData[1];
 
@@ -64,16 +65,12 @@ TestCase("test_feng_doolittle", {
         assertEquals("GCC", alignmentBC[2]);
 
         // output: distances
-        assertEquals(2, outputData.distances[0]);
-        assertEquals(8, outputData.distances[1]);
-        assertEquals(8, outputData.distances[2]);
-
-        assertEquals(2, outputData.distanceMatrix[["a", "b"]]);
-        assertEquals(8, outputData.distanceMatrix[["a", "c"]]);
-        assertEquals(8, outputData.distanceMatrix[["b", "c"]]);
+        assertEquals(1, outputData.distanceMatrix[["a", "b"]]);
+        assertEquals(3, outputData.distanceMatrix[["a", "c"]]);
+        assertEquals(9, outputData.distanceMatrix[["b", "c"]]);
 
         // output: phylogenetic tree
-        assertEquals("(c:4,(a:1,b:1)d:3)e;", outputData.newickString);
+        assertEquals("(c:3,(a:0.5,b:0.5)d:2.5)e;", outputData.newickString);
 
         // output: final
         //assertEquals(-9, outputData.score);

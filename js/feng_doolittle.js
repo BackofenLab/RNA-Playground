@@ -431,13 +431,13 @@ $(document).ready(function () {
         var bChars = getUniqueChars(sequenceB);
 
         for (var i = 0; i < aChars.length; i++) {
-            var char = aChars[i];
+            var aChar = aChars[i];
 
             for (var j = 0; j < bChars.length; j++) {
-                var bChar = aChars[j];
+                var bChar = bChars[j];
 
-                var similarity = inputData.match;
-                var frequencyInA = getFrequency(char, sequenceA);
+                var similarity = aChar === bChar ? inputData.match : inputData.mismatch;
+                var frequencyInA = getFrequency(aChar, sequenceA);
                 var frequencyInB = getFrequency(bChar, sequenceB);
                 doubleSum += similarity * frequencyInA * frequencyInB;
             }

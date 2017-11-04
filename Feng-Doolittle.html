@@ -336,9 +336,7 @@ Author: Alexander Mattheis
 					<tr>
 						<th></th>
                         <!-- ko foreach: $root.output.remainingClusters()[0] -->
-                            <!-- ko if: $index() < $root.output.distanceMatrix()[0].length -->
                                 <th data-bind="drawChar: [$data, undefined]"></th>
-                            <!-- /ko -->
                         <!-- /ko -->
 					</tr>
                 </thead>
