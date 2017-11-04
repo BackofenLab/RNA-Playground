@@ -384,19 +384,19 @@ Author: Alexander Mattheis
 
         roundValues(outputData);
 
-        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices);
+        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
 
         // iteration over each matrix
         for (var i = 0; i < outputData.distanceMatrices.length; i++) {
-            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]);
+            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({ deferred: true });
 
             // iteration over each row of the matrix
             for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
-                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]);
+                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({ deferred: true });
             }
         }
 
-        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters);
+        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
 
         // merge steps
         viewmodel.guideAlignments = ko.observable(outputData.guideAlignments);
@@ -441,6 +441,7 @@ Author: Alexander Mattheis
      * Hint: "Associative arrays" do not have a defined order (browser-dependant).
      */
     function getDistanceTable(distanceMatrix, distanceMatrixLength, remainingClusters, matrixKeys) {
+        debugger;
         var matrix = createMatrix(distanceMatrixLength);
         if (matrixKeys === undefined)
             matrixKeys = Object.keys(distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...
@@ -455,9 +456,9 @@ Author: Alexander Mattheis
 
         // fill right upper half
         for (var j = 0; j < matrixKeys.length; j++) {
-            var key = matrixKeys[j];
+            var key = matrixKeys[j].split(SYMBOLS.COMMA);
             var cluster1Position = getPositionByName(key[0], remainingClusters);
-            var cluster2Position = getPositionByName(key[2], remainingClusters);
+            var cluster2Position = getPositionByName(key[1], remainingClusters);
             var value = distanceMatrix[key];
 
             matrix[cluster1Position][cluster2Position] = value;
@@ -485,19 +486,16 @@ Author: Alexander Mattheis
      * @param clusterName {string} - The name of the cluster.
      */
     function getPositionByName(clusterName, remainingClusterNames) {
-        var clusterCharacter = clusterName.replace(MULTI_SYMBOLS.NUMBERS, SYMBOLS.EMPTY);
-        var clusterNumber = Number(clusterName.replace(MULTI_SYMBOLS.STRINGS, SYMBOLS.EMPTY));
-
         var position = -1;
 
         for (var i = 0; i < remainingClusterNames.length; i++) {
-            if (clusterCharacter === remainingClusterNames[i]) {
+            if (clusterName === remainingClusterNames[i]) {
                 position = i;
                 break;
             }
         }
 
-        return position + clusterNumber * CLUSTER_NAMES.length;
+        return position;
     }
 
     /**
@@ -510,7 +508,6 @@ Author: Alexander Mattheis
         algorithm.setInput(inputViewmodel);
         var ioData = algorithm.compute();
 
-        debugger;
         // deep copy of the output before rounding to avoid information loss
         visualViewmodel.shareInformation(algorithm, ioData[0], jQuery.extend(true, {}, ioData[1]));
     }

@@ -29,7 +29,7 @@ Author: Alexander Mattheis
         clusteringInstance = this;
 
         // variables
-        this.nameIndex = 0;
+        this.nameIndex = 0;  // only really needed, if getNextClusterName() function is used
         this.remainingClusterNames = [];
         this.removedKeys = [];
         this.treeParts = [];  // storing the current incurred tree parts
@@ -182,7 +182,7 @@ Author: Alexander Mattheis
      * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function createNewCluster(cluster1Name, cluster2Name) {
-        var newClusterName = getNextClusterName();
+        var newClusterName = cluster1Name + cluster2Name;  // getNextClusterName();  // alternative name generation
 
         var firstClusterCardinality = outputData.cardinalities[cluster1Name];
         var SecondClusterCardinality = outputData.cardinalities[cluster2Name];
@@ -243,6 +243,7 @@ Author: Alexander Mattheis
      * a3, b3, ...              THIRD ...       (52 <= index < 78)
      * @return {string} - Cluster name.
      */
+    /*
     function getNextClusterName() {
         var clusterName = SYMBOLS.EMPTY;
 
@@ -258,6 +259,7 @@ Author: Alexander Mattheis
 
         return clusterName;
     }
+    */
 
     /**
      * Appends a node with the given parameters to the hierarchical tree.
@@ -320,8 +322,10 @@ Author: Alexander Mattheis
         childInstance.computeDistances(subtree);
         clusteringInstance.remainingClusterNames.push(subtree.name);
 
-        if (iteration === maxNumIterations-1)
+        if (iteration === maxNumIterations-1) {
             subtree.value = 0;
+            getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
+        }
 
         outputData.remainingClusters.push(jQuery.extend(true, [], clusteringInstance.remainingClusterNames));  // for visualization
     }

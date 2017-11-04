@@ -102,7 +102,8 @@ div.colW175 {  /* altered from corporate-design.css */
 }
 
 .calculation, .calculation_horizontal, .calculation_vertical,
-.calculation_1, .calculation_2, .calculation_3, .calculation_4, .calculation_5 {
+.calculation_1, .calculation_2, .calculation_3, .calculation_4, .calculation_5,
+.distances {
     border: solid 1px #a0a0a0;
     border-spacing: 0;
     border-width: 0 1px 0 0;
@@ -116,8 +117,8 @@ div.colW175 {  /* altered from corporate-design.css */
 .calculation_2 td, .calculation_2 th,
 .calculation_3 td, .calculation_3 th,
 .calculation_4 td, .calculation_4 th,
-.calculation_5 td, .calculation_5 th
-{
+.calculation_5 td, .calculation_5 th,
+.distances td, .distances th {
     border: solid 1px #a0a0a0;
     border-width: 1px 0 1px 1px;
     /*
@@ -129,6 +130,10 @@ div.colW175 {  /* altered from corporate-design.css */
     min-height: 24px;
     min-width: 32px;
     width: 32px;
+}
+
+.distances td, .distances th {
+    max-width: none !important;
 }
 
 .distance_table {

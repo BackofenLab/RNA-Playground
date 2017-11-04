@@ -70,7 +70,7 @@ TestCase("test_feng_doolittle", {
         assertEquals(9, outputData.distanceMatrix[["b", "c"]]);
 
         // output: phylogenetic tree
-        assertEquals("(c:3,(a:0.5,b:0.5)d:2.5)e;", outputData.newickString);
+        assertEquals("(c:3,(a:0.5,b:0.5):2.5);", outputData.newickString);
 
         // output: final
         //assertEquals(-9, outputData.score);

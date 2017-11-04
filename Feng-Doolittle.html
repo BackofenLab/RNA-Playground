@@ -337,7 +337,7 @@ Author: Alexander Mattheis
         </div>
 
         <div class="distance_table">
-            <table class="calculation">
+            <table class="distances">
                 <thead>
 					<tr>
 						<th></th>
@@ -353,8 +353,8 @@ Author: Alexander Mattheis
                             <th data-bind="drawChar: [$root.output.remainingClusters()[0][$index()], undefined]"></th>
 
                             <!-- ko foreach: $root.output.distanceMatrix()[0] --> <!-- to get j-indexes = $index() -->
-                                    <td class="non_selectable_entry"
-                                        data-bind="text: $root.output.distanceMatrix()[$parentContext.$index()][$index()]"></td>
+                                <td class="non_selectable_entry"
+                                    data-bind="text: $root.output.distanceMatrix()[$parentContext.$index()][$index()]"></td>
                             <!-- /ko -->
 						</tr>
                     <!-- /ko -->
@@ -372,7 +372,7 @@ Author: Alexander Mattheis
                     </div>
 
                     <div class="distance_table">
-                        <table class="calculation">
+                        <table class="distances">
                             <thead>
                                 <tr>
                                     <th></th>
