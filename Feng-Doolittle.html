@@ -130,9 +130,13 @@ Author: Alexander Mattheis
                         <b>Hint 2:</b> <br>
                         Duplicates of sequences <br>
                         are excluded from computations.
-                        <!-- This is a bigger code readability and runtime enhancement:
-                        sequences are stored as keys in hash-tables and
-                        two times the same key is not possible in a hash-table! -->
+                        <!-- The distance formula
+                        is not defined for two sequences of same type,
+                        because the denominator gets zero.
+                        Also, this allows a bigger code readability and runtime enhancement:
+                        Sequences are stored as keys in hash-tables and
+                        two times the same key is not possible in a hash-table!
+                        -->
                     </div>
                 <!-- /ko -->
             </div>
@@ -317,14 +321,16 @@ Author: Alexander Mattheis
             <div id="phylogenetic_tree"></div>
         </div>
 
-        <div class="group_hint">
-            <b>Visualization done with</b> <br>
-            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br>
-            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br>
-            <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
-                PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
-            </a>
-        </div>
+        <!-- ko if: $root.output.newickString().length !== 1 -->
+            <div class="group_hint">
+                <b>Visualization done with</b> <br>
+                Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br>
+                A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br>
+                <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                    PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+                </a>
+            </div>
+        <!-- /ko -->
 
         <div class="intermediate_result_header">
             <h4 class="subresult">Distance Table</h4>
