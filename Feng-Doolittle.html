@@ -271,15 +271,9 @@ Author: Alexander Mattheis
                                 </td>
 
                                  <td class="entry entry_start">
-                                     <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>:
+                                     <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br>
                                      <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
-                                        <!-- ko if: $index() == 0 -->
-                                            <code data-bind="text: $data"></code> <br>
-                                        <!-- /ko -->
-
-                                        <!-- ko if: $index() != 0 -->
-                                            <code>  </code><code data-bind="text: $data"></code> <br>
-                                        <!-- /ko -->
+                                        <code data-bind="text: $data"></code> <br>
                                      <!-- /ko -->
                                 </td>
                             </tr>

@@ -830,7 +830,6 @@ Author: Alexander Mattheis
      * and has been optimized + commented.
      */
     function drawTree() {
-        debugger;
         $("#phylogenetic_tree").remove();  // remove from container
         $(".tree_container").append(PHYLOGENETIC_TREE.SVG_CANVAS);  // add again
 
