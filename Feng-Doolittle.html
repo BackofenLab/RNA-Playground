@@ -352,6 +352,14 @@ Author: Alexander Mattheis
                             <!-- /ko -->
 						</tr>
                     <!-- /ko -->
+
+                    <tr>
+                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+                            <small>
+                                <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[0]"></span>
+                            </small>
+                        </th>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -385,6 +393,16 @@ Author: Alexander Mattheis
                                                 data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
                                             </td>
                                         <!-- /ko -->
+                                    </tr>
+                                <!-- /ko -->
+
+                                <!-- ko if: $index() < $root.output.distanceMatrices().length-1 --> <!-- The last minimum is not computed -->
+                                    <tr>
+                                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+                                            <small>
+                                                <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[$index()]"></span>
+                                            </small>
+                                        </th>
                                     </tr>
                                 <!-- /ko -->
                             </tbody>

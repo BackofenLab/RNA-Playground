@@ -352,10 +352,6 @@ $(document).ready(function () {
      * Hint: for [S(a,b) - S^rand(a,b)] == 0, it was not defined,
      * but for simplicity it is used [S(a,b) - S^rand(a,b)] = FENG_DOOLITTLE_CONSTANT
      *
-     * Hint 2: If there are no restriction of parameters,
-     * it would hold that [S^max(a,b) - S^rand(a,b)] <= 0 is possible (if match-scores are negative, gaps positive).
-     * This cases have to be disallowed, because Feng-Doolittle is not defined for this cases.
-     *
      * Hint 3: Because of floating point errors,
      * it is also maybe possible, that [S^max(a,b) - S^rand(a,b)] <= 0.
      * In this case [S^max(a,b) - S^rand(a,b)] is set to FENG_DOOLITTLE_CONSTANT

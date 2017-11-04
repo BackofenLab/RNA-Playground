@@ -397,6 +397,7 @@ Author: Alexander Mattheis
         }
 
         viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
+        viewmodel.minimums = ko.observable(outputData.minimums).extend({ deferred: true });
 
         // merge steps
         viewmodel.guideAlignments = ko.observable(outputData.guideAlignments);

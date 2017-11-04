@@ -270,6 +270,7 @@ Author: Alexander Mattheis
         }
 
         viewmodels.output.remainingClusters(outputData.remainingClusters);
+        viewmodels.output.minimums(outputData.minimums);
 
         // merge steps
         viewmodels.output.guideAlignments(outputData.guideAlignments);

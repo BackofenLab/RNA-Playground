@@ -96,6 +96,7 @@ Author: Alexander Mattheis
         outputData.remainingClusters = [jQuery.extend(true, [], clusteringInstance.remainingClusterNames)];
         outputData.distanceMatrices = [];
         outputData.keys = [];
+        outputData.minimums = [];
     }
 
     /**
@@ -131,6 +132,8 @@ Author: Alexander Mattheis
                 minValue = value;  // distance
             }
         }
+
+        outputData.minimums.push(Math.round(minValue*10)/10);  // only for visualization
 
         // create structure for better understandable access
         var minimum = {};
