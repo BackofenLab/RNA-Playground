@@ -155,6 +155,7 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
+        debugger;
         computePairwiseData();
         computeDistancesFromSimilarities();
         createDistanceMatrix();
@@ -395,7 +396,7 @@ $(document).ready(function () {
      * Computes an approximation of the random score for aligning two sequences
      * by using the approximative formula from 1996 of Feng and Doolittle.
      * Hint: Usually random shuffling is used (1987),
-     * but then the algorithm would become non-deterministic and it couldn't be tested.
+     * but then the algorithm would become non-deterministic and it couldn't be tested so easy.
      * @param alignmentLength - The length of the alignment (number of columns).
      * @param sequenceA - The first (not aligned) sequence.
      * @param sequenceB - The second (not aligned) sequence.
@@ -411,7 +412,7 @@ $(document).ready(function () {
      * This is the reason for writing a "+" instead of "-" in the formula:
      * ... + N_{a,b}(gaps) * \beta
      *
-     * Hint 3: Mismatches s(i,j) have been really omitted in the original formula!
+     * Hint 3: Mismatches s(i,j) have been omitted in the original formula! Probably this was a mistake.
      *
      * @example:
      * S^rand(a,b)
@@ -423,10 +424,6 @@ $(document).ready(function () {
     function getApproximatedRandomScore(alignmentLength, sequenceA, sequenceB, numOfGaps, numOfGapStarts) {
         var doubleSum = 0;
 
-        // Hint: \sum_{i in A(a,b)} is replaceable with \sum_{i in A(a)}
-        // it's not needed to iterate over common unique chars of sequence A and sequence B
-        // because if the char of A and the char of b are not matching,
-        // then one of the frequencies will be zero and so the double sum is not changing
         var aChars = getUniqueChars(sequenceA);
         var bChars = getUniqueChars(sequenceB);
 

@@ -830,63 +830,66 @@ Author: Alexander Mattheis
      * and has been optimized + commented.
      */
     function drawTree() {
+        debugger;
         $("#phylogenetic_tree").remove();  // remove from container
         $(".tree_container").append(PHYLOGENETIC_TREE.SVG_CANVAS);  // add again
 
-        visualizerInstance.phylogeneticTree
-            = new Smits.PhyloCanvas(visualizerInstance.output.newickString,
-            PHYLOGENETIC_TREE.SVG_CANVAS_NAME,
-            PHYLOGENETIC_TREE.SVG_WIDTH,
-            PHYLOGENETIC_TREE.SVG_HEIGHT);
+        if (visualizerInstance.output.newickString.length !== 1) {  // if there is not only a ";"
+            visualizerInstance.phylogeneticTree
+                = new Smits.PhyloCanvas(visualizerInstance.output.newickString,
+                PHYLOGENETIC_TREE.SVG_CANVAS_NAME,
+                PHYLOGENETIC_TREE.SVG_WIDTH,
+                PHYLOGENETIC_TREE.SVG_HEIGHT);
 
-        var svgPaths = $("svg path");
-        var svgTexts = $("svg text");
+            var svgPaths = $("svg path");
+            var svgTexts = $("svg text");
 
-        var currentSvgY = parseInt($("svg")[0].attributes.getNamedItem("height").value);
+            var currentSvgY = parseInt($("svg")[0].attributes.getNamedItem("height").value);
 
-        // search for maximum y in the defined SVG
-        var definedMaxY = 0;
+            // search for maximum y in the defined SVG
+            var definedMaxY = 0;
 
-        // go through each path (in SVG figures defined as paths)
-        for (var i = 0; i < svgPaths.length; i++){
-            var path = svgPaths[i].attributes.getNamedItem("d").value.split(",");
+            // go through each path (in SVG figures defined as paths)
+            for (var i = 0; i < svgPaths.length; i++){
+                var path = svgPaths[i].attributes.getNamedItem("d").value.split(",");
 
-            // go through each element of the path
-            for (var j = 1; j < path.length; j++){
-                var currentY = parseInt(path[j].split("L")[0]);
+                // go through each element of the path
+                for (var j = 1; j < path.length; j++){
+                    var currentY = parseInt(path[j].split("L")[0]);
 
-                if(definedMaxY < currentY)
-                    definedMaxY = currentY;
+                    if(definedMaxY < currentY)
+                        definedMaxY = currentY;
+                }
             }
-        }
 
-        if (definedMaxY > currentSvgY) {  // if (SVG has moved)
-            var heightAdjustment = definedMaxY - (currentSvgY - 20);  // compute difference between true value and desired value
+            if (definedMaxY > currentSvgY) {  // if (SVG has moved)
+                var heightAdjustment = definedMaxY - (currentSvgY - 20);  // compute difference between true value and desired value
 
-            // adjust figures-heights
-            // go through each path
-            for (var i = 0; i < svgPaths.length; i++) {
-                var path = svgPaths[i].attributes.getNamedItem("d").value.split(SYMBOLS.COMMA);
+                // adjust figures-heights
+                // go through each path
+                for (var i = 0; i < svgPaths.length; i++) {
+                    var path = svgPaths[i].attributes.getNamedItem("d").value.split(SYMBOLS.COMMA);
 
-                var correctedPath = SYMBOLS.EMPTY + path[0];
+                    var correctedPath = SYMBOLS.EMPTY + path[0];
 
-                // go through each element of the path and adjust the y-value
-                for (var j = 1; j < path.length; j++) {
-                    var currentY = path[j].split("L");
+                    // go through each element of the path and adjust the y-value
+                    for (var j = 1; j < path.length; j++) {
+                        var currentY = path[j].split("L");
 
-                    // adjustment
-                    if(currentY.length !== 1)
-                        correctedPath = correctedPath + SYMBOLS.COMMA + (parseInt(currentY[0]) - heightAdjustment).toString() + "L" + currentY[1];
-                    else
-                        correctedPath = correctedPath + SYMBOLS.COMMA + (parseInt(currentY[0]) - heightAdjustment).toString();
+                        // adjustment
+                        if(currentY.length !== 1)
+                            correctedPath = correctedPath + SYMBOLS.COMMA + (parseInt(currentY[0]) - heightAdjustment).toString() + "L" + currentY[1];
+                        else
+                            correctedPath = correctedPath + SYMBOLS.COMMA + (parseInt(currentY[0]) - heightAdjustment).toString();
+                    }
+
+                    svgPaths[i].setAttribute("d", correctedPath);
                 }
 
-                svgPaths[i].setAttribute("d", correctedPath);
-            }
-
-            // adjust text-heights
-            for( var i = 0; i < svgTexts.length; i++ ){
-                svgTexts[i].setAttribute("y", (parseInt(svgTexts[i].attributes.getNamedItem("y").value) - heightAdjustment).toString());
+                // adjust text-heights
+                for( var i = 0; i < svgTexts.length; i++ ){
+                    svgTexts[i].setAttribute("y", (parseInt(svgTexts[i].attributes.getNamedItem("y").value) - heightAdjustment).toString());
+                }
             }
         }
     }

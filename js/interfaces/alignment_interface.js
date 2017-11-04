@@ -510,6 +510,7 @@ Author: Alexander Mattheis
         algorithm.setInput(inputViewmodel);
         var ioData = algorithm.compute();
 
+        debugger;
         // deep copy of the output before rounding to avoid information loss
         visualViewmodel.shareInformation(algorithm, ioData[0], jQuery.extend(true, {}, ioData[1]));
     }
