@@ -123,8 +123,9 @@ $(document).ready(function () {
      * and combines both libraries to one big library (signal addition).
      */
     function computeCombinedWeightPrimaryLibrary() {
+        // conversion is directly done in the computations of pairwise weights
         computePairwiseWeights();
-        //signalAddition();  // if additional pairwise does not cost too many runtime
+        //signalAddition();  // if additional local pairwise alignment does not cost too many runtime
     }
 
     /**
@@ -133,27 +134,61 @@ $(document).ready(function () {
      * with respect to the smaller sequence.
      * Hint: It could be computed during computation of alignment data,
      * but for better understanding and less code complexity
-     * everything computed in order defined in the original paper.
+     * nearly everything computed in order defined in the original paper.
      */
     function computePairwiseWeights() {
+        var primaryLib = {};
+
+        // iterate over each sequence a and sequence b to compute structure primLib^{a,b}(i,j) = {L_{1,3}, L_{2,4}, ..., L_{5,7}}
         for (var i = 0; i < inputData.sequences.length; i++) {
             for (var j = 0; j < i; j++) {
                 var sequenceA = inputData.sequences[j];
                 var sequenceB = inputData.sequences[i];
 
-                var alignment = outputData.alignmentsAndScores[[sequenceA, sequenceB]];
-                var matches = getNumberOfMatches(alignment);
+                var asData = outputData.alignmentsAndScores[[sequenceA, sequenceB]];
+                var sequenceIdentities = getSequenceIdentities(asData[0]);
+                primaryLib[[sequenceA, sequenceB]] = sequenceIdentities;
             }
         }
     }
 
     /**
-     * Returns the number of matches in the alignment.
-     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
-     * - The triple of strings for which the number of gaps has to be computed.
-     * @return {number} - The number of matches in the alignment.
+     * Computes a structure L dependant on an argument of the form [i,j]
+     * which returns the position specific sequence identity.
+     * @param alignment - The alignment for which you want compute
+     * a structure that returns position specific sequence identities.
+     * @return {Object}
      */
-    function getNumberOfMatches(alignment) {
+    function getSequenceIdentities(alignment) {
+        var sequenceA = alignment[0];
+        var sequenceB = alignment[2];
+
+        var sequenceLength = sequenceA.length;  // OR: sequenceB.length
+        var numCharactersInA = 0;
+        var numCharactersInB = 0;
+        var numMatches = 0;
+        var numMatchesOrMismatches = 0;
+
+        var L = {};
+
+        // iterate over each position to compute structures L_{i,j}
+        for (var k = 0; k < sequenceLength; k++) {
+            if (sequenceA[k] === SYMBOLS.GAP) {  // means there is a gap in sequence b
+                numCharactersInB++;
+            } else if (sequenceB[k] === SYMBOLS.GAP) {  // means there is a gap in sequence a
+                numCharactersInA++;
+            } else {  // match or mismatch
+                numCharactersInA++;
+                numCharactersInB++;
+                numMatchesOrMismatches++;
+
+                numMatches += sequenceA[k] === sequenceB[k] ? 1 : 0;  // if match, then increment
+
+                L[[numCharactersInA, numCharactersInB]] = (100 * numMatches) / numMatchesOrMismatches;
+            }
+        }
+
+        return L;
     }
 
     /**
