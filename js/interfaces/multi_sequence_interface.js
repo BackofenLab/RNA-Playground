@@ -282,6 +282,7 @@ Author: Alexander Mattheis
         // tree and final output
         viewmodels.output.newickString(outputData.newickString);
         viewmodels.output.progressiveAlignment(outputData.progressiveAlignment);
+        viewmodels.output.score(outputData.score);
 
         viewmodels.visual.drawTree();
 

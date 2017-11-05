@@ -6,10 +6,12 @@ load:
 
   - js/defaults.js
   - js/loader.js
-  - js/formats/newick_format.js
 
   - js/bases/alignment.js
   - js/bases/clustering.js
+
+  - js/formats/newick_format.js
+  - js/formats/scoring_functions.js
 
   - js/arslan_egecioglu_pevzner.js
   - js/feng_doolittle.js
@@ -26,5 +28,6 @@ test:
   - js/tests/test_gotoh_local.js
   - js/tests/test_needleman_wunsch.js
   - js/tests/test_smith_waterman.js
+  - js/tests/test_sum_of_pairs.js
   - js/tests/test_upgma.js
   - js/tests/test_waterman_smith_beyer.js

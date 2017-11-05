@@ -409,6 +409,7 @@ Author: Alexander Mattheis
         // tree and final output
         viewmodel.newickString = ko.observable(outputData.newickString);
         viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
+        viewmodel.score = ko.observable(outputData.score);
 
         // pairwise data
         viewmodel.sequencePairNames = ko.observable(outputData.sequencePairNames);
@@ -442,7 +443,6 @@ Author: Alexander Mattheis
      * Hint: "Associative arrays" do not have a defined order (browser-dependant).
      */
     function getDistanceTable(distanceMatrix, distanceMatrixLength, remainingClusters, matrixKeys) {
-        debugger;
         var matrix = createMatrix(distanceMatrixLength);
         if (matrixKeys === undefined)
             matrixKeys = Object.keys(distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...

@@ -73,7 +73,7 @@ TestCase("test_feng_doolittle", {
         assertEquals("(c:3,(a:0.5,b:0.5):2.5);", outputData.newickString);
 
         // output: final
-        //assertEquals(-9, outputData.score);
+        assertEquals(-9, outputData.score);
         assertEquals("GC_C", outputData.progressiveAlignment[0]);
         assertEquals("ACGT", outputData.progressiveAlignment[1]);
         assertEquals("A__T", outputData.progressiveAlignment[2]);

@@ -185,9 +185,21 @@ div.colW175 {  /* altered from corporate-design.css */
     width: 246px;
 }
 
-.final_result_header {
-    width: 246px;
+final_result_footer {
     vertical-align: top;
+}
+
+.final_result_footer td, .final_result_footer th {
+    border-top: none;
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 233px;
+}
+
+.final_result_header {
+    vertical-align: top;
+    width: 246px;
 }
 
 .final_result_header td, .final_result_header th {

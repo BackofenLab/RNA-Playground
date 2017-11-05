@@ -160,6 +160,8 @@ $(document).ready(function () {
         computeDistancesFromSimilarities();
         createDistanceMatrix();
         createProgressiveAlignment(getPhylogeneticTree());
+
+        outputData.score = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
         return [inputData, outputData];
     }
 
