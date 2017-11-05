@@ -104,6 +104,18 @@ $(document).ready(function () {
      * Computes the set of pairwise alignments for local and global alignments.
      */
     function computePrimaryLibraries() {
+        computePairwiseGlobalAlignmentData();
+        // computePairwiseLocalAlignmentData();  // if it does not cost too many runtime
+    }
+
+    /**
+     * Computes scores (similarities),
+     * the number of gaps, the alignment lengths
+     * and so on between all sequences.
+     */
+    function computePairwiseGlobalAlignmentData() {
+        fengDoolittleInstance.setIO(inputData, outputData);  // todo: move computePairwiseGlobalAlignmentData into multi_sequence_alignment.js
+        fengDoolittleInstance.computePairwiseData();
     }
 
     /**
@@ -111,6 +123,37 @@ $(document).ready(function () {
      * and combines both libraries to one big library (signal addition).
      */
     function computeCombinedWeightPrimaryLibrary() {
+        computePairwiseWeights();
+        //signalAddition();  // if additional pairwise does not cost too many runtime
+    }
+
+    /**
+     * Computes the sequence identity.
+     * So, how much is identical between two sequences
+     * with respect to the smaller sequence.
+     * Hint: It could be computed during computation of alignment data,
+     * but for better understanding and less code complexity
+     * everything computed in order defined in the original paper.
+     */
+    function computePairwiseWeights() {
+        for (var i = 0; i < inputData.sequences.length; i++) {
+            for (var j = 0; j < i; j++) {
+                var sequenceA = inputData.sequences[j];
+                var sequenceB = inputData.sequences[i];
+
+                var alignment = outputData.alignmentsAndScores[[sequenceA, sequenceB]];
+                var matches = getNumberOfMatches(alignment);
+            }
+        }
+    }
+
+    /**
+     * Returns the number of matches in the alignment.
+     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
+     * - The triple of strings for which the number of gaps has to be computed.
+     * @return {number} - The number of matches in the alignment.
+     */
+    function getNumberOfMatches(alignment) {
     }
 
     /**

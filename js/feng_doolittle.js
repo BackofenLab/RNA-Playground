@@ -19,7 +19,8 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("fengDoolittle", startFengDoolittle, FengDoolittle, getInput, setInput, compute, getOutput, setIO, getSuperclass);
+    namespace("fengDoolittle", startFengDoolittle, FengDoolittle, getInput, setInput, compute, computePairwiseData,
+        getOutput, setIO, getSuperclass);
 
     // instances
     var multiSequenceAlignmentInstance;
@@ -63,6 +64,7 @@ $(document).ready(function () {
 
         this.setInput = setInput;
         this.compute = compute;
+        this.computePairwiseData = computePairwiseData;
         this.getOutput = getOutput;
 
         this.setIO = setIO;
@@ -320,7 +322,7 @@ $(document).ready(function () {
 
             scoreEffective = dividend / divisor;
 
-            outputData.distances.push(Math.round(-Math.log(scoreEffective)));  // natural logarithm
+            outputData.distances.push(-Math.log(scoreEffective));  // natural logarithm
         }
     }
 

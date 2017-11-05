@@ -118,7 +118,7 @@ Author: Alexander Mattheis
                 </label>
             </div>
 
-            <div class="colW175">
+            <div class="colW225">
                 <input class="sequence" data-bind="value: $data" placeholder="EXAMPLE 'ATC'" type="text">
 
                 <!-- ko if: $index() == $root.input.clusterNames().length-1 -->
@@ -355,13 +355,13 @@ Author: Alexander Mattheis
                 </thead>
 
                 <tbody>
-					<!-- ko foreach: $root.output.distanceMatrix()[0]--> <!-- to get i-indexes = $parentContext.$index() -->
+					<!-- ko foreach: $root.output.distanceMatrices()[0][0]--> <!-- to get i-indexes = $parentContext.$index() -->
 						<tr>
                             <th data-bind="drawChar: [$root.output.remainingClusters()[0][$index()], undefined]"></th>
 
-                            <!-- ko foreach: $root.output.distanceMatrix()[0] --> <!-- to get j-indexes = $index() -->
+                            <!-- ko foreach: $root.output.distanceMatrices()[0][0] --> <!-- to get j-indexes = $index() -->
                                 <td class="non_selectable_entry"
-                                    data-bind="text: $root.output.distanceMatrix()[$parentContext.$index()][$index()]"></td>
+                                    data-bind="text: $root.output.distanceMatrices()[0][$parentContext.$index()][$index()]"></td>
                             <!-- /ko -->
 						</tr>
                     <!-- /ko -->

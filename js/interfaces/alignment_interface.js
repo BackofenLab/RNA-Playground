@@ -161,7 +161,7 @@ Author: Alexander Mattheis
 
         } else if (outputData.distanceMatrices !== undefined) {  // if Feng-Doolittle or UPGMA
             // iterate over each distance matrix
-            for (var k = 1; k < outputData.distanceMatrices.length; k++) {  // k=1: because the values of first table already rounded
+            for (var k = 0; k < outputData.distanceMatrices.length; k++) {
 
                 // iterate over each row
                 for (var i = 0; i < outputData.distanceMatrices[k].length; i++) {

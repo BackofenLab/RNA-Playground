@@ -113,7 +113,7 @@ Author: Alexander Mattheis
         algorithmInput.find(".optimization_type").on("change", functionArguments, negateOptimizationParameters);
 
         functionParameters.on("focusout keypress", removeCriticalNumbers);
-        algorithmInput.find(".sequence").on("keyup", removeNonAllowedBases);
+        algorithmInput.on("keyup", ".sequence", removeNonAllowedBases);
     }
 
     /**

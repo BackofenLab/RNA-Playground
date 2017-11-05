@@ -52,16 +52,6 @@ th {
     color: gray;
 }
 
-/* MIXED CLASS/TAG STYLING */
-div.colW175 {  /* altered from corporate-design.css */
-    width: 175px;
-    display: inline-block;
-    margin-left: 20px;
-    vertical-align:top;
-    *zoom: 1;
-    *display: inline;
-}
-
 /*---- CLASS STYLING ----*/
 .add_remove {
     height: 22px;
@@ -431,6 +421,10 @@ final_result_footer {
 .selected_very_light_red {
     background-color: #FFEFEC;
     color: white;
+}
+
+.sequence {
+    width: 200px;
 }
 
 .subresult {

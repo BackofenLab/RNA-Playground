@@ -65,12 +65,12 @@ TestCase("test_feng_doolittle", {
         assertEquals("GCC", alignmentBC[2]);
 
         // output: distances
-        assertEquals(1, outputData.distanceMatrix[["a", "b"]]);
-        assertEquals(3, outputData.distanceMatrix[["a", "c"]]);
-        assertEquals(9, outputData.distanceMatrix[["b", "c"]]);
+        assertEquals(1, Math.round(outputData.distanceMatrix[["a", "b"]]));
+        assertEquals(3, Math.round(outputData.distanceMatrix[["a", "c"]]));
+        assertEquals(9, Math.round(outputData.distanceMatrix[["b", "c"]]));
 
         // output: phylogenetic tree
-        assertEquals("(c:3,(a:0.5,b:0.5):2.5);", outputData.newickString);
+        assertEquals("(c:2.8547,(a:0.4904,b:0.4904):2.3642);", outputData.newickString);
 
         // output: final
         assertEquals(-9, outputData.score);
