@@ -325,7 +325,7 @@ Author: Alexander Mattheis
             <div id="phylogenetic_tree"></div>
         </div>
 
-        <!-- ko if: $root.output.newickString().length !== 1 -->
+        <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
             <div class="group_hint">
                 <b>Visualization done with</b> <br>
                 Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br>
@@ -335,6 +335,10 @@ Author: Alexander Mattheis
                 </a>
             </div>
         <!-- /ko -->
+
+        <div class="group_hint">
+            <b>Hint: </b> Visualization is only shown, if there are no negative distances.
+        </div>
 
         <div class="intermediate_result_header">
             <h4 class="subresult">Distance Table</h4>

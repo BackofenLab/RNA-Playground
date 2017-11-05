@@ -827,15 +827,20 @@ Author: Alexander Mattheis
      * was taken from
      * https://stackoverflow.com/questions/30667884/why-is-the-bottom-of-the-figure-cut-off
      * https://pastebin.com/9w4PXtLQ
-     * and has been optimized + commented.
+     * and has been optimized, extended and commented.
      */
     function drawTree() {
         $("#phylogenetic_tree").remove();  // remove from container
         $(".tree_container").append(PHYLOGENETIC_TREE.SVG_CANVAS);  // add again
 
-        if (visualizerInstance.output.newickString.length !== 1) {  // if there is not only a ";"
+        var newick = visualizerInstance.output.newickString;
+
+        debugger;
+        if (visualizerInstance.output.newickString.length !== 1
+            && newick.indexOf(SYMBOLS.MINUS) === -1) {  // if there is not only a ";" and if there are no negative values
+
             visualizerInstance.phylogeneticTree
-                = new Smits.PhyloCanvas(visualizerInstance.output.newickString,
+                = new Smits.PhyloCanvas(newick,
                 PHYLOGENETIC_TREE.SVG_CANVAS_NAME,
                 PHYLOGENETIC_TREE.SVG_WIDTH,
                 PHYLOGENETIC_TREE.SVG_HEIGHT);

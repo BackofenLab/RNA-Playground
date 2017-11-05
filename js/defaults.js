@@ -406,6 +406,7 @@ var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
     GAP: "_",
     G_LITTLE: "g",
     INFINITY: "∞",
+    MINUS: "-",
     NEGATIVE_INFINITY: "-∞",
     NEW_LINE: "\n",
     NONE: "#",
