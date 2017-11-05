@@ -24,7 +24,7 @@ $(document).ready(function () {
         getInput, setInput, compute, getOutput, setIO, getSuperclass);
 
     // instances
-    var alignmentInstance;
+    var multiSequenceAlignmentInstance;
     var fengDoolittleInstance;
     var gotohInstance;
     var notredameHigginsHeringaInstance;
@@ -56,7 +56,7 @@ $(document).ready(function () {
         this.type = ALGORITHMS.NOTREDAME_HIGGINS_HERINGA;
 
         // instances (do not change order)
-        alignmentInstance = new bases.alignment.Alignment(this);
+        multiSequenceAlignmentInstance = new bases.multiSequenceAlignment.MultiSequenceAlignment(this);
         fengDoolittleInstance = new fengDoolittle.FengDoolittle();
         gotohInstance = new gotoh.Gotoh();
 
@@ -85,15 +85,8 @@ $(document).ready(function () {
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
-        inputData.sequences = inputViewmodel.sequences();
-        //inputData.arrayPositionsOfRemovedSequences = getDuplicatePositions(inputData.sequences);
-
-        inputData.calculationType = inputViewmodel.calculation();
-
-        inputData.baseCosts = inputViewmodel.baseCosts();
-        inputData.enlargement = inputViewmodel.enlargement();
-        inputData.match = inputViewmodel.match();
-        inputData.mismatch = inputViewmodel.mismatch();
+        multiSequenceAlignmentInstance.setIO(inputData, {});
+        multiSequenceAlignmentInstance.setInput(inputViewmodel);
     }
 
     /**
@@ -126,6 +119,6 @@ $(document).ready(function () {
      * @return {Object} - Superclass instance.
      */
     function getSuperclass() {
-        return alignmentInstance;
+        return multiSequenceAlignmentInstance;
     }
 }());

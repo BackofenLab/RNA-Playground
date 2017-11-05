@@ -22,7 +22,7 @@ $(document).ready(function () {
     namespace("fengDoolittle", startFengDoolittle, FengDoolittle, getInput, setInput, compute, getOutput, setIO, getSuperclass);
 
     // instances
-    var alignmentInstance;
+    var multiSequenceAlignmentInstance;
     var fengDoolittleInstance;
     var gotohInstance;
 
@@ -44,8 +44,8 @@ $(document).ready(function () {
      * Extended (= affine) version of the original Feng-Doolittle approaches
      * between 1986 and 1997.
      * @constructor
-     * @augments Alignment
-     * @see: The superclass "alignmentInstance" have to be created as last instance
+     * @augments MultiSequenceAlignment
+     * @see: The superclass "multiSequenceAlignmentInstance" have to be created as last instance
      * or the childInstance in the superclass will be probably wrong!
      */
     function FengDoolittle() {
@@ -55,7 +55,7 @@ $(document).ready(function () {
         this.type = ALGORITHMS.FENG_DOOLITTLE;
 
         // instances (do not change order)
-        alignmentInstance = new bases.alignment.Alignment(this);
+        multiSequenceAlignmentInstance = new bases.multiSequenceAlignment.MultiSequenceAlignment(this);
         gotohInstance = new gotoh.Gotoh();
 
         // public class methods
@@ -83,71 +83,8 @@ $(document).ready(function () {
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
-        inputData.sequences = inputViewmodel.sequences();
-        inputData.arrayPositionsOfRemovedSequences = getDuplicatePositions(inputData.sequences);
-
-        inputData.calculationType = inputViewmodel.calculation();
-
-        inputData.baseCosts = inputViewmodel.baseCosts();
-        inputData.enlargement = inputViewmodel.enlargement();
-        inputData.match = inputViewmodel.match();
-        inputData.mismatch = inputViewmodel.mismatch();
-    }
-
-    /**
-     * Returns the non-first position of sequences which are multiple times in the sequences.
-     * @param sequences - The sequences which are checked for duplicates.
-     */
-    function getDuplicatePositions(sequences) {
-        var positions = {};
-        var duplicatePositions = [];
-        var uniqueSequences = getUniqueElements(sequences);
-
-        for (var i = 0; i < uniqueSequences.length; i++) {
-            positions[uniqueSequences[i]] = getAllPositions(uniqueSequences[i], sequences);
-
-            if (positions[uniqueSequences[i]].length > 1) {  // if a sequence contained multiple times in sequences
-                // removing first position, because it's not needed (not removed)
-                // and copy the other positions into duplicatePositions (to remove the associated sequences later)
-                var nonFirstPositions = positions[uniqueSequences[i]].slice(1);  // first position removed and rest is copied
-                duplicatePositions = duplicatePositions.concat(nonFirstPositions)
-            }
-        }
-
-        return duplicatePositions;
-    }
-
-    /**
-     * Returns unique elements.
-     * @param array {Array} - The sequence in which is counted.
-     * @return {Array} - The input array without duplicates.
-     */
-    function getUniqueElements(array) {
-        var elements = [];
-
-        for (var i = 0; i < array.length; i++) {
-            if (elements.indexOf(array[i]) === -1)
-                elements.push(array[i]);
-        }
-
-        return elements;
-    }
-
-    /**
-     * Returns all positions of a given sequence in the sequences.
-     * @param sequence {string} - The sequence to search for.
-     * @param sequences {Array} - The array of sequences in which is searched.
-     * @return {Array} - The array of all positions of the sequence in the sequence array.
-     */
-    function getAllPositions(sequence, sequences) {
-        var positions = [];
-
-        for (var i = 0; i < sequences.length; i++) {
-            if (sequence === sequences[i])
-                positions.push(i);
-        }
-
-        return positions;
+        multiSequenceAlignmentInstance.setIO(inputData, {});
+        multiSequenceAlignmentInstance.setInput(inputViewmodel);
     }
 
     /**
@@ -842,6 +779,6 @@ $(document).ready(function () {
      * @return {Object} - Superclass instance.
      */
     function getSuperclass() {
-        return alignmentInstance;
+        return multiSequenceAlignmentInstance;
     }
 }());
