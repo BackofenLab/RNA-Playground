@@ -9,6 +9,7 @@ load:
 
   - js/bases/alignment.js
   - js/bases/clustering.js
+  - js/bases/multi_sequence_alignment.js
 
   - js/formats/newick_format.js
   - js/formats/scoring_functions.js

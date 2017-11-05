@@ -93,7 +93,38 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
+        computePrimaryLibraries();
+        computeCombinedWeightPrimaryLibrary();
+        computeExtendedWeightPrimaryLibrary();
+        createProgressiveAlignment();
         return [inputData, outputData];
+    }
+
+    /**
+     * Computes the set of pairwise alignments for local and global alignments.
+     */
+    function computePrimaryLibraries() {
+    }
+
+    /**
+     * Computes the weights for both libraries
+     * and combines both libraries to one big library (signal addition).
+     */
+    function computeCombinedWeightPrimaryLibrary() {
+    }
+
+    /**
+     * The weights in the primary library are recomputed
+     * to add consistency-information.
+     */
+    function computeExtendedWeightPrimaryLibrary() {
+    }
+
+    /**
+     * Creates a progressive alignment with Feng-Doolittle
+     * and the computed, extended weight library.
+     */
+    function createProgressiveAlignment() {
     }
 
     /**
