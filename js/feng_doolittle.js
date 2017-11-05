@@ -40,7 +40,7 @@ $(document).ready(function () {
 
     /*---- ALGORITHM ----*/
     /**
-     * Computes local affine multi-alignments (non-optimal approach).
+     * Computes global affine multi-alignments (non-optimal approach).
      * Extended (= affine) version of the original Feng-Doolittle approaches
      * between 1986 and 1997.
      * @constructor

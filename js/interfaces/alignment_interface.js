@@ -127,7 +127,7 @@ Author: Alexander Mattheis
             } else if (outputData.matrix !== undefined) {  // other algorithms
                 createOutputViewmodel(algorithmName, viewmodel, outputData);
             }
-        } else {  // if multi-sequence alignment algorithm
+        } else if (MULTI_SEQUENCE_ALGORITHMS.indexOf(algorithmName) >= 0) {  // if multi-sequence alignment algorithm
             createMultiSequenceOutputViewmodel(viewmodel, outputData);
         }
     }
