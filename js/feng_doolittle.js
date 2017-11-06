@@ -24,6 +24,7 @@ $(document).ready(function () {
 
     // instances
     var multiSequenceAlignmentInstance;
+
     var fengDoolittleInstance;
     var gotohInstance;
 
@@ -46,8 +47,6 @@ $(document).ready(function () {
      * between 1986 and 1997.
      * @constructor
      * @augments MultiSequenceAlignment
-     * @see: The superclass "multiSequenceAlignmentInstance" have to be created as last instance
-     * or the childInstance in the superclass will be probably wrong!
      */
     function FengDoolittle() {
         fengDoolittleInstance = this;
@@ -109,7 +108,6 @@ $(document).ready(function () {
      */
     function computePairwiseData() {
         multiSequenceAlignmentInstance.setIO(inputData, outputData);
-        debugger;
         multiSequenceAlignmentInstance.computePairwiseData(gotohInstance);
     }
 

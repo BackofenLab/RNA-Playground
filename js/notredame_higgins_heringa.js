@@ -25,11 +25,16 @@ $(document).ready(function () {
 
     // instances
     var multiSequenceAlignmentInstance;
+
     var fengDoolittleInstance;
     var gotohInstance;
+    var gotohLocalInstance;
     var notredameHigginsHeringaInstance;
 
     // shared variables
+    var globalOutputData = {};
+    var localOutputData = {};
+
     var inputData = {};  // stores the input of the algorithm
     var outputData = {};  // stores the output of the algorithm
 
@@ -45,9 +50,7 @@ $(document).ready(function () {
     /**
      * Computes affine multi-alignments (non-optimal approach) with T-Coffee.
      * @constructor
-     * @augments Alignment
-     * @see: The superclass "alignmentInstance" have to be created as last instance
-     * or the childInstance in the superclass will be probably wrong!
+     * @augments MultiSequenceAlignment
      */
     function NotredameHigginsHeringa() {
         notredameHigginsHeringaInstance = this;
@@ -57,8 +60,10 @@ $(document).ready(function () {
 
         // instances (do not change order)
         multiSequenceAlignmentInstance = new bases.multiSequenceAlignment.MultiSequenceAlignment(this);
+
         fengDoolittleInstance = new fengDoolittle.FengDoolittle();
         gotohInstance = new gotoh.Gotoh();
+        gotohLocalInstance = new gotohLocalInstance.GotohLocal();
 
         // public class methods
         this.getInput = getInput;
@@ -114,11 +119,13 @@ $(document).ready(function () {
      * and so on between all sequences.
      */
     function computePairwiseGlobalAlignmentData() {
-        multiSequenceAlignmentInstance.setIO(inputData, outputData);
+        multiSequenceAlignmentInstance.setIO(inputData, globalOutputData);
         multiSequenceAlignmentInstance.computePairwiseData(gotohInstance);
     }
 
     function computePairwiseLocalAlignmentData() {
+        multiSequenceAlignmentInstance.setIO(inputData, localOutputData);
+        multiSequenceAlignmentInstance.computePairwiseData(gotohLocalInstance);
     }
 
     /**
@@ -126,9 +133,10 @@ $(document).ready(function () {
      * and combines both libraries to one big library (signal addition).
      */
     function computeCombinedWeightPrimaryLibrary() {
-        // conversion is directly done in the computations of pairwise weights
-        computePairwiseWeights();
-        //signalAddition();  // if additional local pairwise alignment does not cost too many runtime
+        // Hint: conversion of double sequences into alignment edges is directly done during the computations of pairwise weights
+        outputData.primaryGlobalWeightLib = computePairwiseWeights(globalOutputData);
+        outputData.primaryLocalWeightLib = computePairwiseWeights(localOutputData);
+        addSignals();
     }
 
     /**
@@ -138,21 +146,25 @@ $(document).ready(function () {
      * Hint: It could be computed during computation of alignment data,
      * but for better understanding and less code complexity
      * nearly everything computed in order defined in the original paper.
+     * @param {Object} - The output which is used to compute a primary library.
      */
-    function computePairwiseWeights() {
-        outputData.primaryWeightLib1 = {};
+    function computePairwiseWeights(output) {
+        var primaryWeightLib = {};
 
         // iterate over each sequence a and sequence b to compute structure primLib^{a,b}(i,j) = {L_{1,3}, L_{2,4}, ..., L_{5,7}}
+        // Hint: a and b are the aligned sequences
         for (var i = 0; i < inputData.sequences.length; i++) {
             for (var j = 0; j < i; j++) {
                 var sequenceA = inputData.sequences[j];
                 var sequenceB = inputData.sequences[i];
 
-                var asData = outputData.alignmentsAndScores[[sequenceA, sequenceB]];
-                var sequenceIdentities = getSequenceIdentities(asData[0]);
-                outputData.primaryWeightLib1[[sequenceA, sequenceB]] = sequenceIdentities;
+                var alignment = output.alignmentsAndScores[[sequenceA, sequenceB]][0];
+                var sequenceIdentities = getSequenceIdentities(alignment);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                primaryWeightLib[[alignment[0], alignment[2]]] = sequenceIdentities;
             }
         }
+
+        return primaryWeightLib;
     }
 
     /**
@@ -195,11 +207,19 @@ $(document).ready(function () {
     }
 
     /**
+     * The elements of both weight libraries added into one primary weight library.
+     * If the alignment [a, b] of an element L^{a,b} is contained in both libraries,
+     * then the weights of this element [a, b] retrieved in both libraries and added together.
+     */
+    function addSignals() {
+
+    }
+    
+    /**
      * The weights in the primary weight library are recomputed
      * to add consistency-information.
      */
     function computeExtendedWeightPrimaryLibrary() {
-
     }
 
     /**

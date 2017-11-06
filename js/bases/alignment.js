@@ -237,7 +237,7 @@ Author: Alexander Mattheis
                 if (alignmentInstance.stopTraceback)
                     break;
 
-                if (inputData.computeOneAlignment) // extension to speed up Feng-Doolittle
+                if (inputData.computeOneAlignment)  // extension to speed up Feng-Doolittle
                     alignmentInstance.stopTraceback = true;
 
                 path.push(neighboured[i]);
@@ -271,6 +271,8 @@ Author: Alexander Mattheis
      * @return {Array} - Array of paths.
      */
     function getLocalTraces(path, inputData, outputData, pathLength, neighbourFunction) {
+        alignmentInstance.stopTraceback = false;
+
         var paths = [];
         localTraceback(paths, path, inputData, outputData, pathLength, neighbourFunction);
         return paths;
@@ -299,6 +301,13 @@ Author: Alexander Mattheis
             if (outputData.matrix[neighboured[i].i][neighboured[i].j] === 0  // stop criteria checks
                 || (pathLength !== -1 && path.length >= pathLength)
                 || outputData.moreTracebacks) {
+
+                if (alignmentInstance.stopTraceback)
+                    break;
+
+                if (inputData.computeOneAlignment)  // extension to speed up T-Coffee's local alignment
+                    alignmentInstance.stopTraceback = true;
+
                 path.push(neighboured[i]);
 
                 // path storage, if MAX_NUMBER_TRACEBACKS is not exceeded
