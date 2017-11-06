@@ -208,13 +208,82 @@ $(document).ready(function () {
 
     /**
      * The elements of both weight libraries added into one primary weight library.
-     * If the alignment [a, b] of an element L^{a,b} is contained in both libraries,
-     * then the weights of this element [a, b] retrieved in both libraries and added together.
+     * If the key (alignment) [a, b] of an element primLib^{a,b} is present in both libraries,
+     * then the weights for this key [a, b] retrieved in both libraries and added together.
      */
     function addSignals() {
+        var globalAlignmentKeys = Object.keys(outputData.primaryGlobalWeightLib);  // global alignments {{a,b}, {a,d}, ... {d,f}}
+        var localAlignmentKeys = Object.keys(outputData.primaryLocalWeightLib);  // local alignments {{a,b}, {a,g}, ... {d,f}}
+        var commonAlignmentKeys = getCommonArguments(globalAlignmentKeys, localAlignmentKeys);  // common alignments {{a,b}, {d,f}}
 
+        // append global, non common elements into primary weight library -> primLib^{a,b} =  {L_{1,3}, L_{2,4}, ..., L_{5,7}}
+        outputData.primaryWeightLib
+            = appendToLibrary(outputData.primaryWeightLib, outputData.primaryGlobalWeightLib, globalAlignmentKeys, commonAlignmentKeys);
+
+        // append local, non common elements into primary weight library -> primLib^{a,b} = {L_{2,3}, L_{2,5}, ..., L_{5,5}}
+        outputData.primaryWeightLib
+            = appendToLibrary(outputData.primaryWeightLib, outputData.primaryLocalWeightLib, localAlignmentKeys, commonAlignmentKeys);
+
+        // append common elements into primary weight library
+        for (var i = 0; i < commonAlignmentKeys.length; i++) {
+            var globalWeights = outputData.primaryGlobalWeightLib[commonAlignmentKeys[i]];  // {L_{1,3}, L_{2,4}, ..., L_{5,7}}
+            var localWeights = outputData.primaryLocalWeightLib[commonAlignmentKeys[i]];  // {L_{2,3}, L_{2,5}, ..., L_{5,5}}
+
+            var globalWeightKeys = Object.keys(globalWeights);  // {{1,3}, {2,4}, ..., {5,7}}
+            var localWeightKeys = Object.keys(localWeights);  // {{2,3}, {2,5}, ..., {5,5}}
+            var commonWeightKeys = getCommonArguments(globalWeightKeys, localWeightKeys);  // {{3,3}, {3,5}, ..., {5,4}}
+
+            var weights = {};
+
+            // append global, non common weights
+            weights = appendToLibrary(weights, globalWeights, globalWeightKeys, commonWeightKeys);
+
+            // append local, non common weights
+            weights = appendToLibrary(weights, globalWeights, globalWeightKeys, commonWeightKeys);
+
+            // add common weights of both libraries together and append
+            for (var j = 0; j < commonWeightKeys.length; j++)
+                weights[[commonWeightKeys[j]]] = globalWeights[commonWeightKeys[j]] + localWeights[commonWeightKeys[j]];
+        }
     }
-    
+
+    /**
+     * Returns the common keys from two arrays.
+     * @param keys1 {Array} - The keys from the first structure.
+     * @param keys2 {Array} - The keys from the second structure.
+     * @return {Array} - The common keys.
+     */
+    function getCommonArguments(keys1, keys2) {
+        var commonKeys = [];
+
+        var shorterSequenceLength = keys1.length < keys2.length ? keys1.length : keys2.length;
+
+        for (var i = 0; i < shorterSequenceLength; i++) {
+            if (keys2.indexOf(keys1[i]) >= 0)  // if (key from keys1 contained in keys2)
+                commonKeys.push(keys1[i]);
+        }
+
+        return commonKeys;
+    }
+
+    /**
+     * Append elements from one structure into a second structure by using the given keys.
+     * @param libraryWriteTo {Object} - The structure in which elements are stored.
+     * @param libraryReadFrom {Object} - The structure from which elements are read.
+     * @param keys {Array} - Keys, which are read from the "readFrom"-structure.
+     * @param nonKeys {Array} - Keys of the elements, that are not written in the "WriteTo"-structure (read, but not written).
+     * @return {Object} - The structure in which elements were appended.
+     */
+    function appendToLibrary(libraryWriteTo, libraryReadFrom, keys, nonKeys) {
+        // append non common elements into libraryWriteTo
+        for (var i = 0; i < keys.length; i++) {
+            if (nonKeys.indexOf(keys[i]) === -1)  // if (not contained in nonKeys)
+                libraryWriteTo[keys[i]] = libraryReadFrom[keys[i]];
+        }
+
+        return libraryWriteTo;
+    }
+
     /**
      * The weights in the primary weight library are recomputed
      * to add consistency-information.
