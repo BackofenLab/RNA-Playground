@@ -108,155 +108,9 @@ $(document).ready(function () {
      * and so on between all sequences.
      */
     function computePairwiseData() {
-        var gotohInput = {};
-        initializeInput(gotohInput);
-
-        outputData.alignmentLengths = [];
-        outputData.alignmentsAndScores = [];
-        outputData.gapNumbers = [];
-        outputData.gapStarts = [];
-        outputData.sequencePairs = [];
-        outputData.similarities = [];
-
-        for (var i = 1; i < inputData.sequences.length; i++) {
-            if (inputData.arrayPositionsOfRemovedSequences.indexOf(i) === -1) {  // only if the sequence is not a duplicate
-                for (var j = 0; j < i; j++) {
-                    var sequenceA = inputData.sequences[j];
-                    var sequenceB = inputData.sequences[i];
-
-                    var ioData = computeGotoh(gotohInput, sequenceA, sequenceB);
-                    var alignment = getAlignment(ioData);
-
-                    outputData.alignmentsAndScores[[sequenceA, sequenceB]] = [alignment, ioData[1].score];  // for faster access
-
-                    outputData.alignmentLengths.push(getAlignmentLength(alignment));
-                    outputData.gapNumbers.push(getNumberOfGaps(alignment));
-                    outputData.gapStarts.push(getNumberOfGapsStarts(alignment));
-                    outputData.sequencePairs.push([sequenceA, sequenceB]);
-                    outputData.similarities.push(ioData[1].score);
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns the alignment given the input/output data object.
-     * @param ioData {Object} - The input/output object
-     * @return {Object} - The alignment.
-     */
-    function getAlignment(ioData) {
-        return ioData[1].alignments[0] !== undefined ? ioData[1].alignments[0] : EMPTY_ALIGNMENT;
-    }
-
-    /**
-     * Initializes the given input with the read in inputData.
-     * @param input {Object} - The input which has to be initialized.
-     */
-    function initializeInput(input) {
-        input.baseCosts = inputData.baseCosts;
-        input.enlargement = inputData.enlargement;
-        input.match = inputData.match;
-        input.mismatch = inputData.mismatch;
-
-        input.calculationType = inputData.calculationType;
-    }
-
-    /**
-     * Computes Gotoh with the given input sequences and the function.
-     * @param input {Object} - The initialized Gotoh input structure.
-     * @return {Object} - Output data of Gotoh with the given sequences in the input.
-     */
-    function computeGotoh(input, sequenceA, sequenceB) {
-        input.sequenceA = sequenceA;
-        input.sequenceB = sequenceB;
-
-        input.matrixHeight = input.sequenceB.length + 1;
-        input.matrixWidth = input.sequenceA.length + 1;
-
-        input.computeOneAlignment = true;  // speed up for Feng-Doolittle
-
-        gotohInstance.setIO(input, {});
-
-        return gotohInstance.compute();
-    }
-
-
-    /**
-     * Computes the length of the alignment.
-     * Hint: The alignment length can be defined differently.
-     * It does not make sense to define it like in the AEP algorithm
-     * as the number of characters of both aligned sequences (without gaps),
-     * because here global alignments are used (GOTOH) and so the alignment length would be
-     * always the length of both sequences (what does not make sense to call it then alignment length).
-     * So, here the MSA-length definition used (Feng-Doolittle is a MSA algorithm):
-     * length is the number of columns in the global alignment of the sequences.
-     * Hint 2: Verified with original paper.
-     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
-     * - The triple of strings for which the length has to be computed.
-     * @see: https://doi.org/10.1016/S0076-6879(96)66023-6
-     * Feng, Da-Fei, and Russell F. Doolittle.
-     * "[21] Progressive alignment of amino acid sequences and construction of phylogenetic trees from them."
-     * Methods in enzymology 266 (1996): 368-382.
-     * @return {number} - The length of the alignment.
-     */
-    function getAlignmentLength(alignment) {
-        return alignment[0].length;
-    }
-
-    /**
-     * Returns the number of gaps in the alignment.
-     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
-     * - The triple of strings for which the number of gaps has to be computed.
-     * @return {number} - The number of gaps in the alignment.
-     */
-    function getNumberOfGaps(alignment) {
-        return countNumberOfGaps(alignment[0]) + countNumberOfGaps(alignment[2]);
-    }
-
-    /**
-     * Counts the number of gaps in the given sequence.
-     * @param sequence {string} - The sequence for which the number of gaps has to be counted.
-     * @return {number} - The number of gaps.
-     */
-    function countNumberOfGaps(sequence) {
-        var numGaps = 0;
-
-        for (var i = 0; i < sequence.length; i++) {
-            if (sequence[i] === SYMBOLS.GAP)
-                numGaps++;
-        }
-
-        return numGaps;
-    }
-
-    /**
-     * Returns the number of gap starts in the alignment.
-     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
-     * - The triple of strings for which the number of gaps has to be computed.
-     * @return {number} - The number of gaps in the alignment.
-     */
-    function getNumberOfGapsStarts(alignment) {
-        return countNumberOfGapsStarts(alignment[0]) + countNumberOfGapsStarts(alignment[2]);
-    }
-
-    /**
-     * Counts the number of gap starts in the given sequence.
-     * @param sequence {string} - The sequence for which the number of gaps has to be counted.
-     * @return {number} - The number of gaps.
-     */
-    function countNumberOfGapsStarts(sequence) {
-        var numGapsStarts = 0;
-
-        for (var i = 0; i < sequence.length; i++) {
-            if (sequence[i] === SYMBOLS.GAP) {
-                numGapsStarts++;
-
-                while (sequence[i] === SYMBOLS.GAP && i < sequence.length)  // iterate to the gap end
-                    i++;
-            }
-        }
-
-        return numGapsStarts;
+        multiSequenceAlignmentInstance.setIO(inputData, outputData);
+        debugger;
+        multiSequenceAlignmentInstance.computePairwiseData(gotohInstance);
     }
 
     /**
@@ -661,8 +515,8 @@ $(document).ready(function () {
             return alignmentAndScore;
 
         var input = {};
-        initializeInput(input);
-        var ioData = computeGotoh(input, sequence1, sequence2);
+        multiSequenceAlignmentInstance.initializeInput(input);
+        var ioData = multiSequenceAlignmentInstance.computeWithAlgorithm(gotohInstance, input, sequence1, sequence2);
 
         return [ioData[1].alignments[0], ioData[1].score];
     }

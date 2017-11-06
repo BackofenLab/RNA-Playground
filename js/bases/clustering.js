@@ -74,6 +74,7 @@ Author: Alexander Mattheis
             computeDistances(subtree, i, numOfIterations);
         }
 
+        getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
         outputData.newickString = formats.newickFormat.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
         return [inputData, outputData];
@@ -325,10 +326,8 @@ Author: Alexander Mattheis
         childInstance.computeDistances(subtree);
         clusteringInstance.remainingClusterNames.push(subtree.name);
 
-        if (iteration === maxNumIterations-1) {
+        if (iteration === maxNumIterations-1)
             subtree.value = 0;
-            getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
-        }
 
         outputData.remainingClusters.push(jQuery.extend(true, [], clusteringInstance.remainingClusterNames));  // for visualization
     }

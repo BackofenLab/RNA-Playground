@@ -105,7 +105,7 @@ $(document).ready(function () {
      */
     function computePrimaryLibraries() {
         computePairwiseGlobalAlignmentData();
-        // computePairwiseLocalAlignmentData();  // if it does not cost too many runtime
+        computePairwiseLocalAlignmentData();
     }
 
     /**
@@ -114,8 +114,11 @@ $(document).ready(function () {
      * and so on between all sequences.
      */
     function computePairwiseGlobalAlignmentData() {
-        fengDoolittleInstance.setIO(inputData, outputData);  // todo: move computePairwiseGlobalAlignmentData into multi_sequence_alignment.js
-        fengDoolittleInstance.computePairwiseData();
+        multiSequenceAlignmentInstance.setIO(inputData, outputData);
+        multiSequenceAlignmentInstance.computePairwiseData(gotohInstance);
+    }
+
+    function computePairwiseLocalAlignmentData() {
     }
 
     /**
@@ -137,7 +140,7 @@ $(document).ready(function () {
      * nearly everything computed in order defined in the original paper.
      */
     function computePairwiseWeights() {
-        var primaryLib = {};
+        outputData.primaryWeightLib1 = {};
 
         // iterate over each sequence a and sequence b to compute structure primLib^{a,b}(i,j) = {L_{1,3}, L_{2,4}, ..., L_{5,7}}
         for (var i = 0; i < inputData.sequences.length; i++) {
@@ -147,7 +150,7 @@ $(document).ready(function () {
 
                 var asData = outputData.alignmentsAndScores[[sequenceA, sequenceB]];
                 var sequenceIdentities = getSequenceIdentities(asData[0]);
-                primaryLib[[sequenceA, sequenceB]] = sequenceIdentities;
+                outputData.primaryWeightLib1[[sequenceA, sequenceB]] = sequenceIdentities;
             }
         }
     }
@@ -192,10 +195,11 @@ $(document).ready(function () {
     }
 
     /**
-     * The weights in the primary library are recomputed
+     * The weights in the primary weight library are recomputed
      * to add consistency-information.
      */
     function computeExtendedWeightPrimaryLibrary() {
+
     }
 
     /**
