@@ -1,0 +1,348 @@
+/*
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Author: Alexander Mattheis
+*/
+
+/* HINT: alphabetically ordered (also within definitions) */
+
+/*---- TAG STYLING ----*/
+form input {
+    user-focus: ignore;
+}
+
+input[type="text"] {
+    text-transform: uppercase;
+}
+
+input[type="number"] {
+    width: 35px;
+}
+
+small {
+    font-weight: normal;
+}
+
+table {
+    border-collapse: collapse;
+    display: inline-block;
+    text-align: center;
+}
+
+/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
+td {
+    /*
+    bug fix for Firefox and Microsoft Browsers:
+    https://bugzilla.mozilla.org/show_bug.cgi?id=688556
+    https://bugzilla.mozilla.org/show_bug.cgi?id=995263
+    https://stackoverflow.com/questions/7517127/
+    borders-not-shown-in-firefox-with-border-collapse-on-table-position-relative-o
+    */
+    background-clip: padding-box;
+    background-color: #FCFCFB;
+    border: 1px solid #a0a0a0;
+    color: gray;
+}
+
+/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
+th {
+    background-color: #F3F4F1;
+    border: 1px solid #a0a0a0;
+    color: gray;
+}
+
+/*---- CLASS STYLING ----*/
+.ancillary_output {
+    clear: left;
+    float: left;
+}
+
+/* HINT: to avoid errors all pictures have to be imported as classes whether they are unique */
+.arrows_d, .arrows_l, .arrows_t {
+    background: url(../inner_sprites.png) no-repeat;
+}
+
+.arrows_d, .arrows_l, .arrows_t {
+    height: 32px;
+    left: -10px;
+    pointer-events: none; /* shouldn't work on IE lower 11 */
+    position: absolute;
+    top: -8px;
+    width: 42px;
+}
+
+.arrows_d { /* diagonal */
+    background-position: 0px 0px;
+}
+
+.arrows_l { /* left */
+    background-position: 0px -38px;
+}
+
+.arrows_t { /* top */
+    background-position: 0px -73px;
+}
+
+.calculation, .calculation_horizontal, .calculation_vertical,
+.calculation_1, .calculation_2, .calculation_3, .calculation_4, .calculation_5 {
+    border: solid 1px #a0a0a0;
+    border-spacing: 0;
+    border-width: 0 1px 0 0;
+}
+
+/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
+.calculation td, .calculation th,
+.calculation_horizontal td, .calculation_horizontal th,
+.calculation_vertical td, .calculation_vertical th,
+.calculation_1 td, .calculation_1 th,
+.calculation_2 td, .calculation_2 th,
+.calculation_3 td, .calculation_3 th,
+.calculation_4 td, .calculation_4 th,
+.calculation_5 td, .calculation_5 th
+{
+    border: solid 1px #a0a0a0;
+    border-width: 1px 0 1px 1px;
+    /*
+    min- and max values avoid cell shrinking when the table is growing
+     */
+    height: 24px;
+    max-height: 24px;
+    max-width: 32px;
+    min-height: 24px;
+    min-width: 32px;
+    width: 32px;
+}
+
+.download_area {
+    clear: both;
+    line-height: 140%;
+    padding-top: 10px;
+}
+
+.entry {
+    border-bottom: 0;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
+}
+
+.entry_start {
+    border-bottom: 1px;
+    border-top: 0;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
+}
+
+.group_hint {
+    color: gray;
+    font-size: smaller;
+    padding-top: 10px;
+}
+
+.group input {
+    margin-left: 5px;
+    margin-right: 15px;
+}
+
+.hint {
+    border-width: 1px;
+    padding-left: 8px;
+    text-align: left;
+}
+
+.iteration {
+    clear: both;
+    padding-bottom: 30px;
+}
+
+.iteration_footer {
+    background-color: #ebebeb; /* Uni-Freiburg standard */
+    clear: both;
+    font-size: smaller;
+    padding: 5px;
+}
+
+.iteration_header h4 {
+    background-color: #ebebeb; /* Uni-Freiburg standard */
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.main_output {
+    max-width: 600px;
+    overflow: auto;
+}
+
+.non_selectable_entry {
+    border-bottom: 0;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
+}
+
+.outcome {
+    display: inline-block;
+    padding-left: 30px;
+}
+
+.output {
+    float: left;
+}
+
+.parameters {
+    line-height: 180%;
+    padding-bottom: 30px;
+}
+
+.results {
+    border: none;
+    clear: left;
+    float: left;
+    max-height: 200px;
+    max-width: 160px;
+    overflow-y: scroll;
+    vertical-align: top;
+}
+
+.results td, .results th {
+    border-left: none;
+    border-right: none; /* other possibilities does not look bug-like on tablets/smartphone browsers */
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 150px;
+}
+
+.results_footer {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+.results_footer td, .results_footer th,
+.results_header td, .results_header th {
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 150px;
+}
+
+.results_header {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+.results_with_scrollbar {
+    border-left: 1px solid #a0a0a0;
+    border-right: 1px solid #a0a0a0;
+    clear: left;
+    float: left;
+    width: 161px;
+}
+
+.selectable_entry {
+    border-bottom: 0;
+    cursor: pointer;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
+}
+
+.selectable_entry_start {
+    border-bottom: 1px;
+    border-top: 0;
+    cursor: pointer;
+    font-family: serif;
+    font-size: 1.1em;
+    position: relative;
+}
+
+.selected {
+    background-color: #5582BC; /* Uni-Freiburg Logo blue */
+    color: white;
+}
+
+.selected_green {
+    background-color: #9ACD32;
+    color: white;
+}
+
+.selected_light_red {
+    background-color: #F5CAD1;
+    color: white;
+}
+
+.selected_red {
+    background-color: #E9909F;
+    color: white;
+}
+
+.selected_very_light_red {
+    background-color: #FFEFEC;
+    color: white;
+}
+
+/*---- ID STYLING ----*/
+#algorithm_description .description {
+    display: inline-block;
+    line-height: 140%;
+    vertical-align: top;
+    width: 600px;
+}
+
+#algorithm_description .picture {
+    display: inline-block;
+    margin-left: 30px;
+    width: 150px;
+}
+
+#algorithm_input {
+    margin: 15px 0 15px 15px;
+}
+
+#algorithm_output {
+    margin-bottom: 15px;
+}
+
+#length {
+    width: 55px;
+}
+
+#overlay {
+    pointer-events: none;
+    position: absolute;
+    z-index: 4;
+}
+
+#page_contents {
+    background-color: #F2F3F1; /* Uni-Freiburg standard */
+    border-radius: 4px 4px 0 0;
+    margin: 50px auto; /* centering website */
+    min-height: 1500px; /* Uni-Freiburg standard */
+    overflow: auto;
+    padding-bottom: 30px;
+    text-align: justify;
+    width: 880px; /* Uni-Freiburg standard */
+}
+
+/*---- BROWSER SPECIFIC ----*/
+/* Microsoft */
+_:-ms-lang(x), _:-webkit-full-screen, input[type="number"]:focus {
+    outline: black solid 1px;
+}
+
+_:-ms-lang(x), _:-webkit-full-screen, input[type="text"]:focus {
+    outline: black solid 1px;
+}
+
+/* Mozilla */
+_:-moz-tree-row(hover), input[type="number"]:focus {
+    outline: black solid 1px;
+}
+
+_:-moz-tree-row(hover), input[type="text"]:focus {
+    outline: black solid 1px;
+}

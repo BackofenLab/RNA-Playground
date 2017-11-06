@@ -11,9 +11,9 @@
 			Here, we provide a simplified version of the approach using a
 			Nussinov-like energy scoring scheme, i.e. each base pair of a structure
 			contributes a fixed energy term $E_{bp}$ independent of its context. Given this,
-			we populate two dynamic programming tables $Q$ and $Q^{b}$. $Q_{i,j}$ provides
+			we populate two dynamic programming tables $Q$ and $Q^{bp}$. $Q_{i,j}$ provides
 			the partition function for subsequence from position $i$ to $j$, while
-			$Q^{b}_{i,j}$ holds the partition function of the subsequence 
+			$Q^{bp}_{i,j}$ holds the partition function of the subsequence 
 			given the constraint that position $i$ and $j$ form a base pair 
 			(or 0 if no base pair is possible).
 			Watson-Crick as well as GU base	pairs are considered complementary.
@@ -85,7 +85,7 @@
     
 		<h2>Partition functions</h2>
 
-        <div>The following recursions are used to compute the partition functions $Q$ and $Q^{b}$.</div>
+        <div>The following recursions are used to compute the partition functions $Q$ and $Q^{bp}$.</div>
 
         <div id="rec_id_0" data-bind="text: latex()[0]"></div>
 
@@ -115,7 +115,7 @@
         <table id="matrixQb">
             <thead>
             <tr>
-                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$Q^{b}$</th>
+                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$Q^{bp}$</th>
                 <th class="cell_count"></th>
                 <!-- ko foreach: { data: seqList, as: 'base' } -->
                 <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
@@ -137,7 +137,7 @@
 		<h2>Base pair probabilities</h2>
 		
 		<div>
-			Given the partition functions $Q$ and $Q^{b}$ we can now compute the
+			Given the partition functions $Q$ and $Q^{bp}$ we can now compute the
 			probabilities of individual base pairs $(i,j)$ within the structure
 			ensemble, i.e. $P^{bp}_{i,j} = \sum_{P \ni (i,j)} \exp(-E(P)/RT) / Z$ given by 
 			the sum of the Boltzmann probabilities of all structures that contain the
@@ -176,7 +176,7 @@
         <div><a href="javascript:generate_tables()">Download Tables</a></div>
 
 		<div>
-			The base pair probabilities can be visualized by a dotplot, where 
+			The base pair probabilities $P^{bp}$ can be visualized by a dotplot, where 
 			larger dots represent higher probabilities.
 		</div>
 
@@ -223,7 +223,7 @@
         <div><a href="javascript:generate_tables()">Download Tables</a></div>
 
 		<div>
-			The probabilities of subsequences to be unpaired can be visualized by a dotplot, where 
+			The probabilities of subsequences to be unpaired $P^{u}$ can be visualized by a dotplot, where 
 			larger dots represent higher probabilities.
 		</div>
 

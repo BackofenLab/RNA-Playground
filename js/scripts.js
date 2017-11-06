@@ -72,7 +72,7 @@ function matrixToCSV(sequence, matrices) {
             res += "," + sequence[j];
         }
         res += "\n";
-        for (var i = 1; i < matrix.cells.length; ++i) {
+        for (var i = 1, mat_cells_len = matrix.cells.length; i < mat_cells_len; ++i) {
             if (sequence_column && i > 0)
                 res += sequence[i - 1];
 
@@ -80,8 +80,9 @@ function matrixToCSV(sequence, matrices) {
             for (var j in matrix.cells[i]) {
                 if (sequence_column || j > 0)
                     res += ",";
-                if (!isNaN(matrix.cells[i][j].value) && matrix.cells[i][j].value != null)
-                    res += matrix.cells[i][j].value;
+                var mat_cell_value = matrix.cells[i][j].value;
+                if (!isNaN(mat_cell_value) && mat_cell_value != null)
+                    res += mat_cell_value;
             }
             res += "\n";
         }
@@ -91,19 +92,23 @@ function matrixToCSV(sequence, matrices) {
     return res;
 }
 
+/*
+ #######################--- END Download Tables ---############################
+ */
 
+
+
+/*
+ #######################--- BEGIN interaction visualization ---############################
+ */
 
 function allor3dots(str) {
-    if (10 < str.length) {
-        return str.substr(0, 3) + "..." + str.substr(str.length - 4);
-    } else {
-        return str;
-    }
+    return ( 10 < str.length ? ( str.substr( 0, 3 ) + "..." + str.substr( str.length - 4 ) ) : str );
 }
 
 function repres(res) {
     ret = "";
-    for (var i = 0; i < res.length; ++i) {
+    for (var i = 0, res_len = res.length; i < res_len; ++i) {
         ret += "\t";
         for (var j in res[i]) {
             ret += res[i][j];
@@ -250,7 +255,7 @@ function visualize4d(str1, str2, ps) {
 
 
 /*
- #######################--- END Download Tables ---############################
+ #######################--- END interaction visualization ---############################
  */
 
 /*
@@ -293,21 +298,33 @@ function hidetext() {
         .attr("display","none")
 }
 
-function dotplot(sequence, table, pname) {
+function dotplot(sequence, table, pname, use_log_value) {
     //console.log('hi', sequence, table, pname);
     var maindic = {};
-
-
+    
     var bpp = [];
     var mlp = [];
     var keys=["source","target","value"];
 
+    var maxV = 0.001;
+
+    if (use_log_value) {
+        for (var i = 1; i < table.length; i++) {
+            for (var j = 1; j < table[i].length; j++) {
+                maxV = Math.max(maxV, table[i][j].logValue);
+            }
+        }
+    }
     for(var i=1; i<table.length; i++){
         for(var j=1; j<table[i].length; j++){
             var a = table[i][j].i;
             var b = table[i][j].j;
             //var c = Math.pow(parseFloat(table[i][j].value), 0.5);
             var c = parseFloat(table[i][j].value);
+            //console.log(table[i][j].value, table[i][j].logValue);
+            if (use_log_value) {
+                c = parseFloat(table[i][j].logValue);
+            }
             c = parseFloat(c.toFixed(3));
             var roww = {};
             roww[keys[0]]=a;
@@ -338,22 +355,6 @@ function dotplot(sequence, table, pname) {
 
     //var svg = d3.select("#output").append("svg")
     var dev = document.createElement("div");
-    var desc = d3.select(dev).append("div").style("margin-top", 40 + "px").style("font-size", "120%");
-
-
-    if (pname === "pd") {
-        desc.text("Dotplot for paired base pair probabilities");
-    } else
-    if (pname === "ud") {
-        desc.text("Dotplot for unpaired probabilities");
-    }
-
-    if (pname === "up1") {
-        desc.text("Dotplot for unpaired probabilities of $S^1$");
-    } else
-    if (pname === "up2") {
-        desc.text("Dotplot for unpaired probabilities of $S^2$");
-    }
     var svg = d3.select(dev).append("svg")
         .attr("id", pname)
         .attr("width", width + margin.left + margin.right)
@@ -454,7 +455,7 @@ function dotplot(sequence, table, pname) {
             .attr("cy", 26)
             //.attr("width", function(d) {return x.rangeBand() * Math.pow(z(d.z), 0.5);})
             //.attr("height", function(d) {return x.rangeBand() * Math.pow(z(d.z), 0.5);})
-            .attr("r", function(d) { return 0.9*x.rangeBand() * Math.pow(z(d.z), 0.5)/2;})
+            .attr("r", function(d) { return use_log_value ? (0.9*x.rangeBand() * Math.pow(z(d.z / (maxV + 0.01)), 0.5)/2) : (0.9*x.rangeBand() * Math.pow(z(d.z), 0.5)/2);})
             //.attr("ry", function(d) { return x.rangeBand() * Math.pow(z(d.z), 0.5);})
             //.attr("border", "1px solid red")
             //.style("stroke", "rgb(0, 165, 255)")

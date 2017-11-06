@@ -295,7 +295,7 @@ var NussinovMatrix4d = {
      */
     computeAllCells: function() {
         for (var i = 0; i <= this.seq1_length; ++i) {
-            for (var k = 0; k<= this.seq1_length; ++k) {
+            for (var k = 0; k <= this.seq1_length; ++k) {
                 for (var j = 0; j <= this.seq2_length; ++j) {
                     for (var l = 0; l <= this.seq2_length; ++l) {
                         this.getCell(i, k, j, l);
@@ -343,11 +343,15 @@ var NussinovMatrix4d = {
      */
     conv_str: function(P) {
         var str = "";
-        for (var l = 0; l < this.seq1_length + this.seq2_length + 1 + this.minLoopLength; l++) {
+        for (var l = 0; l < this.seq1_length + this.seq2_length + this.minLoopLength + 1; l++) {
             str += ".";
         }
         //str[this.seq1_length] = 'X';
-        str = str.substr(0, this.seq1_length) + "X" + str.substr(this.seq1_length + 1);
+        var linked = "";
+        for (var i = 0; i <= this.minLoopLength; ++i) {
+            linked += "X";
+        }
+        str = str.substr(0, this.seq1_length) + linked + str.substr(this.seq1_length + this.minLoopLength + 1);
         for (var indx in P) {
             var i = P[indx][0], j = P[indx][1];
             //str[i - 1] = '(';
@@ -369,7 +373,7 @@ var NussinovMatrix4d = {
             for (var k = i; k <= this.seq1_length; ++k)
                 for (var j = 0; j <= this.seq2_length; ++j)
                     for (var l = j; l <= this.seq2_length; ++l)
-                        if (this.getValue(i, k, j, l) != null && Math.abs(this.getValue(i, k, j, l)) > 1e-5 ) {
+                        if (this.getValue(i, k, j, l) != null && this.getCell(i, k, j, l).traces.length > 0) {
                             res += JSON.stringify(this.getCell(i, k, j, l)) + "\n";
                         }
 
@@ -380,10 +384,10 @@ var NussinovMatrix4d = {
 
 var DPAlgorithm_hybrid = Object.create(DPAlgorithm);
 
-DPAlgorithm_hybrid.Description = "hybrid-only optimization";
+DPAlgorithm_hybrid.Description = "hybrid-only interaction prediction";
 DPAlgorithm_hybrid.Tables = new Array();
 DPAlgorithm_hybrid.Tables.push(Object.create(NussinovMatrix4d));
-DPAlgorithm_hybrid.Tables[0].latex_representation = "D^{i, k}_{j, l} = \\max \\begin{cases} 1 & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i = k, j = l \\\\ \\max_{\\substack{i<p\\leq k\\\\j<q\\leq l}}\\left( 1 + D_{q, l}^{p, k} \\right) & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases}";
+DPAlgorithm_hybrid.Tables[0].latex_representation = "D^{i, k}_{j, l} = \\max \\begin{cases} 1 & \\text{if } S^1_i, \\overleftarrow{S^2_j}  \\text{ compl.}, i = k, j = l \\\\ \\max_{\\substack{i<p\\leq k,\\;j<q\\leq l\\\\S^1_p, \\overleftarrow{S^2_q}  \\text{ compl.}}}\\left( 1 + D_{q, l}^{p, k} \\right) & \\text{if } S^1_i, \\overleftarrow{S^2_j}  \\text{ compl.}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases}";
 //DPAlgorithm_hybrid.Tables[0].latex_representation = "\\begin{array} \\ D^{i, k}_{j, l} = \\max \\begin{cases} E^{init}(i, j) & S^1_i, S^2_j  \\text{  pairs}, i = k, j = l \\\\ \\max_{p,q}{ E^{loop}(i, j, p, q) + D_{q, l}^{p, k} } & S^1_i, S^2_j  \\text{  pairs}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ E^{init} = 1 \\\\ \\\\ E^{loop}_{i, j, p, q} =  \\begin{cases} 1 & \\text{if }S^1_p, S^2_q  \\text{  pairs} \\\\ 0 & \\text{otherwise} \\end{cases} \\end{array}";
 
 DPAlgorithm_hybrid.Tables[0].computeCell = function(i, k, j, l) {
@@ -416,7 +420,7 @@ DPAlgorithm_hybrid.Tables[0].computeCell = function(i, k, j, l) {
 DPAlgorithm_hybrid.computeMatrix = function(input) {
     var splitSeq = input.sequence().indexOf('X');
     var sequence1 = input.sequence().substr(0, splitSeq);
-    var sequence2 = input.sequence().substr(parseInt(input.loopLength()) + splitSeq + 1);//split("").reverse().join("");
+    var sequence2 = input.sequence().substr(parseInt(input.loopLength()) + splitSeq + 1);
 
     this.Tables[0].init(sequence1, sequence2, "RNAHybrid");
     this.Tables[0].minLoopLength = parseInt(input.loopLength());
@@ -432,13 +436,13 @@ DPAlgorithm_hybrid.computeMatrix = function(input) {
 
 var DPAlgorithm_rnaup = Object.create(DPAlgorithm);
 
-DPAlgorithm_rnaup.Description = "RNA to RNA matching";
+DPAlgorithm_rnaup.Description = "accessibility-based RNA-RNA interaction prediction";
 DPAlgorithm_rnaup.Tables = new Array();
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix4d));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_rnaup.Tables.push(Object.create(NussinovMatrix));
 
-DPAlgorithm_rnaup.Tables[0].latex_representation = "\\begin{array}\\ I^{i, k}_{j, l} &=& \\min \\begin{cases} E_{bp} \\cdot D_{i, k}^{j, l} - RT \\cdot \\log(P^{u1}_{i,k}\\cdot P^{u2}_{j, l}) &\\text{if } D_{i, k}^{j, l} \\neq 0 \\\\ 0 \\end{cases} \\\\ \\\\ D^{i, k}_{j, l} &=& \\max \\begin{cases} 1 & \\text{if } S^1_i, S^2_j  \\text{ compl. base pair}, i = k, j = l \\\\ \\max_{\\substack{i<p\\leq k\\\\j<q\\leq l}}\\left( 1 + D_{q, l}^{p, k} \\right) & \\text{if } S^1_i, S^2_j \\text{ compl. base pair}, i < k, j < l\\\\ 0 & \\text{otherwise} \\end{cases} \\\\ \\\\ P^{u1}_{i,k} &=& P^{u}_{i,k}\\text{ of } S^1,\\quad\\quad\\quad P^{u2}_{j, l} \\;=\\; P^{u}_{j, l}\\text{ of } S^2 \\end{array}";
+DPAlgorithm_rnaup.Tables[0].latex_representation = "\\begin{array}\\ I^{i, k}_{j, l} &=& \\max \\begin{cases} - (E^{bp}\\cdot D^{i, k}_{j, l} +ED^{1}_{i,k} +ED^{2}_{j, l}) &\\text{if } D^{i, k}_{j, l} > 0 \\\\ -\\infty & \\text{otherwise} \\end{cases} \\\\ \\\\ D^{i, k}_{j, l} &=& \\max \\begin{cases} 1 & \\text{if } S^1_i, \\overleftarrow{S_j^2} \\text{ compl.}, i = k, j = l \\\\ \\underset{\\substack{i<p\\leq k,\\;j<q\\leq l}}{\\max}\\left( 1 + D_{q, l}^{p, k} \\right) & \\text{if } S^1_i, \\overleftarrow{S^2_j} \\text{ compl.}, i < k, j < l\\\\ -\\infty & \\text{otherwise} \\end{cases} \\\\ \\\\ ED^{1}_{i,k} &=& - RT \\cdot \\log(P^{u1}_{i,k}),\\quad\\quad\\quad ED^{2}_{j, l} \\;=\\; - RT \\cdot \\log(P^{u2}_{j, l}) \\end{array}";
 
 
 DPAlgorithm_rnaup.Tables[0].computeCell = function(i, k, j, l) {
@@ -448,12 +452,13 @@ DPAlgorithm_rnaup.Tables[0].computeCell = function(i, k, j, l) {
     if (this.isInvalidState(i, k, j, l)) {
         return curCell;
     }
-    // I[i1,j1,i2,j2] = Ebp*H[i1,j1,i2,j2] -RT*ln(P^u_1) -RT*ln(P^u_2)
     if (DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) == 0) {
         return curCell;
     }
     var logP = Math.log(DPAlgorithm_rnaup.Tables[1].getValue(i, k)) + Math.log(DPAlgorithm_rnaup.Tables[2].getValue(j, l));
 
+    // I[i,k,j,l] = Ebp*H[i,k,j,l] -RT*ln(P^u_1[i,k]) -RT*ln(reverseP^u_2[j,l])
+    // negate value for generic maximization optimization
     curCell.value = - (this.energy * DPAlgorithm_hybrid.Tables[0].getValue(i, k, j, l) - this.energy_normal * logP);
     curCell.traces = DPAlgorithm_hybrid.Tables[0].getCell(i, k, j, l).traces;
     return curCell;
@@ -473,14 +478,13 @@ DPAlgorithm_rnaup.computeMatrix = function(input) {
     this.Tables[1].getCell = NussinovDPAlgorithm_McCaskill.Tables[3].getCell;
     this.Tables[1].getValue = NussinovDPAlgorithm_McCaskill.Tables[3].getValue;
     this.Tables[1].isInvalidState = NussinovDPAlgorithm_McCaskill.Tables[3].isInvalidState;
-    
+
     NussinovDPAlgorithm_McCaskill.computeMatrix({sequence: function(){return sequence2;}, loopLength: input.loopLength, energy: input.energy, energy_normal: input.energy_normal});
     this.Tables[2] = JSON.parse(JSON.stringify(NussinovDPAlgorithm_McCaskill.Tables[3]));
     this.Tables[2].getRecursionInLatex = NussinovDPAlgorithm_McCaskill.Tables[3].getRecursionInLatex;
     this.Tables[2].getCell = NussinovDPAlgorithm_McCaskill.Tables[3].getCell;
     this.Tables[2].getValue = NussinovDPAlgorithm_McCaskill.Tables[3].getValue;
     this.Tables[2].isInvalidState = NussinovDPAlgorithm_McCaskill.Tables[3].isInvalidState;
-    
     
     this.Tables[0].init(sequence1, sequence2, "RNAup");
     this.Tables[0].minLoopLength = parseInt(input.loopLength());
@@ -502,6 +506,7 @@ var wuchty4d = function (xmat, maxSOS) {
     //console.log("wuchty4d");
     var sigma_0 = [];
     var NMax = 0;
+    //console.log(xmat.seq1_length, xmat.seq2_length);
     for (var i = 0; i <= xmat.seq1_length; ++i) {
         for (var k = i; k <= xmat.seq1_length; ++k) {
             for (var j = 0; j <= xmat.seq2_length; ++j) {
@@ -517,6 +522,8 @@ var wuchty4d = function (xmat, maxSOS) {
             }
         }
     }
+    //console.log(NMax);
+    //console.log(sigma_0);
     var SOS = [];
     var loop = 0;
     for (var sig = 0; sig < sigma_0.length; ++sig) {
@@ -536,7 +543,7 @@ var wuchty4d = function (xmat, maxSOS) {
                 if (!xmat.isInvalidState(sigma[s][0], sigma[s][1], sigma[s][2], sigma[s][3])) sigma_remaining++;
             }
             if (sigma.length == 0 || sigma_remaining == 0) {
-                var temp_sos = {structure: xmat.conv_str(P), traces: traces, rep4d: repres(visualize4d(xmat.sequence1, xmat.sequence2, P))};
+                var temp_sos = {value: NMax, structure: xmat.conv_str(P), traces: traces, rep4d: repres(visualize4d(xmat.sequence1, xmat.sequence2, P))};
                 //console.log("P", JSON.stringify(P), JSON.stringify(xmat.conv_str(P)));
                 SOS.push(temp_sos);
 

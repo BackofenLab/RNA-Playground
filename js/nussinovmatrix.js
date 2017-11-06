@@ -60,6 +60,8 @@ var NussinovCell = {
 // value
     value: null,
 
+    logValue: null,
+
 // traces for the current value
     traces: null,
 
@@ -76,6 +78,7 @@ var NussinovCell = {
         this.j = j;
         this.value = value;
         this.traces = [];
+        this.logValue = null;
         // this access for chaining
         return this;
     }
@@ -543,7 +546,7 @@ var NussinovDPAlgorithm_Ambiguous = Object.create(DPAlgorithm);
 NussinovDPAlgorithm_Ambiguous.Description = "Ambiguous recursion";
 NussinovDPAlgorithm_Ambiguous.Tables = new Array();
 NussinovDPAlgorithm_Ambiguous.Tables.push(Object.create(NussinovMatrix));
-NussinovDPAlgorithm_Ambiguous.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 & \\text{if } S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
+NussinovDPAlgorithm_Ambiguous.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 & \\text{if } S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{ decomposition} \\end{cases}";
 
 NussinovDPAlgorithm_Ambiguous.Tables[0].computeCell = function(i, j) {
 
@@ -1194,7 +1197,7 @@ NussinovDPAlgorithm_structuresCount.Description = "Nussinov counting";
 NussinovDPAlgorithm_structuresCount.Tables = new Array();
 NussinovDPAlgorithm_structuresCount.Tables.push(Object.create(NussinovMatrix));
 
-NussinovDPAlgorithm_structuresCount.Tables[0].latex_representation = "C_{i,j} = C_{i,j-1} + \\sum_{i\\leq k <(j-l) \\atop S_k,S_j \\text{ pair}} C_{i,k-1} \\cdot C_{k+1,j-1} \\cdot 1";
+NussinovDPAlgorithm_structuresCount.Tables[0].latex_representation = "C_{i,j} = C_{i,j-1} + \\sum_{i\\leq k <(j-l) \\atop S_k,S_j \\text{ pair}} C_{i,k-1} \\cdot C_{k+1,j-1}";
 
 // C(i, j) = C(i, j - 1) + sum[k: [i <= k < j - l] && k,j pairs] C(i, k - 1) * C(k + 1, j - 1)
 NussinovDPAlgorithm_structuresCount.Tables[0].computeCell = function (i, j) {
@@ -1247,11 +1250,11 @@ NussinovDPAlgorithm_McCaskill.Tables.push(Object.create(NussinovMatrix)); // Qb
 NussinovDPAlgorithm_McCaskill.Tables.push(Object.create(NussinovMatrix)); // Pe
 NussinovDPAlgorithm_McCaskill.Tables.push(Object.create(NussinovMatrix)); // Pu
 
-NussinovDPAlgorithm_McCaskill.Tables[0].latex_representation = "Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} \\cdot Q^{b}_{k,j}";
-NussinovDPAlgorithm_McCaskill.Tables[1].latex_representation = "Q_{i,j}^{b} = \\begin{cases} Q_{i + 1, j - 1} \\cdot \\exp(-E_{bp}/RT) & \\text{ if }S_{i},S_{j} \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}";
+NussinovDPAlgorithm_McCaskill.Tables[0].latex_representation = "Q_{i,j} = Q_{i,j-1} + \\sum_{i\\leq k <(j-l)} Q_{i,k-1} \\cdot Q^{bp}_{k,j}";
+NussinovDPAlgorithm_McCaskill.Tables[1].latex_representation = "Q_{i,j}^{bp} = \\begin{cases} Q_{i + 1, j - 1} \\cdot \\exp(-E_{bp}/RT) & \\text{ if }S_{i},S_{j} \\text{ can form base pair} \\\\ 0 & \\text{ otherwise}\\end{cases}";
 
-NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i,j} = \\frac{Q_{1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\frac{\\exp(-E_{bp} / RT) \\cdot Q_{p+1,i-1} \\cdot Q^{b}_{i,j} \\cdot Q_{j+1,q-1}}{Q^b_{p,q}}";
-NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i,j} = \\frac{Q_{1,i-1} \\cdot 1 \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\frac{\\exp(-E_{bp} / RT) \\cdot Q_{p+1,i-1} \\cdot 1 \\cdot Q_{j+1,q-1}}{Q^b_{p,q}}";
+NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i,j} = \\frac{Q_{1,i-1} \\cdot Q^{bp}_{i,j} \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\frac{\\exp(-E_{bp} / RT) \\cdot Q_{p+1,i-1} \\cdot Q^{bp}_{i,j} \\cdot Q_{j+1,q-1}}{Q^{bp}_{p,q}}";
+NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i,j} = \\frac{Q_{1,i-1} \\cdot 1 \\cdot Q_{j+1,n}}{Q_{1,n}} + \\sum_{p<i,j<q} P^{bp}_{p,q} \\cdot \\frac{\\exp(-E_{bp} / RT) \\cdot Q_{p+1,i-1} \\cdot 1 \\cdot Q_{j+1,q-1}}{Q^{bp}_{p,q}}";
 
 //NussinovDPAlgorithm_McCaskill.Tables[2].latex_representation = "P^{bp}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot Q^{b}_{i, j} \\cdot Q_{j + 1, n})";
 //NussinovDPAlgorithm_McCaskill.Tables[3].latex_representation = "P^{u}_{i, j} = Q^{-1}_{1, n} \\cdot (Q_{1, i - 1} \\cdot 1 \\cdot Q_{j + 1, n})";
@@ -1334,6 +1337,8 @@ NussinovDPAlgorithm_McCaskill.Tables[2].computeCell = function(i, j) {
         }
     }
     curCell.value = ret;
+    curCell.logValue = -this.energy_normal * Math.log(ret);
+    //console.log(curCell);
     return curCell;
 };
 
@@ -1376,6 +1381,8 @@ NussinovDPAlgorithm_McCaskill.Tables[3].computeCell = function(i, j) {
         }
     }
     curCell.value = ret;
+    curCell.logValue = -this.energy_normal * Math.log(ret);
+    //console.log(curCell);
     return curCell;
 };
 
@@ -1396,6 +1403,7 @@ NussinovDPAlgorithm_McCaskill.computeMatrix = function (input) {
 
     for (var i = 1; i < 4; ++i) {
         this.Tables[i].energy_basepair = -input.energy() / input.energy_normal();
+        this.Tables[i].energy_normal = input.energy_normal();
     }
 
     for (var i = 0; i < 4; ++i) {
@@ -1414,10 +1422,10 @@ DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables.push(Object.create(NussinovMatrix));
 DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases}M_{i, j - 1} + P^{u}_{j} & S_{j}\\text{ unpaired} \\\\ \\max_{i \\leq k < (j-l)} \\left( M_{i, k - 1} + M_{k + 1, j - 1} + \\gamma \\cdot P^{bp}_{k, j} \\right) & S_{k}\\text{ paired with }S_{j} \\end{cases}";
-DPAlgorithm_MEA.Tables[2].latex_representation = "P_{i}^{u} = 1 - \\sum_{k < i}{P^{bp}_{k, i}} - \\sum_{i < k}{P^{bp}_{i, k}}";
+DPAlgorithm_MEA.Tables[2].latex_representation = "P_{i}^{u} = 1 - \\sum_{k < i}{P^{bp}_{k, i}} - \\sum_{i < j}{P^{bp}_{i, j}}";
 
 //DPAlgorithm_MEA.Tables[0].latex_representation = "M_{i, j} = \\max \\begin{cases} 0 & i > j \\\\ M_{i, j - 1} + p^{u}_{j} & j unpaired \\\\ M_{i + 1, j - 1} + p^{p}_{i,j} & j paired with i \\\\ \\max_{i \\leq k < j}{M_{i, k} + M_{k + 1, j}} & decomposition \\end{cases}";
-//DPAlgorithm_MEA.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 & \\text{if } S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{decomposition} \\end{cases}";
+//DPAlgorithm_MEA.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j) & S_i \\text{ unpaired} \\\\ D(i,j-1) & S_j \\text{ unpaired} \\\\ D(i+1,j-1)+1 & \\text{if } S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i< k< (j-1)} D(i,k)+D(k+1,j) & \\text{ decomposition} \\end{cases}";
 DPAlgorithm_MEA.Tables[0].updateCell = function (curCell, curVal, curAncestor) {
 
     if (curCell === null || curCell.value <= curVal) {

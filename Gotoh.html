@@ -1,0 +1,312 @@
+<!--
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Author: Alexander Mattheis
+-->
+
+<div id="algorithm_description">
+    <div class="description">
+        The algorithm by <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Osamu Gotoh (1982)</a>
+        computes the optimal global alignment of two sequences when using an affine gap scoring.
+        Here, the scoring of a long consecutive gap (insertion/deletion) is favored over
+        a collection of small gaps with the same combined length.
+        This incorporates the assumption that a single large insertion/deletion event is 
+        biologically more likely to happen compared to many small insertions/deletions.
+        While sophisticated gap scoring models can be applied in the generic algorithm by
+        <a href="https://doi.org/10.1016/0001-8708(76)90202-4">Waterman-Smith-Beyer (1976)</a>,
+        affine gap scoring used in Gotoh's algorithm enables a reasonable gap model with 
+        reduced runtime.
+        <br>
+        <br>
+        Under the assumption that both input sequences $a$ and $b$ stem from the same origin,
+        a global alignment tries to identify matching parts and the 
+        changes needed to transfer one sequence into the other.
+        The changes are scored and an optimal set of changes is identified, which defines an alignment.
+        Gotoh's dynamic programming approach tabularizes optimal subsolutions in matrices $D,P$ and $Q$.
+        An entry $D_{i,j}$ represents the best score for the alignment of the 
+        prefixes $a_{1..i}$ with $b_{1..j}$, while an entry $P_{i,j}/Q_{i,j}$ provides the best score
+        under the additional constraint that the alignment ends in a gap within sequence $b/a$, respectively.
+        The according recursions and the used affine gap function $g$ are shown below. 
+        <br>
+        <br>
+        For the given input, the according tables $D,P$ and $Q$ are provided along with a list 
+        of according optimal alignments. 
+        On table cell selection, optimal traceback options are shown.
+        On alignment selection, an according traceback path is visualized in the table.
+    </div>
+
+    <div class="picture">
+        <img src="Gotoh-120x90.png">
+    </div>
+</div>
+
+<div id="algorithm_input">
+    <div class="row">
+		<div class="colW100"><label>Sequence $a$:</label></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'" type="text"></div>
+	</div>
+
+	<div class="row">
+		<div class="colW100"><label>Sequence $b$:</label></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'" type="text"></div>
+	</div>
+
+    <div class="row">
+		<div class="colW100"><label>Optimization of:</label></div>
+		<div class="colW400">
+            <span class="group">
+                Distance <input class="optimization_type" data-bind="checked: input.calculation" id="distance"
+                                name="calculation" type="radio" value="distance">
+                Similarity <input class="optimization_type" data-bind="checked: input.calculation" id="similarity"
+                                  name="calculation" type="radio" value="similarity">
+            </span>
+        </div>
+	</div>
+
+    <div class="row">
+		<div class="colW100"><label>Scoring in $s$:</label></div>
+
+		<div class="colW400">
+            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
+                Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
+            </span>
+		</div>
+    </div>
+
+    <div class="row">
+		<div class="colW100"><label>Scoring in $g$:</label></div>
+
+		<div class="colW400">
+            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                Gap opening $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
+                Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
+            </span>
+
+            <div class="group_hint">
+				<b>Hint:</b> <br>
+				For similarity maximization, <br> match scores should be positive and all other scores lower. <br>
+                For distance minimization the reverse applies.
+			</div>
+		</div>
+    </div>
+
+    <div class="row">
+		<div class="colW100">
+            <label>
+                <br>
+                Recursions:
+            </label>
+        </div>
+
+		<div class="colW600">
+            <span data-bind="text: $root.input.formulaP"></span>
+            <br>
+            <br>
+            <span data-bind="text: $root.input.formulaQ"></span>
+            <br>
+            <br>
+            <span data-bind="text: $root.input.formula"></span>
+            <br>
+            <br>
+            <br>
+            <span data-bind="text: $root.input.gapFunction"></span>
+		</div>
+	</div>
+</div>
+
+<div id="algorithm_output">
+    <div class="output">
+        <div class="main_output">
+            <table class="calculation_vertical">
+                <thead>
+                    <tr>
+                        <th>$P$</th>
+                        <th></th>
+                        <!-- ko foreach: input.sequence1 -->
+                            <th data-bind="drawChar: [$data, $index()+1]"></th>
+                        <!-- /ko -->
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- ko foreach: output.verticalGaps --> <!-- to get i-indexes = $parentContext.$index() -->
+                        <tr>
+                            <!-- ko if: $index() == 0 -->
+                                <th></th>
+                            <!-- /ko -->
+
+                            <!-- ko if: $index() > 0 -->
+                                <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                            <!-- /ko -->
+
+                            <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
+                                <td class="selectable_entry"
+                                    data-bind="text: $root.output.verticalGaps()[$parentContext.$index()][$index()]"></td>
+                            <!-- /ko -->
+                        </tr>
+                    <!-- /ko -->
+
+                    <tr>
+                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
+                            <small>
+                                <b>Score:</b> -
+                            </small>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+
+            <br>
+            <br>
+            <br>
+
+            <table class="calculation">
+                <thead>
+                    <tr>
+                        <th>$D$</th>
+                        <th></th>
+                        <!-- ko foreach: input.sequence1 -->
+                            <th data-bind="drawChar: [$data, $index()+1]"></th>
+                        <!-- /ko -->
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- ko foreach: output.matrix --> <!-- to get i-indexes = $parentContext.$index() -->
+                        <tr>
+                            <!-- ko if: $index() == 0 -->
+                                <th></th>
+                            <!-- /ko -->
+
+                            <!-- ko if: $index() > 0 -->
+                                <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                            <!-- /ko -->
+
+                            <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
+                                <td class="selectable_entry"
+                                    data-bind="text: $root.output.matrix()[$parentContext.$index()][$index()]"></td>
+                            <!-- /ko -->
+                        </tr>
+                    <!-- /ko -->
+
+                    <tr>
+                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
+                            <small>
+                                <b>Score:</b> <span data-bind="text: $root.output.score"></span>
+                            </small>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+
+            <br>
+            <br>
+            <br>
+
+            <table class="calculation_horizontal">
+                <thead>
+                    <tr>
+                        <th>$Q$</th>
+                        <th></th>
+                        <!-- ko foreach: input.sequence1 -->
+                            <th data-bind="drawChar: [$data, $index()+1]"></th>
+                        <!-- /ko -->
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- ko foreach: output.horizontalGaps --> <!-- to get i-indexes = $parentContext.$index() -->
+                        <tr>
+                            <!-- ko if: $index() == 0 -->
+                                <th></th>
+                            <!-- /ko -->
+
+                            <!-- ko if: $index() > 0 -->
+                                <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                            <!-- /ko -->
+
+                            <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
+                                <td class="selectable_entry"
+                                    data-bind="text: $root.output.horizontalGaps()[$parentContext.$index()][$index()]"></td>
+                            <!-- /ko -->
+                        </tr>
+                    <!-- /ko -->
+
+                    <tr>
+                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into hint-class when browsers are ready! -->
+                            <small>
+                                <b>Score:</b> -
+                            </small>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="download_area">
+            <a class="table_vertical_download" href="#">Download Table P</a> <br>
+            <a class="table_download" href="#">Download Table D</a> <br>
+            <a class="table_horizontal_download" href="#">Download Table Q</a>
+        </div>
+    </div>
+
+    <div class="outcome">
+        <div class ="ancillary_output">
+            <table class="results_header">
+                <thead>
+                    <tr>
+                        <th>
+                            Results <br>
+                            <small>
+                                You can select a result to get the related traceback.
+                            </small>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="results_with_scrollbar">
+                <table class="results">
+                    <tbody>
+                        <!-- ko foreach: $root.output.alignments -->
+                            <!-- ko if: $index() < 10 -->
+                                <!-- ko if: $index() == 0 -->
+                                    <tr>
+                                        <td class="selectable_entry selectable_entry_start">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
+                                <!-- ko if: $index() != 0 -->
+                                    <tr>
+                                        <td class="selectable_entry">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
+                            <!-- /ko -->
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="results_footer">
+                <tr>
+                    <th>
+                        <small>
+                            <!-- ko if: $root.output.moreTracebacks -->
+                                <b>Hint:</b> Only the first ten results are computed.
+                            <!-- /ko -->
+                        </small>
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

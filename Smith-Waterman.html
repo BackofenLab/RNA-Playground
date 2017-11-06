@@ -1,0 +1,197 @@
+<!--
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Author: Alexander Mattheis
+-->
+
+<div id="algorithm_description">
+    <div class="description">
+        The dynamic programming approach by
+        <a href="https://doi.org/10.1016/0022-2836(81)90087-5">
+            Temple F. Smith and Michael S. Waterman (1981)</a>
+        computes optimal local alignments of two sequences.
+        This means it identifies the two subsequences that are best preserved,
+        i.e. their alignment shows the maximal similarity scoring.
+        <br>
+        <br>
+        In order to find such a local alignment, the global alignment algorithm by 
+        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman and Wunsch (1970)</a> or
+        <a href="https://doi.org/10.1137/0126070">Sellers</a>
+        is extended with an additional case '0'.
+        This lower bound on the similarity score excludes 'too bad' alignments
+        that are eventually 'not similar' (score < 0).
+        <br>
+        <br>
+        A local alignment approach tries to identify the most similar subsequences
+        that maximize the scoring of their matching parts and the 
+        changes needed to transfer one subsequence into the other.
+        The dynamic programming approach tabularizes optimal subsolutions in matrix $S$,
+        where an entry $S_{i,j}$ represents the maximal similarity score for any local alignment of the 
+        (sub)prefixes $a_{x..i}$ with $b_{y..j}$, where $x,y>0$ are so far unknown 
+        and to be identified via traceback. 
+        The according recursions are shown below. 
+        Note, consecutive gap (insertions/deletions) scoring is done linearly.
+        <br>
+        <br>
+        For the given input, the according table $S$ is shown along with a list 
+        of according optimal local alignments. 
+        On table cell selection, optimal traceback options are shown.
+        On alignment selection, an according traceback path is visualized in the table.
+    </div>
+
+    <div class="picture">
+        <img src="Smith-Waterman-120x90.png">
+    </div>
+</div>
+
+<div id="algorithm_input">
+	<div class="row">
+		<div class="colW100"><label>Sequence $a$:</label></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'" type="text"></div>
+	</div>
+
+	<div class="row">
+		<div class="colW100"><label>Sequence $b$:</label></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'" type="text"></div>
+	</div>
+
+	<div class="row">
+		<div class="colW100"><label>Scoring in $s$:</label></div>
+
+		<div class="colW400">
+			<span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+				Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
+				Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
+				Gap <input class="fx_parameter" data-bind="value: input.gap" id="gap" type="number">
+			</span>
+
+			<div class="group_hint">
+				<b>Hint:</b> <br>
+				For similarity maximization, <br> match scores should be positive and all other scores lower.
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="colW100">
+            <br>
+            <label>
+                <br>
+                <br>
+                Recursion:
+            </label>
+        </div>
+
+		<div class="colW600">
+			<span data-bind="text: $root.input.formula"></span>
+		</div>
+	</div>
+</div>
+
+<div id="algorithm_output">
+    <div class="output">
+        <div class="main_output">
+            <table class="calculation">
+                <thead>
+					<tr>
+						<th>$S$</th>
+						<th></th>
+                        <!-- ko foreach: input.sequence1 -->
+							<th data-bind="drawChar: [$data, $index()+1]"></th>
+                        <!-- /ko -->
+					</tr>
+                </thead>
+
+                <tbody>
+					<!-- ko foreach: output.matrix --> <!-- to get i-indexes = $parentContext.$index() -->
+						<tr>
+							<!-- ko if: $index() == 0 -->
+								<th></th>
+                            <!-- /ko -->
+
+                            <!-- ko if: $index() > 0 -->
+								<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                            <!-- /ko -->
+
+                            <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
+								<td class="selectable_entry"
+                                    data-bind="text: $root.output.matrix()[$parentContext.$index()][$index()]"></td>
+                            <!-- /ko -->
+						</tr>
+                    <!-- /ko -->
+
+					<tr>
+						<th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+							<small>
+								<b>Score:</b> <span data-bind="text: $root.output.score"></span>
+							</small>
+						</th>
+					</tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="download_area">
+            <a class="table_download" href="#">Download Table</a>
+        </div>
+    </div>
+
+    <div class="outcome">
+        <div class ="ancillary_output">
+            <table class="results_header">
+                <thead>
+					<tr>
+						<th>
+							Results <br>
+							<small>
+								You can select a result to get the related traceback.
+							</small>
+						</th>
+					</tr>
+                </thead>
+            </table>
+
+            <div class="results_with_scrollbar">
+                <table class="results">
+                    <tbody>
+                        <!-- ko foreach: $root.output.alignments -->
+                            <!-- ko if: $index() < 10 -->
+                                <!-- ko if: $index() == 0 -->
+                                    <tr>
+                                        <td class="selectable_entry selectable_entry_start">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
+                                <!-- ko if: $index() != 0 -->
+                                    <tr>
+                                        <td class="selectable_entry">
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
+                                        </td>
+                                    </tr>
+                                <!-- /ko -->
+                            <!-- /ko -->
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="results_footer">
+                <tr>
+                    <th>
+                        <small>
+                            <!-- ko if: $root.output.moreTracebacks -->
+                                <b>Hint:</b> Only the first ten results are computed.
+                            <!-- /ko -->
+                        </small>
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

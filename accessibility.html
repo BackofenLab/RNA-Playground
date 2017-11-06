@@ -3,7 +3,7 @@
 		<div class="colW600">
 			State-of-the-art RNA-RNA interaction prediction algorithms take
 			the accessibility of the interacting regions into account. That is,
-			a penalty is added to the interaction scoring that represents how
+			a penalty corrects the interaction scoring for how
 			much the interaction sites are involved in intramolecular base pairs.
 			This can be expressed by reverting unpaired probabilities $P^{u}_{i,j}$ into
 			pseudo energy scores via $-RT\log(P^{u}_{i,j})$ that represent the amount
@@ -14,10 +14,10 @@
 			<br>
 			Here, we extend the 
 			<a href="index.jsp?toolName=hybrid-only">hybrid-only approach</a>
-			towards the integration of an accessibility scoring. To this end, the
+			towards the integration of an accessibility-based scoring. To this end, the
 			<a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>
 			is used to compute unpaired probabilities $P^{u}$. The penalties are
-			added as a post-processing step to the hybridization energies in 
+			used in a post-processing step to correct the hybridization energies in 
 			order to identify the interaction that optimizes the combination of
 			hybridization and accessibility scoring.
 		</div>
@@ -38,7 +38,9 @@
         </div>
 
         <div class="row">
-            <div class="colW250" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^2$:</div>
+            <div class="colW250" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^2$:<br>
+            <span style="font-size:70%;">(Computation uses reversed sequence $\overleftarrow{S^2}$)</span>
+            </div>
             <div class="colW400">
                 <input data-bind="value: rawSeq2" class="userInput"
                        placeholder="Example 'GCACG'" onkeydown="validate(event)"
@@ -70,7 +72,7 @@
         <div class="row">
             <div class="colW250" style="font-size: 120%">'Normalized' temperature $RT$:</div>
             <div class="colW400">
-                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="-2" step="(max - min) / 100">
+                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="1" step="(max - min) / 100">
                 <label for="energy_normal" data-bind="text: input.energy_normal"></label>
             </div>
         </div>
@@ -82,14 +84,14 @@
         	interaction sites are computed using the 
         	<a href="index.jsp?toolName=hybrid-only">hybrid-only approach</a>.
         	Furthermore, the unpaired probabilities $P^{u1}$ and $P^{u2}$ are 
-        	tabularized for both sequences $S^1$ and $S^2$, resp., using the 
+        	tabularized for both sequences $S^1$ and $\overleftarrow{S^2}$, resp., using the 
         	<a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>.
         	<br>
-        	Given these values, the accessibility-incorporating interaction energies
+        	Given these values, the accessibility-incorporating interaction scorings
        		are computed and stored in table $I$. A non-zero entry $I^{i,k}_{j,l}$
-       		represents the combined minimum energy score of an interaction of
-       		$S^1_{i..k}$ with $S^2_{j..l}$ with 
-       		left/right most base pairs $(S^1_i,S^2_j)$/$(S^1_k,S^2_l)$, respectively.
+       		represents the combined scoring for an interaction of
+       		$S^1_{i..k}$ with $\overleftarrow{S^2_{j..l}}$ with 
+       		left/right most base pairs $(S^1_i,\overleftarrow{S^2_j})$/$(S^1_k,\overleftarrow{S^2_l})$, respectively.
         </div>
 
         <div id="recursion" data-bind="text: latex()[0]"></div>
@@ -104,9 +106,9 @@
         <div>
        		Due to the four-dimensionality of $I$, we only list the optimal
        		hybrid structures (up to 15). On selection, the intermolecular base pairs are
-       		visualized. If all entries $I^{i,k}_{j,l}$ show positive energy scores,
+       		visualized. If all entries $I^{i,k}_{j,l}$ show negative scores,
        		no favorable interaction is possible since intramolecular base pairs
-       		dominate the individual structures (too low accessibility values of 
+       		dominate the individual structures (too hight penalties for 
        		possible interaction sites). Therefore, the structure list might be
        		empty.
         </div>
@@ -126,7 +128,12 @@
 	        	<div id="4dVisual" class="hybridVisual"></div>
 			</div>
 		</div>
-	    
+
+		<div style="font-weight:bold;">
+			Energy of selection:
+			<span id="output_value"></span>
+		</div>
+
 	    <div>
     		The box provides an ASCII representation of the interacting
     		base pairs of the selected structure with $S^{1}$ on top and $S^{2}$ 
@@ -138,20 +145,26 @@
 	    </div>
 	</div>
 
+
     <div id="output">
 
-		<h2>Unpaired probabilities</h2>
+		<h2>Accessibility</h2>
 		
 		<div>
 			The <a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>
-			is used in order to compute the unpaired probabilities for each of
-			the two sequences. Please refer to the according page for details. 
-			In the following, the unpaired probabilities for $S^1$ and $S^2$ are 
-			visualized in dotplot format.
+			is used in order to compute the unpaired probabilities $P^{u}$ for each of
+			the two sequences. Please refer to the according page for details.
+			These are used to compute according energy penalties $ED$ to make an 
+			interacting site $i..j$ accessible, i.e. $ED_{i,j} = -RT\cdot\log(P^{u}_{i,j})$.
+			In the following, the penalties for $S^1$ and $\overleftarrow{S^2}$ are 
+			visualized in dotplot format, i.e. the larger the dot the higher is
+			the penalty for the respective subsequence to form an interaction.
 		</div>
 
+		<div style="font-weight:bold;">Penalties $ED^{1}$ to make site in $S^{1}$ accessible:</div>
         <div id="dotplot_seq1"></div>
         
+		<div style="font-weight:bold;">Penalties $ED^{2}$ to make site in $\overleftarrow{S^2}$ accessible:</div>
         <div id="dotplot_seq2"></div>
 
     </div>

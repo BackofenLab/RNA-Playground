@@ -2,17 +2,15 @@
 	<div class="row" id="introduction">
 		<div class="colW600">
 			The number of nested secondary structures that can be formed by an RNA sequence grows
-			exponentially with sequence length $n$ (about $\sim 1.8^{n}$, see 
-			<a href="http://dx.doi.org/10.1007/BF02459506">(Zuker and Sankoff, 1984)</a>).
+			exponentially with sequence length $n$ (about $\sim 2.3^{n}$, see 
+			<a href="https://doi.org/10.1016/S0166-218X(98)00073-0">(Hofacker et al., 1997)</a>).
 			<br />
 			<br />
-			Zuker and Sankoff presented 
-			<a href="http://dx.doi.org/10.1007/BF02459506">1984</a> a recursion to compute the
-			expected number of admissible structures for an RNA sequence of a given length.
+			Here, we use a variant of the algorithm by 
+			<a href="http://dx.doi.org/10.1016/0025-5564(78)90099-8">Michael S. Waterman and Temple F. Smith (1970)</a>
+			to compute the exact number of nested structures a sequence can form.
 			The approach applies dynamic programming, i.e. tabularizes results for subproblems.
-			<br />
-			Here, we use a variant of this algorithm that populates a matrix $C$, 
-			where an entry $C_{i,j}$ 
+			To this end, it populates a matrix $C$, where an entry $C_{i,j}$ 
 			provides the <em>exact number</em> of admissible structures for the subsequence from 
 			position $i$ to $j$. The overall number of admissible structures for the
 			sequences can be found in the upper right corner $C_{1,n}$, where $n$ denotes
