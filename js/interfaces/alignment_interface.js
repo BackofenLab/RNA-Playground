@@ -10,7 +10,7 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("interfaces.alignmentInterface", AlignmentInterface,
-        imports, sharedInterfaceOperations, roundValues, getDistanceTable, getDistanceTables, startProcessing);
+        imports, sharedInterfaceOperations, roundValues, getDistanceTable, getDistanceTables, reorderGroupSequences, startProcessing);
 
     // instances
     var alignmentInterfaceInstance;
@@ -30,6 +30,7 @@ Author: Alexander Mattheis
         this.roundValues = roundValues;
         this.getDistanceTable = getDistanceTable;
         this.getDistanceTables = getDistanceTables;
+        this.reorderGroupSequences = reorderGroupSequences;
         this.startProcessing = startProcessing;
     }
 
@@ -400,9 +401,12 @@ Author: Alexander Mattheis
         viewmodel.minimums = ko.observable(outputData.minimums).extend({ deferred: true });
 
         // merge steps
+        reorderGroupSequences(outputData);
         viewmodel.guideAlignments = ko.observable(outputData.guideAlignments);
         viewmodel.firstGroups = ko.observable(outputData.firstGroups);
         viewmodel.secondGroups = ko.observable(outputData.secondGroups);
+        viewmodel.firstGroupsNames = ko.observable(outputData.firstGroupsNames);
+        viewmodel.secondGroupsNames = ko.observable(outputData.secondGroupsNames);
         viewmodel.joinedGroups = ko.observable(outputData.joinedGroups);
         viewmodel.joinedGroupNames = ko.observable(outputData.joinedGroupNames);
 
@@ -425,6 +429,11 @@ Author: Alexander Mattheis
         };
     }
 
+    /**
+     * Converts the distances stored in associative array into a real distance matrix.
+     * @param outputData - The output on which conversion is applied.
+     * @return {Object} - The outputData with converted distance matrices.
+     */
     function getDistanceTables(outputData) {
         var matrixLength = outputData.distanceMatrixLength;  // start length
 
@@ -497,6 +506,149 @@ Author: Alexander Mattheis
         }
 
         return position;
+    }
+
+    /**
+     * Reordering groups in alphabetical order for increasing readability.
+     * @param outputData - The output on which conversion is applied.
+     */
+    function reorderGroupSequences(outputData) {
+        var finalGroupName = outputData.joinedGroupNames[outputData.joinedGroupNames.length-1];
+        var finalGroup = outputData.joinedGroups[outputData.joinedGroups.length-1];
+
+        var groupMemberNames = getIndividualElementNames(finalGroupName);
+        var groupMemberRankings = getRankings(groupMemberNames, finalGroup);
+
+        var reorderedGroups = [];
+        var reorderedGroupNames = [];
+
+        var reorderedFirstGroups = [];
+        var reorderedFirstGroupsNames = [];
+
+        var reorderedSecondGroups = [];
+        var reorderedSecondGroupsNames = [];
+
+        // iterate over all groups (result, group 1 and group 2)
+        for (var i = 0; i < outputData.joinedGroups.length; i++) {
+            var group = outputData.joinedGroups[i];
+            var group1 = outputData.firstGroups[i];
+            var group2 = outputData.secondGroups[i];
+
+            var memberNames = getIndividualElementNames(outputData.joinedGroupNames[i]);
+            var member1Names = getIndividualElementNames(outputData.firstGroupsNames[i]);
+            var member2Names = getIndividualElementNames(outputData.secondGroupsNames[i]);
+
+            var sortedGroupAndNames = getSortedGroup(group, memberNames, groupMemberRankings);
+            var sorted1GroupAndNames = getSortedGroup(group1, member1Names, groupMemberRankings);
+            var sorted2GroupAndNames = getSortedGroup(group2, member2Names, groupMemberRankings);
+
+            reorderedGroups.push(sortedGroupAndNames[0]);
+            reorderedGroupNames.push(sortedGroupAndNames[1]);
+
+            reorderedFirstGroups.push(sorted1GroupAndNames[0]);
+            reorderedFirstGroupsNames.push(sorted1GroupAndNames[1]);
+
+            reorderedSecondGroups.push(sorted2GroupAndNames[0]);
+            reorderedSecondGroupsNames.push(sorted2GroupAndNames[1]);
+        }
+
+        outputData.joinedGroups = reorderedGroups;
+        outputData.joinedGroupNames = reorderedGroupNames;
+
+        outputData.firstGroups = reorderedFirstGroups;
+        outputData.firstGroupsNames = reorderedFirstGroupsNames;
+
+        outputData.secondGroups = reorderedSecondGroups;
+        outputData.secondGroupsNames = reorderedSecondGroupsNames;
+
+        outputData.progressiveAlignment = reorderedGroups[reorderedGroups.length - 1];
+    }
+
+    /**
+     * Returns the individual names of the group members,
+     * where a name character separated by a comma from the name number.
+     * @param groupName - The group name from which the names extracted.
+     * @return {Array} - The array with the individual names.
+     */
+    function getIndividualElementNames(groupName) {
+        var names = [];
+
+        for (var i = 0; i < groupName.length; i++) {
+            var character = groupName[i];
+            var number = SYMBOLS.EMPTY;
+
+            while (i + 1 < groupName.length && groupName[i + 1].match(CHARACTER.NUMBER)) {
+                number += groupName[i + 1];
+                i++;
+            }
+            names.push(number.length > 0 ? character + SYMBOLS.COMMA + number : character);
+        }
+
+        return names;
+    }
+
+    /**
+     * Returns the rankings of the individual members.
+     * The ranking is the position within the cluster names.
+     * Hint: memberNames.length <= outputData.clusterNames.length (because duplicate sequences are removed)
+     * @param memberNames {Array} - The names of the used sequences (duplicate sequences are removed).
+     * @param group {Array} - The group of the members.
+     * @return {[rankings, highestRanking]} - The structure containing ranking and highest ranking.
+     */
+    function getRankings(memberNames, group) {
+        var rankings = {};
+        var highestRanking = Number.NEGATIVE_INFINITY;
+
+        for (var i = 0; i < memberNames.length; i++) {
+            var name = memberNames[i].split(SYMBOLS.COMMA);
+            var character = name[0];
+            var number = name.length > 1 ? Number(name[1] - 1) : 0;
+
+            var characterPosition = CLUSTER_NAMES.indexOf(character);
+            var sequence = group[i].replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);
+            rankings[sequence] = characterPosition + CLUSTER_NAMES.length * number;
+
+            if (highestRanking < rankings[sequence])
+                highestRanking = rankings[sequence];
+        }
+
+        return [rankings, highestRanking];
+    }
+
+    /**
+     * Resorts the group and the group names alphabetically in linear time by using two arrays.
+     * @param group {Array} - The group which is resorted.
+     * @param groupMemberNames {Array} - The group names which are resorted.
+     * @param groupMemberRankings {Array} - The rankings which are sued to sort elements.
+     * @return {[sortedGroupMembers, sortedGroupMemberNames]} - The sorted group and names.
+     */
+    function getSortedGroup(group, groupMemberNames, groupMemberRankings) {
+        var highestRanking = groupMemberRankings[1];
+
+        var sortedGroup = new Array(highestRanking);  // with empty positions
+        var sortedGroupNames = new Array(highestRanking);
+
+        var finalSortedGroup = [];  // without empty positions
+        var finalSortedGroupNames = SYMBOLS.EMPTY;  // without empty positions
+
+        // going over non sorted group
+        for (var i = 0; i < group.length; i++) {
+            var sequence = group[i].replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);
+            var sequenceRanking = groupMemberRankings[0][sequence];
+
+            sortedGroup[sequenceRanking] = group[i];
+            sortedGroupNames[sequenceRanking] = groupMemberNames !== undefined ? groupMemberNames[i] : SYMBOLS.EMPTY;
+        }
+
+        // going over sorted array with empties (to remove the empty positions)
+        for (var j = 0; j < sortedGroup.length; j++) {
+            if (sortedGroup[j] !== undefined) {
+                finalSortedGroup.push(sortedGroup[j]);
+                finalSortedGroupNames += sortedGroupNames[j].replace(SYMBOLS.COMMA, SYMBOLS.EMPTY);
+            }
+        }
+
+        return [finalSortedGroup, finalSortedGroupNames];
     }
 
     /**

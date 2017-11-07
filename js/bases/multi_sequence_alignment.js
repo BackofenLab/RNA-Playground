@@ -87,7 +87,7 @@ Author: Alexander Mattheis
                 // removing first position, because it's not needed (not removed)
                 // and copy the other positions into duplicatePositions (to remove the associated sequences later)
                 var nonFirstPositions = positions[uniqueSequences[i]].slice(1);  // first position removed and rest is copied
-                duplicatePositions = duplicatePositions.concat(nonFirstPositions)
+                duplicatePositions = duplicatePositions.concat(nonFirstPositions);
             }
         }
 

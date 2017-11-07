@@ -273,9 +273,12 @@ Author: Alexander Mattheis
         viewmodels.output.minimums(outputData.minimums);
 
         // merge steps
+        alignmentInterfaceInstance.reorderGroupSequences(outputData);
         viewmodels.output.guideAlignments(outputData.guideAlignments);
         viewmodels.output.firstGroups(outputData.firstGroups);
         viewmodels.output.secondGroups(outputData.secondGroups);
+        viewmodels.output.firstGroupsNames(outputData.firstGroupsNames);
+        viewmodels.output.secondGroupsNames(outputData.secondGroupsNames);
         viewmodels.output.joinedGroups(outputData.joinedGroups);
         viewmodels.output.joinedGroupNames(outputData.joinedGroupNames);
 

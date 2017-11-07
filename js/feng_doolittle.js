@@ -187,7 +187,9 @@ $(document).ready(function () {
 
         // needed for visualization
         outputData.firstGroups = [];
+        outputData.firstGroupsNames = [];
         outputData.secondGroups = [];
+        outputData.secondGroupsNames = [];
         outputData.guideAlignments = [];
         outputData.joinedGroups = [];
         outputData.joinedGroupNames = [];
@@ -220,7 +222,9 @@ $(document).ready(function () {
         // for visualization of steps
         outputData.guideAlignments.push(bestAlignment);
         outputData.firstGroups.push(group1Sequences);
+        outputData.firstGroupsNames.push(leftChildName);
         outputData.secondGroups.push(group2Sequences);
+        outputData.secondGroupsNames.push(rightChildName);
         outputData.joinedGroups.push(outputData.groups[groupName]);
         outputData.joinedGroupNames.push(groupName);
     }

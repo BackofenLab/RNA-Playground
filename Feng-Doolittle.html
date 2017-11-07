@@ -127,13 +127,9 @@ Author: Alexander Mattheis
 
                 <!-- ko if: $index() == $root.input.clusterNames().length-1 -->
                     <div class="group_hint">
-                        <b>Hint:</b> <br>
+                        <b>Hints:</b> <br>
                         The "+" and "-" buttons can be used to add or remove sequences.
-                        <br>
-                        <br>
-                        <b>Hint 2:</b> <br>
-                        Duplicates of sequences <br>
-                        are excluded from computations.
+                        Duplicates of sequences are excluded from computations.
                         <!-- The distance formula
                         is not defined for two sequences of same type,
                         because the denominator gets zero.
@@ -266,12 +262,14 @@ Author: Alexander Mattheis
                         <!-- ko foreach: $root.output.guideAlignments() -->
                             <tr>
                                 <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br>
                                     <!-- ko foreach: $root.output.firstGroups()[$index()] -->
                                         <code data-bind="text: $data"></code> <br>
                                     <!-- /ko -->
                                 </td>
 
                                 <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br>
                                     <!-- ko foreach: $root.output.secondGroups()[$index()] -->
                                         <code data-bind="text: $data"></code> <br>
                                     <!-- /ko -->

@@ -61,7 +61,7 @@ Author: Alexander Mattheis
      */
     function compute() {
         var distanceMatrixCopy = jQuery.extend(true, {}, outputData.distanceMatrix);  // deep copy
-
+        debugger;
         var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in hierarchical clustering algorithms
 
         initializeStructs();
@@ -108,7 +108,7 @@ Author: Alexander Mattheis
         clusteringInstance.nameIndex = inputData.sequences.length;  // do not change that!
 
         for (var i = 0; i < clusteringInstance.nameIndex; i++)
-            outputData.cardinalities[CLUSTER_NAMES[i]] = 1;
+            outputData.cardinalities[outputData.clusterNames[i]] = 1;
     }
 
     /**

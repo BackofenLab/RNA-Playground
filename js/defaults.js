@@ -95,6 +95,7 @@ var CHARACTER = {
     BASE: /[a-zA-Z]/i,
     BASES: /^[a-zA-Z-]+$/,
     NON_BASES: /[^a-zA-Z-]+/g,  // g to replace globally
+    NUMBER: /[0-9]/,
     NUMBERS: /[-+]?[0-9]+\.[0-9]*/
 };
 
@@ -290,7 +291,7 @@ var MULTI_SEQUENCE_DEFAULTS = {
         BASE_COSTS: -5,
         ENLARGEMENT: -1,
         MATCH: 3,
-        MISMATCH: -1
+        MISMATCH: -2
     }
 };
 
@@ -461,10 +462,7 @@ var TABLE = {
 
 // lists (used for check ups and more)
 var CLUSTER_NAMES =
-    ["a", "b", "c", "d", "e", "f", "g", "h",
-    "i", "j", "k", "l", "m", "n", "o", "p",
-    "q", "r", "s", "t", "u", "v", "w", "x",
-    "y", "z"];
+    ["a", "b", "c", "d"];
 
 var EMPTY_ALIGNMENT = [SYMBOLS.EMPTY, SYMBOLS.EMPTY, SYMBOLS.EMPTY];
 
