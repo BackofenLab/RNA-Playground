@@ -462,7 +462,10 @@ var TABLE = {
 
 // lists (used for check ups and more)
 var CLUSTER_NAMES =
-    ["a", "b", "c", "d"];
+    ["a", "b", "c", "d", "e", "f", "g", "h",
+        "i", "j", "k", "l", "m", "n", "o", "p",
+        "q", "r", "s", "t", "u", "v", "w", "x",
+        "y", "z"];
 
 var EMPTY_ALIGNMENT = [SYMBOLS.EMPTY, SYMBOLS.EMPTY, SYMBOLS.EMPTY];
 
