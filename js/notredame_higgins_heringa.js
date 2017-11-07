@@ -26,7 +26,6 @@ $(document).ready(function () {
     // instances
     var multiSequenceAlignmentInstance;
 
-    var fengDoolittleInstance;
     var gotohInstance;
     var gotohLocalInstance;
     var notredameHigginsHeringaInstance;
@@ -61,7 +60,6 @@ $(document).ready(function () {
         // instances (do not change order)
         multiSequenceAlignmentInstance = new bases.multiSequenceAlignment.MultiSequenceAlignment(this);
 
-        fengDoolittleInstance = new fengDoolittle.FengDoolittle();
         gotohInstance = new gotoh.Gotoh();
         gotohLocalInstance = new gotohLocal.GotohLocal();
 
@@ -143,9 +141,6 @@ $(document).ready(function () {
      * Computes the sequence identity.
      * So, how much is identical between two sequences
      * with respect to the smaller sequence.
-     * Hint: It could be computed during computation of alignment data,
-     * but for better understanding and less code complexity
-     * nearly everything computed in order defined in the original paper.
      * @param {Object} - The output which is used to compute a primary library.
      */
     function computePairwiseWeights(output) {
@@ -168,10 +163,10 @@ $(document).ready(function () {
     }
 
     /**
-     * Computes a structure L dependant on an argument of the form [i,j]
-     * which returns the position specific sequence identity.
+     * Computes a structure L with elements
+     * containing the sequence identity.
      * @param alignment - The alignment for which you want compute
-     * a structure that returns position specific sequence identities.
+     * a structure that returns position sequence identities.
      * @return {Object}
      */
     function getSequenceIdentities(alignment) {
@@ -183,10 +178,11 @@ $(document).ready(function () {
         var numCharactersInB = 0;
         var numMatches = 0;
         var numMatchesOrMismatches = 0;
+        var sequenceIdentity = 0;
 
         var L = {};
 
-        // iterate over each position to compute structures L_{i,j}
+        // iterate over each position to create keys L_{i,j}
         for (var k = 0; k < sequenceLength; k++) {
             if (sequenceA[k] === SYMBOLS.GAP) {  // means there is a gap in sequence b
                 numCharactersInB++;
@@ -199,8 +195,17 @@ $(document).ready(function () {
 
                 numMatches += sequenceA[k] === sequenceB[k] ? 1 : 0;  // if match, then increment
 
-                L[[numCharactersInA, numCharactersInB]] = (100 * numMatches) / numMatchesOrMismatches;
+                sequenceIdentity = (100 * numMatches) / numMatchesOrMismatches;
+                L[[numCharactersInA, numCharactersInB]] = sequenceIdentity;  // creating key with non-final value
             }
+        }
+
+        var definedKeys = Object.keys(L);  //
+
+        // set final weight: L^{ii'}(jj') = L^{ii'}(jj') + weight(A)
+        // where initial L^{ii'}(jj') = 0 and weight(A) = seqIdentity(A)
+        for (var i = 0; i < definedKeys.length; i++) {
+            L[definedKeys[i]] = sequenceIdentity;  // overwriting wrong value
         }
 
         return L;
@@ -371,10 +376,27 @@ $(document).ready(function () {
     }
 
     /**
-     * Creates a progressive alignment with Feng-Doolittle
-     * and the computed, extended weight library.
+     * Creates a progressive alignment
+     * and the computed, extended weight library as a scoring-function.
      */
     function createProgressiveAlignment() {
+        // use all pairwise scores, gaps, ... from alignments in step 1 to compute distances
+        // problem: we have local and global alignment data
+        // ideas:
+        // (1)  take average scores, gaps, ... and compute then distances for a distance matrix
+        // (2)  just use global alignment data for the distance matrix
+        // (3)  compute distance matrix first with global alignment data,
+        //      then with local alignment data and take then average distance matrix = (D_local + D_global) / 2
+        //
+        // but: second possibility (2) taken, because
+        // [1] in other sources it is said that local alignments less important
+        // http://www.bioinfbook.org/ : Bioinformatics and Functional Genomics 2nd Edition p.193
+        // (not all, only 10 local alignments for library computation used)
+        // [2] we want create global progressive alignments
+
+        multiSequenceAlignmentInstance.setIO(inputData, globalOutputData);
+        multiSequenceAlignmentInstance.computeDistancesFromSimilarities();
+        multiSequenceAlignmentInstance.createDistanceMatrix();
     }
 
     /**
