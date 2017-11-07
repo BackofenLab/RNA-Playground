@@ -63,7 +63,7 @@ $(document).ready(function () {
 
         fengDoolittleInstance = new fengDoolittle.FengDoolittle();
         gotohInstance = new gotoh.Gotoh();
-        gotohLocalInstance = new gotohLocalInstance.GotohLocal();
+        gotohLocalInstance = new gotohLocal.GotohLocal();
 
         // public class methods
         this.getInput = getInput;
@@ -244,6 +244,8 @@ $(document).ready(function () {
             // add common weights of both libraries together and append
             for (var j = 0; j < commonWeightKeys.length; j++)
                 weights[[commonWeightKeys[j]]] = globalWeights[commonWeightKeys[j]] + localWeights[commonWeightKeys[j]];
+
+            outputData.primaryWeightLib[commonAlignmentKeys[i]] = weights;
         }
     }
 
@@ -289,6 +291,84 @@ $(document).ready(function () {
      * to add consistency-information.
      */
     function computeExtendedWeightPrimaryLibrary() {
+        outputData.extendedWeightLib = {};  // extLib^{a,b}
+        var outerPrimLibKeys = Object.keys(outputData.primaryWeightLib);  // {{a,b}, {a,c}, ..., {d,f}}
+        var alignmentSequenceNames = getIndividualArguments(outerPrimLibKeys);  // [a, b, c, ..., f]
+
+        var TODO = 0;
+
+        // iterate over each element in primary library (so over all ii')
+        for (var i = 0; i < outerPrimLibKeys.length; i++) {
+            var alignmentKey = outerPrimLibKeys[i].split(SYMBOLS.COMMA);  // [a,b]
+            var leftAlignmentKeyArgument = alignmentKey[0];  // a
+            var rightAlignmentKeyArgument = alignmentKey[1];  // b
+
+            var innerPrimLibKeys = Object.keys(outputData.primaryWeightLib[outerPrimLibKeys[i]]);  // {{2,3}, {2,5}, ..., {5,7}}
+
+            var positionSequenceNames = getIndividualArguments(innerPrimLibKeys);
+
+            outputData.extendedWeightLib[outerPrimLibKeys[i]] = {};  // extLib^{a,b}(i,j)
+
+            // iterate over each weight (so over all jj')
+            for (var j = 0; j < innerPrimLibKeys.length; j++) {
+                var weightKey = innerPrimLibKeys[j].split(SYMBOLS.COMMA);  // [i,j]
+                var leftWeightKeyArgument = weightKey[0];  // i
+                var rightWeightKeyArgument = weightKey[1];  // j
+
+                // computation of following formula
+                // EL^{ab}(ij) = L^{ab}(ij) + \sum_{x \in S_aligned} \sum_{k in pos(x)} min(L^{ax}(ik), L^{xb}(kj))
+                var sum = 0;
+
+                // iterate overall aligned sequence x
+                for (var x = 0; x < alignmentSequenceNames.length; x++) {
+
+                    // iterate overall positions in aligned sequence x
+                    for (var k = 0; k < positionSequenceNames.length; k++) {
+                        var alignment1 = outputData.primaryWeightLib[leftAlignmentKeyArgument, alignmentSequenceNames[x]];  // {ax}
+                        var alignment2 = outputData.primaryWeightLib[alignmentSequenceNames[x], rightAlignmentKeyArgument];  // {xb}
+
+                        var weight1 = 0;
+                        var weight2 = 0;
+
+                        if (alignment1 !== undefined) {
+                            weight1 = alignment1[leftWeightKeyArgument, positionSequenceNames[k]];  // (ik)
+                            weight1 = weight1 !== undefined ? weight1 : 0;
+                        }
+
+                        if (alignment2 !== undefined) {
+                            weight2 = alignment2[positionSequenceNames[k], rightWeightKeyArgument];  // (kj)
+                            weight2 = weight2 !== undefined ? weight2 : 0;
+                        }
+
+                        sum += Math.min(weight1, weight2);
+                    }
+                }
+
+                outputData.extendedWeightLib[outerPrimLibKeys[i]][innerPrimLibKeys[j]]
+                    = outputData.primaryWeightLib[outerPrimLibKeys[i]][innerPrimLibKeys[j]];
+            }
+        }
+    }
+
+    /**
+     * Returns the individual arguments of a set of key-pairs.
+     * @param keyPairs - The key-pairs from which the arguments are retrieved.
+     * @return {Array} - The set of individual arguments.
+     */
+    function getIndividualArguments(keyPairs) {
+        var args = [];  // "arguments" is Javascript keyword
+
+        for (var i = 0; i < keyPairs.length; i++) {
+            var leftArg = keyPairs[i][0];
+            var rightArg = keyPairs[i][1];
+
+            if (args.indexOf(leftArg) === -1)  // if (not contained)
+                args.push(leftArg);
+            if (args.indexOf(rightArg) === -1)  // if (not contained)
+                args.push(rightArg);
+        }
+
+        return args;
     }
 
     /**
