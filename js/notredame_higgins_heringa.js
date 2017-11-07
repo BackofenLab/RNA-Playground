@@ -309,14 +309,13 @@ $(document).ready(function () {
 
             outputData.extendedWeightLib[outerPrimLibKeys[i]] = {};  // extLib^{a,b}(i,j)
 
-            // iterate over each weight (so over all jj')
-            for (var j = 0; j < innerPrimLibKeys.length; j++) {
+            // computation of following formula
+            // EL^{ab}(ij) = L^{ab}(ij) + \sum_{x \in S_aligned} \sum_{k in pos(x)} min(L^{ax}(ik), L^{xb}(kj))
+            for (var j = 0; j < innerPrimLibKeys.length; j++) {  // iteration over each weight
                 var weightKey = innerPrimLibKeys[j].split(SYMBOLS.COMMA);  // [i,j]
                 var leftWeightKeyArgument = weightKey[0];  // i
                 var rightWeightKeyArgument = weightKey[1];  // j
 
-                // computation of following formula
-                // EL^{ab}(ij) = L^{ab}(ij) + \sum_{x \in S_aligned} \sum_{k in pos(x)} min(L^{ax}(ik), L^{xb}(kj))
                 var sum = 0;
 
                 // iterate overall aligned sequence x
@@ -345,7 +344,7 @@ $(document).ready(function () {
                 }
 
                 outputData.extendedWeightLib[outerPrimLibKeys[i]][innerPrimLibKeys[j]]
-                    = outputData.primaryWeightLib[outerPrimLibKeys[i]][innerPrimLibKeys[j]];
+                    = outputData.primaryWeightLib[outerPrimLibKeys[i]][innerPrimLibKeys[j]] + sum;
             }
         }
     }
