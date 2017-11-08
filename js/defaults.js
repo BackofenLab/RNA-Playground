@@ -291,7 +291,7 @@ var MULTI_SEQUENCE_DEFAULTS = {
         BASE_COSTS: -5,
         ENLARGEMENT: -1,
         MATCH: 3,
-        MISMATCH: -2
+        MISMATCH: 1
     }
 };
 
