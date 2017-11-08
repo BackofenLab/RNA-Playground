@@ -381,7 +381,7 @@ var PATHS = {
 var PHYLOGENETIC_TREE = {
     SVG_CANVAS: '<div id=\"phylogenetic_tree\"></div>',
     SVG_CANVAS_NAME: "phylogenetic_tree",
-    SVG_DIMENSION_FACTOR: 50,
+    SVG_DIMENSION_FACTOR: 40,
     SVG_WIDTH: 450
 };
 
