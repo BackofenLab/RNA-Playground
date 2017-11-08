@@ -64,8 +64,7 @@ h1 {
 h2 {
     color: gray !important;
     font-family: sans-serif !important;
-    margin-bottom: 5px;
-    margin-left: 0px;
+    margin: 12px 0px 5px 0px;
     line-height: 150%;
     padding-left: 5px !important;
 }
