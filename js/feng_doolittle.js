@@ -216,6 +216,7 @@ $(document).ready(function () {
      * or after a look-up in the previously computed alignments for the start-sequences.
      * @param group1Sequences {Array} - The sequences of the first group.
      * @param group2Sequences {Array} - The sequences of the second group.
+     * @return {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]} - A triple of strings.
      */
     function getBestAlignment(group1Sequences, group2Sequences) {
         var maxScore = Number.NEGATIVE_INFINITY;
@@ -310,6 +311,7 @@ $(document).ready(function () {
      * @param groupSequences {Array} - The sequences which should be added to the guide sequence.
      * @param guideSequence {Array} - The sequence which is used to align the sequences of the group.
      * @return {Array} - The group in which group sequences have been added to the guide sequence.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function getGuidedGroup(groupSequences, guideSequence) {
         if (groupSequences.length === 1)  // if only one element in group

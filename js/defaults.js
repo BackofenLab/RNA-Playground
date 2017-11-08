@@ -274,7 +274,6 @@ var MOVE = {
 
 var MULTI_SEQUENCE_DEFAULTS = {
     CALCULATION: "similarity",
-    GAP_FUNCTION: "affine",
     SEQUENCES: [
         "YYRMAPCYVGCQRAD",
         "YRMPGPIKCQFFQDRA",
@@ -284,7 +283,7 @@ var MULTI_SEQUENCE_DEFAULTS = {
         "YYRMAPCYVGCQRAD",
         "YRMPGPIKCQFFQDRA",
         "YYRMPTSLTQDRAD",
-        "NSLVKKSEDPRD"],  /* some bugfix */
+        "NSLVKKSEDPRD"],  /* some bugfix for Knockout */
 
     FUNCTION: {
         BASE_COSTS: -5,
@@ -293,6 +292,36 @@ var MULTI_SEQUENCE_DEFAULTS = {
         MISMATCH: 1
     }
 };
+
+var MULTI_SEQUENCE_DEFAULTS_T_COFFEE = { /* example from paper */
+    CALCULATION: "similarity",
+    SEQUENCES: [
+        "GARFIELD-THE-LAST-FAT-CAT",
+        "GARFIELD-THE-FAST-CAT",
+        "GARFIELD-THE-VERY-FAST-CAT",
+        "THE-FAT-CAT"],
+    SEQUENCES_COPY: [
+        "GARFIELD-THE-LAST-FAT-CAT",
+        "GARFIELD-THE-FAST-CAT",
+        "GARFIELD-THE-VERY-FAST-CAT",
+        "THE-FAT-CAT"],  /* some bugfix for Knockout */
+
+    FUNCTION: {
+        BASE_COSTS: -5,
+        BASE_COSTS_LOCAL: -5,
+
+        ENLARGEMENT: -1,
+        ENLARGEMENT_LOCAL: -1,
+
+        MATCH: 3,
+        MATCH_LOCAL: 3,
+
+        MISMATCH: 1,
+        MISMATCH_LOCAL: 1
+    }
+};
+
+
 
 /**
  * Symbols which are used to be for example globally replaced.
@@ -461,8 +490,8 @@ var TABLE = {
 };
 
 var TOGGLE_LINK_TEXT = {
-    HIDE: "Show intermediate steps",
-    SHOW: "Hide intermediate steps"
+    HIDE: "hide intermediate steps",
+    SHOW: "show intermediate steps"
 };
 
 // lists (used for check ups and more)

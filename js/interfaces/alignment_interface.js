@@ -432,7 +432,7 @@ Author: Alexander Mattheis
 
         viewmodel.toggleLinkText = ko.computed(
             function () {
-                return viewmodel.showMatrices() ? TOGGLE_LINK_TEXT.SHOW : TOGGLE_LINK_TEXT.HIDE;
+                return viewmodel.showMatrices() ? TOGGLE_LINK_TEXT.HIDE : TOGGLE_LINK_TEXT.SHOW;
             }
         );
     }

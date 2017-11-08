@@ -90,6 +90,9 @@ $(document).ready(function () {
     function setInput(inputViewmodel) {
         multiSequenceAlignmentInstance.setIO(inputData, {});
         multiSequenceAlignmentInstance.setInput(inputViewmodel);
+
+        inputData.maxNumberOptimalAlignments = inputViewmodel.maxNumberOptimalAlignments();
+        inputData.maxNumberOptimalAlignmentsLocal = inputViewmodel.maxNumberOptimalAlignmentsLocal();
     }
 
     /**
@@ -108,7 +111,7 @@ $(document).ready(function () {
      */
     function computePrimaryLibraries() {
         computePairwiseGlobalAlignmentData();
-        computePairwiseLocalAlignmentData();
+        //computePairwiseLocalAlignmentData();
     }
 
     /**
@@ -122,6 +125,13 @@ $(document).ready(function () {
     }
 
     function computePairwiseLocalAlignmentData() {
+        /*
+        // later
+        inputData.baseCosts = inputViewmodel.baseCostsLocal();
+        inputData.enlargement = inputViewmodel.enlargementLocal();
+        inputData.match = inputViewmodel.matchLocal();
+        inputData.mismatch = inputViewmodel.mismatchLocal();
+        */
         multiSequenceAlignmentInstance.setIO(inputData, localOutputData);
         multiSequenceAlignmentInstance.computePairwiseData(gotohLocalInstance);
     }
@@ -133,8 +143,9 @@ $(document).ready(function () {
     function computeCombinedWeightPrimaryLibrary() {
         // Hint: conversion of double sequences into alignment edges is directly done during the computations of pairwise weights
         outputData.primaryGlobalWeightLib = computePairwiseWeights(globalOutputData);
-        outputData.primaryLocalWeightLib = computePairwiseWeights(localOutputData);
-        addSignals();
+        // later
+        // outputData.primaryLocalWeightLib = computePairwiseWeights(localOutputData);
+        // addSignals();
     }
 
     /**
@@ -300,8 +311,6 @@ $(document).ready(function () {
         var outerPrimLibKeys = Object.keys(outputData.primaryWeightLib);  // {{a,b}, {a,c}, ..., {d,f}}
         var alignmentSequenceNames = getIndividualArguments(outerPrimLibKeys);  // [a, b, c, ..., f]
 
-        var TODO = 0;
-
         // iterate over each element in primary library (so over all ii')
         for (var i = 0; i < outerPrimLibKeys.length; i++) {
             var alignmentKey = outerPrimLibKeys[i].split(SYMBOLS.COMMA);  // [a,b]
@@ -397,6 +406,7 @@ $(document).ready(function () {
         multiSequenceAlignmentInstance.setIO(inputData, globalOutputData);
         multiSequenceAlignmentInstance.computeDistancesFromSimilarities();
         multiSequenceAlignmentInstance.createDistanceMatrix();
+
     }
 
     /**
