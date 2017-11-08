@@ -102,7 +102,7 @@ $(document).ready(function () {
         computePrimaryLibraries();
         computeCombinedWeightPrimaryLibrary();
         computeExtendedWeightPrimaryLibrary();
-        createProgressiveAlignment();
+        startProgressiveAlignment();
         return [inputData, outputData];
     }
 
@@ -385,10 +385,9 @@ $(document).ready(function () {
     }
 
     /**
-     * Creates a progressive alignment
-     * and the computed, extended weight library as a scoring-function.
+     * Starts the creation of a progressive alignment under the computed, extended weight library as a scoring-function.
      */
-    function createProgressiveAlignment() {
+    function startProgressiveAlignment() {
         // use all pairwise scores, gaps, ... from alignments in step 1 to compute distances
         // problem: we have local and global alignment data
         // ideas:
@@ -406,7 +405,32 @@ $(document).ready(function () {
         multiSequenceAlignmentInstance.setIO(inputData, globalOutputData);
         multiSequenceAlignmentInstance.computeDistancesFromSimilarities();
         multiSequenceAlignmentInstance.createDistanceMatrix();
+        createProgressiveAlignment(multiSequenceAlignmentInstance.getPhylogeneticTree());
+    }
 
+    /**
+     * By going through the guide tree branches (in correct merging order),
+     * the algorithm generates progressive alignments.
+     * Hint: A repeated post order traversal of the tree would be less efficient.
+     * This is why just an iteration through the branches is done.
+     * @param treeBranches {Object} - The tree branches which are defining the order for the merging process.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     */
+    function createProgressiveAlignment() {
+        inputData.substitutionFunction = substitutionFunction;
+        inputData.enlargement = 0;
+        inputData.gapCosts = 0;
+
+        multiSequenceAlignmentInstance.setIO(inputData, globalOutputData);
+    }
+
+    /**
+     * Returns the position specific scoring.
+     * @param i {number} - The position in the first sequence.
+     * @param j {number} - The position in the second sequence.
+     * @returns {number} - The position specific score.
+     */
+    function substitutionFunction(i, j) {
     }
 
     /**

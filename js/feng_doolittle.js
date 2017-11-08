@@ -96,24 +96,10 @@ $(document).ready(function () {
         multiSequenceAlignmentInstance.computePairwiseData(gotohInstance);  // computes scores, number of gaps, alignment lengths, ...
         multiSequenceAlignmentInstance.computeDistancesFromSimilarities(); // converting the pairwise similarities into distances
         multiSequenceAlignmentInstance.createDistanceMatrix();  // creates a function dist(a,b) between cluster names and distances
-        createProgressiveAlignment(getPhylogeneticTree());
+        createProgressiveAlignment(multiSequenceAlignmentInstance.getPhylogeneticTree());
 
         outputData.score = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
         return [inputData, outputData];
-    }
-
-    /**
-     * Using a clustering algorithm like UPGMA (Group Average)
-     * the algorithm returns the binary guide tree branches in creation order.
-     * @return {Object} - The tree branches.
-     */
-    function getPhylogeneticTree() {
-        inputData.numOfStartClusters = inputData.sequences.length - inputData.arrayPositionsOfRemovedSequences.length;
-
-        var clustering = new upgma.Upgma();
-        clustering.setIO(inputData, outputData);
-        var ioData = clustering.compute();
-        return ioData[1].treeBranches;
     }
 
     /**

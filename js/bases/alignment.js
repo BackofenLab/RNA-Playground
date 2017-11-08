@@ -10,8 +10,9 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("bases.alignment", Vector, create,
-        Alignment, getInput, setLinearAlignmentInput, setSubadditiveAlignmentInput, compute, recursionFunction, getGlobalTraces, getLocalTraces,
-        createAlignments, getOutput, setIO, getLastChild, getNeighboured, differenceLowerEpsilon);
+        Alignment, getInput, setLinearAlignmentInput, setSubadditiveAlignmentInput, compute, recursionFunction,
+        affineRecursionFunction, getGlobalTraces, getLocalTraces, getAllMaxPositions, createAlignments, getOutput, setIO, getLastChild,
+        getNeighboured, getVerticalNeighboured, getHorizontalNeighboured, differenceLowerEpsilon);
 
     // instances
     var alignmentInstance;
@@ -64,9 +65,13 @@ Author: Alexander Mattheis
         this.setSubadditiveAlignmentInput = setSubadditiveAlignmentInput;
         this.compute = compute;
         this.recursionFunction = recursionFunction;
+        this.affineRecursionFunction = affineRecursionFunction;
         this.getGlobalTraces = getGlobalTraces;
         this.getLocalTraces = getLocalTraces;
+        this.getAllMaxPositions = getAllMaxPositions;
         this.getNeighboured = getNeighboured;
+        this.getVerticalNeighboured = getVerticalNeighboured;
+        this.getHorizontalNeighboured = getHorizontalNeighboured;
         this.createAlignments = createAlignments;
         this.getOutput = getOutput;
 
@@ -177,6 +182,69 @@ Author: Alexander Mattheis
         var leftValue = outputData.matrix[i][j - 1] + inputData.insertion;
 
         return childInstance.recursionFunction(diagonalValue, upValue, leftValue);
+    }
+
+    /**
+     * Computes the cell score.
+     * @param aChar {string} - The current char from the first string.
+     * @param bChar {string} - The current char from the second string.
+     * @param i {number} - The current vertical position in the matrix.
+     * @param j {number} - The current horizontal position in the matrix.
+     * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
+     * @param local {boolean} - Tells if the local recursion function should be used.
+     * @return {number} - The value for the cell at position (i,j).
+     */
+    function affineRecursionFunction(aChar, bChar, i, j, optimum, local) {
+        var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
+
+        if (inputData.substitutionFunction !== undefined)  // extension for T-Coffee
+            matchOrMismatch = inputData.substitutionFunction(i,j);
+
+        if (aChar === SYMBOLS.NONE || bChar === SYMBOLS.NONE) matchOrMismatch = 0;  // extension for Feng-Doolittle
+
+        // gap recursion-functions
+        outputData.horizontalGaps[i][j] = horizontalOptimum(optimum, i, j);
+        outputData.verticalGaps[i][j] = verticalOptimum(optimum, i, j);
+
+        // default matrix recursion function
+        if (local)
+            return optimum(
+                outputData.horizontalGaps[i][j],
+                outputData.matrix[i - 1][j - 1] + matchOrMismatch,
+                outputData.verticalGaps[i][j],
+                0);
+
+        // else global
+        return optimum(
+            outputData.horizontalGaps[i][j],
+            outputData.matrix[i - 1][j - 1] + matchOrMismatch,
+            outputData.verticalGaps[i][j]);
+    }
+
+    /**
+     * Computes the cell score for the horizontal gap matrix.
+     * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
+     * @param i {number} - The current vertical position in the matrix.
+     * @param j {number} - The current horizontal position in the matrix.
+     * @return {number} - The optimal value.
+     */
+    function horizontalOptimum(optimum, i, j) {
+        return optimum(
+            outputData.horizontalGaps[i][j - 1] + inputData.enlargement,
+            outputData.matrix[i][j - 1] + inputData.baseCosts + inputData.enlargement);
+    }
+
+    /**
+     * Computes the cell score for the vertical gap matrix.
+     * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
+     * @param i {number} - The current vertical position in the matrix.
+     * @param j {number} - The current horizontal position in the matrix.
+     * @return {number} - The optimal value.
+     */
+    function verticalOptimum(optimum, i, j) {
+        return optimum(
+            outputData.verticalGaps[i - 1][j] + inputData.enlargement,
+            outputData.matrix[i - 1][j] + inputData.baseCosts + inputData.enlargement);
     }
 
     /**
@@ -328,6 +396,28 @@ Author: Alexander Mattheis
     }
 
     /**
+     * Returning all maximums of the computed matrix.
+     * @param inputData {Object} - Containing information about the output matrix.
+     * @param outputData {Object} - Containing the output matrix.
+     * @return {Array} - Array of vectors (max-positions).
+     */
+    function getAllMaxPositions(inputData, outputData) {
+        var maxPositions = [];
+
+        if (outputData.score > 0) {  // only positions bigger 0 can be start positions (because local alignments never lower 0)
+            for (var i = 0; i < inputData.matrixHeight; i++) {
+                for (var j = 0; j < inputData.matrixWidth; j++) {
+                    if (outputData.matrix[i][j] === outputData.score) {
+                        maxPositions.push(new bases.alignment.Vector(i, j));
+                    }
+                }
+            }
+        }
+
+        return maxPositions;
+    }
+
+    /**
      * Creates the alignments.
      */
     function createAlignments() {
@@ -470,6 +560,82 @@ Author: Alexander Mattheis
 
         if (isInsertion)
             neighboured.push(new Vector(position.i, left));
+
+        return neighboured;
+    }
+
+    /**
+     * Returns the neighbours to which you can go from the current cell position in the matrix for vertical gap costs.
+     * @param position {Object} - Current cell position in matrix.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     */
+    function getVerticalNeighboured(position, inputData, outputData) {
+        var neighboured = [];
+
+        var up = position.i - 1;
+
+        // retrieve values
+        var currentValue = outputData.verticalGaps[position.i][position.j];
+
+        var pUpValue = Number.NaN;
+        var xUpValue = Number.NaN;
+
+        if (position.i >= 0 && up >= 0) {
+            pUpValue = outputData.verticalGaps[up][position.j];
+            xUpValue = outputData.matrix[up][position.j];
+        }
+
+        // check
+        var isUpInP = currentValue === pUpValue + inputData.enlargement;
+        var isUpInX = currentValue === xUpValue + inputData.baseCosts + inputData.enlargement;
+
+        // add
+        if (isUpInP)
+            neighboured.push(bases.alignment.create(new bases.alignment.Vector(up, position.j), MATRICES.VERTICAL));
+
+        if (isUpInX)
+            neighboured.push(new bases.alignment.Vector(up, position.j));
+
+        return neighboured;
+    }
+
+    /**
+     * Returns the neighbours to which you can go from the current cell position in the matrix for horizontal gap costs.
+     * @param position {Object} - Current cell position in matrix.
+     * @param inputData {Object} - Contains all input data.
+     * @param outputData {Object} - Contains all output data.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     */
+    function getHorizontalNeighboured(position, inputData, outputData) {
+        var neighboured = [];
+
+        var left = position.j - 1;
+
+        // retrieve values
+        var currentValue = outputData.horizontalGaps[position.i][position.j];
+
+        var qLeftValue = Number.NaN;
+        var xLeftValue = Number.NaN;
+
+        if (position.i >= 0 && left >= 0) {
+            qLeftValue = outputData.horizontalGaps[position.i][left];
+            xLeftValue = outputData.matrix[position.i][left];
+        }
+
+        // check
+        var isLeftInQ = currentValue === qLeftValue + inputData.enlargement;
+        var isLeftInX = currentValue === xLeftValue + inputData.baseCosts + inputData.enlargement;
+
+        // add
+        if (isLeftInQ)
+            neighboured.push(bases.alignment.create(new bases.alignment.Vector(position.i, left), MATRICES.HORIZONTAL));
+
+        if (isLeftInX)
+            neighboured.push(new bases.alignment.Vector(position.i, left));
 
         return neighboured;
     }

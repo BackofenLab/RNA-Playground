@@ -20,7 +20,7 @@ $(document).ready(function () {
 (function () {  // namespace
     // public methods
     namespace("smithWaterman", startSmithWaterman, SmithWaterman,
-        initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getAllMaxPositions,
+        initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback,
         getSuperclass);
 
     // instances
@@ -63,7 +63,6 @@ $(document).ready(function () {
         this.recursionFunction = recursionFunction;
         this.computeTraceback = computeTraceback;
 
-        this.getAllMaxPositions = getAllMaxPositions;
         this.getSuperclass = getSuperclass;
     }
 
@@ -141,7 +140,7 @@ $(document).ready(function () {
         var outputData = alignmentInstance.getOutput();
 
         // computing all traceback start-positions
-        var backtraceStarts = getAllMaxPositions(inputData, outputData);
+        var backtraceStarts = alignmentInstance.getAllMaxPositions(inputData, outputData);
 
         outputData.tracebackPaths = [];
         outputData.moreTracebacks = false;
@@ -150,28 +149,6 @@ $(document).ready(function () {
             var tracebackPaths = alignmentInstance.getLocalTraces([backtraceStarts[i]], inputData, outputData, -1, alignmentInstance.getNeighboured);
             outputData.tracebackPaths = outputData.tracebackPaths.concat(tracebackPaths);
         }
-    }
-
-    /**
-     * Returning all maximums of the computed matrix.
-     * @param inputData {Object} - Containing information about the output matrix.
-     * @param outputData {Object} - Containing the output matrix.
-     * @return {Array} - Array of vectors (max-positions).
-     */
-    function getAllMaxPositions(inputData, outputData) {
-        var maxPositions = [];
-
-        if (outputData.score > 0) {  // only positions bigger 0 can be start positions (because local alignments never lower 0)
-            for (var i = 0; i < inputData.matrixHeight; i++) {
-                for (var j = 0; j < inputData.matrixWidth; j++) {
-                    if (outputData.matrix[i][j] === outputData.score) {
-                        maxPositions.push(new bases.alignment.Vector(i, j));
-                    }
-                }
-            }
-        }
-
-        return maxPositions;
     }
 
     /**

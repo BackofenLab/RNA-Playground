@@ -11,7 +11,7 @@ Author: Alexander Mattheis
     // public methods
     namespace("bases.multiSequenceAlignment", MultiSequenceAlignment, getInput, setInput,
         computePairwiseData, initializeInput, computeWithAlgorithm, computeDistancesFromSimilarities,
-        createDistanceMatrix, getOutput, setIO, getLastChild);
+        createDistanceMatrix, getPhylogeneticTree, getOutput, setIO, getLastChild);
 
     // instances
     var alignmentInstance;
@@ -40,6 +40,7 @@ Author: Alexander Mattheis
         this.computeWithAlgorithm = computeWithAlgorithm;
         this.computeDistancesFromSimilarities = computeDistancesFromSimilarities;
         this.createDistanceMatrix = createDistanceMatrix;
+        this.getPhylogeneticTree = getPhylogeneticTree;
         this.getOutput = getOutput;
 
         this.setIO = setIO;
@@ -531,6 +532,20 @@ Author: Alexander Mattheis
         }
 
         return clusterNames;
+    }
+
+    /**
+     * Using a clustering algorithm like UPGMA (Group Average)
+     * the algorithm returns the binary guide tree branches in creation order.
+     * @return {Object} - The tree branches.
+     */
+    function getPhylogeneticTree() {
+        inputData.numOfStartClusters = inputData.sequences.length - inputData.arrayPositionsOfRemovedSequences.length;
+
+        var clustering = new upgma.Upgma();
+        clustering.setIO(inputData, outputData);
+        var ioData = clustering.compute();
+        return ioData[1].treeBranches;
     }
 
     /**
