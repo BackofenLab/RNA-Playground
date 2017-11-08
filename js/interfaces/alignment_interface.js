@@ -403,6 +403,7 @@ Author: Alexander Mattheis
         // merge steps
         reorderGroupSequences(outputData);
         viewmodel.guideAlignments = ko.observable(outputData.guideAlignments);
+        viewmodel.guideAlignmentsNames = ko.observable(outputData.guideAlignmentsNames);
         viewmodel.firstGroups = ko.observable(outputData.firstGroups);
         viewmodel.secondGroups = ko.observable(outputData.secondGroups);
         viewmodel.firstGroupsNames = ko.observable(outputData.firstGroupsNames);
@@ -424,9 +425,16 @@ Author: Alexander Mattheis
 
         viewmodel.showMatrices = ko.observable(false);
 
+        // gimmicks/optimizations
         viewmodel.toggleVisibility = function() {
             viewmodel.showMatrices(!viewmodel.showMatrices());
         };
+
+        viewmodel.toggleLinkText = ko.computed(
+            function () {
+                return viewmodel.showMatrices() ? TOGGLE_LINK_TEXT.SHOW : TOGGLE_LINK_TEXT.HIDE;
+            }
+        );
     }
 
     /**
@@ -513,55 +521,57 @@ Author: Alexander Mattheis
      * @param outputData - The output on which conversion is applied.
      */
     function reorderGroupSequences(outputData) {
-        var finalGroupName = outputData.joinedGroupNames[outputData.joinedGroupNames.length-1];
-        var finalGroup = outputData.joinedGroups[outputData.joinedGroups.length-1];
+        if (outputData.joinedGroupNames.length > 0) {
+            var finalGroupName = outputData.joinedGroupNames[outputData.joinedGroupNames.length-1];
+            var finalGroup = outputData.joinedGroups[outputData.joinedGroups.length-1];
 
-        var groupMemberNames = getIndividualElementNames(finalGroupName);
-        var groupMemberRankings = getRankings(groupMemberNames, finalGroup);
+            var groupMemberNames = getIndividualElementNames(finalGroupName);
+            var groupMemberRankings = getRankings(groupMemberNames, finalGroup);
 
-        var reorderedGroups = [];
-        var reorderedGroupNames = [];
+            var reorderedGroups = [];
+            var reorderedGroupNames = [];
 
-        var reorderedFirstGroups = [];
-        var reorderedFirstGroupsNames = [];
+            var reorderedFirstGroups = [];
+            var reorderedFirstGroupsNames = [];
 
-        var reorderedSecondGroups = [];
-        var reorderedSecondGroupsNames = [];
+            var reorderedSecondGroups = [];
+            var reorderedSecondGroupsNames = [];
 
-        // iterate over all groups (result, group 1 and group 2)
-        for (var i = 0; i < outputData.joinedGroups.length; i++) {
-            var group = outputData.joinedGroups[i];
-            var group1 = outputData.firstGroups[i];
-            var group2 = outputData.secondGroups[i];
+            // iterate over all groups (result, group 1 and group 2)
+            for (var i = 0; i < outputData.joinedGroups.length; i++) {
+                var group = outputData.joinedGroups[i];
+                var group1 = outputData.firstGroups[i];
+                var group2 = outputData.secondGroups[i];
 
-            var memberNames = getIndividualElementNames(outputData.joinedGroupNames[i]);
-            var member1Names = getIndividualElementNames(outputData.firstGroupsNames[i]);
-            var member2Names = getIndividualElementNames(outputData.secondGroupsNames[i]);
+                var memberNames = getIndividualElementNames(outputData.joinedGroupNames[i]);
+                var member1Names = getIndividualElementNames(outputData.firstGroupsNames[i]);
+                var member2Names = getIndividualElementNames(outputData.secondGroupsNames[i]);
 
-            var sortedGroupAndNames = getSortedGroup(group, memberNames, groupMemberRankings);
-            var sorted1GroupAndNames = getSortedGroup(group1, member1Names, groupMemberRankings);
-            var sorted2GroupAndNames = getSortedGroup(group2, member2Names, groupMemberRankings);
+                var sortedGroupAndNames = getSortedGroup(group, memberNames, groupMemberRankings);
+                var sorted1GroupAndNames = getSortedGroup(group1, member1Names, groupMemberRankings);
+                var sorted2GroupAndNames = getSortedGroup(group2, member2Names, groupMemberRankings);
 
-            reorderedGroups.push(sortedGroupAndNames[0]);
-            reorderedGroupNames.push(sortedGroupAndNames[1]);
+                reorderedGroups.push(sortedGroupAndNames[0]);
+                reorderedGroupNames.push(sortedGroupAndNames[1]);
 
-            reorderedFirstGroups.push(sorted1GroupAndNames[0]);
-            reorderedFirstGroupsNames.push(sorted1GroupAndNames[1]);
+                reorderedFirstGroups.push(sorted1GroupAndNames[0]);
+                reorderedFirstGroupsNames.push(sorted1GroupAndNames[1]);
 
-            reorderedSecondGroups.push(sorted2GroupAndNames[0]);
-            reorderedSecondGroupsNames.push(sorted2GroupAndNames[1]);
+                reorderedSecondGroups.push(sorted2GroupAndNames[0]);
+                reorderedSecondGroupsNames.push(sorted2GroupAndNames[1]);
+            }
+
+            outputData.joinedGroups = reorderedGroups;
+            outputData.joinedGroupNames = reorderedGroupNames;
+
+            outputData.firstGroups = reorderedFirstGroups;
+            outputData.firstGroupsNames = reorderedFirstGroupsNames;
+
+            outputData.secondGroups = reorderedSecondGroups;
+            outputData.secondGroupsNames = reorderedSecondGroupsNames;
+
+            outputData.progressiveAlignment = reorderedGroups[reorderedGroups.length - 1];
         }
-
-        outputData.joinedGroups = reorderedGroups;
-        outputData.joinedGroupNames = reorderedGroupNames;
-
-        outputData.firstGroups = reorderedFirstGroups;
-        outputData.firstGroupsNames = reorderedFirstGroupsNames;
-
-        outputData.secondGroups = reorderedSecondGroups;
-        outputData.secondGroupsNames = reorderedSecondGroupsNames;
-
-        outputData.progressiveAlignment = reorderedGroups[reorderedGroups.length - 1];
     }
 
     /**

@@ -839,11 +839,14 @@ Author: Alexander Mattheis
         if (visualizerInstance.output.newickString.length !== 1
             && newick.indexOf(SYMBOLS.MINUS) === -1) {  // if there is not only a ";" and if there are no negative values
 
+            var numberOfUsedseqeunces = visualizerInstance.input.sequences.length - visualizerInstance.input.arrayPositionsOfRemovedSequences.length;
+            var svgHeight = numberOfUsedseqeunces * PHYLOGENETIC_TREE.SVG_DIMENSION_FACTOR;  // make it dependant on the number of sequences
+
             visualizerInstance.phylogeneticTree
                 = new Smits.PhyloCanvas(newick,
                 PHYLOGENETIC_TREE.SVG_CANVAS_NAME,
                 PHYLOGENETIC_TREE.SVG_WIDTH,
-                PHYLOGENETIC_TREE.SVG_HEIGHT);
+                svgHeight);
 
             var svgPaths = $("svg path");
             var svgTexts = $("svg text");

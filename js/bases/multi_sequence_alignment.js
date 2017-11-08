@@ -472,12 +472,12 @@ Author: Alexander Mattheis
     function createDistanceMatrix() {
         outputData.clusterNames = getClusterNames();
 
-        var names = {};
+        outputData.nameOfSequence = {};
 
         var currentNamePos = 0;
         for (var i = 0; i < inputData.sequences.length; i++) {
             if (inputData.arrayPositionsOfRemovedSequences.indexOf(i) === -1) {  // if sequence is a used sequence
-                names[inputData.sequences[i]] = outputData.clusterNames[currentNamePos];
+                outputData.nameOfSequence[inputData.sequences[i]] = outputData.clusterNames[currentNamePos];
                 currentNamePos++;
             }
         }
@@ -489,8 +489,8 @@ Author: Alexander Mattheis
         for (var i = 0; i < outputData.distances.length; i++) {
             var sequencePair = outputData.sequencePairs[i];
 
-            var firstClusterName = names[sequencePair[0]];
-            var secondClusterName = names[sequencePair[1]];
+            var firstClusterName = outputData.nameOfSequence[sequencePair[0]];
+            var secondClusterName = outputData.nameOfSequence[sequencePair[1]];
 
             outputData.distanceMatrix[[firstClusterName, secondClusterName]] = outputData.distances[i];
             outputData.sequencePairNames.push([firstClusterName, secondClusterName]);

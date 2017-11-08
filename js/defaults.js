@@ -29,7 +29,6 @@ var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight traceba
 
 var SMITH_WATERMAN_STOP = "0";
 
-
 // structs
 /**
  * Stores the implemented algorithm names.
@@ -353,8 +352,8 @@ var PATHS = {
 var PHYLOGENETIC_TREE = {
     SVG_CANVAS: '<div id=\"phylogenetic_tree\"></div>',
     SVG_CANVAS_NAME: "phylogenetic_tree",
-    SVG_HEIGHT: 600,
-    SVG_WIDTH: 600,
+    SVG_DIMENSION_FACTOR: 50,
+    SVG_WIDTH: 450
 };
 
 /**
@@ -397,6 +396,7 @@ var SUBADDITIVE_FUNCTIONS = {
  * Stores non-LaTeX symbols used in the program.
  */
 var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
+    ALIGN: "~",
     AND: "&",
     BRACKET_LEFT: "(",
     BRACKET_RIGHT: ")",
@@ -458,6 +458,11 @@ var SVG = {
 var TABLE = {
     DOWNLOAD_NAME: "table.csv",
     TEXT_FILE_ENCODING: "text/csv;charset=utf-8"
+};
+
+var TOGGLE_LINK_TEXT = {
+    HIDE: "Show intermediate steps",
+    SHOW: "Hide intermediate steps"
 };
 
 // lists (used for check ups and more)

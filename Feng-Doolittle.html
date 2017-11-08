@@ -112,7 +112,7 @@ Author: Alexander Mattheis
     </div>
 </div>
 
-<h2 class="header">Input:</h2>
+<h1>Input:</h1>
 <div id="algorithm_input">
     <!-- ko foreach: $root.input.sequences() -->
         <div class="row">
@@ -182,7 +182,7 @@ Author: Alexander Mattheis
     </div>
 </div>
 
-<h2 class="header">Output:</h2>
+<h1>Output:</h1>
 <div id="algorithm_output">
     <div class="output">
         <div class="final">
@@ -222,7 +222,7 @@ Author: Alexander Mattheis
         </div>
 
         <div class="intermediate_result_header">
-            <h4>Intermediate Results</h4>
+            <h2>Intermediate Results</h2>
         </div>
 
         <div class="merge_steps">
@@ -276,6 +276,7 @@ Author: Alexander Mattheis
                                 </td>
 
                                 <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.guideAlignmentsNames()[$index()]"></code>: <br>
                                     <code data-bind="text: $root.output.guideAlignments()[$index()][0]"></code> <br>
                                     <code data-bind="text: $root.output.guideAlignments()[$index()][1]"></code> <br>
                                     <code data-bind="text: $root.output.guideAlignments()[$index()][2]"></code>
@@ -295,7 +296,7 @@ Author: Alexander Mattheis
         </div>
 
         <div class="intermediate_result_header">
-            <h4 class="subresult">Phylogenetic Tree</h4>
+            <h2 class="subresult">Phylogenetic Tree</h2>
         </div>
 
         <div class="newick_tree">
@@ -342,7 +343,7 @@ Author: Alexander Mattheis
         </div>
 
         <div class="intermediate_result_header">
-            <h4 class="subresult">Distance Table</h4>
+            <h2 class="subresult">Distance Table</h2>
         </div>
 
         <div class="distance_table">
@@ -379,13 +380,13 @@ Author: Alexander Mattheis
             </table>
         </div>
 
-        <button data-bind="click: $root.output.toggleVisibility">UPGMA Iterations</button>
+        <a href="#" data-bind="click: $root.output.toggleVisibility, text: $root.output.toggleLinkText"></a>
 
         <div class="matrices" data-bind="visible: $root.output.showMatrices">
             <!-- ko foreach: $root.output.distanceMatrices() -->
                 <!-- ko if: $index() > 0 -->
                     <div class="intermediate_result_header">
-                        <h4 class="header subresult">Iteration <span data-bind="text: $index()"></span>:</h4>
+                        <h2 class="header subresult">Iteration <span data-bind="text: $index()"></span>:</h2>
                     </div>
 
                     <div class="distance_table">
@@ -428,7 +429,7 @@ Author: Alexander Mattheis
         </div>
 
         <div class="intermediate_result_header">
-            <h4 class="subresult">Pairwise Data</h4>
+            <h2 class="subresult">Pairwise Data</h2>
         </div>
 
         <div class="pairwise_data">

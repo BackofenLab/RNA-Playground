@@ -275,6 +275,7 @@ Author: Alexander Mattheis
         // merge steps
         alignmentInterfaceInstance.reorderGroupSequences(outputData);
         viewmodels.output.guideAlignments(outputData.guideAlignments);
+        viewmodels.output.guideAlignmentsNames(outputData.guideAlignmentsNames);
         viewmodels.output.firstGroups(outputData.firstGroups);
         viewmodels.output.secondGroups(outputData.secondGroups);
         viewmodels.output.firstGroupsNames(outputData.firstGroupsNames);

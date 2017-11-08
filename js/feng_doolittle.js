@@ -19,7 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("fengDoolittle", startFengDoolittle, FengDoolittle, getInput, setInput, compute, computePairwiseData,
+    namespace("fengDoolittle", startFengDoolittle, FengDoolittle, getInput, setInput, compute,
         getOutput, setIO, getSuperclass);
 
     // instances
@@ -63,7 +63,6 @@ $(document).ready(function () {
 
         this.setInput = setInput;
         this.compute = compute;
-        this.computePairwiseData = computePairwiseData;
         this.getOutput = getOutput;
 
         this.setIO = setIO;
@@ -94,40 +93,13 @@ $(document).ready(function () {
     function compute() {
         multiSequenceAlignmentInstance.setIO(inputData, outputData);
 
-        computePairwiseData();
-        computeDistancesFromSimilarities();
-        createDistanceMatrix();
+        multiSequenceAlignmentInstance.computePairwiseData(gotohInstance);  // computes scores, number of gaps, alignment lengths, ...
+        multiSequenceAlignmentInstance.computeDistancesFromSimilarities(); // converting the pairwise similarities into distances
+        multiSequenceAlignmentInstance.createDistanceMatrix();  // creates a function dist(a,b) between cluster names and distances
         createProgressiveAlignment(getPhylogeneticTree());
 
         outputData.score = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
         return [inputData, outputData];
-    }
-
-    /**
-     * Computes scores (similarities),
-     * the number of gaps, the alignment lengths
-     * and so on between all sequences.
-     */
-    function computePairwiseData() {
-        multiSequenceAlignmentInstance.computePairwiseData(gotohInstance);
-    }
-
-    /**
-     * Converting the pairwise similarities into distances
-     * by using the Feng-Doolittle formulas.
-     */
-    function computeDistancesFromSimilarities() {
-        multiSequenceAlignmentInstance.computeDistancesFromSimilarities();
-    }
-
-    /**
-     * Creates dependency between cluster names and distances.
-     * So, a function dist(a,b) which giving you
-     * for two cluster-names a and b the distance
-     * (needed for the clustering algorithm).
-     */
-    function createDistanceMatrix() {
-        multiSequenceAlignmentInstance.createDistanceMatrix();
     }
 
     /**
@@ -191,6 +163,7 @@ $(document).ready(function () {
         outputData.secondGroups = [];
         outputData.secondGroupsNames = [];
         outputData.guideAlignments = [];
+        outputData.guideAlignmentsNames = [];
         outputData.joinedGroups = [];
         outputData.joinedGroupNames = [];
     }
@@ -220,11 +193,11 @@ $(document).ready(function () {
         outputData.groups[groupName] = createGroup(group1Sequences, group2Sequences, bestAlignment);
 
         // for visualization of steps
-        outputData.guideAlignments.push(bestAlignment);
         outputData.firstGroups.push(group1Sequences);
         outputData.firstGroupsNames.push(leftChildName);
         outputData.secondGroups.push(group2Sequences);
         outputData.secondGroupsNames.push(rightChildName);
+        outputData.guideAlignments.push(bestAlignment);
         outputData.joinedGroups.push(outputData.groups[groupName]);
         outputData.joinedGroupNames.push(groupName);
     }
@@ -247,6 +220,8 @@ $(document).ready(function () {
     function getBestAlignment(group1Sequences, group2Sequences) {
         var maxScore = Number.NEGATIVE_INFINITY;
         var maxAlignment = [];
+        var maxSequence1 = SYMBOLS.EMPTY;
+        var maxSequence2 = SYMBOLS.EMPTY;
 
         // iterate through all sequences and search for search for alignment with maximum similarity
         for (var i = 0; i < group1Sequences.length; i++) {
@@ -259,10 +234,19 @@ $(document).ready(function () {
                 if (asData[1] > maxScore) {
                     maxScore = asData[1];
                     maxAlignment = asData[0];
+
+                    maxSequence1 = sequence1;
+                    maxSequence2 = sequence2;
                 }
             }
         }
 
+        var firstSequence
+            = outputData.nameOfSequence[maxSequence1.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
+        var secondSequence
+            = outputData.nameOfSequence[maxSequence2.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
+
+        outputData.guideAlignmentsNames.push(firstSequence + SYMBOLS.ALIGN + secondSequence);
         return maxAlignment;
     }
 
