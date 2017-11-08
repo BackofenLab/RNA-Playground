@@ -235,13 +235,6 @@ final_result_footer {
     padding: 5px;
 }
 
-.intermediate_result_header h4 {
-    background-color: #ebebeb; /* Uni-Freiburg standard */
-    margin-bottom: 5px;
-    padding: 5px;
-    width: 790px;
-}
-
 .main_output {
     max-width: 600px;
     overflow: auto;
