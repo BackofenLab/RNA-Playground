@@ -294,6 +294,7 @@ final_result_footer {
     height: 24px;
     padding-left: 10px;
     text-align: left;
+    vertical-align: top;
     width: 798px;
 }
 
