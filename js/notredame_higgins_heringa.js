@@ -226,6 +226,12 @@ $(document).ready(function () {
      * The elements of both weight libraries added into one primary weight library.
      * If the key (alignment) [a, b] of an element primLib^{a,b} is present in both libraries,
      * then the weights for this key [a, b] retrieved in both libraries and added together.
+     * @see: https://doi.org/10.1006/jmbi.2000.4042
+     * Notredame, Cédric, Desmond G. Higgins, and Jaap Heringa.
+     * "T-Coffee: A novel method for fast and accurate multiple sequence alignment."
+     * Journal of molecular biology 302.1 (2000): 205-217.
+     *
+     * Hint: Described on p.207: Combination of the libraries
      */
     function addSignals() {
         var globalAlignmentKeys = Object.keys(outputData.primaryGlobalWeightLib);  // global alignments {{a,b}, {a,d}, ... {d,f}}
@@ -400,7 +406,7 @@ $(document).ready(function () {
         // [1] in other sources it is said that local alignments less important
         // http://www.bioinfbook.org/ : Bioinformatics and Functional Genomics 2nd Edition p.193
         // (not all, only 10 local alignments for library computation used)
-        // [2] we want create global progressive alignments
+        // [2] we want create "global" progressive alignments
 
         multiSequenceAlignmentInstance.setIO(inputData, globalOutputData);
         multiSequenceAlignmentInstance.computeDistancesFromSimilarities();
@@ -414,14 +420,18 @@ $(document).ready(function () {
      * Hint: A repeated post order traversal of the tree would be less efficient.
      * This is why just an iteration through the branches is done.
      * @param treeBranches {Object} - The tree branches which are defining the order for the merging process.
-     * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     * @see: https://doi.org/10.1006/jmbi.2000.4042
+     * Notredame, Cédric, Desmond G. Higgins, and Jaap Heringa.
+     * "T-Coffee: A novel method for fast and accurate multiple sequence alignment."
+     * Journal of molecular biology 302.1 (2000): 205-217.
      */
-    function createProgressiveAlignment() {
+    function createProgressiveAlignment(treeBranches) {
         inputData.substitutionFunction = substitutionFunction;
-        inputData.enlargement = 0;
+        inputData.enlargement = 0;  // p.210 top-left
         inputData.gapCosts = 0;
 
         multiSequenceAlignmentInstance.setIO(inputData, globalOutputData);
+        multiSequenceAlignmentInstance.createProgressiveAlignment(treeBranches);
     }
 
     /**
@@ -429,8 +439,90 @@ $(document).ready(function () {
      * @param i {number} - The position in the first sequence.
      * @param j {number} - The position in the second sequence.
      * @returns {number} - The position specific score.
+     * @see: https://doi.org/10.1006/jmbi.2000.4042
+     * Notredame, Cédric, Desmond G. Higgins, and Jaap Heringa.
+     * "T-Coffee: A novel method for fast and accurate multiple sequence alignment."
+     * Journal of molecular biology 302.1 (2000): 205-217.
+     *
+     * Hint: Described on p.209: Progressive Alignment Strategy
+     * When aligning group sequences with other group sequences,
+     * the average library score of the group columns is used.
+     * Else usual extended library score is used.
      */
     function substitutionFunction(i, j) {
+        // have to read from currentFirstGroup, currentSecondGroup, currentSequence1 and currentSequence2 of outputData
+        var group1 = outputData.currentFirstGroup;
+        var group2 = outputData.currentSecondGroup;
+
+        var averageColumnWeight1 = 0;
+        var averageColumnWeight2 = 0;
+
+        // score using neighbour joining for groups
+        if (group1.length > 1 && group2.length > 1) {
+            averageColumnWeight1 = getColumnWeight(group1, i) / group1.length;  // average score of column in group 1
+            averageColumnWeight2 = getColumnWeight(group2, j) / group2.length;  // average score of column in group 2
+
+            return (averageColumnWeight1 + averageColumnWeight2) / 2;  // average score of columns in group 1 and group 2
+        }
+
+        // score using neighbour joining for sequences
+        var preSequenceA = outputData.currentSequence1;  // contains neutral symbol SYMBOLS.NONE
+        var preSequenceB = outputData.currentSequence2;
+
+        var sequenceA = preSequenceA.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);  // without neutral symbol SYMBOLS.NONE
+        var sequenceB = preSequenceB.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);
+
+        var L = outputData.extendedWeightLib[[sequenceA, sequenceB]];
+
+        var argI = i - getNumberOfNeutrals(preSequenceA, i);
+        var argJ = j - getNumberOfNeutrals(preSequenceB, j);
+        return L[[argI,argJ]] !== undefined ? L[[argI,argJ]] : 0;  // not defined positions have always score 0
+    }
+
+    /**
+     * Returns the average weight of a column in the group.
+     * @param group {Array} - The group in which the score for a column is computed.
+     * @param i {number} - The column in which is looked up.
+     * @return {number} - The weight.
+     */
+    function getColumnWeight(group, i) {
+        var weight = 0;
+
+        // for every sequence in group the weight in column i is looked up
+        for (var k = 1; k < group.length; k++) {
+            for (var l = 0; l < k; l++) {
+                var preSequenceA = group[l];  // contains neutral symbol SYMBOLS.NONE
+                var preSequenceB = group[k];
+
+                var sequenceA = preSequenceA.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);  // without neutral symbol SYMBOLS.NONE
+                var sequenceB = preSequenceB.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);
+
+                var L = outputData.extendedWeightLib[[sequenceA, sequenceB]];
+
+                var argI = i - getNumberOfNeutrals(preSequenceA, i);
+                var argJ = i - getNumberOfNeutrals(preSequenceB, i);
+                weight += L[[argI,argJ]] !== undefined ? L[[argI,argJ]] : 0;  // not defined positions have always score 0
+            }
+        }
+
+        return weight;
+    }
+
+    /**
+     * Returns the number of neutrals in the sequence up to a certain position.
+     * @param sequence {string} - The sequence in which neutral symbols are counted.
+     * @param position {number} - The position up to which neutral symbols are inclusively counted.
+     * @return {number} - The number of neutral symbols in the alignment.
+     */
+    function getNumberOfNeutrals(sequence, position) {
+        var numOfNeutrals = 0;
+
+        for (var i = 0; i <= position; i++) {
+            if (sequence[i] === SYMBOLS.NONE)
+                numOfNeutrals++;
+        }
+
+        return numOfNeutrals;
     }
 
     /**
