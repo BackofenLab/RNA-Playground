@@ -30,33 +30,32 @@ TestCase("test_notredame_higgins_heringa", {
 
         var ioData = algorithm.compute();
         var outputData = ioData[1];
-        var globalOutputData = ioData[2];
 
         debugger;
         // output: pairwise alignment
-        assertEquals(4, globalOutputData.alignmentLengths[0]);
-        assertEquals(4, globalOutputData.alignmentLengths[1]);
-        assertEquals(3, globalOutputData.alignmentLengths[2]);
+        assertEquals(4, outputData.alignmentLengths[0]);
+        assertEquals(4, outputData.alignmentLengths[1]);
+        assertEquals(3, outputData.alignmentLengths[2]);
 
-        assertEquals(2, globalOutputData.gapNumbers[0]);
-        assertEquals(1, globalOutputData.gapNumbers[1]);
-        assertEquals(1, globalOutputData.gapNumbers[2]);
+        assertEquals(2, outputData.gapNumbers[0]);
+        assertEquals(1, outputData.gapNumbers[1]);
+        assertEquals(1, outputData.gapNumbers[2]);
 
-        assertEquals(1, globalOutputData.gapStarts[0]);
-        assertEquals(1, globalOutputData.gapStarts[1]);
-        assertEquals(1, globalOutputData.gapStarts[2]);
+        assertEquals(1, outputData.gapStarts[0]);
+        assertEquals(1, outputData.gapStarts[1]);
+        assertEquals(1, outputData.gapStarts[2]);
 
-        assertEquals(-2, globalOutputData.similarities[0]);
-        assertEquals(-1, globalOutputData.similarities[1]);
-        assertEquals(-2, globalOutputData.similarities[2]);
+        assertEquals(-2, outputData.similarities[0]);
+        assertEquals(-1, outputData.similarities[1]);
+        assertEquals(-2, outputData.similarities[2]);
 
-        var pairAB = globalOutputData.sequencePairs[0];
-        var pairAC = globalOutputData.sequencePairs[1];
-        var pairBC = globalOutputData.sequencePairs[2];
+        var pairAB = outputData.sequencePairs[0];
+        var pairAC = outputData.sequencePairs[1];
+        var pairBC = outputData.sequencePairs[2];
 
-        var alignmentAB = globalOutputData.alignmentsAndScores[[pairAB[0], pairAB[1]]][0];
-        var alignmentAC = globalOutputData.alignmentsAndScores[[pairAC[0], pairAC[1]]][0];
-        var alignmentBC = globalOutputData.alignmentsAndScores[[pairBC[0], pairBC[1]]][0];
+        var alignmentAB = outputData.alignmentsAndScores[[pairAB[0], pairAB[1]]][0];
+        var alignmentAC = outputData.alignmentsAndScores[[pairAC[0], pairAC[1]]][0];
+        var alignmentBC = outputData.alignmentsAndScores[[pairBC[0], pairBC[1]]][0];
 
         assertEquals("ACGT", alignmentAB[0]);
         assertEquals("A__T", alignmentAB[2]);
@@ -89,22 +88,48 @@ TestCase("test_notredame_higgins_heringa", {
         assertEquals(50, outputData.extendedWeightLib[["AT","GCT"]][[1,2]]);
         assertEquals(350/3, outputData.extendedWeightLib[["AT","GCT"]][[2,3]]);
 
-        debugger;
         // output: distances
-        assertEquals(1, Math.round(globalOutputData.distanceMatrix[["a", "b"]] * 10) / 10);
-        assertEquals(1, Math.round(globalOutputData.distanceMatrix[["a", "c"]] * 10) / 10);
-        assertEquals(1.5, Math.round(globalOutputData.distanceMatrix[["b", "c"]] * 10) / 10);
-
+        assertEquals(1, Math.round(outputData.distanceMatrix[["a", "b"]] * 10) / 10);
+        assertEquals(1, Math.round(outputData.distanceMatrix[["a", "c"]] * 10) / 10);
+        assertEquals(1.5, Math.round(outputData.distanceMatrix[["b", "c"]] * 10) / 10);
 
         // output: phylogenetic tree
         assertEquals("(c:0.6264,(a:0.4904,b:0.4904):0.136);", outputData.newickString);
 
-        /*
+        debugger;
+        // output: joinment
+        // matrix a~b (is mirrored)
+        assertEquals(100, outputData.groupMatrices["ab"][1][1]);
+        assertEquals(100, outputData.groupMatrices["ab"][1][2]);
+        assertEquals(100, outputData.groupMatrices["ab"][1][3]);
+        assertEquals(100, outputData.groupMatrices["ab"][1][4]);
+
+        assertEquals(100, outputData.groupMatrices["ab"][2][1]);
+        assertEquals(100, outputData.groupMatrices["ab"][2][2]);
+        assertEquals(100, outputData.groupMatrices["ab"][2][3]);
+        assertEquals(250, outputData.groupMatrices["ab"][2][4]);
+
+        // matrix ab~c
+        assertEquals(100/3, outputData.groupMatrices["cab"][1][1]);
+        assertEquals(100/3, outputData.groupMatrices["cab"][1][2]);
+        assertEquals(100/3, outputData.groupMatrices["cab"][1][3]);
+
+        assertEquals(100/3, outputData.groupMatrices["cab"][2][1]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][2][2]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][2][3]);
+
+        assertEquals(100/3, outputData.groupMatrices["cab"][3][1]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][3][2]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][3][3]);
+
+        assertEquals(100/3, outputData.groupMatrices["cab"][4][1]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][4][2]);
+        assertEquals(550/3, outputData.groupMatrices["cab"][4][3]);
+
         // output: final
         assertEquals(-5, outputData.score);
         assertEquals("GC_T", outputData.progressiveAlignment[0]);
         assertEquals("ACGT", outputData.progressiveAlignment[1]);
         assertEquals("A__T", outputData.progressiveAlignment[2]);
-        */
     }
 });

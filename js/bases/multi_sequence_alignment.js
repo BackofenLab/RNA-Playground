@@ -606,9 +606,7 @@ Author: Alexander Mattheis
         // T-Coffee extension: substitution values are dependant on the groups -> sequences read by substitution function
         outputData.currentFirstGroup = [];  // needed to recompute substitution values for column
         outputData.currentSecondGroup = [];  // needed to recompute substitution values for column
-
-        outputData.currentSeqeunce1 = SYMBOLS.EMPTY;  // needed to receive correct values from substitution function
-        outputData.currentSeqeunce2 = SYMBOLS.EMPTY;  // needed to receive correct values from substitution function
+        outputData.groupMatrices = {};  // extension for T-Coffee: store previously computed matrices
     }
 
     /**
@@ -632,6 +630,10 @@ Author: Alexander Mattheis
         var group2Sequences = outputData.groups[rightChildName];
 
         var bestAlignment = getBestAlignment(group1Sequences, group2Sequences);
+
+        // extension for T-Coffee: store previously calculated matrices
+        if (childInstance.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)
+            outputData.groupMatrices[groupName] = outputData.currentMatrix;
 
         outputData.groups[groupName] = createGroup(group1Sequences, group2Sequences, bestAlignment);
 
@@ -699,16 +701,14 @@ Author: Alexander Mattheis
     function getAlignmentAndScore(sequence1, sequence2) {
         var alignmentAndScore = outputData.alignmentsAndScores[[sequence1, sequence2]];  // constant time!
 
-        if (alignmentAndScore !== undefined)
+        if (alignmentAndScore !== undefined && childInstance.type !== ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)  // T-Coffee extension
             return alignmentAndScore;
-
-        // T-Coffee extension: substitution values are dependant on the currently aligned sequences
-        outputData.currentSeqeunce1 = sequence1;
-        outputData.currentSeqeunce2 = sequence2;
 
         var input = {};
         initializeInput(input);
         var ioData = computeWithAlgorithm(gotohInstance, input, sequence1, sequence2);
+
+        outputData.currentMatrix = ioData[1].matrix;  // extension for T-Coffee
 
         return [ioData[1].alignments[0], ioData[1].score];
     }

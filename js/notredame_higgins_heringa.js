@@ -104,8 +104,8 @@ $(document).ready(function () {
         computeExtendedWeightPrimaryLibrary();
         startProgressiveAlignment();
 
-        // outputData.score = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
-        return [inputData, outputData, globalOutputData, localOutputData];
+        outputData.score = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
+        return [inputData, outputData];
     }
 
     /**
@@ -122,7 +122,7 @@ $(document).ready(function () {
      * and so on between all sequences.
      */
     function computePairwiseGlobalAlignmentData() {
-        multiSequenceAlignmentInstance.setIO(inputData, globalOutputData);
+        multiSequenceAlignmentInstance.setIO(inputData, outputData);
         multiSequenceAlignmentInstance.computePairwiseData(gotohInstance);
     }
 
@@ -144,7 +144,7 @@ $(document).ready(function () {
      */
     function computeCombinedWeightPrimaryLibrary() {
         // Hint: conversion of double sequences into alignment edges is directly done during the computations of pairwise weights
-        outputData.primaryGlobalWeightLib = computePairwiseWeights(globalOutputData);
+        outputData.primaryGlobalWeightLib = computePairwiseWeights(outputData);
         // later
         // outputData.primaryLocalWeightLib = computePairwiseWeights(localOutputData);
         // addSignals();
@@ -520,7 +520,7 @@ $(document).ready(function () {
         // [2] we want create "global" progressive alignments
 
         debugger;
-        multiSequenceAlignmentInstance.setIO(inputData, globalOutputData);
+        multiSequenceAlignmentInstance.setIO(inputData, outputData);
         multiSequenceAlignmentInstance.computeDistancesFromSimilarities();
         multiSequenceAlignmentInstance.createDistanceMatrix();
         createProgressiveAlignment(multiSequenceAlignmentInstance.getPhylogeneticTree());
@@ -538,12 +538,20 @@ $(document).ready(function () {
      * Journal of molecular biology 302.1 (2000): 205-217.
      */
     function createProgressiveAlignment(treeBranches) {
+        // store
+        var enlargement = inputData.enlargement;
+        var baseCosts = inputData.baseCosts;
+
         inputData.substitutionFunction = substitutionFunction;
         inputData.enlargement = 0;  // p.210 top-left
-        inputData.gapCosts = 0;
+        inputData.baseCosts = 0;
 
-        multiSequenceAlignmentInstance.setIO(inputData, globalOutputData);
+        multiSequenceAlignmentInstance.setIO(inputData, outputData);
         multiSequenceAlignmentInstance.createProgressiveAlignment(treeBranches);
+
+        // restore
+        inputData.enlargement = enlargement;
+        inputData.baseCosts = baseCosts;
     }
 
     /**
@@ -562,58 +570,49 @@ $(document).ready(function () {
      * Else usual extended library score is used.
      */
     function substitutionFunction(i, j) {
-        // have to read from currentFirstGroup, currentSecondGroup, currentSequence1 and currentSequence2 of outputData
         var group1 = outputData.currentFirstGroup;
         var group2 = outputData.currentSecondGroup;
 
-        var averageColumnWeight1 = 0;
-        var averageColumnWeight2 = 0;
-
-        // score using neighbour joining for groups
-        if (group1.length > 1 && group2.length > 1) {
-            averageColumnWeight1 = getColumnWeight(group1, i) / group1.length;  // average score of column in group 1
-            averageColumnWeight2 = getColumnWeight(group2, j) / group2.length;  // average score of column in group 2
-
-            return (averageColumnWeight1 + averageColumnWeight2) / 2;  // average score of columns in group 1 and group 2
-        }
-
-        // score using neighbour joining for sequences
-        var preSequenceA = outputData.currentSequence1;  // contains neutral symbol SYMBOLS.NONE
-        var preSequenceB = outputData.currentSequence2;
-
-        var sequenceA = preSequenceA.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);  // without neutral symbol SYMBOLS.NONE
-        var sequenceB = preSequenceB.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);
-
-        var L = outputData.extendedWeightLib[[sequenceA, sequenceB]];
-
-        var argI = i - getNumberOfNeutrals(preSequenceA, i);
-        var argJ = j - getNumberOfNeutrals(preSequenceB, j);
-        return L[[argI,argJ]] !== undefined ? L[[argI,argJ]] : 0;  // not defined positions have always score 0
+        return getPairwiseColumnWeight(group1, group2, i, j) / (group1.length * group2.length);
     }
 
     /**
-     * Returns the average weight of a column in the group.
-     * @param group {Array} - The group in which the score for a column is computed.
-     * @param i {number} - The column in which is looked up.
+     * Returns the average weight of two groups at a specific position.
+     * @param group1 {Array} - The group in which the score for a column is computed.
+     * @param group2 {Array} - The group in which the score for a column is computed.
+     * @param i {number} - The row in which is looked up.
+     * @param j {number} - The column in which is looked up.
      * @return {number} - The weight.
      */
-    function getColumnWeight(group, i) {
+    function getPairwiseColumnWeight(group1, group2, i, j) {
         var weight = 0;
 
-        // for every sequence in group the weight in column i is looked up
-        for (var k = 1; k < group.length; k++) {
-            for (var l = 0; l < k; l++) {
-                var preSequenceA = group[l];  // contains neutral symbol SYMBOLS.NONE
-                var preSequenceB = group[k];
+        for (var k = 0; k < group1.length; k++) {
+            for (var l = 0; l < group2.length; l++) {
+                var preSequenceA = group1[k];  // contains neutral symbol SYMBOLS.NONE
+                var preSequenceB = group2[l];
 
                 var sequenceA = preSequenceA.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);  // without neutral symbol SYMBOLS.NONE
                 var sequenceB = preSequenceB.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);
 
                 var L = outputData.extendedWeightLib[[sequenceA, sequenceB]];
 
-                var argI = i - getNumberOfNeutrals(preSequenceA, i);
-                var argJ = i - getNumberOfNeutrals(preSequenceB, i);
-                weight += L[[argI,argJ]] !== undefined ? L[[argI,argJ]] : 0;  // not defined positions have always score 0
+                var switchArguments = true;  // L^{a,b}(i,j) = L^{b,a}(j,i)
+
+                if (L === undefined) {
+                    L = outputData.extendedWeightLib[[sequenceB, sequenceA]];
+                    switchArguments = false;
+                }
+
+                if (L !== undefined) {
+                    var argI = i - getNumberOfNeutrals(preSequenceB, i);
+                    var argJ = j - getNumberOfNeutrals(preSequenceA, j);
+
+                    if (switchArguments)
+                        weight += L[[argJ,argI]] !== undefined ? L[[argJ,argI]] : 0;
+                    else
+                        weight += L[[argI,argJ]] !== undefined ? L[[argI,argJ]] : 0;  // not defined positions have always score 0
+                }
             }
         }
 

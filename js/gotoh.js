@@ -230,7 +230,11 @@ $(document).ready(function () {
         var currentValue = outputData.matrix[position.i][position.j];
 
         var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
+
         if (aChar === SYMBOLS.NONE || bChar === SYMBOLS.NONE) matchOrMismatch = 0;  // extension for Feng-Doolittle
+
+        if (inputData.substitutionFunction !== undefined)  // extension for T-Coffee
+            matchOrMismatch = inputData.substitutionFunction(position.i, position.j);
 
         var diagonalValue = left >= 0 && up >= 0 ? outputData.matrix[up][left] : Number.NaN;
         var verticalValue = up >= 0 ? outputData.verticalGaps[position.i][position.j] : Number.NaN;
@@ -240,7 +244,7 @@ $(document).ready(function () {
         var leftValue = left >= 0 && position.i === 0 ? outputData.matrix[position.i][left] : Number.NaN;
 
         // check
-        var isMatchMismatch = currentValue === (diagonalValue + matchOrMismatch);
+        var isMatchMismatch = alignmentInstance.differenceLowerEpsilon(currentValue, (diagonalValue + matchOrMismatch), EPSILON);  // extension for T-Coffee
         var isChangeToP = currentValue === verticalValue;
         var isChangeToQ = currentValue === horizontalValue;
 

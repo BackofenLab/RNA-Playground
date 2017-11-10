@@ -197,10 +197,10 @@ Author: Alexander Mattheis
     function affineRecursionFunction(aChar, bChar, i, j, optimum, local) {
         var matchOrMismatch = aChar === bChar ? inputData.match : inputData.mismatch;
 
+        if (aChar === SYMBOLS.NONE || bChar === SYMBOLS.NONE) matchOrMismatch = 0;  // extension for Feng-Doolittle
+
         if (inputData.substitutionFunction !== undefined)  // extension for T-Coffee
             matchOrMismatch = inputData.substitutionFunction(i,j);
-
-        if (aChar === SYMBOLS.NONE || bChar === SYMBOLS.NONE) matchOrMismatch = 0;  // extension for Feng-Doolittle
 
         // gap recursion-functions
         outputData.horizontalGaps[i][j] = horizontalOptimum(optimum, i, j);
