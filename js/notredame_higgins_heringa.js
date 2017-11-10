@@ -103,7 +103,9 @@ $(document).ready(function () {
         computeCombinedWeightPrimaryLibrary();
         computeExtendedWeightPrimaryLibrary();
         startProgressiveAlignment();
-        return [inputData, outputData];
+
+        // outputData.score = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
+        return [inputData, outputData, globalOutputData, localOutputData];
     }
 
     /**
@@ -146,6 +148,8 @@ $(document).ready(function () {
         // later
         // outputData.primaryLocalWeightLib = computePairwiseWeights(localOutputData);
         // addSignals();
+        // now
+        outputData.primaryWeightLib = outputData.primaryGlobalWeightLib;
     }
 
     /**
@@ -166,7 +170,7 @@ $(document).ready(function () {
 
                 var alignment = output.alignmentsAndScores[[sequenceA, sequenceB]][0];
                 var sequenceIdentities = getSequenceIdentities(alignment);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
-                primaryWeightLib[[alignment[0], alignment[2]]] = sequenceIdentities;
+                primaryWeightLib[[sequenceA, sequenceB]] = sequenceIdentities;
             }
         }
 
@@ -311,57 +315,37 @@ $(document).ready(function () {
     /**
      * The weights in the primary weight library are recomputed
      * to add consistency-information.
+     * @example:
+     * \forall(ab) \forall(ij):
+     * EL^{ab}(ij) = L^{ab}(ij) + \sum_{x \in S_aligned} \sum_{k in pos(x)} min(L^{ax}(ik), L^{xb}(kj))
+     * is computed.
      */
     function computeExtendedWeightPrimaryLibrary() {
         outputData.extendedWeightLib = {};  // extLib^{a,b}
-        var outerPrimLibKeys = Object.keys(outputData.primaryWeightLib);  // {{a,b}, {a,c}, ..., {d,f}}
+
+        debugger;
+        var outerPrimLibKeys = Object.keys(outputData.primaryWeightLib);  // [(a,b), (a,c), ..., (d,f)] where [character] = [ALIGNED SEQUENCE]
         var alignmentSequenceNames = getIndividualArguments(outerPrimLibKeys);  // [a, b, c, ..., f]
 
         // iterate over each element in primary library (so over all ii')
         for (var i = 0; i < outerPrimLibKeys.length; i++) {
             var alignmentKey = outerPrimLibKeys[i].split(SYMBOLS.COMMA);  // [a,b]
-            var leftAlignmentKeyArgument = alignmentKey[0];  // a
+            var leftAlignmentKeyArgument = alignmentKey[0];  // a -> [character] = [ALIGNED SEQUENCE]
             var rightAlignmentKeyArgument = alignmentKey[1];  // b
 
-            var innerPrimLibKeys = Object.keys(outputData.primaryWeightLib[outerPrimLibKeys[i]]);  // {{2,3}, {2,5}, ..., {5,7}}
-
-            var positionSequenceNames = getIndividualArguments(innerPrimLibKeys);
+            var innerPrimLibKeys = Object.keys(outputData.primaryWeightLib[outerPrimLibKeys[i]]);  // [(2,3), (2,5), ..., (5,7)]
 
             outputData.extendedWeightLib[outerPrimLibKeys[i]] = {};  // extLib^{a,b}(i,j)
 
-            // computation of following formula
-            // EL^{ab}(ij) = L^{ab}(ij) + \sum_{x \in S_aligned} \sum_{k in pos(x)} min(L^{ax}(ik), L^{xb}(kj))
             for (var j = 0; j < innerPrimLibKeys.length; j++) {  // iteration over each weight
                 var weightKey = innerPrimLibKeys[j].split(SYMBOLS.COMMA);  // [i,j]
+
                 var leftWeightKeyArgument = weightKey[0];  // i
                 var rightWeightKeyArgument = weightKey[1];  // j
 
-                var sum = 0;
-
-                // iterate overall aligned sequence x
-                for (var x = 0; x < alignmentSequenceNames.length; x++) {
-
-                    // iterate overall positions in aligned sequence x
-                    for (var k = 0; k < positionSequenceNames.length; k++) {
-                        var alignment1 = outputData.primaryWeightLib[leftAlignmentKeyArgument, alignmentSequenceNames[x]];  // {ax}
-                        var alignment2 = outputData.primaryWeightLib[alignmentSequenceNames[x], rightAlignmentKeyArgument];  // {xb}
-
-                        var weight1 = 0;
-                        var weight2 = 0;
-
-                        if (alignment1 !== undefined) {
-                            weight1 = alignment1[leftWeightKeyArgument, positionSequenceNames[k]];  // (ik)
-                            weight1 = weight1 !== undefined ? weight1 : 0;
-                        }
-
-                        if (alignment2 !== undefined) {
-                            weight2 = alignment2[positionSequenceNames[k], rightWeightKeyArgument];  // (kj)
-                            weight2 = weight2 !== undefined ? weight2 : 0;
-                        }
-
-                        sum += Math.min(weight1, weight2);
-                    }
-                }
+                var sum = computeExtensionSum(
+                    alignmentSequenceNames, leftAlignmentKeyArgument, rightAlignmentKeyArgument,
+                    leftWeightKeyArgument, rightWeightKeyArgument);
 
                 outputData.extendedWeightLib[outerPrimLibKeys[i]][innerPrimLibKeys[j]]
                     = outputData.primaryWeightLib[outerPrimLibKeys[i]][innerPrimLibKeys[j]] + sum;
@@ -378,8 +362,9 @@ $(document).ready(function () {
         var args = [];  // "arguments" is Javascript keyword
 
         for (var i = 0; i < keyPairs.length; i++) {
-            var leftArg = keyPairs[i][0];
-            var rightArg = keyPairs[i][1];
+            var keyPair = keyPairs[i].split(SYMBOLS.COMMA);
+            var leftArg = keyPair[0];
+            var rightArg = keyPair[1];
 
             if (args.indexOf(leftArg) === -1)  // if (not contained)
                 args.push(leftArg);
@@ -388,6 +373,132 @@ $(document).ready(function () {
         }
 
         return args;
+    }
+
+    /**
+     * Computes the extension.
+     * @example:
+     * \sum_{x \in S_aligned} \sum_{k in pos(x)} min(L^{ax}(ik), L^{xb}(kj))
+     * @param alignmentSequenceNames {Array} - The different aligned sequence-strings: [a, b, c, ..., f]
+     * @param leftAlignmentKeyArgument {string} - The aligned left sequence which is used in a key-pair (a,b).
+     * @param rightAlignmentKeyArgument {string} - The aligned sequence which is used in a key-pair (a,b).
+     * @param leftWeightKeyArgument {number} - The number which is used in a key-pair (i,j).
+     * @param rightWeightKeyArgument {number} - The number which is used in a key-pair (i,j).
+     * @return {number} - The extension sum which is added to a library weight to add consistency information.
+     */
+    function computeExtensionSum(alignmentSequenceNames, leftAlignmentKeyArgument, rightAlignmentKeyArgument,
+                                 leftWeightKeyArgument, rightWeightKeyArgument) {
+        var sum = 0;
+
+        // iterate overall aligned sequence x
+        for (var x = 0; x < alignmentSequenceNames.length; x++) {
+
+            if (alignmentSequenceNames[x] !== leftAlignmentKeyArgument
+                && alignmentSequenceNames[x] !== rightAlignmentKeyArgument) {  // just an optimization (x in S\{a,b})
+
+                debugger;
+                var positionSequenceNames = getPositions(alignmentSequenceNames[x]);
+
+                // iterate overall positions in aligned sequence x
+                for (var k = 0; k < positionSequenceNames.length; k++) {
+
+                    sum += getMinimumWeight(
+                        alignmentSequenceNames, leftAlignmentKeyArgument, rightAlignmentKeyArgument,
+                        positionSequenceNames, leftWeightKeyArgument, rightWeightKeyArgument, x, k);
+                }
+            }
+        }
+
+        return sum;
+    }
+
+    /**
+     * Return the possible positions in an aligned sequence without counting gap positions.
+     * @example A__T returns [1,2]
+     * @param sequence {string} - The sequence in which the non-gap positions are searched.
+     * @return {Array} - The non-gap positions of the input sequence.
+     */
+    function getPositions(sequence) {
+        var positions = [];
+
+        var position = 1;   // "+1" because counting starts in this algorithm with 1
+
+        for (var i = 0; i < sequence.length; i++) {
+            if (sequence[i] !== SYMBOLS.GAP) {
+                positions.push(position);
+                position++;
+            }
+        }
+
+        return positions;
+    }
+
+    /**
+     * Computes the minimum weight.
+     * @example:
+     * min(L^{ax}(ik), L^{xb}(kj))
+     * where L^{ab}(ij) = L^{ba}(ji)
+     * @param alignmentSequenceNames {Array} - The different aligned sequence-strings: [a, b, c, ..., f]
+     * @param leftAlignmentKeyArgument {string} - The aligned left sequence which is used in a key-pair (a,b).
+     * @param rightAlignmentKeyArgument {string} - The aligned sequence which is used in a key-pair (a,b).
+     * @param positionSequenceNames {Array} - The different positions within a aligned sequence: [1, 2, ..., n]
+     * @param leftWeightKeyArgument {number} - The number which is used in a key-pair (i,j).
+     * @param rightWeightKeyArgument {number} - The number which is used in a key-pair (i,j).
+     * @param x {number} - The position within alignmentSequenceNames which should be called.
+     * @param k {number} - The position within positionSequenceNames which should be called.
+     * @return {number} - The weight which is added to a library weight to add consistency information.
+     */
+    function getMinimumWeight(alignmentSequenceNames, leftAlignmentKeyArgument, rightAlignmentKeyArgument,
+                              positionSequenceNames, leftWeightKeyArgument, rightWeightKeyArgument, x, k) {
+        var weightStruct1 = outputData.primaryWeightLib[[leftAlignmentKeyArgument, alignmentSequenceNames[x]]];  // {ax}
+        var weightStruct2 = outputData.primaryWeightLib[[alignmentSequenceNames[x], rightAlignmentKeyArgument]];  // {xb}
+
+        var symmetry1 = false;  // it holds: L^{ab}(ij) = L^{ba}(ji)
+        var symmetry2 = false;
+
+        if (weightStruct1 === undefined) {
+            weightStruct1 = outputData.primaryWeightLib[[alignmentSequenceNames[x], leftAlignmentKeyArgument]];  // {xa}
+            symmetry1 = true;
+        }
+
+        if (weightStruct2 === undefined) {
+            weightStruct2 = outputData.primaryWeightLib[[rightAlignmentKeyArgument, alignmentSequenceNames[x]]];  // {bx}
+            symmetry2 = true;
+        }
+
+        var weight1 = getWeight(weightStruct1, symmetry1, positionSequenceNames, leftWeightKeyArgument, false, k);
+        var weight2 = getWeight(weightStruct2, symmetry2, positionSequenceNames, rightWeightKeyArgument, true, k);
+
+        return Math.min(weight1, weight2);
+    }
+
+    /**
+     * Returns the weight.
+     * @example
+     * L^{ax}(ik) or L^{xb}(kj)
+     * @param weightStruct {Object} - The structure L which is used to output a weight.
+     * @param symmetry {boolean} - Tells if arguments have to be swapped in their order (e.g. ik to ki).
+     * @param positionSequenceNames {Array} - The different positions within a aligned sequence: [1, 2, ..., n]
+     * @param weightKeyArgument {number} - The number which is used in a key-pair (i,j).
+     * @param right {boolean} - Tells if weightKeyArgument is a right or left weight key argument.
+     * @param k {number} - The position within positionSequenceNames which should be called.
+     * @return {number} - The weight of the weight structure at a specific position.
+     */
+    function getWeight(weightStruct, symmetry, positionSequenceNames, weightKeyArgument, right, k) {
+        var weight = 0;
+
+        symmetry = right ? !symmetry : symmetry;
+
+        if (weightStruct !== undefined) {
+            if (symmetry)
+                weight = weightStruct[[positionSequenceNames[k], weightKeyArgument]];  // (ki) or (kj)
+            else
+                weight = weightStruct[[weightKeyArgument, positionSequenceNames[k]]];  // (ik) or (jk)
+
+            weight = weight !== undefined ? weight : 0;
+        }
+
+        return weight;
     }
 
     /**
@@ -408,6 +519,7 @@ $(document).ready(function () {
         // (not all, only 10 local alignments for library computation used)
         // [2] we want create "global" progressive alignments
 
+        debugger;
         multiSequenceAlignmentInstance.setIO(inputData, globalOutputData);
         multiSequenceAlignmentInstance.computeDistancesFromSimilarities();
         multiSequenceAlignmentInstance.createDistanceMatrix();
