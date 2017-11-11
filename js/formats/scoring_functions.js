@@ -21,7 +21,6 @@ Author: Alexander Mattheis
      * @return {number} - The sum-of-pairs score.
      */
     function getAffineSumOfPairsScore(inputData, alignment) {
-        debugger;
         var score = 0;
 
         // every alignment with every other alignment
@@ -33,17 +32,17 @@ Author: Alexander Mattheis
                 var sequenceA = sequences[0];
                 var sequenceB = sequences[1];
 
-                for (var k = 0; k < sequenceA.length; k++) {
-                    if (sequenceA[k] === SYMBOLS.GAP) {
-                        var gapSize = getGapSize(k, sequenceA);
-                        score += inputData.baseCosts + gapSize * inputData.enlargement;
-                        k += gapSize-1;
-                    } else if (sequenceB[k] === SYMBOLS.GAP) {
+                for (var k = 0; k < sequenceB.length; k++) {
+                    if (sequenceB[k] === SYMBOLS.GAP) {
                         var gapSize = getGapSize(k, sequenceB);
                         score += inputData.baseCosts + gapSize * inputData.enlargement;
                         k += gapSize-1;
+                    } else if (sequenceA[k] === SYMBOLS.GAP) {
+                        var gapSize = getGapSize(k, sequenceA);
+                        score += inputData.baseCosts + gapSize * inputData.enlargement;
+                        k += gapSize-1;
                     } else
-                        score += sequenceA[k] === sequenceB[k] ? inputData.match : inputData.mismatch;
+                        score += sequenceB[k] === sequenceA[k] ? inputData.match : inputData.mismatch;
                 }
             }
         }

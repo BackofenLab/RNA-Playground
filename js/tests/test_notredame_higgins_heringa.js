@@ -101,30 +101,31 @@ TestCase("test_notredame_higgins_heringa", {
         // matrix a~b (is mirrored)
         assertEquals(100, outputData.groupMatrices["ab"][1][1]);
         assertEquals(100, outputData.groupMatrices["ab"][1][2]);
-        assertEquals(100, outputData.groupMatrices["ab"][1][3]);
-        assertEquals(100, outputData.groupMatrices["ab"][1][4]);
 
         assertEquals(100, outputData.groupMatrices["ab"][2][1]);
         assertEquals(100, outputData.groupMatrices["ab"][2][2]);
-        assertEquals(100, outputData.groupMatrices["ab"][2][3]);
-        assertEquals(250, outputData.groupMatrices["ab"][2][4]);
 
-        // matrix ab~c
+        assertEquals(100, outputData.groupMatrices["ab"][3][1]);
+        assertEquals(100, outputData.groupMatrices["ab"][3][2]);
+
+        assertEquals(100, outputData.groupMatrices["ab"][4][1]);
+        assertEquals(250, outputData.groupMatrices["ab"][4][2]);
+
+        // matrix ab~c (mirrored, so really "c~ab")
         assertEquals(100/3, outputData.groupMatrices["cab"][1][1]);
         assertEquals(100/3, outputData.groupMatrices["cab"][1][2]);
         assertEquals(100/3, outputData.groupMatrices["cab"][1][3]);
+        assertEquals(100/3, outputData.groupMatrices["cab"][1][4]);
 
         assertEquals(100/3, outputData.groupMatrices["cab"][2][1]);
         assertEquals(200/3, outputData.groupMatrices["cab"][2][2]);
         assertEquals(200/3, outputData.groupMatrices["cab"][2][3]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][2][4]);
 
         assertEquals(100/3, outputData.groupMatrices["cab"][3][1]);
         assertEquals(200/3, outputData.groupMatrices["cab"][3][2]);
         assertEquals(200/3, outputData.groupMatrices["cab"][3][3]);
-
-        assertEquals(100/3, outputData.groupMatrices["cab"][4][1]);
-        assertEquals(200/3, outputData.groupMatrices["cab"][4][2]);
-        assertEquals(550/3, outputData.groupMatrices["cab"][4][3]);
+        assertEquals(550/3, outputData.groupMatrices["cab"][3][4]);
 
         // output: final
         assertEquals(-5, outputData.score);

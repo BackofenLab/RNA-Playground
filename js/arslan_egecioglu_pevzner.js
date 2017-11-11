@@ -116,11 +116,11 @@ $(document).ready(function () {
      * @param input {Object} - The input which has to be initialized.
      */
     function initializeInput(input) {
-        input.sequenceA = inputData.sequenceA;
-        input.sequenceB =  inputData.sequenceB;
+        input.sequenceB = inputData.sequenceB;
+        input.sequenceA =  inputData.sequenceA;
         input.calculationType = inputData.calculationType;
-        input.matrixHeight = inputData.sequenceB.length + 1;
-        input.matrixWidth = inputData.sequenceA.length + 1;
+        input.matrixHeight = inputData.sequenceA.length + 1;
+        input.matrixWidth = inputData.sequenceB.length + 1;
     }
 
     /**

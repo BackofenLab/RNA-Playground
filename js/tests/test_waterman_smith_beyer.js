@@ -14,8 +14,8 @@ TestCase("test_waterman_smith_beyer", {
         var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
 
         var inputData = {};
-        inputData.sequenceA = "TGGA";
-        inputData.sequenceB = "GG";
+        inputData.sequenceB = "TGGA";
+        inputData.sequenceA = "GG";
 
         inputData.calculationType = "similarity";
 
@@ -25,8 +25,8 @@ TestCase("test_waterman_smith_beyer", {
         inputData.mismatch = -1;
         inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -34,11 +34,11 @@ TestCase("test_waterman_smith_beyer", {
         var outputData = ioData[1];
 
         assertEquals(-6, outputData.score);
-        assertEquals("TGGA", outputData.alignments[0][0]);
-        assertEquals("__GG", outputData.alignments[0][2]);
+        assertEquals("TGGA", outputData.alignments[0][2]);
+        assertEquals("__GG", outputData.alignments[0][0]);
 
-        assertEquals("TGGA", outputData.alignments[1][0]);
-        assertEquals("GG__", outputData.alignments[1][2]);
+        assertEquals("TGGA", outputData.alignments[1][2]);
+        assertEquals("GG__", outputData.alignments[1][0]);
     },
 
     /**
@@ -48,8 +48,8 @@ TestCase("test_waterman_smith_beyer", {
         var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
 
         var inputData = {};
-        inputData.sequenceA = "CCGA";
-        inputData.sequenceB = "CG";
+        inputData.sequenceB = "CCGA";
+        inputData.sequenceA = "CG";
 
         inputData.calculationType = "similarity";
 
@@ -59,8 +59,8 @@ TestCase("test_waterman_smith_beyer", {
         inputData.mismatch = -1;
         inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -68,11 +68,11 @@ TestCase("test_waterman_smith_beyer", {
         var outputData = ioData[1];
 
         assertEquals(-5, outputData.score);
-        assertEquals("CCGA", outputData.alignments[0][0]);
-        assertEquals("C__G", outputData.alignments[0][2]);
+        assertEquals("CCGA", outputData.alignments[0][2]);
+        assertEquals("C__G", outputData.alignments[0][0]);
 
-        assertEquals("CCGA", outputData.alignments[1][0]);
-        assertEquals("CG__", outputData.alignments[1][2]);
+        assertEquals("CCGA", outputData.alignments[1][2]);
+        assertEquals("CG__", outputData.alignments[1][0]);
     },
 
     /**
@@ -83,8 +83,8 @@ TestCase("test_waterman_smith_beyer", {
         var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
 
         var inputData = {};
-        inputData.sequenceA = "TACGCAGA";
-        inputData.sequenceB = "TCCGA";
+        inputData.sequenceB = "TACGCAGA";
+        inputData.sequenceA = "TCCGA";
 
         inputData.calculationType = "similarity";
 
@@ -94,8 +94,8 @@ TestCase("test_waterman_smith_beyer", {
         inputData.mismatch = 0;
         inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -103,14 +103,14 @@ TestCase("test_waterman_smith_beyer", {
         var outputData = ioData[1];
 
         assertEquals(-3, outputData.score);
-        assertEquals("TACGCAGA", outputData.alignments[0][0]);
-        assertEquals("T___CCGA", outputData.alignments[0][2]);
+        assertEquals("TACGCAGA", outputData.alignments[0][2]);
+        assertEquals("T___CCGA", outputData.alignments[0][0]);
 
-        assertEquals("TACGCAGA", outputData.alignments[1][0]);
-        assertEquals("TCC___GA", outputData.alignments[1][2]);
+        assertEquals("TACGCAGA", outputData.alignments[1][2]);
+        assertEquals("TCC___GA", outputData.alignments[1][0]);
 
-        assertEquals("TACGCAGA", outputData.alignments[2][0]);
-        assertEquals("TCCG___A", outputData.alignments[2][2]);
+        assertEquals("TACGCAGA", outputData.alignments[2][2]);
+        assertEquals("TCCG___A", outputData.alignments[2][0]);
     },
 
     /**
@@ -121,8 +121,8 @@ TestCase("test_waterman_smith_beyer", {
         var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
 
         var inputData = {};
-        inputData.sequenceA = "ACCT";
-        inputData.sequenceB = "CC";
+        inputData.sequenceB = "ACCT";
+        inputData.sequenceA = "CC";
 
         inputData.calculationType = "similarity";
 
@@ -132,8 +132,8 @@ TestCase("test_waterman_smith_beyer", {
         inputData.mismatch = -1;
         inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -141,11 +141,11 @@ TestCase("test_waterman_smith_beyer", {
         var outputData = ioData[1];
 
         assertEquals(-7, outputData.score);
-        assertEquals("ACCT", outputData.alignments[0][0]);
-        assertEquals("__CC", outputData.alignments[0][2]);
+        assertEquals("ACCT", outputData.alignments[0][2]);
+        assertEquals("__CC", outputData.alignments[0][0]);
 
-        assertEquals("ACCT", outputData.alignments[1][0]);
-        assertEquals("CC__", outputData.alignments[1][2])
+        assertEquals("ACCT", outputData.alignments[1][2]);
+        assertEquals("CC__", outputData.alignments[1][0])
     },
 
     /**
@@ -156,8 +156,8 @@ TestCase("test_waterman_smith_beyer", {
         var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
 
         var inputData = {};
-        inputData.sequenceA = "AGTC";
-        inputData.sequenceB = "ATC";
+        inputData.sequenceB = "AGTC";
+        inputData.sequenceA = "ATC";
 
         inputData.calculationType = "similarity";
 
@@ -167,8 +167,8 @@ TestCase("test_waterman_smith_beyer", {
         inputData.mismatch = -1;
         inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -176,8 +176,8 @@ TestCase("test_waterman_smith_beyer", {
         var outputData = ioData[1];
 
         assertEquals(1, outputData.score);
-        assertEquals("AGTC", outputData.alignments[0][0]);
-        assertEquals("A_TC", outputData.alignments[0][2]);
+        assertEquals("AGTC", outputData.alignments[0][2]);
+        assertEquals("A_TC", outputData.alignments[0][0]);
     },
 
     /**
@@ -188,8 +188,8 @@ TestCase("test_waterman_smith_beyer", {
         var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
 
         var inputData = {};
-        inputData.sequenceA = "CCCCGCGACTCGGGTTCAAGGG";
-        inputData.sequenceB = "GGGTGAGACCCCAGTTCAACCC";
+        inputData.sequenceB = "CCCCGCGACTCGGGTTCAAGGG";
+        inputData.sequenceA = "GGGTGAGACCCCAGTTCAACCC";
 
         inputData.calculationType = "similarity";
 
@@ -199,8 +199,8 @@ TestCase("test_waterman_smith_beyer", {
         inputData.mismatch = -1;
         inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -208,8 +208,8 @@ TestCase("test_waterman_smith_beyer", {
         var outputData = ioData[1];
 
         assertEquals(33, outputData.score);
-        assertEquals("CCCCGCGACTCGGGTTCAAGGG", outputData.alignments[0][0]);
-        assertEquals("GGGTGAGACCCCAGTTCAACCC", outputData.alignments[0][2]);
+        assertEquals("CCCCGCGACTCGGGTTCAAGGG", outputData.alignments[0][2]);
+        assertEquals("GGGTGAGACCCCAGTTCAACCC", outputData.alignments[0][0]);
     },
 
     /**
@@ -220,8 +220,8 @@ TestCase("test_waterman_smith_beyer", {
         var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
 
         var inputData = {};
-        inputData.sequenceA = "TCCGA";
-        inputData.sequenceB = "TACGCGC";
+        inputData.sequenceB = "TCCGA";
+        inputData.sequenceA = "TACGCGC";
 
         inputData.calculationType = "similarity";
 
@@ -231,8 +231,8 @@ TestCase("test_waterman_smith_beyer", {
         inputData.mismatch = 0;
         inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -240,8 +240,8 @@ TestCase("test_waterman_smith_beyer", {
         var outputData = ioData[1];
 
         assertEquals(2, outputData.score);
-        assertEquals("T_C_CGA", outputData.alignments[0][0]);
-        assertEquals("TACGCGC", outputData.alignments[0][2]);
+        assertEquals("T_C_CGA", outputData.alignments[0][2]);
+        assertEquals("TACGCGC", outputData.alignments[0][0]);
     },
 
     /**
@@ -252,8 +252,8 @@ TestCase("test_waterman_smith_beyer", {
         var algorithm = new watermanSmithBeyer.WatermanSmithBeyer();
 
         var inputData = {};
-        inputData.sequenceA = "AACG";
-        inputData.sequenceB = "AATCG";
+        inputData.sequenceB = "AACG";
+        inputData.sequenceA = "AATCG";
 
         inputData.calculationType = "similarity";
 
@@ -263,8 +263,8 @@ TestCase("test_waterman_smith_beyer", {
         inputData.mismatch = -1;
         inputData.subadditiveFunction = SUBADDITIVE_FUNCTIONS.AFFINE;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -272,7 +272,7 @@ TestCase("test_waterman_smith_beyer", {
         var outputData = ioData[1];
 
         assertEquals(2, outputData.score);
-        assertEquals("AA_CG", outputData.alignments[0][0]);
-        assertEquals("AATCG", outputData.alignments[0][2]);
+        assertEquals("AA_CG", outputData.alignments[0][2]);
+        assertEquals("AATCG", outputData.alignments[0][0]);
     }
 });

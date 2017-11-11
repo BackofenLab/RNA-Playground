@@ -11,6 +11,7 @@ TestCase("test_feng_doolittle", {
      * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_1": function () {
+        debugger;
         var algorithm = new fengDoolittle.FengDoolittle();
 
         var inputData = {};
@@ -73,8 +74,8 @@ TestCase("test_feng_doolittle", {
         assertEquals("(c:2.8547,(a:0.4904,b:0.4904):2.3642);", outputData.newickString);
 
         // output: final
-        assertEquals(-9, outputData.score);
-        assertEquals("GC_C", outputData.progressiveAlignment[0]);
+        assertEquals(-11, outputData.score);
+        assertEquals("G_CC", outputData.progressiveAlignment[0]);
         assertEquals("ACGT", outputData.progressiveAlignment[1]);
         assertEquals("A__T", outputData.progressiveAlignment[2]);
     }

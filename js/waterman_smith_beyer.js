@@ -149,10 +149,10 @@ $(document).ready(function () {
     function computeMatrixAndScore() {
         // going through every matrix cell
         for (var i = 1; i < inputData.matrixHeight; i++) {
-            var bChar = inputData.sequenceB[i - 1];
+            var aChar = inputData.sequenceA[i - 1];
 
             for (var j = 1; j < inputData.matrixWidth; j++) {
-                var aChar = inputData.sequenceA[j - 1];
+                var bChar = inputData.sequenceB[j - 1];
 
                 if (inputData.calculationType === ALIGNMENT_TYPES.DISTANCE)
                     outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.min);
@@ -283,8 +283,8 @@ $(document).ready(function () {
         var up = position.i - 1;
 
         // retrieve values
-        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
-        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
+        var aChar = left >= 0 ? inputData.sequenceB[left] : SYMBOLS.EMPTY;
+        var bChar = up >= 0 ? inputData.sequenceA[up] : SYMBOLS.EMPTY;
 
         var currentValue = outputData.matrix[position.i][position.j];
 

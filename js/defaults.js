@@ -51,8 +51,8 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript
  */
 var ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
-    SEQUENCE_1: "AACG",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "AATCG",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "AATCG",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "AACG",  // hint: UPPERCASE letters!
 
     FUNCTION: {
         GAP: -2,
@@ -92,8 +92,8 @@ var CELL_PERCENT = {
  */
 var CHARACTER = {
     BASE: /[a-zA-Z]/i,
-    BASES: /^[a-zA-Z-]+$/,
-    NON_BASES: /[^a-zA-Z-]+/g,  // g to replace globally
+    BASES: /^[a-zA-Z-#]+$/,
+    NON_BASES: /[^a-zA-Z-#]+/g,  // g to replace globally
     NUMBER: /[0-9]/,
     NUMBERS: /[-+]?[0-9]+\.[0-9]*/
 };
@@ -342,8 +342,8 @@ var MULTI_SYMBOLS = {
 var NORMALIZED_ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     LENGTH: 10,
-    SEQUENCE_1: "GCATTUGCCUU",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "CTTGACCATU",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "CTTGACCATU",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "GCATTUGCCUU",  // hint: UPPERCASE letters!
 
     FUNCTION: {
         GAP: -2,
@@ -401,8 +401,8 @@ var SUB = {
 var SUBADDITIVE_ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     GAP_FUNCTION: "affine",
-    SEQUENCE_1: "CCGA",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "CG",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "CG",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "CCGA",  // hint: UPPERCASE letters!
 
     FUNCTION: {
         BASE_COSTS: -3,

@@ -134,11 +134,27 @@ $(document).ready(function () {
     function initComputationMatrix() {
         outputData.matrix[0][0] = 0;
 
-        for (var i = 1; i < inputData.matrixHeight; i++)
-            outputData.matrix[i][0] = inputData.baseCosts + i * inputData.enlargement;
+        var currentVerticalPosition = 1;
 
-        for (var j = 1; j < inputData.matrixWidth; j++)
-            outputData.matrix[0][j] = inputData.baseCosts + j * inputData.enlargement
+        for (var i = 1; i < inputData.matrixHeight; i++) {
+            if (inputData.sequenceA[i-1] === SYMBOLS.NONE)  // extension for Feng-Doolittle
+                outputData.matrix[i][0] = outputData.matrix[i - 1][0];
+            else {
+                outputData.matrix[i][0] = inputData.baseCosts + currentVerticalPosition * inputData.enlargement;
+                currentVerticalPosition++;
+            }
+        }
+
+        var currentHorizontalPosition = 1;
+
+        for (var j = 1; j < inputData.matrixWidth; j++) {
+            if (inputData.sequenceB[j-1] === SYMBOLS.NONE)  // extension for Feng-Doolittle
+                outputData.matrix[0][j] = outputData.matrix[0][j - 1];
+            else {
+                outputData.matrix[0][j] = inputData.baseCosts + currentHorizontalPosition * inputData.enlargement;
+                currentHorizontalPosition++;
+            }
+        }
     }
 
     /**
@@ -173,10 +189,10 @@ $(document).ready(function () {
 
         // going through every matrix cell
         for (var i = 1; i < inputData.matrixHeight; i++) {
-            var bChar = inputData.sequenceB[i - 1];
+            var aChar = inputData.sequenceA[i - 1];
 
             for (var j = 1; j < inputData.matrixWidth; j++) {
-                var aChar = inputData.sequenceA[j - 1];
+                var bChar = inputData.sequenceB[j - 1];
 
                 if (inputData.calculationType === ALIGNMENT_TYPES.DISTANCE)
                     outputData.matrix[i][j] = alignmentInstance.affineRecursionFunction(aChar, bChar, i, j, Math.min, false);
@@ -185,6 +201,7 @@ $(document).ready(function () {
             }
         }
 
+        debugger;
         // score is stored in the right bottom cell
         outputData.score = outputData.matrix[inputData.matrixHeight - 1][inputData.matrixWidth - 1];
     }
@@ -224,8 +241,8 @@ $(document).ready(function () {
         var up = position.i - 1;
 
         // retrieve values
-        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
-        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
+        var aChar = left >= 0 ? inputData.sequenceB[left] : SYMBOLS.EMPTY;
+        var bChar = up >= 0 ? inputData.sequenceA[up] : SYMBOLS.EMPTY;
 
         var currentValue = outputData.matrix[position.i][position.j];
 
@@ -248,8 +265,8 @@ $(document).ready(function () {
         var isChangeToP = currentValue === verticalValue;
         var isChangeToQ = currentValue === horizontalValue;
 
-        var isDeletion = currentValue === upValue + inputData.enlargement;
-        var isInsertion = currentValue === leftValue + inputData.enlargement;
+        var isDeletion = currentValue === upValue + (aChar === SYMBOLS.NONE ? 0 : inputData.enlargement);  // extension for Feng-Doolittle
+        var isInsertion = currentValue === leftValue + (bChar === SYMBOLS.NONE ? 0 : inputData.enlargement);
 
         // add
         if (isMatchMismatch)

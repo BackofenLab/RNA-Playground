@@ -11,12 +11,11 @@ TestCase("test_arslan_egecioglu_pevzner", {
      * @see Test values are taken from lecture Bioinformatics I.
      */
     "test_1": function () {
-        debugger;
         var algorithm = new arslanEgeciougluPevzner.ArslanEgeciougluPevzner();
 
         var inputData = {};
-        inputData.sequenceA = "GCATTUGCCUU";
-        inputData.sequenceB = "CTTGACCATU";
+        inputData.sequenceB = "GCATTUGCCUU";
+        inputData.sequenceA = "CTTGACCATU";
 
         inputData.calculationType = "similarity";
 
@@ -26,8 +25,8 @@ TestCase("test_arslan_egecioglu_pevzner", {
         inputData.mismatch = -1;
         inputData.length = 10;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -59,14 +58,14 @@ TestCase("test_arslan_egecioglu_pevzner", {
         assertEquals(2.04, match);
         assertEquals(-1.96, mismatch);
 
-        assertEquals("CATTUG_CC", alignments[0][0]);
-        assertEquals("C_TT_GACC", alignments[0][2]);
+        assertEquals("CATTUG_CC", alignments[0][2]);
+        assertEquals("C_TT_GACC", alignments[0][0]);
 
-        assertEquals("CATTUG_CC_UU", alignments[1][0]);
-        assertEquals("C_TT_GACCATU", alignments[1][2]);
+        assertEquals("CATTUG_CC_UU", alignments[1][2]);
+        assertEquals("C_TT_GACCATU", alignments[1][0]);
 
-        assertEquals("CATTUG_CCU_U", alignments[2][0]);
-        assertEquals("C_TT_GACCATU", alignments[2][2]);
+        assertEquals("CATTUG_CCU_U", alignments[2][2]);
+        assertEquals("C_TT_GACCATU", alignments[2][0]);
 
         // [2]
         var secondIterationData = outputData.iterationData[0][1];
@@ -113,8 +112,8 @@ TestCase("test_arslan_egecioglu_pevzner", {
         assertEquals(1.875, match);
         assertEquals(-2.125, mismatch);
 
-        assertEquals("CAT", alignments[0][0]);
         assertEquals("CAT", alignments[0][2]);
+        assertEquals("CAT", alignments[0][0]);
 
         /*
         // [All path test-cases below!]
@@ -142,23 +141,23 @@ TestCase("test_arslan_egecioglu_pevzner", {
         assertEquals(true, match);
         assertEquals(true, mismatch);
 
-        assertEquals("CATTUG_CC", alignmentsFourth[0][0]);
-        assertEquals("C_TT_GACC", alignmentsFourth[0][2]);
+        assertEquals("CATTUG_CC", alignmentsFourth[0][2]);
+        assertEquals("C_TT_GACC", alignmentsFourth[0][0]);
 
-        assertEquals("CATTUG_CC_UU", alignmentsFourth[1][0]);
-        assertEquals("C_TT_GACCATU", alignmentsFourth[1][2]);
+        assertEquals("CATTUG_CC_UU", alignmentsFourth[1][2]);
+        assertEquals("C_TT_GACCATU", alignmentsFourth[1][0]);
 
-        assertEquals("CATTUG_CCU_U", alignmentsFourth[2][0]);
-        assertEquals("C_TT_GACCATU", alignmentsFourth[2][2]);
+        assertEquals("CATTUG_CCU_U", alignmentsFourth[2][2]);
+        assertEquals("C_TT_GACCATU", alignmentsFourth[2][0]);
 
-        assertEquals("CATTUG_CC", alignmentsSeventh[0][0]);
-        assertEquals("C_TT_GACC", alignmentsSeventh[0][2]);
+        assertEquals("CATTUG_CC", alignmentsSeventh[0][2]);
+        assertEquals("C_TT_GACC", alignmentsSeventh[0][0]);
 
-        assertEquals("CATTUG_CC_UU", alignmentsSeventh[1][0]);
-        assertEquals("C_TT_GACCATU", alignmentsSeventh[1][2]);
+        assertEquals("CATTUG_CC_UU", alignmentsSeventh[1][2]);
+        assertEquals("C_TT_GACCATU", alignmentsSeventh[1][0]);
 
-        assertEquals("CATTUG_CCU_U", alignmentsSeventh[2][0]);
-        assertEquals("C_TT_GACCATU", alignmentsSeventh[2][2]);
+        assertEquals("CATTUG_CCU_U", alignmentsSeventh[2][2]);
+        assertEquals("C_TT_GACCATU", alignmentsSeventh[2][0]);
 
         // [5,8]
         var fifthIterationData = outputData.iterationData[1][1];
@@ -183,11 +182,11 @@ TestCase("test_arslan_egecioglu_pevzner", {
         assertEquals(true, match);
         assertEquals(true, mismatch);
 
-        assertEquals("CAT", alignmentsFifth[0][0]);
         assertEquals("CAT", alignmentsFifth[0][2]);
+        assertEquals("CAT", alignmentsFifth[0][0]);
 
-        assertEquals("CAT", alignmentsEighth[0][0]);
         assertEquals("CAT", alignmentsEighth[0][2]);
+        assertEquals("CAT", alignmentsEighth[0][0]);
 
         // [6,9]
         var sixthIterationData = outputData.iterationData[1][2];
@@ -212,11 +211,11 @@ TestCase("test_arslan_egecioglu_pevzner", {
         assertEquals(true, match);
         assertEquals(true, mismatch);
 
-        assertEquals("CAT", alignmentsSixth[0][0]);
         assertEquals("CAT", alignmentsSixth[0][2]);
+        assertEquals("CAT", alignmentsSixth[0][0]);
 
-        assertEquals("CAT", alignmentsNinth[0][0]);
         assertEquals("CAT", alignmentsNinth[0][2]);
+        assertEquals("CAT", alignmentsNinth[0][0]);
         */
     }
 });

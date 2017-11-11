@@ -148,11 +148,11 @@ Author: Alexander Mattheis
         outputData.sequencePairs = [];
         outputData.similarities = [];
 
-        for (var i = 1; i < inputData.sequences.length; i++) {
-            if (inputData.arrayPositionsOfRemovedSequences.indexOf(i) === -1) {  // only if the sequence is not a duplicate
-                for (var j = 0; j < i; j++) {
-                    var sequenceA = inputData.sequences[j];
-                    var sequenceB = inputData.sequences[i];
+        for (var j = 1; j < inputData.sequences.length; j++) {
+            if (inputData.arrayPositionsOfRemovedSequences.indexOf(j) === -1) {  // only if the sequence is not a duplicate
+                for (var i = 0; i < j; i++) {
+                    var sequenceA = inputData.sequences[i];
+                    var sequenceB = inputData.sequences[j];
 
                     var ioData = computeWithAlgorithm(algorithm, algorithmInput, sequenceA, sequenceB);
                     var alignment = getAlignment(ioData);
@@ -197,15 +197,15 @@ Author: Alexander Mattheis
      * @param {Object} - The algorithm with which the alignment data is computed.
      * @param input {Object} - The initialized Gotoh input structure.
      * @param sequenceA {string} - The first sequence.
-     * @param sequenceA {string} - The second sequence.
+     * @param sequenceB {string} - The second sequence.
      * @return {Object} - Output data of Gotoh with the given sequences in the input.
      */
     function computeWithAlgorithm(algorithm, input, sequenceA, sequenceB) {
         input.sequenceA = sequenceA;
         input.sequenceB = sequenceB;
 
-        input.matrixHeight = input.sequenceB.length + 1;
-        input.matrixWidth = input.sequenceA.length + 1;
+        input.matrixHeight = input.sequenceA.length + 1;
+        input.matrixWidth = input.sequenceB.length + 1;
 
         input.computeOneAlignment = true;  // speed up for Feng-Doolittle
 

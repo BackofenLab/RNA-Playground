@@ -128,7 +128,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<tr>
 							   <th>$D^5$</th>
 								<th></th>
-								<!-- ko foreach: $root.input.sequence1 -->
+								<!-- ko foreach: $root.input.sequence2 -->
 									<th data-bind="drawChar: [$data, $index()+1]"></th>
 								<!-- /ko -->
 							</tr>
@@ -142,7 +142,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 									<!-- /ko -->
 
 									<!-- ko if: $index() > 0 -->
-										<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+										<th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
 									<!-- /ko -->
 
 									<!-- ko foreach: $root.output.matrix5[0] -->
@@ -265,7 +265,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<tr>
 								<th>$D^4$</th>
 								<th></th>
-								<!-- ko foreach: $root.input.sequence1 -->
+								<!-- ko foreach: $root.input.sequence2 -->
 									<th data-bind="drawChar: [$data, $index()+1]"></th>
 								<!-- /ko -->
 							</tr>
@@ -279,7 +279,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 									<!-- /ko -->
 
 									<!-- ko if: $index() > 0 -->
-										<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+										<th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
 									<!-- /ko -->
 
 									<!-- ko foreach: $root.output.matrix4[0] -->
@@ -402,7 +402,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<tr>
 								<th>$D^3$</th>
 								<th></th>
-								<!-- ko foreach: $root.input.sequence1 -->
+								<!-- ko foreach: $root.input.sequence2 -->
 									<th data-bind="drawChar: [$data, $index()+1]"></th>
 								<!-- /ko -->
 							</tr>
@@ -416,7 +416,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 									<!-- /ko -->
 
 									<!-- ko if: $index() > 0 -->
-										<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+										<th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
 									<!-- /ko -->
 
 									<!-- ko foreach: $root.output.matrix3[0] -->
@@ -539,7 +539,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<tr>
 								<th>$D^2$</th>
 								<th></th>
-								<!-- ko foreach: $root.input.sequence1 -->
+								<!-- ko foreach: $root.input.sequence2 -->
 									<th data-bind="drawChar: [$data, $index()+1]"></th>
 								<!-- /ko -->
 							</tr>
@@ -553,7 +553,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 									<!-- /ko -->
 
 									<!-- ko if: $index() > 0 -->
-										<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+										<th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
 									<!-- /ko -->
 
 									<!-- ko foreach: $root.output.matrix2[0] -->
@@ -676,7 +676,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<tr>
 								<th>$D^1$</th>
 								<th></th>
-								<!-- ko foreach: $root.input.sequence1 -->
+								<!-- ko foreach: $root.input.sequence2 -->
 									<th data-bind="drawChar: [$data, $index()+1]"></th>
 								<!-- /ko -->
 							</tr>
@@ -690,7 +690,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 									<!-- /ko -->
 
 									<!-- ko if: $index() > 0 -->
-										<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+										<th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
 									<!-- /ko -->
 
 									<!-- ko foreach: $root.output.matrix1[0] -->

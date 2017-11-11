@@ -632,8 +632,8 @@ Author: Alexander Mattheis
 
         var matrix = getMatrix(number);
         if (matrix !== undefined) {
-            var upperString = visualizerInstance.input.sequenceA;
-            var leftString = visualizerInstance.input.sequenceB;
+            var upperString = visualizerInstance.input.sequenceB;
+            var leftString = visualizerInstance.input.sequenceA;
 
             var tableCSV = tableToCSV(number, matrix, upperString, leftString);
             var tableFile = new File([tableCSV], {type: TABLE.TEXT_FILE_ENCODING});

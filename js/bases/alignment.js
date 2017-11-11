@@ -11,7 +11,7 @@ Author: Alexander Mattheis
     // public methods
     namespace("bases.alignment", Vector, create,
         Alignment, getInput, setLinearAlignmentInput, setSubadditiveAlignmentInput, compute, recursionFunction,
-        affineRecursionFunction, getGlobalTraces, getLocalTraces, getAllMaxPositions, createAlignments, getOutput, setIO, getLastChild,
+        affineRecursionFunction, getEnlargementAndBaseCosts, getGlobalTraces, getLocalTraces, getAllMaxPositions, createAlignments, getOutput, setIO, getLastChild,
         getNeighboured, getVerticalNeighboured, getHorizontalNeighboured, differenceLowerEpsilon);
 
     // instances
@@ -66,6 +66,7 @@ Author: Alexander Mattheis
         this.compute = compute;
         this.recursionFunction = recursionFunction;
         this.affineRecursionFunction = affineRecursionFunction;
+        this.getEnlargementAndBaseCosts = getEnlargementAndBaseCosts;
         this.getGlobalTraces = getGlobalTraces;
         this.getLocalTraces = getLocalTraces;
         this.getAllMaxPositions = getAllMaxPositions;
@@ -95,8 +96,8 @@ Author: Alexander Mattheis
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm (NW, SW, AEP).
      */
     function setLinearAlignmentInput(inputViewmodel) {
-        inputData.sequenceA = inputViewmodel.sequence1();
         inputData.sequenceB = inputViewmodel.sequence2();
+        inputData.sequenceA = inputViewmodel.sequence1();
 
         inputData.calculationType = inputViewmodel.calculation();
 
@@ -105,8 +106,8 @@ Author: Alexander Mattheis
         inputData.match = inputViewmodel.match();
         inputData.mismatch = inputViewmodel.mismatch();
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
     }
 
     /**
@@ -115,8 +116,8 @@ Author: Alexander Mattheis
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm (G, WSB).
      */
     function setSubadditiveAlignmentInput(inputViewmodel) {
-        inputData.sequenceA = inputViewmodel.sequence1();
         inputData.sequenceB = inputViewmodel.sequence2();
+        inputData.sequenceA = inputViewmodel.sequence1();
 
         inputData.calculationType = inputViewmodel.calculation();
 
@@ -125,8 +126,8 @@ Author: Alexander Mattheis
         inputData.match = inputViewmodel.match();
         inputData.mismatch = inputViewmodel.mismatch();
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
     }
 
     /**
@@ -203,8 +204,8 @@ Author: Alexander Mattheis
             matchOrMismatch = inputData.substitutionFunction(i,j);
 
         // gap recursion-functions
-        outputData.horizontalGaps[i][j] = horizontalOptimum(optimum, i, j);
-        outputData.verticalGaps[i][j] = verticalOptimum(optimum, i, j);
+        outputData.horizontalGaps[i][j] = horizontalOptimum(optimum, i, j, bChar);
+        outputData.verticalGaps[i][j] = verticalOptimum(optimum, i, j, aChar);
 
         // default matrix recursion function
         if (local)
@@ -226,12 +227,31 @@ Author: Alexander Mattheis
      * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
      * @param i {number} - The current vertical position in the matrix.
      * @param j {number} - The current horizontal position in the matrix.
+     * @param char {string} - The current char from the second string.
      * @return {number} - The optimal value.
      */
-    function horizontalOptimum(optimum, i, j) {
+    function horizontalOptimum(optimum, i, j, char) {
+        var enlargmentBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);  // Hint: case s(.,#) = 0
+
         return optimum(
-            outputData.horizontalGaps[i][j - 1] + inputData.enlargement,
-            outputData.matrix[i][j - 1] + inputData.baseCosts + inputData.enlargement);
+            outputData.horizontalGaps[i][j - 1] + enlargmentBaseCosts[0],
+            outputData.matrix[i][j - 1] +  enlargmentBaseCosts[1] +  enlargmentBaseCosts[0]);
+    }
+
+    /**
+     * Returns the base costs and the enlargement given a char.
+     * @param enlargement {number} - The enlargement from the input data.
+     * @param baseCosts {number} - The base costs from the input data.
+     * @param char {string} - The current char from first or second string.
+     * @return {[enlargement, baseCosts]} - The pair of base costs and enlargement.
+     */
+    function getEnlargementAndBaseCosts(enlargement, baseCosts, char) {
+        if (char === SYMBOLS.NONE) {  // Feng-Doolittle extension: s(.,#) = s(#,.) = 0
+            enlargement = 0;
+            baseCosts = 0;
+        }
+
+        return [enlargement, baseCosts];
     }
 
     /**
@@ -239,12 +259,15 @@ Author: Alexander Mattheis
      * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
      * @param i {number} - The current vertical position in the matrix.
      * @param j {number} - The current horizontal position in the matrix.
+     * @param char {string} - The current char from the first string.
      * @return {number} - The optimal value.
      */
-    function verticalOptimum(optimum, i, j) {
+    function verticalOptimum(optimum, i, j, char) {
+        var enlargmentBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);  // Hint: case s(#, .) = 0
+
         return optimum(
-            outputData.verticalGaps[i - 1][j] + inputData.enlargement,
-            outputData.matrix[i - 1][j] + inputData.baseCosts + inputData.enlargement);
+            outputData.verticalGaps[i - 1][j] + enlargmentBaseCosts[0],
+            outputData.matrix[i - 1][j] + enlargmentBaseCosts[1] +  enlargmentBaseCosts[0])
     }
 
     /**
@@ -433,7 +456,7 @@ Author: Alexander Mattheis
     /**
      * Creates an alignment by going through the path array of vectors.
      * @param path {Array} - Path of vectors which is used to create the alignment.
-     * @return {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]} - The triple of strings which have to be displayed.
+     * @return {[alignedSequenceB, matchOrMismatchString, alignedSequenceA]} - The triple of strings which have to be displayed.
      * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function createAlignment(path) {
@@ -443,8 +466,8 @@ Author: Alexander Mattheis
         var matchOrMismatchString = SYMBOLS.EMPTY;
         var alignedSequenceB = SYMBOLS.EMPTY;
 
-        var currentPositionA = path[0].j;
-        var currentPositionB = path[0].i;
+        var currentPositionA = path[0].i;
+        var currentPositionB = path[0].j;
 
         // going through each element of the path and look on the differences between vectors
         // to find out the type of difference vector (arrow)
@@ -457,27 +480,27 @@ Author: Alexander Mattheis
                 var bChar = inputData.sequenceB[currentPositionB];
 
                 alignedSequenceA += aChar;
-                matchOrMismatchString += aChar === bChar ? SYMBOLS.STAR : SYMBOLS.VERTICAL_BAR;
+                matchOrMismatchString += bChar === aChar ? SYMBOLS.STAR : SYMBOLS.VERTICAL_BAR;
                 alignedSequenceB += bChar;
 
-                currentPositionA++;
                 currentPositionB++;
+                currentPositionA++;
             } else if (horizontalDifference > 0) {  // horizontal case
                 for (var k = 0; k < horizontalDifference; k++) {
-                    alignedSequenceA += inputData.sequenceA[currentPositionA];
-                    matchOrMismatchString += SYMBOLS.SPACE;
-                    alignedSequenceB += SYMBOLS.GAP;
-
-                    currentPositionA++;
-                }
-            } else if (verticalDifference > 0) {  // vertical case
-                // Hint: for Gotoh really "else if" is needed because you can switch between matrices
-                for (var k = 0; k < verticalDifference; k++) {
                     alignedSequenceA += SYMBOLS.GAP;
                     matchOrMismatchString += SYMBOLS.SPACE;
                     alignedSequenceB += inputData.sequenceB[currentPositionB];
 
                     currentPositionB++;
+                }
+            } else if (verticalDifference > 0) {  // vertical case
+                // Hint: for Gotoh really "else if" is needed because you can switch between matrices
+                for (var k = 0; k < verticalDifference; k++) {
+                    alignedSequenceA += inputData.sequenceA[currentPositionA];
+                    matchOrMismatchString += SYMBOLS.SPACE;
+                    alignedSequenceB += SYMBOLS.GAP;
+
+                    currentPositionA++;
                 }
             }
         }
@@ -529,8 +552,8 @@ Author: Alexander Mattheis
         var up = position.i - 1;
 
         // retrieve values
-        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
-        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
+        var aChar = left >= 0 ? inputData.sequenceB[left] : SYMBOLS.EMPTY;
+        var bChar = up >= 0 ? inputData.sequenceA[up] : SYMBOLS.EMPTY;
 
         var currentValue = outputData.matrix[position.i][position.j];
 
@@ -583,14 +606,17 @@ Author: Alexander Mattheis
         var pUpValue = Number.NaN;
         var xUpValue = Number.NaN;
 
-        if (position.i >= 0 && up >= 0) {
+        if (position.j >= 0 && up >= 0) {
             pUpValue = outputData.verticalGaps[up][position.j];
             xUpValue = outputData.matrix[up][position.j];
         }
 
+        var char = up >= 0 ? inputData.sequenceA[up] : SYMBOLS.EMPTY;
+        var enlargementBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);  // Hint: case s(.,#) = 0
+
         // check
-        var isUpInP = currentValue === pUpValue + inputData.enlargement;
-        var isUpInX = currentValue === xUpValue + inputData.baseCosts + inputData.enlargement;
+        var isUpInP = currentValue === pUpValue + enlargementBaseCosts[0];
+        var isUpInX = currentValue === xUpValue + enlargementBaseCosts[1] + enlargementBaseCosts[0];
 
         // add
         if (isUpInP)
@@ -626,9 +652,12 @@ Author: Alexander Mattheis
             xLeftValue = outputData.matrix[position.i][left];
         }
 
+        var char = left >= 0 ? inputData.sequenceB[left] : SYMBOLS.EMPTY;
+        var enlargementBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);
+
         // check
-        var isLeftInQ = currentValue === qLeftValue + inputData.enlargement;
-        var isLeftInX = currentValue === xLeftValue + inputData.baseCosts + inputData.enlargement;
+        var isLeftInQ = currentValue === qLeftValue + enlargementBaseCosts[0];
+        var isLeftInX = currentValue === xLeftValue + enlargementBaseCosts[1] + enlargementBaseCosts[0];
 
         // add
         if (isLeftInQ)

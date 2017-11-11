@@ -11,7 +11,6 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    debugger;
     if (loaded === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {  // to avoid self execution on a script import
         notredameHigginsHeringa.startNotredameHigginsHeringa();
         loaded = ALGORITHMS.NONE;
@@ -163,10 +162,10 @@ $(document).ready(function () {
 
         // iterate over each sequence a and sequence b to compute structure primLib^{a,b}(i,j) = {L_{1,3}, L_{2,4}, ..., L_{5,7}}
         // Hint: a and b are the aligned sequences
-        for (var i = 0; i < inputData.sequences.length; i++) {
-            for (var j = 0; j < i; j++) {
-                var sequenceA = inputData.sequences[j];
-                var sequenceB = inputData.sequences[i];
+        for (var j = 1; j < inputData.sequences.length; j++) {
+            for (var i = 0; i < j; i++) {
+                var sequenceA = inputData.sequences[i];
+                var sequenceB = inputData.sequences[j];
 
                 var alignment = output.alignmentsAndScores[[sequenceA, sequenceB]][0];
                 var sequenceIdentities = getSequenceIdentities(alignment);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
@@ -199,9 +198,9 @@ $(document).ready(function () {
 
         // iterate over each position to create keys L_{i,j}
         for (var k = 0; k < sequenceLength; k++) {
-            if (sequenceA[k] === SYMBOLS.GAP) {  // means there is a gap in sequence b
+            if (sequenceA[k] === SYMBOLS.GAP) {  // means there is no gap in sequence b
                 numCharactersInB++;
-            } else if (sequenceB[k] === SYMBOLS.GAP) {  // means there is a gap in sequence a
+            } else if (sequenceB[k] === SYMBOLS.GAP) {  // means there is no gap in sequence a
                 numCharactersInA++;
             } else {  // match or mismatch
                 numCharactersInA++;
@@ -323,7 +322,6 @@ $(document).ready(function () {
     function computeExtendedWeightPrimaryLibrary() {
         outputData.extendedWeightLib = {};  // extLib^{a,b}
 
-        debugger;
         var outerPrimLibKeys = Object.keys(outputData.primaryWeightLib);  // [(a,b), (a,c), ..., (d,f)] where [character] = [ALIGNED SEQUENCE]
         var alignmentSequenceNames = getIndividualArguments(outerPrimLibKeys);  // [a, b, c, ..., f]
 
@@ -396,7 +394,6 @@ $(document).ready(function () {
             if (alignmentSequenceNames[x] !== leftAlignmentKeyArgument
                 && alignmentSequenceNames[x] !== rightAlignmentKeyArgument) {  // just an optimization (x in S\{a,b})
 
-                debugger;
                 var positionSequenceNames = getPositions(alignmentSequenceNames[x]);
 
                 // iterate overall positions in aligned sequence x
@@ -519,7 +516,6 @@ $(document).ready(function () {
         // (not all, only 10 local alignments for library computation used)
         // [2] we want create "global" progressive alignments
 
-        debugger;
         multiSequenceAlignmentInstance.setIO(inputData, outputData);
         multiSequenceAlignmentInstance.computeDistancesFromSimilarities();
         multiSequenceAlignmentInstance.createDistanceMatrix();
@@ -597,16 +593,16 @@ $(document).ready(function () {
 
                 var L = outputData.extendedWeightLib[[sequenceA, sequenceB]];
 
-                var switchArguments = true;  // L^{a,b}(i,j) = L^{b,a}(j,i)
+                var switchArguments = false;
 
                 if (L === undefined) {
                     L = outputData.extendedWeightLib[[sequenceB, sequenceA]];
-                    switchArguments = false;
+                    switchArguments = true;  // L^{a,b}(i,j) = L^{b,a}(j,i)
                 }
 
                 if (L !== undefined) {
-                    var argI = i - getNumberOfNeutrals(preSequenceB, i);
-                    var argJ = j - getNumberOfNeutrals(preSequenceA, j);
+                    var argI = i - getNumberOfNeutrals(preSequenceA, i);
+                    var argJ = j - getNumberOfNeutrals(preSequenceB, j);
 
                     if (switchArguments)
                         weight += L[[argJ,argI]] !== undefined ? L[[argJ,argI]] : 0;

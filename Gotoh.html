@@ -124,7 +124,7 @@ Author: Alexander Mattheis
                     <tr>
                         <th>$P$</th>
                         <th></th>
-                        <!-- ko foreach: input.sequence1 -->
+                        <!-- ko foreach: input.sequence2 -->
                             <th data-bind="drawChar: [$data, $index()+1]"></th>
                         <!-- /ko -->
                     </tr>
@@ -138,7 +138,7 @@ Author: Alexander Mattheis
                             <!-- /ko -->
 
                             <!-- ko if: $index() > 0 -->
-                                <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                                <th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
                             <!-- /ko -->
 
                             <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
@@ -167,7 +167,7 @@ Author: Alexander Mattheis
                     <tr>
                         <th>$D$</th>
                         <th></th>
-                        <!-- ko foreach: input.sequence1 -->
+                        <!-- ko foreach: input.sequence2 -->
                             <th data-bind="drawChar: [$data, $index()+1]"></th>
                         <!-- /ko -->
                     </tr>
@@ -181,7 +181,7 @@ Author: Alexander Mattheis
                             <!-- /ko -->
 
                             <!-- ko if: $index() > 0 -->
-                                <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                                <th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
                             <!-- /ko -->
 
                             <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
@@ -210,7 +210,7 @@ Author: Alexander Mattheis
                     <tr>
                         <th>$Q$</th>
                         <th></th>
-                        <!-- ko foreach: input.sequence1 -->
+                        <!-- ko foreach: input.sequence2 -->
                             <th data-bind="drawChar: [$data, $index()+1]"></th>
                         <!-- /ko -->
                     </tr>
@@ -224,7 +224,7 @@ Author: Alexander Mattheis
                             <!-- /ko -->
 
                             <!-- ko if: $index() > 0 -->
-                                <th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+                                <th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
                             <!-- /ko -->
 
                             <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
