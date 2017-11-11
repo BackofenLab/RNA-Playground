@@ -25,8 +25,9 @@ load:
   - js/waterman_smith_beyer.js
 test:
   - js/tests/test_notredame_higgins_heringa.js
-  - js/tests/test_feng_doolittle.js
+
   - js/tests/test_arslan_egecioglu_pevzner.js
+  - js/tests/test_feng_doolittle.js
   - js/tests/test_gotoh.js
   - js/tests/test_gotoh_local.js
   - js/tests/test_needleman_wunsch.js

@@ -92,8 +92,8 @@ var CELL_PERCENT = {
  */
 var CHARACTER = {
     BASE: /[a-zA-Z]/i,
-    BASES: /^[a-zA-Z-#]+$/,
-    NON_BASES: /[^a-zA-Z-#]+/g,  // g to replace globally
+    BASES: /^[a-zA-Z-]+$/,
+    NON_BASES: /[^a-zA-Z-]+/g,  // g to replace globally
     NUMBER: /[0-9]/,
     NUMBERS: /[-+]?[0-9]+\.[0-9]*/
 };
@@ -286,7 +286,7 @@ var MULTI_SEQUENCE_DEFAULTS = {
         "NSLVKKSEDPRD"],  /* some bugfix for Knockout */
 
     FUNCTION: {
-        BASE_COSTS: -5,
+        BASE_COSTS: -2,
         ENLARGEMENT: -1,
         MATCH: 3,
         MISMATCH: 1
