@@ -89,9 +89,12 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
-        initializeMatrices();
-        computeMatricesAndScore();
-        computeTraceback();
+        if (outputData.tracebackPaths === undefined) {  // T-Coffee optimization: reuse traceback paths which were computed before (look into Unit-Test PDF)
+            initializeMatrices();
+            computeMatricesAndScore();
+            computeTraceback();
+        }
+
         createAlignments();
         return [inputData, outputData];
     }

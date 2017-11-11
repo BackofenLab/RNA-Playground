@@ -154,7 +154,7 @@ Author: Alexander Mattheis
                     var sequenceA = inputData.sequences[i];
                     var sequenceB = inputData.sequences[j];
 
-                    var ioData = computeWithAlgorithm(algorithm, algorithmInput, sequenceA, sequenceB);
+                    var ioData = computeWithAlgorithm(algorithm, algorithmInput, {}, sequenceA, sequenceB);
                     var alignment = getAlignment(ioData);
 
                     outputData.alignmentsAndScores[[sequenceA, sequenceB]] = [alignment, ioData[1].score];  // for faster access
@@ -196,20 +196,21 @@ Author: Alexander Mattheis
      * Computes Gotoh with the given input sequences and the function.
      * @param {Object} - The algorithm with which the alignment data is computed.
      * @param input {Object} - The initialized Gotoh input structure.
+     * @param input {Object} - The initialized Gotoh output structure.
      * @param sequenceA {string} - The first sequence.
      * @param sequenceB {string} - The second sequence.
      * @return {Object} - Output data of Gotoh with the given sequences in the input.
      */
-    function computeWithAlgorithm(algorithm, input, sequenceA, sequenceB) {
+    function computeWithAlgorithm(algorithm, input, output, sequenceA, sequenceB) {
         input.sequenceA = sequenceA;
         input.sequenceB = sequenceB;
 
         input.matrixHeight = input.sequenceA.length + 1;
         input.matrixWidth = input.sequenceB.length + 1;
 
-        input.computeOneAlignment = true;  // speed up for Feng-Doolittle
+        input.computeOneAlignment = true;  // speed up for Feng-Doolittle and other multi-alignment algorithms
 
-        algorithm.setIO(input, {});
+        algorithm.setIO(input, output);
 
         return algorithm.compute();
     }
@@ -606,7 +607,9 @@ Author: Alexander Mattheis
         // T-Coffee extension: substitution values are dependant on the groups -> sequences read by substitution function
         outputData.currentFirstGroup = [];  // needed to recompute substitution values for column
         outputData.currentSecondGroup = [];  // needed to recompute substitution values for column
+        outputData.currentGroupName = [];  // extension for T-Coffee: to avoid recomputation of matrices
         outputData.groupMatrices = {};  // extension for T-Coffee: store previously computed matrices
+        outputData.groupTracebackPaths = {};  // extension for T-Coffee: store previously computed traceback paths
     }
 
     /**
@@ -628,12 +631,12 @@ Author: Alexander Mattheis
     function alignGroups(leftChildName, rightChildName, groupName) {
         var group1Sequences = outputData.groups[leftChildName];
         var group2Sequences = outputData.groups[rightChildName];
+        outputData.currentGroupName = groupName;  // extension for T-Coffee: look for #optimization
 
         var bestAlignment = getBestAlignment(group1Sequences, group2Sequences);
 
-        // extension for T-Coffee: store previously calculated matrices
-        if (childInstance.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)
-            outputData.groupMatrices[groupName] = outputData.currentMatrix;
+        if (childInstance.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)  // extension for T-Coffee
+            outputData.groupMatrices[groupName] = outputData.currentMatrix;  // store previously calculated matrices (for a Unit-Test)
 
         outputData.groups[groupName] = createGroup(group1Sequences, group2Sequences, bestAlignment);
 
@@ -705,12 +708,38 @@ Author: Alexander Mattheis
             return alignmentAndScore;
 
         var input = {};
+        var output = {};
         initializeInput(input);
-        var ioData = computeWithAlgorithm(gotohInstance, input, sequence1, sequence2);
 
-        outputData.currentMatrix = ioData[1].matrix;  // extension for T-Coffee
+        if (childInstance.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)  // T-Coffee extension
+            initializeOutput(output);
+
+        var ioData = computeWithAlgorithm(gotohInstance, input, output, sequence1, sequence2);
+
+        // extension for T-Coffee: needed for a Unit-Test
+        // if we have a recalculation (look at #optimization), then the matrix is not computed and undefined, we use the last one
+        outputData.currentMatrix = ioData[1].matrix === undefined ? outputData.currentMatrix : ioData[1].matrix;
+
+        // #optimization:
+        // traceback paths are computed once for a group and then reused, because they do not change anymore
+        // look into Unit-Test: Notredame-Higgins-Heringa.pdf -> matrix ab~c on page 6
+        outputData.groupTracebackPaths[outputData.currentGroupName] = ioData[1].tracebackPaths;
 
         return [ioData[1].alignments[0], ioData[1].score];
+    }
+
+    /**
+     * If traceback path and matrix have been already computed,
+     * then the traceback path is not recomputed.
+     * @param output
+     */
+    function initializeOutput(output) {
+        debugger;
+        var parentGroupName = outputData.currentGroupName;
+        output.tracebackPaths = outputData.groupTracebackPaths[parentGroupName];
+
+        if (output.tracebackPaths !== undefined && output.tracebackPaths[0] !== undefined)
+            output.tracebackPaths[0].reverse();  // because the createAlignment-function in Alignment has reversed the array for the later visualization
     }
 
     /**

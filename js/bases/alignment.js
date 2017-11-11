@@ -460,7 +460,7 @@ Author: Alexander Mattheis
      * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function createAlignment(path) {
-        path.reverse();  // allows more intuitive calculations from left to right
+        path.reverse();  // allows more intuitive calculations from start (left) to finish (right)
 
         var alignedSequenceA = SYMBOLS.EMPTY;
         var matchOrMismatchString = SYMBOLS.EMPTY;
