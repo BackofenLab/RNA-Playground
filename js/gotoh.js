@@ -81,7 +81,7 @@ $(document).ready(function () {
      */
     function setInput(inputViewmodel) {
         inputData.computeOneAlignment = false;  // extension to speed up Feng-Doolittle, default value is false
-        inputData.recomputeTraceback = true;
+        inputData.recomputeTraceback = true;  // extension to speed up T-Coffee
         alignmentInstance.setIO(inputData, {});
         alignmentInstance.setSubadditiveAlignmentInput(inputViewmodel);
     }

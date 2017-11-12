@@ -78,5 +78,36 @@ TestCase("test_feng_doolittle", {
         assertEquals("G_CC", outputData.progressiveAlignment[0]);
         assertEquals("ACGT", outputData.progressiveAlignment[1]);
         assertEquals("A__T", outputData.progressiveAlignment[2]);
+    },
+
+    "test_2": function () {
+        var algorithm = new gotoh.Gotoh();
+
+        var inputData = {};
+        inputData.sequenceB = "GCC";
+        inputData.sequenceA = "A##T";
+
+        inputData.calculationType = "similarity";
+
+        inputData.baseCosts = 0;
+        inputData.enlargement = -2;
+        inputData.match = 1;
+        inputData.mismatch = -1;
+
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
+        inputData.recomputeTraceback = true;  // T-coffee extension
+
+        algorithm.setIO(inputData, {});
+
+        var ioData = algorithm.compute();
+        var outputData = ioData[1];
+
+        assertEquals(-2, outputData.score);
+        assertEquals("G_CC", outputData.alignments[0][2]);
+        assertEquals("A##T", outputData.alignments[0][0]);
+
+        assertEquals("GC_C", outputData.alignments[1][2]);
+        assertEquals("A##T", outputData.alignments[1][0]);
     }
 });
