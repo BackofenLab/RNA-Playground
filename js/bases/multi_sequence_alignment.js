@@ -564,6 +564,7 @@ Author: Alexander Mattheis
     function createProgressiveAlignment(treeBranches) {
         initializeGroups();
 
+        debugger;
         for (var i = 0; i < treeBranches.length; i++) {
             var treeBranch = treeBranches[i];
 
@@ -734,7 +735,6 @@ Author: Alexander Mattheis
      * @param output
      */
     function initializeOutput(output) {
-        debugger;
         var parentGroupName = outputData.currentGroupName;
         output.tracebackPaths = outputData.groupTracebackPaths[parentGroupName];
 

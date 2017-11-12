@@ -214,6 +214,7 @@ Author: Alexander Mattheis
 
         /* bug-fix for a Knockout-problem -> dynamically generated inputs get wrong values after typing in something */
         MULTI_SEQUENCE_DEFAULTS.SEQUENCES = MULTI_SEQUENCE_DEFAULTS.SEQUENCES_COPY.slice();
+        MULTI_SEQUENCE_DEFAULTS_T_COFFEE.SEQUENCES = MULTI_SEQUENCE_DEFAULTS_T_COFFEE.SEQUENCES_COPY.slice();
         inputViewmodel.sequences.removeAll();  // avoids changing on the as constant defined value
 
         return sequenceArray;
@@ -226,6 +227,19 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
+        if (viewmodels.visual.algorithm.type === ALGORITHMS.FENG_DOOLITTLE)
+            changeFengDoolittleOutput(outputData, inputProcessor, viewmodels);
+        else if (viewmodels.visual.algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)
+            changeTcoffeeOutput(outputData, inputProcessor, viewmodels);
+    }
+
+    /**
+     * Changes the output of Feng-Doolittle algorithm after processing the input.
+     * @param outputData {Object} - Contains all output data.
+     * @param inputProcessor {Object} - The unit processing the input.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
+     */
+    function changeFengDoolittleOutput(outputData, inputProcessor, viewmodels) {
         // creates a visually representable distance matrix
         outputData.distanceMatrix
             = alignmentInterfaceInstance.getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength,
@@ -297,5 +311,22 @@ Author: Alexander Mattheis
         viewmodels.output.similarities(outputData.similarities);
         viewmodels.output.gapNumbers(outputData.gapNumbers);
         viewmodels.output.gapStarts(outputData.gapStarts);
+    }
+
+    /**
+     * Changes the output of Notredame-Higgins-Heringa algorithm after processing the input.
+     * @param outputData {Object} - Contains all output data.
+     * @param inputProcessor {Object} - The unit processing the input.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
+     */
+    function changeTcoffeeOutput(outputData, inputProcessor, viewmodels) {
+        alignmentInterfaceInstance.reorderGroupSequences(outputData);  // todo: a little bit overkill, because not all data displayed
+
+        // final output
+        viewmodels.output.progressiveAlignment(outputData.progressiveAlignment);
+        viewmodels.output.score(outputData.score);
+
+        // libraries
+        viewmodels.output.sequencePairNames(outputData.sequencePairNames);
     }
 }());

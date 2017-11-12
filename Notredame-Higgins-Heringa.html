@@ -153,5 +153,93 @@ Author: Alexander Mattheis
     </div>
 </div>
 
+<h1>Output:</h1>
 <div id="algorithm_output">
+
+    <div class="output">
+        <div class="final">
+            <table class="final_result_header">
+                <thead>
+					<tr>
+						<th>
+                            Final result
+						</th>
+					</tr>
+                </thead>
+            </table>
+
+            <div class="final_result_with_scrollbar">
+                <table class="final_result">
+                    <tbody>
+                        <tr>
+                            <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.progressiveAlignment() -->
+                                    <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br>
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="final_result_footer">
+                <tr>
+                    <th>
+                        <small>
+                            Affine SoP score: <span data-bind="text: $root.output.score()"></span>
+                        </small>
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <h2>Libraries</h2>
+
+    <div class="pairwise_data">
+        <div class="result_with_scrollbar">
+            <table class="result_categories top_border">
+                <thead>
+                    <tr>
+                        <th>
+                            <small><b>Sequence Pair</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Position Pair</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Primary Library $L$</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Extended Library $EL$</b></small>
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- ko foreach: $root.output.sequencePairNames() -->
+                        <tr>
+                            <td class="entry entry_start">
+                                <code>(</code><code data-bind="text: $data[0]"></code><code>,</code>
+                                <code data-bind="text: $data[1]"></code><code>)</code>
+                                <br>
+                            </td>
+
+                            <td class="entry entry_start">
+                            </td>
+
+                            <td class="entry entry_start">
+                            </td>
+
+                            <td class="entry entry_start">
+                            </td>
+                        </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

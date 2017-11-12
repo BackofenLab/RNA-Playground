@@ -129,7 +129,10 @@ Author: Alexander Mattheis
                 createOutputViewmodel(algorithmName, viewmodel, outputData);
             }
         } else if (MULTI_SEQUENCE_ALGORITHMS.indexOf(algorithmName) >= 0) {  // if multi-sequence alignment algorithm
-            createMultiSequenceOutputViewmodel(viewmodel, outputData);
+            if (algorithmName === ALGORITHMS.FENG_DOOLITTLE)
+                createFengDoolittleOutputViewmodel(viewmodel, outputData);
+            else
+                createTcoffeeOutputViewmodel(viewmodel, outputData);
         }
     }
 
@@ -365,11 +368,11 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Creates the OutputViewmodel for multi-sequence alignment algorithms.
+     * Creates the OutputViewmodel for Feng-Doolittle.
      * @param viewmodel {Object} - The output viewmodel container which should be filled.
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
-    function createMultiSequenceOutputViewmodel(viewmodel, outputData) {
+    function createFengDoolittleOutputViewmodel(viewmodel, outputData) {
         // distance matrix
         outputData.distanceMatrix
             = getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined);
@@ -659,6 +662,60 @@ Author: Alexander Mattheis
         }
 
         return [finalSortedGroup, finalSortedGroupNames];
+    }
+
+    /**
+     * Creates the OutputViewmodel for T-coffee.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     */
+    function createTcoffeeOutputViewmodel(viewmodel, outputData) {
+        //var librariesData = getLibrariesData(outputData);
+
+        // final output
+        viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
+        viewmodel.score = ko.observable(outputData.score);
+
+        // libraries
+        viewmodel.sequencePairNames = ko.observable(outputData.sequencePairNames);
+        //viewmodel.allLibPositionPairs = ko.observable(outputData.allLibPositionPairs);
+        //viewmodel.primGlobalLibValues = ko.observable(outputData.primGlobalLibValues);
+    }
+
+    function getLibrariesData(outputData) {
+        var sequencePairsNames = [];
+        var positionPairs = [];
+        var primLibValues = [];
+        var extendedLibValues = [];
+
+        var alignmentKeys = Object.keys(outputData.primaryWeightLib);
+
+        // iterate overall alignments
+        for (var i = 0; i < alignmentKeys.length; i++) {
+            var alignmentKey = alignmentKeys[i];
+            var positionKeys = Object.keys(alignmentKey);
+
+            // split key to get an array
+            var splittedAlignmentKey = alignmentKey.split(SYMBOLS.COMMA);
+            var sequence1Name = outputData.nameOfSequence[splittedAlignmentKey[0]];
+            var sequence2Name = outputData.nameOfSequence[splittedAlignmentKey[1]];
+            sequencePairsNames.push([sequence1Name, sequence2Name]);
+
+            // iterate overall positions in this alignments
+            for (var j = 0; j < positionKeys.length; j++) {
+                var positionKey = positionKeys[j];
+
+                var valueL = outputData.primaryWeightLib[alignmentKey][positionKey];  // primary library value
+                var valueEL = outputData.primaryWeightLib[alignmentKey][positionKey];  // extended library value
+
+                // todo: split position key
+                positionPairs.push(positionKey);
+                primLibValues.push(valueL);
+                extendedLibValues.push(valueEL);
+            }
+        }
+
+        return [sequencePairsNames, positionPairs, primLibValues, extendedLibValues];
     }
 
     /**

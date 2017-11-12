@@ -61,7 +61,7 @@ $(document).ready(function () {
         multiSequenceAlignmentInstance = new bases.multiSequenceAlignment.MultiSequenceAlignment(this);
 
         gotohInstance = new gotoh.Gotoh();
-        gotohLocalInstance = new gotohLocal.GotohLocal();
+        //gotohLocalInstance = new gotohLocal.GotohLocal();  // todo: set maxNumberTracebacks = inf
 
         // public class methods
         this.getInput = getInput;
@@ -88,11 +88,22 @@ $(document).ready(function () {
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
+        reinitializeInputOutput();
+
         multiSequenceAlignmentInstance.setIO(inputData, {});
         multiSequenceAlignmentInstance.setInput(inputViewmodel);
 
         //inputData.maxNumberOptimalAlignments = inputViewmodel.maxNumberOptimalAlignments();
         //inputData.maxNumberOptimalAlignmentsLocal = inputViewmodel.maxNumberOptimalAlignmentsLocal();
+    }
+
+    /**
+     * Reinitializes the input and the output, before a recomputation with the algorithm.
+     * It is needed, because else previously computed data can disturb newly computed data.
+     */
+    function reinitializeInputOutput() {
+        inputData = {};
+        outputData = {};
     }
 
     /**
@@ -160,6 +171,7 @@ $(document).ready(function () {
      */
     function computePairwiseWeights(output) {
         var primaryWeightLib = {};
+        outputData.numberOfPairs = 0;  // for visualization
 
         // iterate over each sequence a and sequence b to compute structure primLib^{a,b}(i,j) = {L_{1,3}, L_{2,4}, ..., L_{5,7}}
         // Hint: a and b are the aligned sequences
@@ -171,6 +183,7 @@ $(document).ready(function () {
                 var alignment = output.alignmentsAndScores[[sequenceA, sequenceB]][0];
                 var sequenceIdentities = getSequenceIdentities(alignment);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
                 primaryWeightLib[[sequenceA, sequenceB]] = sequenceIdentities;
+                outputData.numberOfPairs++;
             }
         }
 
@@ -215,13 +228,12 @@ $(document).ready(function () {
             }
         }
 
-        var definedKeys = Object.keys(L);  //
+        var definedKeys = Object.keys(L);
 
         // set final weight: L^{ii'}(jj') = L^{ii'}(jj') + weight(A)
         // where initial L^{ii'}(jj') = 0 and weight(A) = seqIdentity(A)
-        for (var i = 0; i < definedKeys.length; i++) {
+        for (var i = 0; i < definedKeys.length; i++)
             L[definedKeys[i]] = sequenceIdentity;  // overwriting wrong value
-        }
 
         return L;
     }

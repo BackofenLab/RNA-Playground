@@ -88,7 +88,7 @@ var CELL_PERCENT = {
 };
 
 /**
- * Defines allowed and disallowed input characters.
+ * Defines allowed and disallowed input characters with regular expressions (regex).
  */
 var CHARACTER = {
     BASE: /[a-zA-Z]/i,
@@ -296,6 +296,16 @@ var MULTI_SEQUENCE_DEFAULTS = {
 var MULTI_SEQUENCE_DEFAULTS_T_COFFEE = {  /* example from paper */
     CALCULATION: "similarity",
     SEQUENCES: [
+        "ACGT",
+        "AT",
+        "GCT"],
+    SEQUENCES_COPY: [
+        "ACGT",
+        "AT",
+        "GCT"],
+
+    /*
+    SEQUENCES: [
         "GARFIELD-THE-LAST-FAT-CAT",
         "GARFIELD-THE-FAST-CAT",
         "GARFIELD-THE-VERY-FAST-CAT",
@@ -307,16 +317,16 @@ var MULTI_SEQUENCE_DEFAULTS_T_COFFEE = {  /* example from paper */
         "THE-FAT-CAT"],  /* some bugfix for Knockout */
 
     FUNCTION: {
-        BASE_COSTS: -5,
+        BASE_COSTS: 0,
         BASE_COSTS_LOCAL: -5,
 
-        ENLARGEMENT: -1,
+        ENLARGEMENT: -2,
         ENLARGEMENT_LOCAL: -1,
 
-        MATCH: 3,
+        MATCH: 1,
         MATCH_LOCAL: 3,
 
-        MISMATCH: 1,
+        MISMATCH: -1,
         MISMATCH_LOCAL: 1
     }
 };
@@ -434,13 +444,13 @@ var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
     DUMMY: "/",  // have to be a non-letter
     EMPTY: "",
     EQUAL: "=",
-    GAP: "_",
+    GAP: "_",  // Hint: Do not change without a good reason! Can break the interface code!
     G_LITTLE: "g",
     INFINITY: "∞",
-    MINUS: "-",
+    MINUS: "-",  // Hint: Do not change without a good reason! Can break the interface code! Regular expressions have to be changed.
     NEGATIVE_INFINITY: "-∞",
     NEW_LINE: "\n",
-    NONE: "#",
+    NONE: "#",  // Hint: Do not change without a good reason! Can break the interface code!
     PLUS: "+",
     SEMICOLON: ";",
     SEPARATOR: "_",
@@ -505,7 +515,7 @@ var EMPTY_ALIGNMENT = [SYMBOLS.EMPTY, SYMBOLS.EMPTY, SYMBOLS.EMPTY];
 
 var GLOBAL_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.WATERMAN_SMITH_BEYER];
 var LOCAL_ALGORITHMS = [ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.SMITH_WATERMAN];
-var MULTI_SEQUENCE_ALGORITHMS = [ALGORITHMS.FENG_DOOLITTLE];  // todo: add ALGORITHMS.NOTREDAME_HIGGINS_HERINGA
+var MULTI_SEQUENCE_ALGORITHMS = [ALGORITHMS.FENG_DOOLITTLE, ALGORITHMS.NOTREDAME_HIGGINS_HERINGA];
 
 /**
  * Algorithms which use exactly three tables for their computations.

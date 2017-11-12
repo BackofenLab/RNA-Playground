@@ -227,7 +227,7 @@ Author: Alexander Mattheis
     function changeOutput(outputData, inputProcessor, viewmodels) {
         alignmentInterfaceInstance.roundValues(outputData);
 
-        if (outputData.iterationData !== undefined)
+        if (outputData.iterationData !== undefined)  // if AEP
             changeAEPOutput(outputData, viewmodels);
         else if (outputData.matrix !== undefined) {
             viewmodels.output.matrix(outputData.matrix);
