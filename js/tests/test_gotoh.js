@@ -26,6 +26,7 @@ TestCase("test_gotoh", {
 
         inputData.matrixHeight = inputData.sequenceA.length + 1;
         inputData.matrixWidth = inputData.sequenceB.length + 1;
+        inputData.recomputeTraceback = true;  // T-coffee extension
 
         algorithm.setIO(inputData, {});
 
@@ -58,6 +59,7 @@ TestCase("test_gotoh", {
 
         inputData.matrixHeight = inputData.sequenceA.length + 1;
         inputData.matrixWidth = inputData.sequenceB.length + 1;
+        inputData.recomputeTraceback = true;  // T-coffee extension
 
         algorithm.setIO(inputData, {});
 
@@ -92,6 +94,7 @@ TestCase("test_gotoh", {
 
         inputData.matrixHeight = inputData.sequenceA.length + 1;
         inputData.matrixWidth = inputData.sequenceB.length + 1;
+        inputData.recomputeTraceback = true;  // T-coffee extension
 
         algorithm.setIO(inputData, {});
 
@@ -129,6 +132,7 @@ TestCase("test_gotoh", {
 
         inputData.matrixHeight = inputData.sequenceA.length + 1;
         inputData.matrixWidth = inputData.sequenceB.length + 1;
+        inputData.recomputeTraceback = true;  // T-coffee extension
 
         algorithm.setIO(inputData, {});
 
@@ -163,6 +167,7 @@ TestCase("test_gotoh", {
 
         inputData.matrixHeight = inputData.sequenceA.length + 1;
         inputData.matrixWidth = inputData.sequenceB.length + 1;
+        inputData.recomputeTraceback = true;  // T-coffee extension
 
         algorithm.setIO(inputData, {});
 
@@ -194,6 +199,7 @@ TestCase("test_gotoh", {
 
         inputData.matrixHeight = inputData.sequenceA.length + 1;
         inputData.matrixWidth = inputData.sequenceB.length + 1;
+        inputData.recomputeTraceback = true;  // T-coffee extension
 
         algorithm.setIO(inputData, {});
 
@@ -225,6 +231,7 @@ TestCase("test_gotoh", {
 
         inputData.matrixHeight = inputData.sequenceA.length + 1;
         inputData.matrixWidth = inputData.sequenceB.length + 1;
+        inputData.recomputeTraceback = true;  // T-coffee extension
 
         algorithm.setIO(inputData, {});
 
@@ -256,6 +263,7 @@ TestCase("test_gotoh", {
 
         inputData.matrixHeight = inputData.sequenceA.length + 1;
         inputData.matrixWidth = inputData.sequenceB.length + 1;
+        inputData.recomputeTraceback = true;  // T-coffee extension
 
         algorithm.setIO(inputData, {});
 

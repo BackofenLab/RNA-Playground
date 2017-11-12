@@ -81,6 +81,7 @@ $(document).ready(function () {
      */
     function setInput(inputViewmodel) {
         inputData.computeOneAlignment = false;  // extension to speed up Feng-Doolittle, default value is false
+        inputData.recomputeTraceback = true;
         alignmentInstance.setIO(inputData, {});
         alignmentInstance.setSubadditiveAlignmentInput(inputViewmodel);
     }
@@ -89,7 +90,7 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
-        if (outputData.tracebackPaths === undefined) {  // T-Coffee optimization: reuse traceback paths which were computed before (look into Unit-Test PDF)
+        if (inputData.recomputeTraceback) {  // T-Coffee optimization: reuse traceback paths which were computed before (look into Unit-Test PDF)
             initializeMatrices();
             computeMatricesAndScore();
             computeTraceback();

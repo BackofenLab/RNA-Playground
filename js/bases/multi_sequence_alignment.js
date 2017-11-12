@@ -209,7 +209,7 @@ Author: Alexander Mattheis
         input.matrixWidth = input.sequenceB.length + 1;
 
         input.computeOneAlignment = true;  // speed up for Feng-Doolittle and other multi-alignment algorithms
-
+        input.recomputeTraceback = output.tracebackPaths === undefined;
         algorithm.setIO(input, output);
 
         return algorithm.compute();
