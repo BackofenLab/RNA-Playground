@@ -293,7 +293,7 @@ var MULTI_SEQUENCE_DEFAULTS = {
     }
 };
 
-var MULTI_SEQUENCE_DEFAULTS_T_COFFEE = { /* example from paper */
+var MULTI_SEQUENCE_DEFAULTS_T_COFFEE = {  /* example from paper */
     CALCULATION: "similarity",
     SEQUENCES: [
         "GARFIELD-THE-LAST-FAT-CAT",

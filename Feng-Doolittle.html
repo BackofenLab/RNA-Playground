@@ -13,20 +13,20 @@ Author: Alexander Mattheis
         This approximative approach identifies good MSA solutions in reasonable time.
         <br>
         <br>
-	First, all pairwise alignments with maximal similarity of all input sequence pairs are computed.
+	    First, all pairwise alignments with maximal similarity of all input sequence pairs are computed.
         To this end, we use  <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Osamu Gotoh's (1982)</a>
-	approach available in 
-	<a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">our Gotoh implementation</a>.
+	    approach available in
+	    <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">our Gotoh implementation</a>.
         <br>
         In order to build a guide tree to generate the MSA, 
-	observed similarity scores $S(a,b)$ of sequence pairs $a,b$ are converted into distances using
+	    observed similarity scores $S(a,b)$ of sequence pairs $a,b$ are converted into distances using
         $D(a,b) = -ln(S^{eff}_{a,b} \cdot f)$, where we set the scaling factor $f=1$ (originally $f = 100$). <br>
         The 'effective' similarity score $S^{eff}$ is computed by $S^{eff}_{a,b} = (S(a,b) - S^{rand}_{a,b})/(S^{max}_{a,b} - S^{rand}_{a,b})$
         where $S^{max}_{a,b} = (S(a,a)+S(b,b))/2$ provides the best alignment score for both sequences.
-	$S^{rand}$ provides a kind of 'expected score' that can be obtained via sequence randomization. 
-	Here, we use an alternative approach introduced in
-	<a href="https://doi.org/10.1016/s0076-6879(96)66023-6">(Feng&amp;Doolittle, 1996)</a> 
-	using the approximate formula for a given optimal alignment of $a$ and $b$:
+	    $S^{rand}$ provides a kind of 'expected score' that can be obtained via sequence randomization.
+        Here, we use an alternative approach introduced in
+        <a href="https://doi.org/10.1016/s0076-6879(96)66023-6">(Feng&amp;Doolittle, 1996)</a>
+        using the approximate formula for a given optimal alignment of $a$ and $b$:
 
         $$
         \quad
@@ -99,12 +99,13 @@ Author: Alexander Mattheis
             <li>distance matrix</li>
             <li>phylogenetic tree</li>
             <li>MSA via fusions</li>
-	    <li>SoP score of final MSA</li>
+	        <li>SoP score of final MSA</li>
         </ul>
-        and are represented in reverse order below. <br>
-	The sum-of-pairs (SoP) score of the final MSA is simply the score sum of all pairwise 
-	alignments within the MSA, i.e. of pairwise row combinations where gap columns are removed
-	since we are using an affine gap cost model.
+        and are represented in reversed order below. <br>
+
+        The sum-of-pairs (SoP) score of the final MSA is simply the score sum of all pairwise
+        alignments within the MSA, i.e. of pairwise row combinations where gap columns are removed
+        since we are using an affine gap cost model.
     </div>
 
     <div class="picture">

@@ -11,6 +11,7 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
+    debugger;
     if (loaded === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {  // to avoid self execution on a script import
         notredameHigginsHeringa.startNotredameHigginsHeringa();
         loaded = ALGORITHMS.NONE;
@@ -90,8 +91,8 @@ $(document).ready(function () {
         multiSequenceAlignmentInstance.setIO(inputData, {});
         multiSequenceAlignmentInstance.setInput(inputViewmodel);
 
-        inputData.maxNumberOptimalAlignments = inputViewmodel.maxNumberOptimalAlignments();
-        inputData.maxNumberOptimalAlignmentsLocal = inputViewmodel.maxNumberOptimalAlignmentsLocal();
+        //inputData.maxNumberOptimalAlignments = inputViewmodel.maxNumberOptimalAlignments();
+        //inputData.maxNumberOptimalAlignmentsLocal = inputViewmodel.maxNumberOptimalAlignmentsLocal();
     }
 
     /**

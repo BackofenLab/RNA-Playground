@@ -62,16 +62,17 @@ Author: Alexander Mattheis
      */
     function InputViewmodel(algorithmName) {
         var viewmodel = this;
+        var isTcoffee = algorithmName === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA;
 
-        this.sequences = ko.observableArray(MULTI_SEQUENCE_DEFAULTS.SEQUENCES);
+        this.sequences = ko.observableArray(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.SEQUENCES : MULTI_SEQUENCE_DEFAULTS.SEQUENCES);
 
-        this.calculation = ko.observable(MULTI_SEQUENCE_DEFAULTS.CALCULATION);
+        this.calculation = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.CALCULATION : MULTI_SEQUENCE_DEFAULTS.CALCULATION);
 
         // function
-        this.baseCosts = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS);
-        this.enlargement = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT);
-        this.match = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH);
-        this.mismatch = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH);
+        this.baseCosts = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.BASE_COSTS : MULTI_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS);
+        this.enlargement = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.ENLARGEMENT : MULTI_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT);
+        this.match = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.MATCH : MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH);
+        this.mismatch = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.MISMATCH : MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH);
 
         this.clusterNames = ko.computed(
             function () {

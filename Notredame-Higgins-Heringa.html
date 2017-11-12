@@ -9,12 +9,72 @@ Author: Alexander Mattheis
     <div class="description"> <!-- what-why-how description -->
         <a href="http://dx.doi.org/10.1006/jmbi.2000.4042">C&eacute;dric Notredame, Desmond G. Higgins and Jaap Heringa</a>
         introduced 2000 an approach that
-        allows a very accurate computation of multiple sequence alignments,
+        allows a very accurate computation of multiple sequence alignments (MSA),
         the Tree-based Consistency Objective Function for alignment Evaluation (short: <em>T-coffee</em>).
+        It's a tree-based,
+        because it uses a progressive alignment strategy
+        with a consistency based function and a given guide tree.
         The advantage to traditional approaches like
         <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a>
-        is that the results are much better since they are not based on single pairwise alignments
-        but rather an arbitrary large pool of alignments.
+        is that the results are much better since they are not based on single pairwise alignments,
+        but rather an arbitrary large pool of alignments in which the best alignments are chosen
+        to compute a position specific scoring function, the so called extended library $EL^{a,b}_{i,j}$
+        where $a,b$ are arbitrary sequences and $i,j$ are locations within these sequences.
+        <br>
+        <br>
+	    But, first the primary library $L^{a,b}_{i,j}$ is computed.
+        It stores information about the accuracy of an alignment $\mathcal{A}(a,b)$.
+        This is done with the formula for the sequence identity:
+
+        $$
+        \quad
+        L^{a,b}_{i,j} = weight \big(\mathcal{A}(a,b) \big)
+        = \frac {matches \big(\mathcal{A}(a,b) \big)}
+                {matches \big(\mathcal{A}(a,b) \big) + mismatches \big(\mathcal{A}(a,b) \big)} \quad \forall i,j
+        $$
+
+        where $L^{a,b}_{i,j} = L^{b,a}_{j,i}$ ($L^{a,b}_{i,j} = 0$ for not defined locations $i,j$) <br>
+        The extended library instead is calculated to gather consistency information
+        concerning all other alignments, different to $\mathcal{A}(a,b)$.
+        That is done by the consideration of all sequence triples,
+        as shown in the following formula:
+
+        $$
+        \quad
+        EL^{a,b}_{i,j}
+        = L^{a,b}_{i,j} + \sum_{x \in \mathbb{S} \setminus \{a,b\}} \sum_{k \in Loc(x)} min \big(L^{a,x}_{i,k}, L^{x,b}_{k,j} \big)
+        $$
+
+        where <br>
+        <div class="row">
+            <div class="colW150">$\mathbb{S} \setminus \{a,b\}$</div>
+            <div class="colW400">set of all sequences different from $\{a,b\}$</div>
+	    </div>
+
+        <div class="row">
+            <div class="colW150">$Loc(x)$</div>
+            <div class="colW400">set of all locations/positions in x</div>
+        </div>
+
+        The minimum weight $min \big(L^{a,x}_{i,k}, L^{x,b}_{k,j} \big)$
+        through a sequence different to sequences $a$ and $b$
+        is added to the current weight $L^{a,b}_{i,j}$ of an alignment $a$ with $b$.
+        And afterwards this scoring function $EL^{a,b}_{i,j}$ is used in a modified neighbour joining (fusion) process
+        of <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
+        to compute a multiple sequence alignment.
+        Unlike in the <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a> approach,
+        the whole columns of two groups aligned together.
+        Therefore the average alignment score of two columns is used
+        (all chars of first column aligned with all chars of second column).
+        <br>
+        <br>
+        For a given input, the stated computation steps generate the
+        <ul>
+            <li>primary library</li>
+            <li>extended library</li>
+            <li>multiple sequence alignment (MSA) with SoP score</li>
+        </ul>
+        and are represented in reversed order below.
     </div>
 
     <div class="picture">
@@ -39,9 +99,6 @@ Author: Alexander Mattheis
                     <div class="group_hint">
                         <b>Hint:</b> <br>
                         The "+" and "-" buttons can be used to add or remove sequences.
-                        <br>
-                        <br>
-                        <b>Hint 2:</b> <br>
                         Duplicates of sequences <br>
                         are excluded from computations.
                         <!-- The distance formula
