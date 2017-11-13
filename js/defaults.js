@@ -296,16 +296,6 @@ var MULTI_SEQUENCE_DEFAULTS = {
 var MULTI_SEQUENCE_DEFAULTS_T_COFFEE = {  /* example from paper */
     CALCULATION: "similarity",
     SEQUENCES: [
-        "ACGT",
-        "AT",
-        "GCT"],
-    SEQUENCES_COPY: [
-        "ACGT",
-        "AT",
-        "GCT"],
-
-    /*
-    SEQUENCES: [
         "GARFIELD-THE-LAST-FAT-CAT",
         "GARFIELD-THE-FAST-CAT",
         "GARFIELD-THE-VERY-FAST-CAT",

@@ -11,9 +11,10 @@ Author: Alexander Mattheis
         introduced 2000 an approach that
         allows a very accurate computation of multiple sequence alignments (MSA),
         the Tree-based Consistency Objective Function for alignment Evaluation (short: <em>T-coffee</em>).
-        It's a tree-based,
+        It's a tree-based approach,
         because it uses a progressive alignment strategy
-        with a consistency based function and a given guide tree.
+        under a consistency based function with a guide tree
+        (tree can be computed with <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>).
         The advantage to traditional approaches like
         <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a>
         is that the results are much better since they are not based on single pairwise alignments,
@@ -74,6 +75,7 @@ Author: Alexander Mattheis
         <ul>
             <li>primary and extended library</li>
             <li>phylogenetic tree</li>
+            <li>MSA via fusions</li>
             <li>multiple sequence alignment (MSA) with SoP score</li>
         </ul>
         and are represented in reversed order below.
@@ -196,8 +198,113 @@ Author: Alexander Mattheis
         </div>
     </div>
 
-    <h2>Libraries</h2>
+     <h2>Intermediate Results</h2>
 
+    <div class="merge_steps">
+        <table class="result_header">
+            <thead>
+                <tr>
+                    <th>
+                        Fusion steps
+                    </th>
+                </tr>
+            </thead>
+        </table>
+
+        <div class="result_with_scrollbar">
+            <table class="result_categories">
+                <thead>
+                    <tr>
+                        <th>
+                            <small><b>Group 1</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Group 2</b></small>
+                        </th>
+
+                        <th>
+                             <small><b>Result</b></small>
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- ko foreach: $root.output.firstGroups() -->
+                        <tr>
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br>
+                                    <!-- ko foreach: $root.output.firstGroups()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br>
+                                    <!-- /ko -->
+                            </td>
+
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br>
+                                    <!-- ko foreach: $root.output.secondGroups()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br>
+                                    <!-- /ko -->
+                            </td>
+
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br>
+                                    <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br>
+                                    <!-- /ko -->
+                            </td>
+                        </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <h2>Phylogenetic Tree</h2>
+    <div class="newick_tree">
+        <table class="result_header">
+            <thead>
+                <tr>
+                    <th>
+                        Newick Tree
+                    </th>
+                </tr>
+            </thead>
+        </table>
+
+        <div class="result_with_scrollbar">
+            <table class="result">
+                <tbody>
+                    <tr>
+                        <td class="entry entry_start">
+                            <code data-bind="text: $root.output.newickString()"></code>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+        <div id="phylogenetic_tree"></div>
+    </div>
+
+    <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
+        <div class="group_hint">
+            <b>Visualization done with</b> <br>
+            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br>
+            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br>
+            <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+            </a>
+        </div>
+    <!-- /ko -->
+
+    <div class="group_hint">
+        <b>Hint: </b> Visualization is only shown, if there are no negative distances.
+    </div>
+
+
+    <h2>Libraries</h2>
     <div class="pairwise_data">
         <div class="result_with_scrollbar">
             <table class="result_categories top_border">

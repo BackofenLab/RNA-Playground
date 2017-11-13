@@ -103,7 +103,7 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions.
      */
     function executeAlgorithmInterfaceCode(algorithm, viewmodels) {
-        if (algorithm.type === ALGORITHMS.FENG_DOOLITTLE)
+        if (algorithm.type === ALGORITHMS.FENG_DOOLITTLE || algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)
             viewmodels.visual.drawTree();
     }
 
@@ -688,11 +688,24 @@ Author: Alexander Mattheis
      */
     function createTcoffeeOutputViewmodel(algorithmName, viewmodel, outputData) {
         outputData.librariesData = getLibrariesData(outputData);
+
         roundValues(algorithmName, outputData);
+        alignmentInterfaceInstance.reorderGroupSequences(outputData);
 
         // final output
         viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
         viewmodel.score = ko.observable(outputData.score);
+
+        // merge steps
+        viewmodel.firstGroups = ko.observable(outputData.firstGroups);
+        viewmodel.secondGroups = ko.observable(outputData.secondGroups);
+        viewmodel.firstGroupsNames = ko.observable(outputData.firstGroupsNames);
+        viewmodel.secondGroupsNames = ko.observable(outputData.secondGroupsNames);
+        viewmodel.joinedGroups = ko.observable(outputData.joinedGroups);
+        viewmodel.joinedGroupNames = ko.observable(outputData.joinedGroupNames);
+
+        // tree
+        viewmodel.newickString = ko.observable(outputData.newickString);
 
         // libraries
         viewmodel.sequencePairsNames = ko.observable(outputData.librariesData[0]);

@@ -323,11 +323,23 @@ Author: Alexander Mattheis
         outputData.librariesData = alignmentInterfaceInstance.getLibrariesData(outputData);
 
         alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
-        alignmentInterfaceInstance.reorderGroupSequences(outputData);  // todo: a little bit overkill, because not all data displayed
+        alignmentInterfaceInstance.reorderGroupSequences(outputData);
 
         // final output
         viewmodels.output.progressiveAlignment(outputData.progressiveAlignment);
         viewmodels.output.score(outputData.score);
+
+        // merge steps
+        viewmodels.output.firstGroups(outputData.firstGroups);
+        viewmodels.output.secondGroups(outputData.secondGroups);
+        viewmodels.output.firstGroupsNames(outputData.firstGroupsNames);
+        viewmodels.output.secondGroupsNames(outputData.secondGroupsNames);
+        viewmodels.output.joinedGroups(outputData.joinedGroups);
+        viewmodels.output.joinedGroupNames(outputData.joinedGroupNames);
+
+        // tree
+        viewmodels.output.newickString(outputData.newickString);
+        viewmodels.visual.drawTree();
 
         // libraries
         viewmodels.output.sequencePairsNames(outputData.librariesData[0]);
