@@ -11,7 +11,8 @@ Author: Alexander Mattheis
     // public methods
     namespace("bases.alignment", Vector, create,
         Alignment, getInput, setLinearAlignmentInput, setSubadditiveAlignmentInput, compute, recursionFunction,
-        affineRecursionFunction, getEnlargementAndBaseCosts, getGlobalTraces, getLocalTraces, getAllMaxPositions, createAlignments, getOutput, setIO, getLastChild,
+        affineRecursionFunction, getEnlargementAndBaseCosts, getGlobalTraces, getLocalTraces, getAllMaxPositions,
+        createAlignments, getOutput, setIO, getLastChild, setLastChild,
         getNeighboured, getVerticalNeighboured, getHorizontalNeighboured, differenceLowerEpsilon);
 
     // instances
@@ -78,6 +79,7 @@ Author: Alexander Mattheis
 
         this.setIO = setIO;
         this.getLastChild = getLastChild;
+        this.setLastChild = setLastChild;
 
         this.differenceLowerEpsilon = differenceLowerEpsilon;
     }
@@ -532,6 +534,14 @@ Author: Alexander Mattheis
      */
     function getLastChild() {
         return childInstance;
+    }
+
+    /**
+     * Sets the current child algorithm.
+     * @param algorithm {Object} - The algorithm which should be used by this class.
+     */
+    function setLastChild(algorithm) {
+        childInstance = algorithm;
     }
 
     /**

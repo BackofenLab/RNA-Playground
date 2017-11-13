@@ -26,6 +26,8 @@ TestCase("test_notredame_higgins_heringa", {
         inputData.match = 1;
         inputData.mismatch = -1;
 
+        inputData.useLocalLibrary = false;
+
         algorithm.setIO(inputData, {});
 
         var ioData = algorithm.compute();

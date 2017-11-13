@@ -31,9 +31,6 @@ $(document).ready(function () {
     var notredameHigginsHeringaInstance;
 
     // shared variables
-    var globalOutputData = {};
-    var localOutputData = {};
-
     var inputData = {};  // stores the input of the algorithm
     var outputData = {};  // stores the output of the algorithm
 
@@ -61,7 +58,7 @@ $(document).ready(function () {
         multiSequenceAlignmentInstance = new bases.multiSequenceAlignment.MultiSequenceAlignment(this);
 
         gotohInstance = new gotoh.Gotoh();
-        //gotohLocalInstance = new gotohLocal.GotohLocal();  // todo: set maxNumberTracebacks = inf
+        gotohLocalInstance = new gotohLocal.GotohLocal();
 
         // public class methods
         this.getInput = getInput;
@@ -89,16 +86,22 @@ $(document).ready(function () {
      */
     function setInput(inputViewmodel) {
         reinitializeInputOutput();
-
         multiSequenceAlignmentInstance.setIO(inputData, {});
         multiSequenceAlignmentInstance.setInput(inputViewmodel);
+
+        inputData.useLocalLibrary = inputViewmodel.useLocalLibrary();
+
+        inputData.baseCostsLocal = inputViewmodel.baseCostsLocal();
+        inputData.enlargementLocal = inputViewmodel.enlargementLocal();
+        inputData.matchLocal = inputViewmodel.matchLocal();
+        inputData.mismatchLocal = inputViewmodel.mismatchLocal();
 
         //inputData.maxNumberOptimalAlignments = inputViewmodel.maxNumberOptimalAlignments();
         //inputData.maxNumberOptimalAlignmentsLocal = inputViewmodel.maxNumberOptimalAlignmentsLocal();
     }
 
     /**
-     * Reinitializes the input and the output, before a recomputation with the algorithm.
+     * Reinitializes the input and the output before a recomputation with the algorithm.
      * It is needed, because else previously computed data can disturb newly computed data.
      */
     function reinitializeInputOutput() {
@@ -110,6 +113,7 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
+        debugger;
         computePrimaryLibraries();
         computeCombinedWeightPrimaryLibrary();
         computeExtendedWeightPrimaryLibrary();
@@ -124,7 +128,7 @@ $(document).ready(function () {
      */
     function computePrimaryLibraries() {
         computePairwiseGlobalAlignmentData();
-        //computePairwiseLocalAlignmentData();
+        if (inputData.useLocalLibrary) computePairwiseLocalAlignmentData();
     }
 
     /**
@@ -138,14 +142,7 @@ $(document).ready(function () {
     }
 
     function computePairwiseLocalAlignmentData() {
-        /*
-        // later
-        inputData.baseCosts = inputViewmodel.baseCostsLocal();
-        inputData.enlargement = inputViewmodel.enlargementLocal();
-        inputData.match = inputViewmodel.matchLocal();
-        inputData.mismatch = inputViewmodel.mismatchLocal();
-        */
-        multiSequenceAlignmentInstance.setIO(inputData, localOutputData);
+        multiSequenceAlignmentInstance.setIO(inputData, outputData);
         multiSequenceAlignmentInstance.computePairwiseData(gotohLocalInstance);
     }
 
@@ -155,21 +152,23 @@ $(document).ready(function () {
      */
     function computeCombinedWeightPrimaryLibrary() {
         // Hint: conversion of double sequences into alignment edges is directly done during the computations of pairwise weights
-        outputData.primaryGlobalWeightLib = computePairwiseWeights(outputData);
-        // later
-        // outputData.primaryLocalWeightLib = computePairwiseWeights(localOutputData);
-        // addSignals();
-        // now
-        outputData.primaryWeightLib = outputData.primaryGlobalWeightLib;
+        outputData.primaryGlobalWeightLib = computePairwiseWeights(outputData, true);
+
+        if (inputData.useLocalLibrary) {
+            outputData.primaryLocalWeightLib = computePairwiseWeights(outputData, false);
+            addSignals();
+        } else  // only global library
+            outputData.primaryWeightLib = outputData.primaryGlobalWeightLib;
     }
 
     /**
      * Computes the sequence identity.
      * So, how much is identical between two sequences
      * with respect to the smaller sequence.
-     * @param {Object} - The output which is used to compute a primary library.
+     * @param output {Object} - The output which is used to compute a primary library.
+     * @param global {boolean} - Tells if local or global data should be used for computation.
      */
-    function computePairwiseWeights(output) {
+    function computePairwiseWeights(output, global) {
         var primaryWeightLib = {};
         outputData.numberOfPairs = 0;  // for visualization
 
@@ -181,8 +180,20 @@ $(document).ready(function () {
                     var sequenceA = inputData.sequences[i];
                     var sequenceB = inputData.sequences[j];
 
-                    var alignment = output.alignmentsAndScores[[sequenceA, sequenceB]][0];
-                    var sequenceIdentities = getSequenceIdentities(alignment);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                    var alignment = [];
+                    var traceback = [];
+                    var sequenceIdentities = {};
+
+                    if (global) {
+                        alignment = output.alignmentsAndScores[[sequenceA, sequenceB]][0];
+                        sequenceIdentities = getSequenceIdentities(alignment, undefined);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                    }
+                    else {
+                        debugger;
+                        alignment = output.alignmentsAndScoresLocal[[sequenceA, sequenceB]][0];
+                        traceback = output.tracebacks[[sequenceA, sequenceB]];
+                        sequenceIdentities = getSequenceIdentities(alignment, traceback);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                    }
                     primaryWeightLib[[sequenceA, sequenceB]] = sequenceIdentities;
                     outputData.numberOfPairs++;
                 }
@@ -195,11 +206,13 @@ $(document).ready(function () {
     /**
      * Computes a structure L with elements
      * containing the sequence identity.
-     * @param alignment - The alignment for which you want compute
-     * a structure that returns position sequence identities.
+     * @param alignment - The alignment for which you want compute a structure that returns position sequence identities.
+     * @param traceback {Array} - The traceback of the alignment which tells the defined positions.
      * @return {Object}
      */
-    function getSequenceIdentities(alignment) {
+    function getSequenceIdentities(alignment, traceback) {
+        var global = traceback === undefined;  // global alignments do not need the traceback to get defined positions
+
         var sequenceA = alignment[0];
         var sequenceB = alignment[2];
 
@@ -214,6 +227,8 @@ $(document).ready(function () {
 
         // iterate over each position to create keys L_{i,j}
         for (var k = 0; k < sequenceLength; k++) {
+            var currentPosition = global ? undefined : traceback[k+1];  // "+1" to jump over local end-position (with value 0)
+
             if (sequenceA[k] === SYMBOLS.GAP) {  // means there is no gap in sequence b
                 numCharactersInB++;
             } else if (sequenceB[k] === SYMBOLS.GAP) {  // means there is no gap in sequence a
@@ -226,7 +241,11 @@ $(document).ready(function () {
                 numMatches += sequenceA[k] === sequenceB[k] ? 1 : 0;  // if match, then increment
 
                 sequenceIdentity = (100 * numMatches) / numMatchesOrMismatches;
-                L[[numCharactersInA, numCharactersInB]] = sequenceIdentity;  // creating key with non-final value
+
+                if (global)
+                    L[[numCharactersInA, numCharactersInB]] = sequenceIdentity;  // creating key with non-final value
+                else  // local
+                    L[[currentPosition.i, currentPosition.j]] = sequenceIdentity;
             }
         }
 
@@ -252,9 +271,13 @@ $(document).ready(function () {
      * Hint: Described on p.207: Combination of the libraries
      */
     function addSignals() {
+        debugger;
+
         var globalAlignmentKeys = Object.keys(outputData.primaryGlobalWeightLib);  // global alignments {{a,b}, {a,d}, ... {d,f}}
         var localAlignmentKeys = Object.keys(outputData.primaryLocalWeightLib);  // local alignments {{a,b}, {a,g}, ... {d,f}}
         var commonAlignmentKeys = getCommonArguments(globalAlignmentKeys, localAlignmentKeys);  // common alignments {{a,b}, {d,f}}
+
+        outputData.primaryWeightLib = {};
 
         // append global, non common elements into primary weight library -> primLib^{a,b} =  {L_{1,3}, L_{2,4}, ..., L_{5,7}}
         outputData.primaryWeightLib
@@ -279,7 +302,7 @@ $(document).ready(function () {
             weights = appendToLibrary(weights, globalWeights, globalWeightKeys, commonWeightKeys);
 
             // append local, non common weights
-            weights = appendToLibrary(weights, globalWeights, globalWeightKeys, commonWeightKeys);
+            weights = appendToLibrary(weights, localWeights, localWeightKeys, commonWeightKeys);
 
             // add common weights of both libraries together and append
             for (var j = 0; j < commonWeightKeys.length; j++)
@@ -298,11 +321,24 @@ $(document).ready(function () {
     function getCommonArguments(keys1, keys2) {
         var commonKeys = [];
 
-        var shorterSequenceLength = keys1.length < keys2.length ? keys1.length : keys2.length;
+        var shorterSequenceLength = 0;
+        var shorterKey = undefined;
+        var longerKey = undefined;
+
+        if (keys1.length < keys2.length) {
+            shorterSequenceLength = keys1.length;
+            shorterKey = keys1;
+            longerKey = keys2;
+        } else {
+            shorterSequenceLength = keys2.length;
+            shorterKey = keys2;
+            longerKey = keys1;
+        }
+
 
         for (var i = 0; i < shorterSequenceLength; i++) {
-            if (keys2.indexOf(keys1[i]) >= 0)  // if (key from keys1 contained in keys2)
-                commonKeys.push(keys1[i]);
+            if (longerKey.indexOf(shorterKey[i]) >= 0)  // if (key from keys1 contained in keys2)
+                commonKeys.push(shorterKey[i]);
         }
 
         return commonKeys;

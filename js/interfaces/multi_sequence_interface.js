@@ -190,7 +190,7 @@ Author: Alexander Mattheis
 
         if (local) {
             string += viewmodel.baseCostsLocal() >= 0
-                ? viewmodel.baseCosts() + SYMBOLS.PLUS
+                ? viewmodel.baseCostsLocal() + SYMBOLS.PLUS
                 : SYMBOLS.BRACKET_LEFT + viewmodel.baseCostsLocal() + SYMBOLS.BRACKET_RIGHT + SYMBOLS.PLUS;
 
             string += viewmodel.enlargementLocal() >= 0
@@ -232,6 +232,13 @@ Author: Alexander Mattheis
             inputViewmodel.enlargement(Number($("#enlargement").val()));
             inputViewmodel.match(Number($("#match").val()));
             inputViewmodel.mismatch(Number($("#mismatch").val()));
+
+            if (algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {
+                inputViewmodel.baseCostsLocal(Number($("#base_costs_local").val()));
+                inputViewmodel.enlargementLocal(Number($("#enlargement_local").val()));
+                inputViewmodel.matchLocal(Number($("#match_local").val()));
+                inputViewmodel.mismatchLocal(Number($("#mismatch_local").val()));
+            }
         } else
             inputProcessor.activateInputUpdates();
 

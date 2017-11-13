@@ -14,6 +14,7 @@ Author: Alexander Mattheis
         createDistanceMatrix, getPhylogeneticTree, createProgressiveAlignment, getOutput, setIO, getLastChild);
 
     // instances
+    var multiSequenceAlignmentInstance;
     var alignmentInstance;
     var childInstance;
     var gotohInstance;
@@ -30,8 +31,9 @@ Author: Alexander Mattheis
      * @constructor
      */
     function MultiSequenceAlignment(child) {
-        alignmentInstance = this;
+        multiSequenceAlignmentInstance = this;
         childInstance = child;
+        alignmentInstance = new bases.alignment.Alignment(this);
         gotohInstance = new gotoh.Gotoh();
 
         // public methods
@@ -134,19 +136,29 @@ Author: Alexander Mattheis
     /**
      * Computes scores (similarities),
      * the number of gaps, the alignment lengths
-     * and so on between all sequences.
-     * @param {Object} - The algorithm with which the alignment data is computed.
+     * and so on between all sequences with the given algorithm.
+     * Hint: If Gotoh (Local) computes the pairwise data, then the output data has a "Local" at the end of every parameter
+     * and only alignments and scores are stored.
+     * @param algorithm {Object} - The algorithm with which the pairwise data should be computed [Gotoh or Gotoh (Local)].
      */
     function computePairwiseData(algorithm) {
-        var algorithmInput = {};
-        initializeInput(algorithmInput);
+        var global = algorithm.type === ALGORITHMS.GOTOH;
+        alignmentInstance.setLastChild(algorithm);  // or the Alignment will work with wrong child algorithm
 
-        outputData.alignmentLengths = [];
-        outputData.alignmentsAndScores = [];
-        outputData.gapNumbers = [];
-        outputData.gapStarts = [];
-        outputData.sequencePairs = [];
-        outputData.similarities = [];
+        var algorithmInput = {};
+        initializeInput(algorithmInput, global);
+
+        if (global) {
+            outputData.alignmentLengths = [];
+            outputData.alignmentsAndScores = [];
+            outputData.gapNumbers = [];
+            outputData.gapStarts = [];
+            outputData.sequencePairs = [];
+            outputData.similarities = [];
+        } else {  // local
+            outputData.alignmentsAndScoresLocal = [];
+            outputData.tracebacks = [];
+        }
 
         for (var j = 1; j < inputData.sequences.length; j++) {
             if (inputData.arrayPositionsOfRemovedSequences.indexOf(j) === -1) {  // only if the sequence is not a duplicate
@@ -157,13 +169,18 @@ Author: Alexander Mattheis
                     var ioData = computeWithAlgorithm(algorithm, algorithmInput, {}, sequenceA, sequenceB);
                     var alignment = getAlignment(ioData);
 
-                    outputData.alignmentsAndScores[[sequenceA, sequenceB]] = [alignment, ioData[1].score];  // for faster access
+                    if (global) {
+                        outputData.alignmentsAndScores[[sequenceA, sequenceB]] = [alignment, ioData[1].score];  // for faster access
 
-                    outputData.alignmentLengths.push(getAlignmentLength(alignment));
-                    outputData.gapNumbers.push(getNumberOfGaps(alignment));
-                    outputData.gapStarts.push(getNumberOfGapsStarts(alignment));
-                    outputData.sequencePairs.push([sequenceA, sequenceB]);
-                    outputData.similarities.push(ioData[1].score);
+                        outputData.alignmentLengths.push(getAlignmentLength(alignment));
+                        outputData.gapNumbers.push(getNumberOfGaps(alignment));
+                        outputData.gapStarts.push(getNumberOfGapsStarts(alignment));
+                        outputData.sequencePairs.push([sequenceA, sequenceB]);
+                        outputData.similarities.push(ioData[1].score);
+                    } else {  // local
+                        outputData.alignmentsAndScoresLocal[[sequenceA, sequenceB]] = [alignment, ioData[1].score];
+                        outputData.tracebacks[[sequenceA, sequenceB]] = ioData[1].tracebackPaths[0];
+                    }
                 }
             }
         }
@@ -181,12 +198,20 @@ Author: Alexander Mattheis
     /**
      * Initializes the given input with the read in inputData.
      * @param input {Object} - The input which has to be initialized.
+     * @param global {boolean} - Tells if global data should be computed or local.
      */
-    function initializeInput(input) {
-        input.baseCosts = inputData.baseCosts;
-        input.enlargement = inputData.enlargement;
-        input.match = inputData.match;
-        input.mismatch = inputData.mismatch;
+    function initializeInput(input, global) {
+        if (global) {
+            input.baseCosts = inputData.baseCosts;
+            input.enlargement = inputData.enlargement;
+            input.match = inputData.match;
+            input.mismatch = inputData.mismatch;
+        } else {
+            input.baseCosts = inputData.baseCostsLocal;
+            input.enlargement = inputData.enlargementLocal;
+            input.match = inputData.matchLocal;
+            input.mismatch = inputData.mismatchLocal;
+        }
 
         input.calculationType = inputData.calculationType;
         input.substitutionFunction = inputData.substitutionFunction;  // extension for T-Coffee
@@ -710,7 +735,7 @@ Author: Alexander Mattheis
 
         var input = {};
         var output = {};
-        initializeInput(input);
+        initializeInput(input, true);
 
         if (childInstance.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)  // T-Coffee extension
             initializeOutput(output);

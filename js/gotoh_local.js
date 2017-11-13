@@ -52,7 +52,7 @@ $(document).ready(function () {
         this.type = ALGORITHMS.GOTOH_LOCAL;
         this.numberOfTracebacks = 0;
 
-        // instances (do not change order)
+        // instances
         alignmentInstance = new bases.alignment.Alignment(this);
 
         // public class methods
