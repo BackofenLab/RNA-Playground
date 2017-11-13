@@ -262,7 +262,7 @@ Author: Alexander Mattheis
         // distance matrices
         outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData);
 
-        alignmentInterfaceInstance.roundValues(outputData);
+        alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
 
         viewmodels.output.distanceMatrices(outputData.distanceMatrices);
 
@@ -320,6 +320,9 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
     function changeTcoffeeOutput(outputData, inputProcessor, viewmodels) {
+        outputData.librariesData = alignmentInterfaceInstance.getLibrariesData(outputData);
+
+        alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
         alignmentInterfaceInstance.reorderGroupSequences(outputData);  // todo: a little bit overkill, because not all data displayed
 
         // final output
@@ -327,6 +330,9 @@ Author: Alexander Mattheis
         viewmodels.output.score(outputData.score);
 
         // libraries
-        viewmodels.output.sequencePairNames(outputData.sequencePairNames);
+        viewmodels.output.sequencePairsNames(outputData.librariesData[0]);
+        viewmodels.output.libPositionPairs(outputData.librariesData[1]);
+        viewmodels.output.primLibValues(outputData.librariesData[2]);
+        viewmodels.output.extendedLibValues(outputData.librariesData[3]);
     }
 }());

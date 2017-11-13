@@ -225,7 +225,7 @@ Author: Alexander Mattheis
      * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
-        alignmentInterfaceInstance.roundValues(outputData);
+        alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
 
         if (outputData.iterationData !== undefined)  // if AEP
             changeAEPOutput(outputData, viewmodels);

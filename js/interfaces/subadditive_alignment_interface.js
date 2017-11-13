@@ -450,7 +450,7 @@ Author: Alexander Mattheis
     function changeOutput(outputData, inputProcessor, viewmodels) {
         if (viewmodels.input.subadditiveFunction !== undefined
             && viewmodels.input.subadditiveFunction() === SUBADDITIVE_FUNCTIONS.LOGARITHMIC)
-            alignmentInterfaceInstance.roundValues(outputData);
+            alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
 
         viewmodels.output.matrix(outputData.matrix);
 

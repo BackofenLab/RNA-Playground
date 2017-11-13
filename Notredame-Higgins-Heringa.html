@@ -72,8 +72,8 @@ Author: Alexander Mattheis
         <br>
         For a given input, the stated computation steps generate the
         <ul>
-            <li>primary library</li>
-            <li>extended library</li>
+            <li>primary and extended library</li>
+            <li>phylogenetic tree</li>
             <li>multiple sequence alignment (MSA) with SoP score</li>
         </ul>
         and are represented in reversed order below.
@@ -222,7 +222,7 @@ Author: Alexander Mattheis
                 </thead>
 
                 <tbody>
-                    <!-- ko foreach: $root.output.sequencePairNames() -->
+                    <!-- ko foreach: $root.output.sequencePairsNames() -->
                         <tr>
                             <td class="entry entry_start">
                                 <code>(</code><code data-bind="text: $data[0]"></code><code>,</code>
@@ -231,17 +231,36 @@ Author: Alexander Mattheis
                             </td>
 
                             <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.libPositionPairs()[$index()] -->
+                                    <code>(</code><code data-bind="text: $data"></code><code>)</code> <br>
+                                <!-- /ko -->
                             </td>
 
                             <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.primLibValues()[$index()] -->
+                                    <code data-bind="text: $data"></code> <br>
+                                <!-- /ko -->
                             </td>
 
                             <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.extendedLibValues()[$index()] -->
+                                    <code data-bind="text: $data"></code> <br>
+                                <!-- /ko -->
                             </td>
                         </tr>
                     <!-- /ko -->
                 </tbody>
             </table>
         </div>
+
+        <table class="pairwise_data_footer">
+            <tr>
+                <th>
+                    <small>
+                        <b>Hint:</b> Only sequence pairs with alignment length bigger zero displayed!
+                    </small>
+                </th>
+            </tr>
+        </table>
     </div>
 </div>

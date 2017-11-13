@@ -10,7 +10,8 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("interfaces.alignmentInterface", AlignmentInterface,
-        imports, sharedInterfaceOperations, roundValues, getDistanceTable, getDistanceTables, reorderGroupSequences, startProcessing);
+        imports, sharedInterfaceOperations, roundValues, getDistanceTable, getDistanceTables,
+        reorderGroupSequences, getLibrariesData, startProcessing);
 
     // instances
     var alignmentInterfaceInstance;
@@ -31,6 +32,7 @@ Author: Alexander Mattheis
         this.getDistanceTable = getDistanceTable;
         this.getDistanceTables = getDistanceTables;
         this.reorderGroupSequences = reorderGroupSequences;
+        this.getLibrariesData = getLibrariesData;
         this.startProcessing = startProcessing;
     }
 
@@ -121,7 +123,7 @@ Author: Alexander Mattheis
 
         if (GLOBAL_ALGORITHMS.indexOf(algorithmName) >= 0
             || LOCAL_ALGORITHMS.indexOf(algorithmName) >= 0) {  // if basic local or global algorithm
-            roundValues(outputData);
+            roundValues(algorithmName, outputData);
 
             if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {  // if AEP
                 createAEPOutputViewmodel(viewmodel, outputData);
@@ -130,19 +132,19 @@ Author: Alexander Mattheis
             }
         } else if (MULTI_SEQUENCE_ALGORITHMS.indexOf(algorithmName) >= 0) {  // if multi-sequence alignment algorithm
             if (algorithmName === ALGORITHMS.FENG_DOOLITTLE)
-                createFengDoolittleOutputViewmodel(viewmodel, outputData);
+                createFengDoolittleOutputViewmodel(algorithmName, viewmodel, outputData);
             else
-                createTcoffeeOutputViewmodel(viewmodel, outputData);
+                createTcoffeeOutputViewmodel(algorithmName, viewmodel, outputData);
         }
     }
 
     /**
      * Rounds matrix values, scores and other parameters.
+     * @param algorithmName {string} - The name of the algorithm which is executed.
      * @param outputData {Object} - Output data which is modified.
      */
-    function roundValues(outputData) {
-        if (outputData.iterationData !== undefined) {  // AEP
-
+    function roundValues(algorithmName, outputData) {
+        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
             // every possibility
             for (var i = 0; i < outputData.iterationData.length; i++) {
                 // every round
@@ -163,7 +165,20 @@ Author: Alexander Mattheis
                 }
             }
 
-        } else if (outputData.distanceMatrices !== undefined) {  // if Feng-Doolittle or UPGMA
+        } else if (algorithmName === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {
+            var alignmentPairsCount = outputData.librariesData[0].length;
+            var primLibValues = outputData.librariesData[2];
+            var extendedLibValues = outputData.librariesData[3];
+
+            for (var i = 0; i < alignmentPairsCount; i++) {
+                var positionPairsCount = outputData.librariesData[1][i].length;
+
+                for (var j = 0; j < positionPairsCount; j++) {
+                    outputData.librariesData[2][i][j] = round(primLibValues[i][j], 1);
+                    outputData.librariesData[3][i][j] = round(extendedLibValues[i][j], 1);
+                }
+            }
+        } else if (algorithmName === ALGORITHMS.FENG_DOOLITTLE) {  // if Feng-Doolittle or UPGMA
             // iterate over each distance matrix
             for (var k = 0; k < outputData.distanceMatrices.length; k++) {
 
@@ -369,10 +384,11 @@ Author: Alexander Mattheis
 
     /**
      * Creates the OutputViewmodel for Feng-Doolittle.
+     * @param algorithmName {string} - The name of the algorithm which is executed.
      * @param viewmodel {Object} - The output viewmodel container which should be filled.
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
-    function createFengDoolittleOutputViewmodel(viewmodel, outputData) {
+    function createFengDoolittleOutputViewmodel(algorithmName, viewmodel, outputData) {
         // distance matrix
         outputData.distanceMatrix
             = getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined);
@@ -386,7 +402,7 @@ Author: Alexander Mattheis
         // distance matrices
         outputData.distanceMatrices = getDistanceTables(outputData);
 
-        roundValues(outputData);
+        roundValues(algorithmName, outputData);
 
         viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
 
@@ -666,22 +682,30 @@ Author: Alexander Mattheis
 
     /**
      * Creates the OutputViewmodel for T-coffee.
+     * @param algorithmName {string} - The name of the algorithm which is executed.
      * @param viewmodel {Object} - The output viewmodel container which should be filled.
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
-    function createTcoffeeOutputViewmodel(viewmodel, outputData) {
-        //var librariesData = getLibrariesData(outputData);
+    function createTcoffeeOutputViewmodel(algorithmName, viewmodel, outputData) {
+        outputData.librariesData = getLibrariesData(outputData);
+        roundValues(algorithmName, outputData);
 
         // final output
         viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
         viewmodel.score = ko.observable(outputData.score);
 
         // libraries
-        viewmodel.sequencePairNames = ko.observable(outputData.sequencePairNames);
-        //viewmodel.allLibPositionPairs = ko.observable(outputData.allLibPositionPairs);
-        //viewmodel.primGlobalLibValues = ko.observable(outputData.primGlobalLibValues);
+        viewmodel.sequencePairsNames = ko.observable(outputData.librariesData[0]);
+        viewmodel.libPositionPairs = ko.observable(outputData.librariesData[1]);
+        viewmodel.primLibValues = ko.observable(outputData.librariesData[2]);
+        viewmodel.extendedLibValues = ko.observable(outputData.librariesData[3]);
     }
 
+    /**
+     * Returns the data needed to display from primary and extended library.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     * @return {[sequencePairsNames, positionPairs, primLibValues, extendedLibValues]} - The data from primary and extended library.
+     */
     function getLibrariesData(outputData) {
         var sequencePairsNames = [];
         var positionPairs = [];
@@ -693,25 +717,37 @@ Author: Alexander Mattheis
         // iterate overall alignments
         for (var i = 0; i < alignmentKeys.length; i++) {
             var alignmentKey = alignmentKeys[i];
-            var positionKeys = Object.keys(alignmentKey);
+            var positionKeys = Object.keys(outputData.primaryWeightLib[alignmentKey]);
 
-            // split key to get an array
+            // split alignmentKey to get an array
             var splittedAlignmentKey = alignmentKey.split(SYMBOLS.COMMA);
             var sequence1Name = outputData.nameOfSequence[splittedAlignmentKey[0]];
             var sequence2Name = outputData.nameOfSequence[splittedAlignmentKey[1]];
-            sequencePairsNames.push([sequence1Name, sequence2Name]);
+
+            var tempPositionPairs = [];
+            var tempPrimLibValues = [];
+            var tempExtendedLibValues = [];
 
             // iterate overall positions in this alignments
             for (var j = 0; j < positionKeys.length; j++) {
                 var positionKey = positionKeys[j];
 
                 var valueL = outputData.primaryWeightLib[alignmentKey][positionKey];  // primary library value
-                var valueEL = outputData.primaryWeightLib[alignmentKey][positionKey];  // extended library value
+                var valueEL = outputData.extendedWeightLib[alignmentKey][positionKey];  // extended library value
 
-                // todo: split position key
-                positionPairs.push(positionKey);
-                primLibValues.push(valueL);
-                extendedLibValues.push(valueEL);
+                // split positionKey to get an array
+                var splittedPositionKey = positionKey.split(SYMBOLS.COMMA);
+
+                tempPositionPairs.push([splittedPositionKey[0], splittedPositionKey[1]]);
+                tempPrimLibValues.push(valueL);
+                tempExtendedLibValues.push(valueEL);
+            }
+
+            if (tempPositionPairs.length !== 0) {  // don't show names of sequence pairs for which no L or EL exists
+                sequencePairsNames.push([sequence1Name, sequence2Name]);
+                positionPairs.push(tempPositionPairs);
+                primLibValues.push(tempPrimLibValues);
+                extendedLibValues.push(tempExtendedLibValues);
             }
         }
 

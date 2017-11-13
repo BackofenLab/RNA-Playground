@@ -279,37 +279,39 @@ Author: Alexander Mattheis
 
         var currentTable;
 
-        // go over the whole path
-        for (var j = 0; j < path.length; j++) {
-            currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
+        if (path !== undefined) {
+            // go over the whole path
+            for (var j = 0; j < path.length; j++) {
+                currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
 
-            var posI = path[j].i + 1;
-            var posJ = path[j].j + 1;
+                var posI = path[j].i + 1;
+                var posJ = path[j].j + 1;
 
-            switch (colorClass) {  // selecting by adding the right color class to the element
-                case 0:
-                    currentTable.rows[posI].cells[posJ].classList.add("selected_light_red");
-                    break;
-                case 1:
-                    currentTable.rows[posI].cells[posJ].classList.add("selected_very_light_red");
-                    break;
-                case 2:
-                    currentTable.rows[posI].cells[posJ].classList.add("selected_red");
-                    break;
-                default:
-                    currentTable.rows[posI].cells[posJ].classList.add("selected");
-            }
+                switch (colorClass) {  // selecting by adding the right color class to the element
+                    case 0:
+                        currentTable.rows[posI].cells[posJ].classList.add("selected_light_red");
+                        break;
+                    case 1:
+                        currentTable.rows[posI].cells[posJ].classList.add("selected_very_light_red");
+                        break;
+                    case 2:
+                        currentTable.rows[posI].cells[posJ].classList.add("selected_red");
+                        break;
+                    default:
+                        currentTable.rows[posI].cells[posJ].classList.add("selected");
+                }
 
-            if (j === path.length - 1 && colorClass !== -1) {  // start element should be green in a flow visualization
-                removeFlowColors(currentTable, posI, posJ);
-                currentTable.rows[posI].cells[posJ].classList.add("selected_green");
-            }
+                if (j === path.length - 1 && colorClass !== -1) {  // start element should be green in a flow visualization
+                    removeFlowColors(currentTable, posI, posJ);
+                    currentTable.rows[posI].cells[posJ].classList.add("selected_green");
+                }
 
-            if (arrows) {  // draw arrows: YES or NO
-                placeArrow(currentTable, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode);
-                lastPosI = posI;
-                lastPosJ = posJ;
-                lastTable = currentTable;
+                if (arrows) {  // draw arrows: YES or NO
+                    placeArrow(currentTable, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode);
+                    lastPosI = posI;
+                    lastPosJ = posJ;
+                    lastTable = currentTable;
+                }
             }
         }
     }

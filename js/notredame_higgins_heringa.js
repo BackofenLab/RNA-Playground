@@ -176,14 +176,16 @@ $(document).ready(function () {
         // iterate over each sequence a and sequence b to compute structure primLib^{a,b}(i,j) = {L_{1,3}, L_{2,4}, ..., L_{5,7}}
         // Hint: a and b are the aligned sequences
         for (var j = 1; j < inputData.sequences.length; j++) {
-            for (var i = 0; i < j; i++) {
-                var sequenceA = inputData.sequences[i];
-                var sequenceB = inputData.sequences[j];
+            if (inputData.arrayPositionsOfRemovedSequences.indexOf(j) === -1) {  // only if the sequence is not a duplicate
+                for (var i = 0; i < j; i++) {
+                    var sequenceA = inputData.sequences[i];
+                    var sequenceB = inputData.sequences[j];
 
-                var alignment = output.alignmentsAndScores[[sequenceA, sequenceB]][0];
-                var sequenceIdentities = getSequenceIdentities(alignment);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
-                primaryWeightLib[[sequenceA, sequenceB]] = sequenceIdentities;
-                outputData.numberOfPairs++;
+                    var alignment = output.alignmentsAndScores[[sequenceA, sequenceB]][0];
+                    var sequenceIdentities = getSequenceIdentities(alignment);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                    primaryWeightLib[[sequenceA, sequenceB]] = sequenceIdentities;
+                    outputData.numberOfPairs++;
+                }
             }
         }
 
