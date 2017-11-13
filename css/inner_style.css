@@ -219,6 +219,11 @@ th {
     text-align: left;
 }
 
+.input_heading {
+    margin-left: -15px;
+    margin-right: 20px;
+}
+
 .iteration {
     clear: both;
     padding-bottom: 30px;

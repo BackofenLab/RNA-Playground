@@ -74,6 +74,32 @@ Author: Alexander Mattheis
         this.match = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.MATCH : MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH);
         this.mismatch = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.MISMATCH : MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH);
 
+        if (isTcoffee) {
+            this.baseCostsLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.BASE_COSTS_LOCAL);
+            this.enlargementLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.ENLARGEMENT_LOCAL);
+            this.matchLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.MATCH_LOCAL);
+            this.mismatchLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.MISMATCH_LOCAL);
+
+            this.useLocalLibrary = ko.observable(MULTI_SEQUENCE_DEFAULTS_T_COFFEE.USE_LOCAL_LIBRARY);
+
+            // displayed dynamic formulas
+            this.gapStartLocal = ko.computed(
+                function () {
+                    return Number(viewmodel.baseCostsLocal()) + Number(viewmodel.enlargementLocal());
+                }
+            );
+
+            this.gapFunctionLocal = ko.computed(
+                function getSelectedFormula() {
+                    setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+                    }, REUPDATE_TIMEOUT_MS);
+
+                    return getSubformula(viewmodel, true);
+                }
+            );
+        }
+
         this.clusterNames = ko.computed(
             function () {
                 return getClusterNames(viewmodel.sequences().length);
@@ -109,7 +135,7 @@ Author: Alexander Mattheis
                     MathJax.Hub.Queue(["Typeset", MathJax.Hub])
                 }, REUPDATE_TIMEOUT_MS);
 
-                return getSubformula(viewmodel);
+                return getSubformula(viewmodel, false);
             }
         );
     }
@@ -152,21 +178,33 @@ Author: Alexander Mattheis
     /**
      * Returns the LaTeX-code for sub-formulas like gap-functions of subadditive algorithms.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
+     * @param local {boolean} - Tells if local or global parameters should be used.
      * @return {string} - LaTeX code.
      */
-    function getSubformula(viewmodel) {
+    function getSubformula(viewmodel, local) {
         var string = LATEX.MATH_REGION;
 
         string += LATEX.SUB_FORMULAS.GOTOH_GAP_FUNCTION;
 
         string += SYMBOLS.EQUAL;
-        string += viewmodel.baseCosts() >= 0
-            ? viewmodel.baseCosts() + SYMBOLS.PLUS
-            : SYMBOLS.BRACKET_LEFT + viewmodel.baseCosts() + SYMBOLS.BRACKET_RIGHT + SYMBOLS.PLUS;
 
-        string += viewmodel.enlargement() >= 0
-            ? viewmodel.enlargement() + LATEX.DOT + LATEX.FACTOR
-            : SYMBOLS.BRACKET_LEFT + viewmodel.enlargement() + SYMBOLS.BRACKET_RIGHT + LATEX.DOT + LATEX.FACTOR;
+        if (local) {
+            string += viewmodel.baseCostsLocal() >= 0
+                ? viewmodel.baseCosts() + SYMBOLS.PLUS
+                : SYMBOLS.BRACKET_LEFT + viewmodel.baseCostsLocal() + SYMBOLS.BRACKET_RIGHT + SYMBOLS.PLUS;
+
+            string += viewmodel.enlargementLocal() >= 0
+                ? viewmodel.enlargementLocal() + LATEX.DOT + LATEX.FACTOR
+                : SYMBOLS.BRACKET_LEFT + viewmodel.enlargementLocal() + SYMBOLS.BRACKET_RIGHT + LATEX.DOT + LATEX.FACTOR;
+        } else {
+            string += viewmodel.baseCosts() >= 0
+                ? viewmodel.baseCosts() + SYMBOLS.PLUS
+                : SYMBOLS.BRACKET_LEFT + viewmodel.baseCosts() + SYMBOLS.BRACKET_RIGHT + SYMBOLS.PLUS;
+
+            string += viewmodel.enlargement() >= 0
+                ? viewmodel.enlargement() + LATEX.DOT + LATEX.FACTOR
+                : SYMBOLS.BRACKET_LEFT + viewmodel.enlargement() + SYMBOLS.BRACKET_RIGHT + LATEX.DOT + LATEX.FACTOR;
+        }
 
         string += LATEX.MATH_REGION;
         return string;

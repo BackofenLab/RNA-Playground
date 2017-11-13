@@ -86,7 +86,7 @@ Author: Alexander Mattheis
     </div>
 </div>
 
-<h1 class="header">Input:</h1>
+<h1>Input:</h1>
 <div id="algorithm_input">
     <!-- ko foreach: $root.input.sequences() -->
         <div class="row">
@@ -155,20 +155,56 @@ Author: Alexander Mattheis
 			</div>
 		</div>
     </div>
+
+    <div class="row">
+        <div class="colW100"><label>Add local library</label></div>
+        <div class="colW400"><input data-bind="checked: $root.input.useLocalLibrary" type="checkbox"></div>
+    </div>
+
+    <div class="localLibraryParameters" data-bind="visible: $root.input.useLocalLibrary">
+        <h2 class="input_heading">Local Library Parameters</h2>
+        <div class="row">
+            <div class="colW100"><label>Scoring in $s$:</label></div>
+
+            <div class="colW400">
+                <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                    Match <input class="fx_parameter" data-bind="value: input.matchLocal" id="match_local" type="number">
+                    Mismatch <input class="fx_parameter" data-bind="value: input.mismatchLocal" id="mismatch_local" type="number">
+                </span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="colW100"><label>Scoring in $g$:</label></div>
+
+            <div class="colW400">
+                <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                    Gap opening $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCostsLocal" id="base_costs_local" type="number">
+                    Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargementLocal" id="enlargement_local" type="number">
+                </span>
+                <br>
+                <br>
+                <span data-bind="text: $root.input.gapFunctionLocal"></span>
+
+                <div class="group_hint">
+                    <b>Hint:</b> <br>
+                    For similarity maximization, <br> match scores should be positive and all other scores lower. <br>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <h1>Output:</h1>
 <div id="algorithm_output">
-
-    <div class="output">
-        <div class="final">
+    <div class="final">
             <table class="final_result_header">
                 <thead>
-					<tr>
-						<th>
+                    <tr>
+                        <th>
                             Final result
-						</th>
-					</tr>
+                        </th>
+                    </tr>
                 </thead>
             </table>
 
@@ -196,178 +232,177 @@ Author: Alexander Mattheis
                 </tr>
             </table>
         </div>
-    </div>
 
-     <h2>Intermediate Results</h2>
+        <h2>Intermediate Results</h2>
 
-    <div class="merge_steps">
-        <table class="result_header">
-            <thead>
-                <tr>
-                    <th>
-                        Fusion steps
-                    </th>
-                </tr>
-            </thead>
-        </table>
-
-        <div class="result_with_scrollbar">
-            <table class="result_categories">
+        <div class="merge_steps">
+            <table class="result_header">
                 <thead>
                     <tr>
                         <th>
-                            <small><b>Group 1</b></small>
-                        </th>
-
-                        <th>
-                            <small><b>Group 2</b></small>
-                        </th>
-
-                        <th>
-                             <small><b>Result</b></small>
+                            Fusion steps
                         </th>
                     </tr>
                 </thead>
+            </table>
 
-                <tbody>
-                    <!-- ko foreach: $root.output.firstGroups() -->
+            <div class="result_with_scrollbar">
+                <table class="result_categories">
+                    <thead>
                         <tr>
-                            <td class="entry entry_start">
-                                <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br>
+                            <th>
+                                <small><b>Group 1</b></small>
+                            </th>
+
+                            <th>
+                                <small><b>Group 2</b></small>
+                            </th>
+
+                            <th>
+                                 <small><b>Result</b></small>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- ko foreach: $root.output.firstGroups() -->
+                            <tr>
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br>
                                     <!-- ko foreach: $root.output.firstGroups()[$index()] -->
                                         <code data-bind="text: $data"></code> <br>
                                     <!-- /ko -->
-                            </td>
+                                </td>
 
-                            <td class="entry entry_start">
-                                <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br>
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br>
                                     <!-- ko foreach: $root.output.secondGroups()[$index()] -->
                                         <code data-bind="text: $data"></code> <br>
                                     <!-- /ko -->
-                            </td>
+                                </td>
 
-                            <td class="entry entry_start">
-                                <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br>
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br>
                                     <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
                                         <code data-bind="text: $data"></code> <br>
                                     <!-- /ko -->
-                            </td>
-                        </tr>
-                    <!-- /ko -->
-                </tbody>
-            </table>
+                                </td>
+                            </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
-    <h2>Phylogenetic Tree</h2>
-    <div class="newick_tree">
-        <table class="result_header">
-            <thead>
-                <tr>
-                    <th>
-                        Newick Tree
-                    </th>
-                </tr>
-            </thead>
-        </table>
-
-        <div class="result_with_scrollbar">
-            <table class="result">
-                <tbody>
-                    <tr>
-                        <td class="entry entry_start">
-                            <code data-bind="text: $root.output.newickString()"></code>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="tree_container"> <!-- allows to delete and reinsert the div -->
-        <div id="phylogenetic_tree"></div>
-    </div>
-
-    <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
-        <div class="group_hint">
-            <b>Visualization done with</b> <br>
-            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br>
-            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br>
-            <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
-                PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
-            </a>
-        </div>
-    <!-- /ko -->
-
-    <div class="group_hint">
-        <b>Hint: </b> Visualization is only shown, if there are no negative distances.
-    </div>
-
-
-    <h2>Libraries</h2>
-    <div class="pairwise_data">
-        <div class="result_with_scrollbar">
-            <table class="result_categories top_border">
+        <h2>Phylogenetic Tree</h2>
+        <div class="newick_tree">
+            <table class="result_header">
                 <thead>
                     <tr>
                         <th>
-                            <small><b>Sequence Pair</b></small>
-                        </th>
-
-                        <th>
-                            <small><b>Position Pair</b></small>
-                        </th>
-
-                        <th>
-                            <small><b>Primary Library $L$</b></small>
-                        </th>
-
-                        <th>
-                            <small><b>Extended Library $EL$</b></small>
+                            Newick Tree
                         </th>
                     </tr>
                 </thead>
+            </table>
 
-                <tbody>
-                    <!-- ko foreach: $root.output.sequencePairsNames() -->
+            <div class="result_with_scrollbar">
+                <table class="result">
+                    <tbody>
                         <tr>
                             <td class="entry entry_start">
-                                <code>(</code><code data-bind="text: $data[0]"></code><code>,</code>
-                                <code data-bind="text: $data[1]"></code><code>)</code>
-                                <br>
-                            </td>
-
-                            <td class="entry entry_start">
-                                <!-- ko foreach: $root.output.libPositionPairs()[$index()] -->
-                                    <code>(</code><code data-bind="text: $data"></code><code>)</code> <br>
-                                <!-- /ko -->
-                            </td>
-
-                            <td class="entry entry_start">
-                                <!-- ko foreach: $root.output.primLibValues()[$index()] -->
-                                    <code data-bind="text: $data"></code> <br>
-                                <!-- /ko -->
-                            </td>
-
-                            <td class="entry entry_start">
-                                <!-- ko foreach: $root.output.extendedLibValues()[$index()] -->
-                                    <code data-bind="text: $data"></code> <br>
-                                <!-- /ko -->
+                                <code data-bind="text: $root.output.newickString()"></code>
                             </td>
                         </tr>
-                    <!-- /ko -->
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <table class="pairwise_data_footer">
-            <tr>
-                <th>
-                    <small>
-                        <b>Hint:</b> Only sequence pairs with alignment length bigger zero displayed!
-                    </small>
-                </th>
-            </tr>
-        </table>
-    </div>
+        <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+            <div id="phylogenetic_tree"></div>
+        </div>
+
+        <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
+            <div class="group_hint">
+                <b>Visualization done with</b> <br>
+                Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br>
+                A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br>
+                <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                    PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+                </a>
+            </div>
+        <!-- /ko -->
+
+        <div class="group_hint">
+            <b>Hint: </b> Visualization is only shown, if there are no negative distances.
+        </div>
+
+
+        <h2>Libraries</h2>
+        <div class="pairwise_data">
+            <div class="result_with_scrollbar">
+                <table class="result_categories top_border">
+                    <thead>
+                        <tr>
+                            <th>
+                                <small><b>Sequence Pair</b></small>
+                            </th>
+
+                            <th>
+                                <small><b>Position Pair</b></small>
+                            </th>
+
+                            <th>
+                                <small><b>Primary Library $L$</b></small>
+                            </th>
+
+                            <th>
+                                <small><b>Extended Library $EL$</b></small>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- ko foreach: $root.output.sequencePairsNames() -->
+                            <tr>
+                                <td class="entry entry_start">
+                                    <code>(</code><code data-bind="text: $data[0]"></code><code>,</code>
+                                    <code data-bind="text: $data[1]"></code><code>)</code>
+                                    <br>
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <!-- ko foreach: $root.output.libPositionPairs()[$index()] -->
+                                        <code>(</code><code data-bind="text: $data"></code><code>)</code> <br>
+                                    <!-- /ko -->
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <!-- ko foreach: $root.output.primLibValues()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br>
+                                    <!-- /ko -->
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <!-- ko foreach: $root.output.extendedLibValues()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br>
+                                    <!-- /ko -->
+                                </td>
+                            </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="pairwise_data_footer">
+                <tr>
+                    <th>
+                        <small>
+                            <b>Hint:</b> Only sequence pairs with alignment length bigger zero displayed!
+                        </small>
+                    </th>
+                </tr>
+            </table>
+        </div>
 </div>
