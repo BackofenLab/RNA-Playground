@@ -66,6 +66,8 @@ Author: Alexander Mattheis
         the whole columns of two groups aligned together.
         Therefore, the average alignment score of two columns is used
         (all chars of first column aligned with all chars of second column).
+        And gaps are ignored by setting $\alpha = \beta = 0$, because the library
+        is computed on alignments in which such parameters have been already applied.
         <br>
         <br>
         For a given input, the stated computation steps generate the
