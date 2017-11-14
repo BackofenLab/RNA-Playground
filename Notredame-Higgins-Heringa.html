@@ -36,7 +36,7 @@ Author: Alexander Mattheis
 
         where $L^{a,b}_{i,j} = L^{b,a}_{j,i}$ ($L^{a,b}_{i,j} = 0$ for not defined locations $i,j$) <br>
         The extended library instead is calculated to gather consistency information
-        concerning all other alignments, different to $\mathcal{A}(a,b)$.
+        concerning all other alignments (i.e. to emphasize columns with matches), different to $\mathcal{A}(a,b)$.
         That is done by the consideration of all sequence triples,
         as shown in the following formula:
 
@@ -57,10 +57,7 @@ Author: Alexander Mattheis
             <div class="colW400">set of all locations/positions in x</div>
         </div>
 
-        The minimum weight $min \big(L^{a,x}_{i,k}, L^{x,b}_{k,j} \big)$
-        through a sequence different to sequences $a$ and $b$
-        is added to the current weight $L^{a,b}_{i,j}$ of an alignment $a$ with $b$.
-        And afterwards this scoring function $EL^{a,b}_{i,j}$ is used in a modified neighbour joining (fusion) process
+        Afterwards this scoring function $EL^{a,b}_{i,j}$ is used in a modified neighbour joining (fusion) process
         of <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
         to compute a multiple sequence alignment.
         Unlike in the <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a> approach,
@@ -69,6 +66,14 @@ Author: Alexander Mattheis
         (all chars of first column aligned with all chars of second column).
         And gaps are ignored by setting $\alpha = \beta = 0$, because the library
         is computed on alignments in which such parameters have been already applied.
+        <br>
+        <br>
+        In the algorithm, it is possible to add information
+        from arbitrary alignments to emphasize particularly important
+        positions of together aligned sequences.
+        This is done in our case with local alignments, for which with the given sequence identity formula above
+        a local primary library is computed and added to the values of the global primary library
+        i.e. $L^{a,b}_{i,j} = {L^{a,b}_{i,j}}_{loc} + {L^{a,b}_{i,j}}_{glob}$.
         <br>
         <br>
         For a given input, the stated computation steps generate the
