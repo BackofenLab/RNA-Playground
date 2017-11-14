@@ -757,6 +757,8 @@ Author: Alexander Mattheis
             }
 
             if (tempPositionPairs.length !== 0) {  // don't show names of sequence pairs for which no L or EL exists
+                sort(tempPositionPairs, tempPrimLibValues, tempExtendedLibValues);
+                
                 sequencePairsNames.push([sequence1Name, sequence2Name]);
                 positionPairs.push(tempPositionPairs);
                 primLibValues.push(tempPrimLibValues);
@@ -765,6 +767,50 @@ Author: Alexander Mattheis
         }
 
         return [sequencePairsNames, positionPairs, primLibValues, extendedLibValues];
+    }
+
+    /**
+     * Returns numerically sorted input arrays.
+     * @param positionPairs {Array} - Array of tuples which is sorted and used to sort the other two arrays.
+     * @param primLibValues {Array} - Array of primary lib values.
+     * @param extendedLibValues {Array} - Array of extended lib values.
+     * @return {[sortedPositionPairs, sortedPrimLibValues, sortedExtendedLibValues]} - The sorted arrays as a triple.
+     */
+    function sort(positionPairs, primLibValues, extendedLibValues) {
+        var switches = [];
+
+        // documentation {sort} - https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+        var sortedPositionPairs = positionPairs.sort(function (a,b) {
+            var leftNumberA = Number(a[0]);
+            var leftNumberB = Number(b[0]);
+
+            var rightNumberA = Number(a[1]);
+            var rightNumberB = Number(b[1]);
+
+            var value = 0;
+
+            if (leftNumberB === leftNumberA) {
+                value = rightNumberB > rightNumberA ? -1 : (rightNumberB > rightNumberA ? 1 : 0);
+                switches.push(value);
+                return value;
+            }
+
+            var value = leftNumberA - leftNumberB;
+            switches.push(value);
+            return value;
+        });
+
+        var i = 0;
+
+        var sortedPrimLibValues = primLibValues.sort(function (a,b) {
+            return switches[i++];
+        });
+
+        var i = 0;
+
+        var sortedExtendedLibValuess = extendedLibValues.sort(function (a,b) {
+            return switches[i++];
+        });
     }
 
     /**

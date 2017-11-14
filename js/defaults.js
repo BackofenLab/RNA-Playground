@@ -319,8 +319,8 @@ var MULTI_SEQUENCE_DEFAULTS_T_COFFEE = {  /* example from paper */
     USE_LOCAL_LIBRARY: false,
 
     FUNCTION: {
-        BASE_COSTS: -4,
-        BASE_COSTS_LOCAL: -5,
+        BASE_COSTS: 0,
+        BASE_COSTS_LOCAL: 0,
 
         ENLARGEMENT: -2,
         ENLARGEMENT_LOCAL: -1,
