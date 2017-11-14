@@ -296,16 +296,6 @@ var MULTI_SEQUENCE_DEFAULTS = {
 var MULTI_SEQUENCE_DEFAULTS_T_COFFEE = {  /* example from paper */
     CALCULATION: "similarity",
     SEQUENCES: [
-        "ACGT",
-        "AT",
-        "GCT"],
-    SEQUENCES_COPY: [
-        "ACGT",
-        "AT",
-        "GCT"],  /* some bugfix for Knockout */
-
-    /*
-    SEQUENCES: [
         "GARFIELD-THE-LAST-FAT-CAT",
         "GARFIELD-THE-FAST-CAT",
         "GARFIELD-THE-VERY-FAST-CAT",
@@ -319,17 +309,17 @@ var MULTI_SEQUENCE_DEFAULTS_T_COFFEE = {  /* example from paper */
     USE_LOCAL_LIBRARY: false,
 
     FUNCTION: {
-        BASE_COSTS: 0,
-        BASE_COSTS_LOCAL: 0,
+        BASE_COSTS: -3,
+        BASE_COSTS_LOCAL: -3,
 
         ENLARGEMENT: -2,
-        ENLARGEMENT_LOCAL: -1,
+        ENLARGEMENT_LOCAL: -3,
 
         MATCH: 1,
-        MATCH_LOCAL: 3,
+        MATCH_LOCAL: 2,
 
         MISMATCH: -1,
-        MISMATCH_LOCAL: -1
+        MISMATCH_LOCAL: -2
     }
 };
 
