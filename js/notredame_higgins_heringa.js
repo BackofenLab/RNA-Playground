@@ -562,8 +562,9 @@ $(document).ready(function () {
         //      then with local alignment data and take then average distance matrix = (D_local + D_global) / 2
         //
         // but: second possibility (2) taken, because
-        // [1] in other sources it is said that local alignments less important
+        // [1] in sources it is said that local alignments less important
         // http://www.bioinfbook.org/ : Bioinformatics and Functional Genomics 2nd Edition p.193
+        // + original paper at p.206: Generating a primary library of alignments
         // (not all, only 10 local alignments for library computation used)
         // [2] we want create "global" progressive alignments
 
