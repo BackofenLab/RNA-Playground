@@ -112,7 +112,7 @@ Author: Alexander Mattheis
         var functionArguments = {"functionParameters": functionParameters};
         algorithmInput.find(".optimization_type").on("change", functionArguments, negateOptimizationParameters);
 
-        functionParameters.on("focusout keypress", removeCriticalNumbers);
+        functionParameters.on("change", removeCriticalNumbers);
         algorithmInput.on("keyup", ".sequence", removeNonAllowedBases);
     }
 
@@ -139,13 +139,12 @@ Author: Alexander Mattheis
         if (CHARACTER.NUMBERS.test(this.value))
             this.value = Math.round(this.value);
 
-        if (e.which === KEY_CODES.ENTER || e.type === "focusout") {
+        if (e.type === "change") {
             if (this.id === "length") {
                 this.value = this.value >= INPUT.LENGTH_MIN ? this.value : INPUT.LENGTH_MIN;
                 this.value = this.value <= INPUT.LENGTH_MAX ? this.value : INPUT.LENGTH_MAX;
             }
-            else
-            {
+            else {
                 this.value = this.value >= INPUT.MIN ? this.value : INPUT.MIN;
                 this.value = this.value <= INPUT.MAX ? this.value : INPUT.MAX;
             }
@@ -248,21 +247,22 @@ Author: Alexander Mattheis
      * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
      */
     function update(algorithm, viewmodels, processInput, changeOutput) {
-        processInput(algorithm, inputProcessorInstance, viewmodels.input, viewmodels.visual);
-        changeOutput(algorithm.getOutput(), inputProcessorInstance, viewmodels);
-        postProcess(algorithm, viewmodels, processInput, changeOutput);
+        // avoids using not updated values (especially in displayed formulas)
+        // for example removeCriticalNumbers(e) needs to have enough time to be executed first on a value change (uses same event: [..].on(change))
+        setTimeout(function () {
+            processInput(algorithm, inputProcessorInstance, viewmodels.input, viewmodels.visual);
+            changeOutput(algorithm.getOutput(), inputProcessorInstance, viewmodels);
+            postProcess(viewmodels);
+        }, REUPDATE_TIMEOUT_MS);
     }
 
     /**
      * Does post processing after some kind of input by keyboard or mouse.
      * For example LaTeX-math is updated.
-     * @param algorithm {Object} - Algorithm used to update the user interface.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions.
-     * @param processInput {Function} - Function from the algorithm which should process the input.
-     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
      * @see MathJax has to be executed as last one!
      */
-    function postProcess(algorithm, viewmodels, processInput, changeOutput) {
+    function postProcess(viewmodels) {
         linkIterationTables(viewmodels.visual);  // iterative tables are not existing from the beginning and so they have to be relinked
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
     }
