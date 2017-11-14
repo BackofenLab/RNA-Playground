@@ -351,6 +351,8 @@ Author: Alexander Mattheis
         viewmodels.visual.drawTree();
 
         // pairwise data
+        alignmentInterfaceInstance.sortWithClusterTuples(outputData.sequencePairNames,
+            [outputData.alignmentLengths, outputData.similarities, outputData.gapNumbers, outputData.gapStarts]);
         viewmodels.output.sequencePairNames(outputData.sequencePairNames);
         viewmodels.output.alignmentLengths(outputData.alignmentLengths);
         viewmodels.output.similarities(outputData.similarities);

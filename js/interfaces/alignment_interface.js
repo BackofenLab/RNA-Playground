@@ -11,7 +11,7 @@ Author: Alexander Mattheis
     // public methods
     namespace("interfaces.alignmentInterface", AlignmentInterface,
         imports, sharedInterfaceOperations, roundValues, getDistanceTable, getDistanceTables,
-        reorderGroupSequences, getLibrariesData, startProcessing);
+        reorderGroupSequences, getLibrariesData, sortWithClusterTuples, startProcessing);
 
     // instances
     var alignmentInterfaceInstance;
@@ -33,6 +33,7 @@ Author: Alexander Mattheis
         this.getDistanceTables = getDistanceTables;
         this.reorderGroupSequences = reorderGroupSequences;
         this.getLibrariesData = getLibrariesData;
+        this.sortWithClusterTuples = sortWithClusterTuples;
         this.startProcessing = startProcessing;
     }
 
@@ -436,6 +437,8 @@ Author: Alexander Mattheis
         viewmodel.score = ko.observable(outputData.score);
 
         // pairwise data
+        sortWithClusterTuples(outputData.sequencePairNames,
+            [outputData.alignmentLengths, outputData.similarities, outputData.gapNumbers, outputData.gapStarts]);
         viewmodel.sequencePairNames = ko.observable(outputData.sequencePairNames);
         viewmodel.alignmentLengths = ko.observable(outputData.alignmentLengths);
         viewmodel.similarities = ko.observable(outputData.similarities);
@@ -757,7 +760,7 @@ Author: Alexander Mattheis
             }
 
             if (tempPositionPairs.length !== 0) {  // don't show names of sequence pairs for which no L or EL exists
-                sortWithNumberTuples(tempPositionPairs, tempPrimLibValues, tempExtendedLibValues);
+                sortWithNumberTuples(tempPositionPairs, [tempPrimLibValues, tempExtendedLibValues]);
                 
                 sequencePairsNames.push([sequence1Name, sequence2Name]);
                 positionPairs.push(tempPositionPairs);
@@ -766,18 +769,16 @@ Author: Alexander Mattheis
             }
         }
 
-        sortWithClusterTuples(sequencePairsNames, positionPairs, primLibValues, extendedLibValues);
+        sortWithClusterTuples(sequencePairsNames, [positionPairs, primLibValues, extendedLibValues]);
         return [sequencePairsNames, positionPairs, primLibValues, extendedLibValues];
     }
 
     /**
      * Returns numerically sorted input arrays.
-     * @param positionPairs {Array} - Array of number tupels which is sorted and used to sort the other two arrays.
-     * @param primLibValues {Array} - Array of primary lib values.
-     * @param extendedLibValues {Array} - Array of extended lib values.
-     * @return {[sortedPositionPairs, sortedPrimLibValues, sortedExtendedLibValues]} - The sorted arrays as a triple.
+     * @param positionPairs {Array} - Array of number tupels which is sorted and used to sort the input arrays.
+     * @param inputArrays {Array} - Input arrays.
      */
-    function sortWithNumberTuples(positionPairs, primLibValues, extendedLibValues) {
+    function sortWithNumberTuples(positionPairs, inputArrays) {
         var switches = [];
 
         // documentation {sort} - https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
@@ -796,35 +797,29 @@ Author: Alexander Mattheis
                 return value;
             }
 
-            var value = leftNumberA - leftNumberB;
+            value = leftNumberA - leftNumberB;
             switches.push(value);
             return value;
         });
 
-        var i = 0;
+        for (var j = 0; j < inputArrays.length; j++) {
+            var i = 0;
 
-        primLibValues.sort(function (a,b) {  // sort with the sorting determined above
-            return switches[i++];
-        });
-
-        i = 0;
-
-        extendedLibValues.sort(function (a,b) {  // sort with the sorting determined above
-            return switches[i++];
-        });
+            inputArrays[j].sort(function (a,b) {  // sort with the sorting determined above
+                return switches[i++];
+            });
+        }
     }
 
     /**
      * Returns cluster name sorted input arrays.
-     * @param sequencePairsNames {Array} - Array of cluster-tupels which is sorted and used to sort the other three arrays.
-     * @param positionPairsArray {Array} - Array of array with position tuples.
-     * @param primLibValuesArray {Array} - Array of array with primary lib values.
-     * @param extendedLibValuesArray {Array} - Array of array with extended lib values.
-     * @return {[sortedPositionPairs, sortedPrimLibValues, sortedExtendedLibValues]} - The sorted arrays as a triple.
+     * @param sequencePairsNames {Array} - Array of cluster-tupels which is sorted and used to sort the input arrays.
+     * @param inputArrays {Array} - Input arrays.
+     * @return {Array} - Sorted Input arrays.
      */
-    function sortWithClusterTuples(sequencePairsNames, positionPairsArray, primLibValuesArray, extendedLibValuesArray) {
+    function sortWithClusterTuples(sequencePairsNames, inputArrays) {
         var switches = [];
-        debugger;
+
         // documentation {sort} - https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
         sequencePairsNames.sort(function (a,b) {
             var leftNumberA = getNumber(a[0]);
@@ -841,28 +836,18 @@ Author: Alexander Mattheis
                 return value;
             }
 
-            var value = leftNumberA - leftNumberB;
+            value = leftNumberA - leftNumberB;
             switches.push(value);
             return value;
         });
 
-        var i = 0;
+        for (var j = 0; j < inputArrays.length; j++) {
+            var i = 0;
 
-        positionPairsArray.sort(function (a,b) {  // sort with the sorting determined above
-            return switches[i++];
-        });
-
-        i = 0;
-
-        primLibValuesArray.sort(function (a,b) {
-            return switches[i++];
-        });
-
-        i = 0;
-
-        extendedLibValuesArray.sort(function (a,b) {
-            return switches[i++];
-        });
+            inputArrays[j].sort(function (a,b) {  // sort with the sorting determined above
+                return switches[i++];
+            });
+        }
     }
 
     /**
