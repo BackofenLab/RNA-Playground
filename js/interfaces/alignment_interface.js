@@ -631,7 +631,7 @@ Author: Alexander Mattheis
         for (var i = 0; i < memberNames.length; i++) {
             var name = memberNames[i].split(SYMBOLS.COMMA);
             var character = name[0];
-            var number = name.length > 1 ? Number(name[1] - 1) : 0;
+            var number = name.length > 1 ? (Number(name[1]) - 1) : 0;
 
             var characterPosition = CLUSTER_NAMES.indexOf(character);
             var sequence = group[i].replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);
@@ -757,7 +757,7 @@ Author: Alexander Mattheis
             }
 
             if (tempPositionPairs.length !== 0) {  // don't show names of sequence pairs for which no L or EL exists
-                sort(tempPositionPairs, tempPrimLibValues, tempExtendedLibValues);
+                sortWithNumberTuples(tempPositionPairs, tempPrimLibValues, tempExtendedLibValues);
                 
                 sequencePairsNames.push([sequence1Name, sequence2Name]);
                 positionPairs.push(tempPositionPairs);
@@ -766,21 +766,22 @@ Author: Alexander Mattheis
             }
         }
 
+        sortWithClusterTuples(sequencePairsNames, positionPairs, primLibValues, extendedLibValues);
         return [sequencePairsNames, positionPairs, primLibValues, extendedLibValues];
     }
 
     /**
      * Returns numerically sorted input arrays.
-     * @param positionPairs {Array} - Array of tuples which is sorted and used to sort the other two arrays.
+     * @param positionPairs {Array} - Array of number tupels which is sorted and used to sort the other two arrays.
      * @param primLibValues {Array} - Array of primary lib values.
      * @param extendedLibValues {Array} - Array of extended lib values.
      * @return {[sortedPositionPairs, sortedPrimLibValues, sortedExtendedLibValues]} - The sorted arrays as a triple.
      */
-    function sort(positionPairs, primLibValues, extendedLibValues) {
+    function sortWithNumberTuples(positionPairs, primLibValues, extendedLibValues) {
         var switches = [];
 
         // documentation {sort} - https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-        var sortedPositionPairs = positionPairs.sort(function (a,b) {
+        positionPairs.sort(function (a,b) {
             var leftNumberA = Number(a[0]);
             var leftNumberB = Number(b[0]);
 
@@ -802,15 +803,91 @@ Author: Alexander Mattheis
 
         var i = 0;
 
-        var sortedPrimLibValues = primLibValues.sort(function (a,b) {
+        primLibValues.sort(function (a,b) {  // sort with the sorting determined above
             return switches[i++];
+        });
+
+        i = 0;
+
+        extendedLibValues.sort(function (a,b) {  // sort with the sorting determined above
+            return switches[i++];
+        });
+    }
+
+    /**
+     * Returns cluster name sorted input arrays.
+     * @param sequencePairsNames {Array} - Array of cluster-tupels which is sorted and used to sort the other three arrays.
+     * @param positionPairsArray {Array} - Array of array with position tuples.
+     * @param primLibValuesArray {Array} - Array of array with primary lib values.
+     * @param extendedLibValuesArray {Array} - Array of array with extended lib values.
+     * @return {[sortedPositionPairs, sortedPrimLibValues, sortedExtendedLibValues]} - The sorted arrays as a triple.
+     */
+    function sortWithClusterTuples(sequencePairsNames, positionPairsArray, primLibValuesArray, extendedLibValuesArray) {
+        var switches = [];
+        debugger;
+        // documentation {sort} - https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+        sequencePairsNames.sort(function (a,b) {
+            var leftNumberA = getNumber(a[0]);
+            var leftNumberB = getNumber(b[0]);
+
+            var rightNumberA = getNumber(a[1]);
+            var rightNumberB = getNumber(b[1]);
+
+            var value = 0;
+
+            if (leftNumberA === leftNumberB) {
+                value = rightNumberB > rightNumberA ? -1 : (rightNumberB > rightNumberA ? 1 : 0);
+                switches.push(value);
+                return value;
+            }
+
+            var value = leftNumberA - leftNumberB;
+            switches.push(value);
+            return value;
         });
 
         var i = 0;
 
-        var sortedExtendedLibValuess = extendedLibValues.sort(function (a,b) {
+        positionPairsArray.sort(function (a,b) {  // sort with the sorting determined above
             return switches[i++];
         });
+
+        i = 0;
+
+        primLibValuesArray.sort(function (a,b) {
+            return switches[i++];
+        });
+
+        i = 0;
+
+        extendedLibValuesArray.sort(function (a,b) {
+            return switches[i++];
+        });
+    }
+
+    /**
+     * Translates a cluster-name into a number.
+     * @example: (with 26 characters)
+     * CLUSTER NAMES:
+     * a, b, c, ..., z,         FIRST EPISODE   (0 <= index < 26)
+     * a2, b2, c2, ..., z2,     SECOND EPISODE  (26 <= index < 52)
+     * a3, b3, ...              THIRD ...       (52 <= index < 78)
+     *
+     * CALCULATION:
+     * c = pos(a) + 0 * CLUSTER_NAMES.length = 2 + 0 = 2
+     * a2 = pos(a) + (2-1) * CLUSTER_NAMES.length = 0 + 26 = 26
+     * c2 = pos(a) + (2-1) * CLUSTER_NAMES.length = 2 + 26 = 28
+     * @param cluster
+     * @return {*}
+     */
+    function getNumber(cluster) {
+        // hint: Number("[empty]") is replaced with 0 in JS
+        var clusterNumber = Number(cluster.replace(MULTI_SYMBOLS.STRINGS, SYMBOLS.EMPTY));  // the episode
+        var clusterPosition = CLUSTER_NAMES.indexOf(cluster.replace(MULTI_SYMBOLS.NUMBERS, SYMBOLS.EMPTY));  // position in alphabet
+
+        clusterNumber = clusterNumber > 0 ? (clusterNumber - 1) : 0;  // see example above
+
+        return clusterPosition + clusterNumber * CLUSTER_NAMES.length;
     }
 
     /**
