@@ -155,6 +155,7 @@ $(document).ready(function () {
         outputData.primaryGlobalWeightLib = computePairwiseWeights(outputData, true);
 
         if (inputData.useLocalLibrary) {
+            //keepBestLocalAlignments();
             outputData.primaryLocalWeightLib = computePairwiseWeights(outputData, false);
             addSignals();
         } else  // only global library
@@ -170,7 +171,6 @@ $(document).ready(function () {
      */
     function computePairwiseWeights(output, global) {
         var primaryWeightLib = {};
-        outputData.numberOfPairs = 0;  // for visualization
 
         // iterate over each sequence a and sequence b to compute structure primLib^{a,b}(i,j) = {L_{1,3}, L_{2,4}, ..., L_{5,7}}
         // Hint: a and b are the aligned sequences
@@ -189,13 +189,11 @@ $(document).ready(function () {
                         sequenceIdentities = getSequenceIdentities(alignment, undefined);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
                     }
                     else {
-                        debugger;
                         alignment = output.alignmentsAndScoresLocal[[sequenceA, sequenceB]][0];
                         traceback = output.tracebacks[[sequenceA, sequenceB]];
                         sequenceIdentities = getSequenceIdentities(alignment, traceback);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
                     }
                     primaryWeightLib[[sequenceA, sequenceB]] = sequenceIdentities;
-                    outputData.numberOfPairs++;
                 }
             }
         }
@@ -257,6 +255,27 @@ $(document).ready(function () {
             L[definedKeys[i]] = sequenceIdentity;  // overwriting wrong value
 
         return L;
+    }
+
+    function keepBestLocalAlignments(number) {
+        var alignmentsAndScores = [];
+
+        for (var j = 1; j < inputData.sequences.length; j++) {
+            if (inputData.arrayPositionsOfRemovedSequences.indexOf(j) === -1) {  // only if the sequence is not a duplicate
+                for (var i = 0; i < j; i++) {
+                    var sequenceA = inputData.sequences[i];
+                    var sequenceB = inputData.sequences[j];
+
+                    alignmentsAndScores.push(outputData.alignmentsAndScoresLocal[[sequenceA, sequenceB]]);
+                }
+            }
+        }
+
+        alignmentsAndScores.sort(function (a,b) {
+           return a[1] - b[1];
+        });
+
+        // number of alignments to keep parameter
     }
 
     /**
