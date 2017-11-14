@@ -254,7 +254,7 @@ Author: Alexander Mattheis
         var sequenceArray = [];
 
         for (var i = 0; i < inputViewmodel.sequences().length; i++) {
-            sequenceArray.push($(".sequence")[i].value.toUpperCase());
+            sequenceArray.push($(".sequence_multi")[i].value.toUpperCase());
         }
 
         /* bug-fix for a Knockout-problem -> dynamically generated inputs get wrong values after typing in something */
