@@ -270,21 +270,21 @@ Author: Alexander Mattheis
      * @param outputData {Object} - Contains all output data.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
+     * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
         if (viewmodels.visual.algorithm.type === ALGORITHMS.FENG_DOOLITTLE)
-            changeFengDoolittleOutput(outputData, inputProcessor, viewmodels);
+            changeFengDoolittleOutput(outputData, viewmodels);
         else if (viewmodels.visual.algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)
-            changeTcoffeeOutput(outputData, inputProcessor, viewmodels);
+            changeTcoffeeOutput(outputData, viewmodels);
     }
 
     /**
      * Changes the output of Feng-Doolittle algorithm after processing the input.
      * @param outputData {Object} - Contains all output data.
-     * @param inputProcessor {Object} - The unit processing the input.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
-    function changeFengDoolittleOutput(outputData, inputProcessor, viewmodels) {
+    function changeFengDoolittleOutput(outputData, viewmodels) {
         // creates a visually representable distance matrix
         outputData.distanceMatrix
             = alignmentInterfaceInstance.getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength,
@@ -363,10 +363,9 @@ Author: Alexander Mattheis
     /**
      * Changes the output of Notredame-Higgins-Heringa algorithm after processing the input.
      * @param outputData {Object} - Contains all output data.
-     * @param inputProcessor {Object} - The unit processing the input.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
-    function changeTcoffeeOutput(outputData, inputProcessor, viewmodels) {
+    function changeTcoffeeOutput(outputData, viewmodels) {
         outputData.librariesData = alignmentInterfaceInstance.getLibrariesData(outputData);
 
         alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);

@@ -446,6 +446,7 @@ Author: Alexander Mattheis
      * @param outputData {Object} - Contains all output data.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
+     * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
         if (viewmodels.input.subadditiveFunction !== undefined

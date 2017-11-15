@@ -114,6 +114,7 @@ Author: Alexander Mattheis
 
         functionParameters.on("change", removeCriticalNumbers);
         algorithmInput.on("keyup", ".sequence", removeNonAllowedBases);
+        algorithmInput.on("keyup", ".sequence_multi", removeNonAllowedBases);
     }
 
     /**
