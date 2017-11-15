@@ -185,7 +185,11 @@ Author: Alexander Mattheis
      * This function is executed by the Input-Processor
      * and it is dependant on the algorithm.
      * It is needed by the algorithm
-     * to read in the current and not the last values.
+     * to read in the current and not the last values of the inputs.
+     * The problem is that processInput can be only executed before the observable changes
+     * its values in the viewmodel and setting timeouts is not possible,
+     * because it's very hardware dependant when the view is fully reloaded.
+     * This is why all values are reseted with JQuery.
      * @param algorithm {Object} - Algorithm used to update the user interface.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
