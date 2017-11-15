@@ -64,23 +64,23 @@ Author: Alexander Mattheis
         var viewmodel = this;
         var isTcoffee = algorithmName === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA;
 
-        this.sequences = ko.observableArray(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.SEQUENCES : MULTI_SEQUENCE_DEFAULTS.SEQUENCES);
+        this.sequences = ko.observableArray(MULTI_SEQUENCE_DEFAULTS.SEQUENCES);
 
-        this.calculation = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.CALCULATION : MULTI_SEQUENCE_DEFAULTS.CALCULATION);
+        this.calculation = ko.observable(MULTI_SEQUENCE_DEFAULTS.CALCULATION);
 
         // function
-        this.baseCosts = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.BASE_COSTS : MULTI_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS);
-        this.enlargement = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.ENLARGEMENT : MULTI_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT);
-        this.match = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.MATCH : MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH);
-        this.mismatch = ko.observable(isTcoffee ? MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.MISMATCH : MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH);
+        this.baseCosts = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS);
+        this.enlargement = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT);
+        this.match = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH);
+        this.mismatch = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH);
 
         if (isTcoffee) {
-            this.baseCostsLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.BASE_COSTS_LOCAL);
-            this.enlargementLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.ENLARGEMENT_LOCAL);
-            this.matchLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.MATCH_LOCAL);
-            this.mismatchLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS_T_COFFEE.FUNCTION.MISMATCH_LOCAL);
+            this.baseCostsLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS_LOCAL);
+            this.enlargementLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT_LOCAL);
+            this.matchLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH_LOCAL);
+            this.mismatchLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH_LOCAL);
 
-            this.useLocalLibrary = ko.observable(MULTI_SEQUENCE_DEFAULTS_T_COFFEE.USE_LOCAL_LIBRARY);
+            this.useLocalLibrary = ko.observable(MULTI_SEQUENCE_DEFAULTS.USE_LOCAL_LIBRARY);
 
             // displayed dynamic formulas
             this.gapStartLocal = ko.computed(
@@ -259,7 +259,6 @@ Author: Alexander Mattheis
 
         /* bug-fix for a Knockout-problem -> dynamically generated inputs get wrong values after typing in something */
         MULTI_SEQUENCE_DEFAULTS.SEQUENCES = MULTI_SEQUENCE_DEFAULTS.SEQUENCES_COPY.slice();
-        MULTI_SEQUENCE_DEFAULTS_T_COFFEE.SEQUENCES = MULTI_SEQUENCE_DEFAULTS_T_COFFEE.SEQUENCES_COPY.slice();
         inputViewmodel.sequences.removeAll();  // avoids changing on the as constant defined value
 
         return sequenceArray;

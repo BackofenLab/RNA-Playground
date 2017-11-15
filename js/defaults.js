@@ -272,28 +272,7 @@ var MOVE = {
     X_TO_Q: "xToQ"
 };
 
-var MULTI_SEQUENCE_DEFAULTS = {
-    CALCULATION: "similarity",
-    SEQUENCES: [
-        "YYRMAPCYVGCQRAD",
-        "YRMPGPIKCQFFQDRA",
-        "YYRMPTSLTQDRAD",
-        "NSLVKKSEDPRD"],
-    SEQUENCES_COPY: [
-        "YYRMAPCYVGCQRAD",
-        "YRMPGPIKCQFFQDRA",
-        "YYRMPTSLTQDRAD",
-        "NSLVKKSEDPRD"],  /* some bugfix for Knockout */
-
-    FUNCTION: {
-        BASE_COSTS: -2,
-        ENLARGEMENT: -1,
-        MATCH: 3,
-        MISMATCH: 1
-    }
-};
-
-var MULTI_SEQUENCE_DEFAULTS_T_COFFEE = {  /* example from paper */
+var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
     CALCULATION: "similarity",
     SEQUENCES: [
         "GARFIELD-THE-LAST-FAT-CAT",
