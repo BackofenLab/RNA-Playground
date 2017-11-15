@@ -204,211 +204,267 @@ Author: Alexander Mattheis
 <h1>Output:</h1>
 <div id="algorithm_output">
     <div class="final">
-            <table class="final_result_header">
+        <table class="final_result_header">
+            <thead>
+                <tr>
+                    <th>
+                        Final result
+                    </th>
+                </tr>
+            </thead>
+        </table>
+
+        <div class="final_result_with_scrollbar">
+            <table class="final_result">
+                <tbody>
+                    <tr>
+                        <td class="entry entry_start">
+                            <!-- ko foreach: $root.output.progressiveAlignment() -->
+                                <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br>
+                            <!-- /ko -->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <table class="final_result_footer">
+            <tr>
+                <th>
+                    <small>
+                        Affine SoP score: <span data-bind="text: $root.output.score()"></span>
+                    </small>
+                </th>
+            </tr>
+        </table>
+    </div>
+
+    <h2>Intermediate Results</h2>
+
+    <div class="merge_steps">
+        <table class="result_header">
+            <thead>
+                <tr>
+                    <th>
+                        Fusion steps
+                    </th>
+                </tr>
+            </thead>
+        </table>
+
+        <div class="result_with_scrollbar">
+            <table class="result_categories">
                 <thead>
                     <tr>
                         <th>
-                            Final result
+                            <small><b>Group 1</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Group 2</b></small>
+                        </th>
+
+                        <th>
+                             <small><b>Result</b></small>
                         </th>
                     </tr>
                 </thead>
-            </table>
 
-            <div class="final_result_with_scrollbar">
-                <table class="final_result">
-                    <tbody>
+                <tbody>
+                    <!-- ko foreach: $root.output.firstGroups() -->
                         <tr>
                             <td class="entry entry_start">
-                                <!-- ko foreach: $root.output.progressiveAlignment() -->
-                                    <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br>
+                                <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br>
+                                <!-- ko foreach: $root.output.firstGroups()[$index()] -->
+                                    <code data-bind="text: $data"></code> <br>
+                                <!-- /ko -->
+                            </td>
+
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br>
+                                <!-- ko foreach: $root.output.secondGroups()[$index()] -->
+                                    <code data-bind="text: $data"></code> <br>
+                                <!-- /ko -->
+                            </td>
+
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br>
+                                <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
+                                    <code data-bind="text: $data"></code> <br>
                                 <!-- /ko -->
                             </td>
                         </tr>
-                    </tbody>
-                </table>
-            </div>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-            <table class="final_result_footer">
+    <h2>Phylogenetic Tree</h2>
+    <div class="newick_tree">
+        <table class="result_header">
+            <thead>
                 <tr>
                     <th>
-                        <small>
-                            Affine SoP score: <span data-bind="text: $root.output.score()"></span>
-                        </small>
+                        Newick Tree
                     </th>
                 </tr>
+            </thead>
+        </table>
+
+        <div class="result_with_scrollbar">
+            <table class="result">
+                <tbody>
+                    <tr>
+                        <td class="entry entry_start">
+                            <code data-bind="text: $root.output.newickString()"></code>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
+    </div>
 
-        <h2>Intermediate Results</h2>
+    <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+        <div id="phylogenetic_tree"></div>
+    </div>
 
-        <div class="merge_steps">
-            <table class="result_header">
+    <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
+        <div class="group_hint">
+            <b>Visualization done with</b> <br>
+            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br>
+            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br>
+            <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+            </a>
+        </div>
+    <!-- /ko -->
+
+    <div class="group_hint">
+        <b>Hint: </b> Visualization is only shown, if there are no negative distances.
+    </div>
+
+    <h2>Libraries</h2>
+    <div class="pairwise_data">
+        <div class="result_with_scrollbar">
+            <table class="result_categories top_border">
                 <thead>
                     <tr>
                         <th>
-                            Fusion steps
+                            <small><b>Sequence Pair</b></small>
                         </th>
-                    </tr>
-                </thead>
-            </table>
 
-            <div class="result_with_scrollbar">
-                <table class="result_categories">
-                    <thead>
-                        <tr>
-                            <th>
-                                <small><b>Group 1</b></small>
-                            </th>
-
-                            <th>
-                                <small><b>Group 2</b></small>
-                            </th>
-
-                            <th>
-                                 <small><b>Result</b></small>
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <!-- ko foreach: $root.output.firstGroups() -->
-                            <tr>
-                                <td class="entry entry_start">
-                                    <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br>
-                                    <!-- ko foreach: $root.output.firstGroups()[$index()] -->
-                                        <code data-bind="text: $data"></code> <br>
-                                    <!-- /ko -->
-                                </td>
-
-                                <td class="entry entry_start">
-                                    <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br>
-                                    <!-- ko foreach: $root.output.secondGroups()[$index()] -->
-                                        <code data-bind="text: $data"></code> <br>
-                                    <!-- /ko -->
-                                </td>
-
-                                <td class="entry entry_start">
-                                    <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br>
-                                    <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
-                                        <code data-bind="text: $data"></code> <br>
-                                    <!-- /ko -->
-                                </td>
-                            </tr>
-                        <!-- /ko -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <h2>Phylogenetic Tree</h2>
-        <div class="newick_tree">
-            <table class="result_header">
-                <thead>
-                    <tr>
                         <th>
-                            Newick Tree
+                            <small><b>Position Pair</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Primary Library $L$</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Extended Library $EL$</b></small>
                         </th>
                     </tr>
                 </thead>
-            </table>
 
-            <div class="result_with_scrollbar">
-                <table class="result">
-                    <tbody>
+                <tbody>
+                    <!-- ko foreach: $root.output.sequencePairsNames() -->
                         <tr>
                             <td class="entry entry_start">
-                                <code data-bind="text: $root.output.newickString()"></code>
+                                <code>(</code><code data-bind="text: $data[0]"></code><code>,</code>
+                                <code data-bind="text: $data[1]"></code><code>)</code>
+                                <br>
+                            </td>
+
+                            <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.libPositionPairs()[$index()] -->
+                                    <code>(</code><code data-bind="text: $data"></code><code>)</code> <br>
+                                <!-- /ko -->
+                            </td>
+
+                            <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.primLibValues()[$index()] -->
+                                    <code data-bind="text: $data"></code> <br>
+                                <!-- /ko -->
+                            </td>
+
+                            <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.extendedLibValues()[$index()] -->
+                                    <code data-bind="text: $data"></code> <br>
+                                <!-- /ko -->
                             </td>
                         </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="tree_container"> <!-- allows to delete and reinsert the div -->
-            <div id="phylogenetic_tree"></div>
-        </div>
-
-        <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
-            <div class="group_hint">
-                <b>Visualization done with</b> <br>
-                Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br>
-                A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br>
-                <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
-                    PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
-                </a>
-            </div>
-        <!-- /ko -->
-
-        <div class="group_hint">
-            <b>Hint: </b> Visualization is only shown, if there are no negative distances.
-        </div>
-
-
-        <h2>Libraries</h2>
-        <div class="pairwise_data">
-            <div class="result_with_scrollbar">
-                <table class="result_categories top_border">
-                    <thead>
-                        <tr>
-                            <th>
-                                <small><b>Sequence Pair</b></small>
-                            </th>
-
-                            <th>
-                                <small><b>Position Pair</b></small>
-                            </th>
-
-                            <th>
-                                <small><b>Primary Library $L$</b></small>
-                            </th>
-
-                            <th>
-                                <small><b>Extended Library $EL$</b></small>
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <!-- ko foreach: $root.output.sequencePairsNames() -->
-                            <tr>
-                                <td class="entry entry_start">
-                                    <code>(</code><code data-bind="text: $data[0]"></code><code>,</code>
-                                    <code data-bind="text: $data[1]"></code><code>)</code>
-                                    <br>
-                                </td>
-
-                                <td class="entry entry_start">
-                                    <!-- ko foreach: $root.output.libPositionPairs()[$index()] -->
-                                        <code>(</code><code data-bind="text: $data"></code><code>)</code> <br>
-                                    <!-- /ko -->
-                                </td>
-
-                                <td class="entry entry_start">
-                                    <!-- ko foreach: $root.output.primLibValues()[$index()] -->
-                                        <code data-bind="text: $data"></code> <br>
-                                    <!-- /ko -->
-                                </td>
-
-                                <td class="entry entry_start">
-                                    <!-- ko foreach: $root.output.extendedLibValues()[$index()] -->
-                                        <code data-bind="text: $data"></code> <br>
-                                    <!-- /ko -->
-                                </td>
-                            </tr>
-                        <!-- /ko -->
-                    </tbody>
-                </table>
-            </div>
-
-            <table class="pairwise_data_footer">
-                <tr>
-                    <th>
-                        <small>
-                            <b>Hint:</b> Only sequence pairs with alignment length bigger zero displayed!
-                        </small>
-                    </th>
-                </tr>
+                    <!-- /ko -->
+                </tbody>
             </table>
         </div>
+
+        <table class="pairwise_data_footer">
+            <tr>
+                <th>
+                    <small>
+                        <b>Hint:</b> Only sequence pairs with alignment length bigger zero displayed!
+                    </small>
+                </th>
+            </tr>
+        </table>
+    </div>
+
+    <h2>Alignments</h2>
+     <div class="pairwise_data">
+        <div class="result_with_scrollbar">
+            <table class="result_categories top_border">
+                <thead>
+                    <tr>
+                        <th>
+                            <small><b>Sequence Pair</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Global Alignments</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Local Alignments</b></small>
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- ko foreach: $root.output.sequencePairsNames() -->
+                        <tr>
+                            <td class="entry entry_start">
+                                <code>(</code><code data-bind="text: $data[0]"></code><code>,</code>
+                                <code data-bind="text: $data[1]"></code><code>)</code>
+                                <br>
+                            </td>
+
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.alignmentsGlobal()[$index()][0]"></code> <br>
+                                <code data-bind="text: $root.output.alignmentsGlobal()[$index()][1]"></code> <br>
+                                <code data-bind="text: $root.output.alignmentsGlobal()[$index()][2]"></code>
+                            </td>
+
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.alignmentsLocal()[$index()][0]"></code> <br>
+                                <code data-bind="text: $root.output.alignmentsLocal()[$index()][1]"></code> <br>
+                                <code data-bind="text: $root.output.alignmentsLocal()[$index()][2]"></code>
+                            </td>
+                        </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+
+        <table class="pairwise_data_footer">
+            <tr>
+                <th>
+                    <small>
+                        <b>Hint:</b> Only sequence pairs with alignment length bigger zero displayed!
+                    </small>
+                </th>
+            </tr>
+        </table>
+    </div>
 </div>

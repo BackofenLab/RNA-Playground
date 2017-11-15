@@ -715,15 +715,22 @@ Author: Alexander Mattheis
         viewmodel.libPositionPairs = ko.observable(outputData.librariesData[1]);
         viewmodel.primLibValues = ko.observable(outputData.librariesData[2]);
         viewmodel.extendedLibValues = ko.observable(outputData.librariesData[3]);
+
+        // alignments
+        viewmodel.alignmentsGlobal = ko.observable(outputData.librariesData[4]);
+        viewmodel.alignmentsLocal = ko.observable(outputData.librariesData[5]);
     }
 
     /**
-     * Returns the data needed to display from primary and extended library.
+     * Returns the data needed to display from primary and extended library (also alignment data to avoid second loop).
      * @param outputData {Object} - The data which is used to fill the viewmodel.
-     * @return {[sequencePairsNames, positionPairs, primLibValues, extendedLibValues]} - The data from primary and extended library.
+     * @return {[sequencePairsNames, positionPairs, primLibValues, extendedLibValues, alignmentsGlobal, alignmentsLocal]}
+     * - The data from primary library, extended library and alignment.
      */
     function getLibrariesData(outputData) {
         var sequencePairsNames = [];
+        var alignmentsGlobal = [];
+        var alignmentsLocal = [];
         var positionPairs = [];
         var primLibValues = [];
         var extendedLibValues = [];
@@ -733,6 +740,9 @@ Author: Alexander Mattheis
         // iterate overall alignments
         for (var i = 0; i < alignmentKeys.length; i++) {
             var alignmentKey = alignmentKeys[i];
+            var alignmentAndScore = outputData.alignmentsAndScores[alignmentKey];
+            var alignmentAndScoreLocal;
+            if (outputData.alignmentsAndScoresLocal !== undefined) alignmentAndScoreLocal = outputData.alignmentsAndScoresLocal[alignmentKey];
             var positionKeys = Object.keys(outputData.primaryWeightLib[alignmentKey]);
 
             // split alignmentKey to get an array
@@ -767,10 +777,13 @@ Author: Alexander Mattheis
                 primLibValues.push(tempPrimLibValues);
                 extendedLibValues.push(tempExtendedLibValues);
             }
+
+            alignmentsGlobal.push(alignmentAndScore[0]);
+            alignmentsLocal.push(alignmentAndScoreLocal !== undefined ? alignmentAndScoreLocal[0]: EMPTY_ALIGNMENT);
         }
 
-        sortWithClusterTuples(sequencePairsNames, [positionPairs, primLibValues, extendedLibValues]);
-        return [sequencePairsNames, positionPairs, primLibValues, extendedLibValues];
+        sortWithClusterTuples(sequencePairsNames, [positionPairs, primLibValues, extendedLibValues, alignmentsGlobal, alignmentsLocal]);
+        return [sequencePairsNames, positionPairs, primLibValues, extendedLibValues, alignmentsGlobal, alignmentsLocal];
     }
 
     /**

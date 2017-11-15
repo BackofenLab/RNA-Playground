@@ -396,5 +396,9 @@ Author: Alexander Mattheis
         viewmodels.output.libPositionPairs(outputData.librariesData[1]);
         viewmodels.output.primLibValues(outputData.librariesData[2]);
         viewmodels.output.extendedLibValues(outputData.librariesData[3]);
+
+        // alignments
+        viewmodels.output.alignmentsGlobal(outputData.librariesData[4]);
+        viewmodels.output.alignmentsLocal(outputData.librariesData[5]);
     }
 }());

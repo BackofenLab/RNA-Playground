@@ -271,6 +271,20 @@ th {
     width: 787px;
 }
 
+.pairwise_data_header {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+.pairwise_data_header th {
+    border-bottom: 0px;
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 254px;
+}
+
 .result {
     max-width: 800px;
     overflow-x: scroll;
@@ -304,7 +318,7 @@ th {
     padding-left: 10px;
     text-align: left;
     vertical-align: top;
-    width: 798px;
+    width: 798px; /* the only way it always works for a different number of columns */
 }
 
 .result_categories td {
