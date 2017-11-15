@@ -789,17 +789,7 @@ Author: Alexander Mattheis
             var rightNumberA = Number(a[1]);
             var rightNumberB = Number(b[1]);
 
-            var value = 0;
-
-            if (leftNumberA === leftNumberB) {
-                value = rightNumberB > rightNumberA ? -1 : (rightNumberB > rightNumberA ? 1 : 0);
-                switches.push(value);
-                return value;
-            }
-
-            value = leftNumberA - leftNumberB;
-            switches.push(value);
-            return value;
+            return switchOrNotSwitch(leftNumberA, leftNumberB, rightNumberA, rightNumberB, switches);
         });
 
         for (var j = 0; j < inputArrays.length; j++) {
@@ -809,6 +799,28 @@ Author: Alexander Mattheis
                 return switches[i++];
             });
         }
+    }
+
+    /**
+     * Returns a number which tells you if you have to switch two tuples or not.
+     * @param leftNumberA {number} - The left number in a tuple A.
+     * @param leftNumberB {number} - The left number in a tuple B.
+     * @param rightNumberA {number} - The right number in a tuple A.
+     * @param rightNumberB {number}  - The right number in a tuple B.
+     * @param switches {Array} - Stores the switches and not-switches.
+     */
+    function switchOrNotSwitch(leftNumberA, leftNumberB, rightNumberA, rightNumberB, switches) {
+        var value = 0;
+
+        if (leftNumberA === leftNumberB) {
+            value = rightNumberB > rightNumberA ? -1 : (rightNumberB > rightNumberA ? 1 : 0);
+            switches.push(value);
+            return value;
+        }
+
+        value = leftNumberA - leftNumberB;
+        switches.push(value);
+        return value;
     }
 
     /**
@@ -828,17 +840,7 @@ Author: Alexander Mattheis
             var rightNumberA = getNumber(a[1]);
             var rightNumberB = getNumber(b[1]);
 
-            var value = 0;
-
-            if (leftNumberA === leftNumberB) {
-                value = rightNumberB > rightNumberA ? -1 : (rightNumberB > rightNumberA ? 1 : 0);
-                switches.push(value);
-                return value;
-            }
-
-            value = leftNumberA - leftNumberB;
-            switches.push(value);
-            return value;
+            return switchOrNotSwitch(leftNumberA, leftNumberB, rightNumberA, rightNumberB, switches);
         });
 
         for (var j = 0; j < inputArrays.length; j++) {
