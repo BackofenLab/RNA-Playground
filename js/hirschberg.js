@@ -25,6 +25,8 @@ $(document).ready(function () {
     var alignmentInstance;
     var needlemanWunschInstance;
 
+    var hirschbergInstance;
+
     // shared variables
     var inputData = {};  // stores the input of the algorithm
     var outputData = {};  // stores the output of the algorithm
@@ -50,7 +52,7 @@ $(document).ready(function () {
      * Communications of the ACM 18.6 (1975): 341-343.
      */
     function Hirschberg() {
-        needlemanWunschInstance = this;
+        hirschbergInstance = this;
 
         // variables
         this.type = ALGORITHMS.HIRSCHBERG;
@@ -58,6 +60,7 @@ $(document).ready(function () {
 
         // inheritance
         alignmentInstance = new bases.alignment.Alignment(this);
+        needlemanWunschInstance = new needlemanWunsch.NeedlemanWunsch();
 
         this.setIO = alignmentInstance.setIO;
 
@@ -94,7 +97,90 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
+        var recursionData = [];
+        var currentData = [];
+
+        // initialize
+        var input = {};
+        initializeInput(input);
+        hirschbergInstance.numberOfIterations = 0;
+        outputData.maxNumberIterations = false;
+        computeAllRecursionData(input, currentData, recursionData);
+
         return [inputData, outputData];
+    }
+
+    /**
+     * Initializes the given input with the read in inputData.
+     * @param input {Object} - The input which has to be initialized.
+     */
+    function initializeInput(input) {
+        input.sequenceA =  inputData.sequenceA;
+        input.sequenceB = inputData.sequenceB;
+
+        input.calculationType = inputData.calculationType;
+
+        input.matrixHeight = inputData.sequenceA.length + 1;
+        input.matrixWidth = inputData.sequenceB.length + 1;
+    }
+
+    /**
+     * Executes a recursive
+     * deep-first-search (deleting last found path from memory)
+     * to find all possible sub-matrices.
+     * @param input {Object} - The initialized Needleman-Wunsch input structure.
+     * @param currentData {Object} - Stores the data from the current recursion. At the beginning it is empty.
+     * @param recursionData {Object} - Stores the data from all iterations.
+     * @see: Restricted to one path for better runtime! So, first founded minimum chosen for splitting.
+     */
+    function computeAllRecursionData(input, currentData, recursionData) {
+        // [1] find trace-cell
+        var forwardMatrix = computeForwardSequenceMatrix(input);
+        var backwardMatrix = computeBackwardSequenceMatrix(input);
+
+        var forwardRow = forwardMatrix[Math.ceil(input.matrixHeight / 2)];
+        var backwardRow = forwardMatrix[Math.ceil(input.matrixHeight / 2)];
+        var mirroredBackwardRow = backwardRow.splice().reverse();  // create a new mirrored row
+
+        var addedRows = addRows(forwardRow, backwardRow);
+        var minimumColumnPosJ = findMinimum(addedRows);
+
+        // [2] divide and conquer
+    }
+
+    /**
+     * Computes the Needleman-Wunsch matrix with the input sequences in usual order.
+     * @param input {Object} - The initialized Needleman-Wunsch input structure.
+     * @return {Object} - Output data of Needleman-Wunsch.
+     */
+    function computeForwardSequenceMatrix(input) {
+    }
+
+    /**
+     * Computes the Needleman-Wunsch matrix with the input sequences in reversed order.
+     * @param input {Object} - The initialized Needleman-Wunsch input structure.
+     * @return {Object} - Output data of Needleman-Wunsch.
+     */
+    function computeBackwardSequenceMatrix(input) {
+    }
+
+    /**
+     * Adds two rows (arrays) like vectors and returns a new row (array).
+     * @param row1 {Array} - The array of numbers.
+     * @param row2 {Array} - The array of numbers.
+     * @return {Array} - The sum of two rows.
+     */
+    function addRows(row1, row2) {
+        return [];
+    }
+
+    /**
+     * Returns the position of the first minimum.
+     * @param row {Array} - The array in which it is searched for the minimum.
+     * @return {number} - The first minimum.
+     */
+    function findMinimum(row) {
+        return 0;
     }
 
     /**

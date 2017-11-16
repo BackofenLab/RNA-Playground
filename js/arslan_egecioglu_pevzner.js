@@ -25,6 +25,7 @@ $(document).ready(function () {
     // instances
     var alignmentInstance;
     var smithWatermanInstance;
+
     var arslanEgeciougluPevznerInstance;
 
     // shared variables
