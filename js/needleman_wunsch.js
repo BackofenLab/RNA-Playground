@@ -98,7 +98,6 @@ $(document).ready(function () {
         var inputData = alignmentInstance.getInput();
         var outputData = alignmentInstance.getOutput();
 
-        debugger;
         // going through every matrix cell
         for (var i = 1; i < inputData.matrixHeight; i++) {
             var aChar = inputData.sequenceA[i - 1];

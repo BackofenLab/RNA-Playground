@@ -97,15 +97,16 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
-        var recursionData = [];
-        var currentData = [];
+        initializeStructs();
 
         // initialize
         var input = {};
         initializeInput(input);
+
         hirschbergInstance.numberOfIterations = 0;
         outputData.maxNumberIterations = false;
-        computeAllRecursionData(input, currentData, recursionData, [1]);
+
+        computeAllRecursionData(input, [1]);
 
         return [inputData, outputData];
     }
@@ -114,16 +115,16 @@ $(document).ready(function () {
      * Creates the input structs used to visualize algorithm.
      */
     function initializeStructs() {
-        // defining position of sub-matrix within matrix
-        outputData.matrixUpperLeftCorners = [];
-        outputData.matrixHeights = [];
-        outputData.matrixWidths = [];
+        outputData.firstSequences = [];
+        outputData.secondSequences = [];
+        outputData.definedVerticalMatrixPositions = [];
+        outputData.definedHorizontalMatrixPositions = [];
 
-        outputData.cutPositionsWithinInitialMatrix = [];  // stores [i=ceil(matrix.Height/2) + c , j + d]
         outputData.forwardRows = [];
         outputData.mirroredBackwardRows = [];
         outputData.addedRows = [];
-        outputData.recursionNumbers = [];  // stores the position within the computation tree
+        outputData.minimum = [];  // stores [i=ceil(matrix.Height/2) + c , j + d]
+        outputData.recursionNumbersContainer = [];  // stores the position within the computation tree
     }
 
     /**
@@ -131,8 +132,11 @@ $(document).ready(function () {
      * @param input {Object} - The input which has to be initialized.
      */
     function initializeInput(input) {
-        input.sequenceA =  inputData.sequenceA;
+        input.sequenceA = inputData.sequenceA;
         input.sequenceB = inputData.sequenceB;
+
+        input.sequenceAPositions = createCharacterPositions(input.sequenceA);
+        input.sequenceBPositions = createCharacterPositions(input.sequenceB);
 
         input.calculationType = inputData.calculationType;
 
@@ -146,40 +150,57 @@ $(document).ready(function () {
     }
 
     /**
+     * Creates for each character a position in an array.
+     * Hint: Gives more information about the position of a submatrix in the initial matrix.
+     * @param sequence {string} - The sequence in which for every character a position is created.
+     */
+    function createCharacterPositions(sequence) {
+        var positions = [];
+
+        for (var i = 0; i < sequence.length; i++) {
+            positions.push(i);
+        }
+
+        return positions;
+    }
+
+    /**
      * Executes a recursive
      * deep-first-search (deleting last found path from memory)
-     * to find all possible sub-matrices.
+     * to find all possible submatrices.
      * @param input {Object} - The initialized Needleman-Wunsch input structure.
-     * @param currentData {Object} - Stores the data from the current recursion. At the beginning it is empty.
-     * @param recursionData {Object} - Stores the data from all iterations.
      * @param recursionNumbers {Array} - Contains information about recursion (i.e. [1, 1, 2] is upper, upper, lower).
      * @see: Restricted to one path for better runtime! So, first founded minimum chosen for splitting.
      */
-    function computeAllRecursionData(input, currentData, recursionData, recursionNumbers) {
-        if (input.matrixHeight === 0)
-            recursionData.push(currentData.slice());  // shallow copy
+    function computeAllRecursionData(input, recursionNumbers) {
+        debugger;
+        if (input.matrixHeight === 1)
+            return;
 
         // [1] find trace-cell
         var forwardMatrix = computeForwardSequenceMatrix(input);
-        var backwardMatrix = computeBackwardSequenceMatrix(jQuery.extend(true, {}, input));  // deep copy, because else reversed strings are saved
+        var backwardMatrix = computeBackwardSequenceMatrix(deepCopy(input));  // deep copy, because else reversed strings are saved
 
-        var forwardRow = forwardMatrix[Math.ceil(input.matrixHeight / 2)];
-        var backwardRow = backwardMatrix[Math.ceil(input.matrixHeight / 2)];
-        var mirroredBackwardRow = backwardRow.splice().reverse();  // create a new mirrored row
+        var minimumRowPosI = Math.ceil(input.matrixHeight / 2);
 
-        var addedRows = addRows(forwardRow, backwardRow);
-        var minimumColumnPosJ = findMinimum(addedRows);
+        var forwardRow = forwardMatrix[minimumRowPosI];
+        var backwardRow = backwardMatrix[minimumRowPosI];
+        var mirroredBackwardRow = backwardRow.slice().reverse();  // create a new mirrored row
 
-        currentData.push(getDataCopy(input, forwardRow, mirroredBackwardRow, addedRows, minimumColumnPosJ, recursionNumbers));
+        var sumRow = addRows(forwardRow, mirroredBackwardRow);
+
+        var minimumColumnPosJ = findMinimum(sumRow);
+
+        createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers);
 
         // [2] divide and conquer
-        computeAllRecursionData(initializedUpperMatrixInput(input, minimumColumnPosJ), currentData, recursionData, recursionNumbers.push(1));
+        recursionNumbers.push(1);
+        computeAllRecursionData(initializedUpperMatrixInput(deepCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
         recursionNumbers.pop();
-        currentData.pop();
 
-        computeAllRecursionData(initializedLowerMatrixInput(input, minimumColumnPosJ), currentData, recursionData, recursionNumbers.push(2));
+        recursionNumbers.push(2);
+        computeAllRecursionData(initializedLowerMatrixInput(deepCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
         recursionNumbers.pop();
-        currentData.pop();
     }
 
     /**
@@ -189,7 +210,16 @@ $(document).ready(function () {
      */
     function computeForwardSequenceMatrix(input) {
         needlemanWunschInstance.setIO(input, {});
-        return needlemanWunschInstance.compute().matrix;
+        return needlemanWunschInstance.compute()[1].matrix;
+    }
+
+    /**
+     * Creates a deep copy of the struct used as input.
+     * @param input {Object} - The object which should be copied.
+     * @return {Object} - Copy of the Object.
+     */
+    function deepCopy(input) {
+        return jQuery.extend(true, {}, input);
     }
 
     /**
@@ -202,7 +232,7 @@ $(document).ready(function () {
         input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).reverse().join(SYMBOLS.EMPTY);
 
         needlemanWunschInstance.setIO(input, {});
-        return needlemanWunschInstance.compute().matrix;
+        return needlemanWunschInstance.compute()[1].matrix;
     }
 
     /**
@@ -247,36 +277,77 @@ $(document).ready(function () {
 
     /**
      * Creates a copy of the given recursion data to display it later on.
-     * @return {Object} - []
      */
-    function getDataCopy(input, forwardRow, mirroredBackwardRow, addedRows, minimumColumnPosJ, recursionNumbers) {
-        /*
-        outputData.matrixUpperLeftCorners = [];
-        outputData.matrixHeights = [];
-        outputData.matrixWidths = [];
+    function createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers) {
+        outputData.firstSequences.push(input.sequenceA);
+        outputData.secondSequences.push(input.sequenceB);
+        outputData.definedVerticalMatrixPositions.push(input.sequenceAPositions);
+        outputData.definedHorizontalMatrixPositions.push(input.sequenceBPositions);
 
-        outputData.cutPositionsWithinInitialMatrix = [];  // stores [i=ceil(matrix.Height/2) + c , j + d]
-        outputData.forwardRows = [];
-        outputData.mirroredBackwardRows = [];
-        outputData.addedRows = [];
-        outputData.recursionNumbers = [];  // stores the position within the computation tree
-        */
+        outputData.forwardRows.push(forwardRow);
+        outputData.mirroredBackwardRows.push(mirroredBackwardRow);
+        outputData.addedRows.push(sumRow);
+        outputData.minimum.push([minimumRowPosI, minimumColumnPosJ]);
+        outputData.recursionNumbersContainer.push(recursionNumbers);
     }
 
     /**
      * Initializes the input of the next recursion for the upper created matrix.
      * @param input {Object} - The input used to execute the algorithm.
-     * @param minimumColumnPosJ {number} - The position on which the algorithm does a split.
+     * @param minimumRowPosI {number} - The i-position on which the algorithm does a split.
+     * @param minimumColumnPosJ {number} - The j-position on which the algorithm does a split.
      */
-    function initializedUpperMatrixInput(input, minimumColumnPosJ) {
+    function initializedUpperMatrixInput(input, minimumRowPosI, minimumColumnPosJ) {
+        /**
+         * _ 0 1 2 ... j
+         * 0            |
+         * 1            |
+         * .            |
+         * .____________|
+         * i
+         */
+        input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(0, minimumRowPosI).join(SYMBOLS.EMPTY);  // without i
+        input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(0, minimumColumnPosJ + 1).join(SYMBOLS.EMPTY);  // with j
+
+        input.sequenceAPositions = input.sequenceAPositions.slice(0, minimumRowPosI);  // without i
+        input.sequenceBPositions = input.sequenceBPositions.slice(0, minimumColumnPosJ + 1);  // with j
+
+        input.matrixHeight = input.sequenceA.length + 1;
+        input.matrixWidth = input.sequenceB.length + 1;
+
+        return input;
     }
 
     /**
      * Initializes the input of the next recursion for the lower created matrix.
      * @param input {Object} - The input used to execute the algorithm.
-     * @param minimumColumnPosJ {number} - The position on which the algorithm does a split.
+     * @param minimumRowPosI {number} - The i-position on which the algorithm does a split.
+     * @param minimumColumnPosJ {number} - The j-position on which the algorithm does a split.
      */
-    function initializedLowerMatrixInput(input, minimumColumnPosJ) {
+    function initializedLowerMatrixInput(input, minimumRowPosI, minimumColumnPosJ) {
+        /**
+         * _ 0 1 2 ... j ... m
+         * 0
+         * 1
+         * .
+         * .
+         * i          ________
+         * i+1       |        |
+         * .         |        |
+         * .         |        |
+         * n         |        |
+         */
+
+         input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(minimumRowPosI + 1).join(SYMBOLS.EMPTY);  // without i
+         input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(minimumColumnPosJ).join(SYMBOLS.EMPTY);  // with j
+
+         input.sequenceAPositions = input.sequenceAPositions.slice(minimumRowPosI + 1);  // without i
+         input.sequenceBPositions = input.sequenceBPositions.slice(minimumColumnPosJ);  // with j
+
+         input.matrixHeight = inputData.sequenceA.length + 1;
+         input.matrixWidth = inputData.sequenceB.length + 1;
+
+         return input;
     }
 
     /**

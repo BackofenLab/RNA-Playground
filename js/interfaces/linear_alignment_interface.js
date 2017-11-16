@@ -73,15 +73,17 @@ Author: Alexander Mattheis
             this.mismatch = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
             this.length = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.LENGTH);
         } else {
+            var isHirschBerg = algorithmName === ALGORITHMS.HIRSCHBERG;
+
             this.sequence1 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_1);
             this.sequence2 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_2);
 
-            this.calculation = ko.observable(ALIGNMENT_DEFAULTS.CALCULATION);
+            this.calculation = ko.observable(isHirschBerg ? ALIGNMENT_DEFAULTS.CALCULATION_HIRSCHBERG : ALIGNMENT_DEFAULTS.CALCULATION);
 
             // function
-            this.gap = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.GAP);
-            this.match = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
-            this.mismatch = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
+            this.gap = ko.observable(isHirschBerg ? -ALIGNMENT_DEFAULTS.FUNCTION.GAP : ALIGNMENT_DEFAULTS.FUNCTION.GAP);
+            this.match = ko.observable(isHirschBerg ? -ALIGNMENT_DEFAULTS.FUNCTION.MATCH : ALIGNMENT_DEFAULTS.FUNCTION.MATCH );
+            this.mismatch = ko.observable(isHirschBerg ? -ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH : ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
         }
 
         this.formula = ko.computed(

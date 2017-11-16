@@ -52,6 +52,7 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript
  */
 var ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
+    CALCULATION_HIRSCHBERG: "distance",
     SEQUENCE_1: "AATCG",  // hint: UPPERCASE letters!
     SEQUENCE_2: "AACG",  // hint: UPPERCASE letters!
 
