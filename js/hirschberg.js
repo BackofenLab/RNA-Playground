@@ -19,11 +19,15 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("hirschberg", startHirschberg, Hirschberg, getSuperclass);
+    namespace("hirschberg", startHirschberg, Hirschberg, getInput, setInput, compute, getOutput, setIO, getSuperclass);
 
     // instances
     var alignmentInstance;
     var needlemanWunschInstance;
+
+    // shared variables
+    var inputData = {};  // stores the input of the algorithm
+    var outputData = {};  // stores the output of the algorithm
 
     /**
      * Function managing objects.
@@ -55,101 +59,60 @@ $(document).ready(function () {
         // inheritance
         alignmentInstance = new bases.alignment.Alignment(this);
 
-        this.setInput = alignmentInstance.setLinearAlignmentInput;
-        this.compute = alignmentInstance.compute;
-        this.getOutput = alignmentInstance.getOutput;
-
         this.setIO = alignmentInstance.setIO;
 
         // public class methods
-        this.initializeMatrix = initializeMatrix;
-        this.computeMatrixAndScore = computeMatrixAndScore;
-        this.recursionFunction = recursionFunction;
-        this.computeTraceback = computeTraceback;
+        this.getInput = getInput;
+
+        this.setInput = setInput;
+        this.compute = compute;
+        this.getOutput = getOutput;
+
+        this.setIO = setIO;
         this.getSuperclass = getSuperclass;
     }
 
-    // methods
     /**
-     * Initializes the matrix.
-     * @augments Alignment.initializeMatrix()
+     * Returns the input data of the algorithm.
+     * @return {Object} - Contains all input data.
      */
-    function initializeMatrix() {
-        var inputData = alignmentInstance.getInput();
-        var outputData = alignmentInstance.getOutput();
-
-        // initialize left upper corner
-        outputData.matrix[0][0] = 0;
-
-        // initialize left matrix border
-        for (var i = 1; i < inputData.matrixHeight; i++)
-            outputData.matrix[i][0] = outputData.matrix[i - 1][0] + inputData.deletion;
-
-        // initialize upper matrix border
-        for (var j = 1; j < inputData.matrixWidth; j++)
-            outputData.matrix[0][j] = outputData.matrix[0][j - 1] + inputData.insertion;
+    function getInput() {
+        return inputData;
     }
 
     /**
-     * Computes the matrix by using the recursion function and the score.
-     * @override Alignment.computeMatrixAndScore()
+     * Sets the algorithm input for an appropriate algorithm
+     * which is using the inputViewmodel properties in its computations.
+     * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
-    function computeMatrixAndScore() {
-        var inputData = alignmentInstance.getInput();
-        var outputData = alignmentInstance.getOutput();
-
-        debugger;
-        // going through every matrix cell
-        for (var i = 1; i < inputData.matrixHeight; i++) {
-            var aChar = inputData.sequenceA[i - 1];
-
-            for (var j = 1; j < inputData.matrixWidth; j++) {
-                var bChar = inputData.sequenceB[j - 1];
-
-                outputData.matrix[i][j] = alignmentInstance.recursionFunction(aChar, bChar, i, j);
-            }
-        }
-
-        // score is stored in the right bottom cell
-        outputData.score = outputData.matrix[inputData.matrixHeight - 1][inputData.matrixWidth - 1];
+    function setInput(inputViewmodel) {
+        //multiSequenceAlignmentInstance.setIO(inputData, {});
+        //multiSequenceAlignmentInstance.setInput(inputViewmodel);
     }
 
     /**
-     * Computing maximum or minimum of the three input values to compute the cell score.
-     * If the type of calculation is similarity,
-     * the maximum will be computed and else the minimum.
-     * @param diagonalValue {number} - First input value.
-     * @param upValue {number} - Second input value.
-     * @param leftValue {number} - Third input value.
-     * @return {number} - Maximum or minimum.
+     * Starts the computation.
      */
-    function recursionFunction(diagonalValue, upValue, leftValue) {
-        var inputData = alignmentInstance.getInput();
-
-        var value;
-        if (inputData.calculationType === ALIGNMENT_TYPES.DISTANCE)
-            value = Math.min(diagonalValue, upValue, leftValue);
-        else  // inputData.calculationType === ALIGNMENT_TYPES.SIMILARITY
-            value = Math.max(diagonalValue, upValue, leftValue);
-
-        return value;
+    function compute() {
+        return [inputData, outputData];
     }
 
     /**
-     * Initializes the traceback.
-     * @override Alignment.computeTraceback()
+     * Returns all algorithm output.
+     * @return {Object} - Contains all output of the algorithm.
      */
-    function computeTraceback() {
-        needlemanWunschInstance.numberOfTracebacks = 0;
+    function getOutput() {
+        return outputData;
+    }
 
-        var inputData = alignmentInstance.getInput();
-        var outputData = alignmentInstance.getOutput();
-
-        var lowerRightCorner = new bases.alignment.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
-
-        outputData.moreTracebacks = false;
-        outputData.tracebackPaths =
-            alignmentInstance.getGlobalTraces([lowerRightCorner], inputData, outputData, -1, alignmentInstance.getNeighboured);
+    /**
+     * Sets the input and output of an algorithm.
+     * @param input {Object} - Contains all input data.
+     * @param output {Object} - Contains all output data.
+     */
+    function setIO(input, output) {
+        inputData = input;
+        outputData = output;
     }
 
     /**
@@ -157,6 +120,6 @@ $(document).ready(function () {
      * @return {Object} - Superclass instance.
      */
     function getSuperclass() {
-        return alignmentInstance;
+        return multiSequenceAlignmentInstance;
     }
 }());
