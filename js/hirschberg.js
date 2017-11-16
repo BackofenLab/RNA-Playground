@@ -86,8 +86,8 @@ $(document).ready(function () {
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
-        //multiSequenceAlignmentInstance.setIO(inputData, {});
-        //multiSequenceAlignmentInstance.setInput(inputViewmodel);
+        alignmentInstance.setIO(inputData, {});
+        alignmentInstance.setLinearAlignmentInput(inputViewmodel);
     }
 
     /**
