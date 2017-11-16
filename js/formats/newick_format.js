@@ -46,7 +46,7 @@ Author: Alexander Mattheis
         postOrder(node.rightChild, false);
 
         var isLeaf = node.leftChild === undefined && node.rightChild === undefined;
-        newickString += isLeaf ? node.name: SYMBOLS.EMPTY;
+        newickString += isLeaf ? node.name : SYMBOLS.EMPTY;
         newickString +=  SYMBOLS.COLON + Math.round(node.value * 10000) / 10000;  // rounded to four digits after decimal point
 
         if (isLeftChild) // whenever you wrote down a node name, you have to set a comma if it is a left child and else a right bracket

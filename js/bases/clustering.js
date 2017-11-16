@@ -234,7 +234,7 @@ Author: Alexander Mattheis
             clusteringInstance.remainingClusterNames.splice(index, 1);
     }
 
-    /**
+    /** ALTERNATIVE from lecture.
      * Returns the next name of a cluster.
      * Hint: After all characters are depleted,
      * a number is concatenated to the character
