@@ -38,6 +38,7 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript
     FENG_DOOLITTLE: "feng_doolittle",
     GOTOH: "gotoh",
     GOTOH_LOCAL: "gotoh_local",
+    HIRSCHBERG: "hirschberg",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
     NONE: "none",
     NOTREDAME_HIGGINS_HERINGA: "notredame_higgins_heringa",

@@ -40,10 +40,9 @@ $(document).ready(function () {
     /*---- ALGORITHM ----*/
     /**
      * Computes the optimal, local affine alignment.
+     * Combination of the Smith-Waterman and Gotoh-Algorithm.
      * @constructor
      * @augments Alignment
-     * @see: The superclass "alignmentInstance" have to be created as last instance
-     * or the childInstance in the superclass will be probably wrong!
      */
     function GotohLocal() {
         gotohLocalInstance = this;

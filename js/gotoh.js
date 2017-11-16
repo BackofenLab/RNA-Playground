@@ -43,6 +43,11 @@ $(document).ready(function () {
      * Computes the optimal, global affine alignment.
      * @constructor
      * @augments Alignment
+     * @see https://doi.org/10.1016/0022-2836(82)90398-9
+     *
+     * Gotoh, Osamu.
+     * "An improved algorithm for matching biological sequences."
+     * Journal of molecular biology 162.3 (1982): 705-708.
      */
     function Gotoh() {
         gotohInstance = this;

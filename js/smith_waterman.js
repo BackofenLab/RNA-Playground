@@ -40,6 +40,11 @@ $(document).ready(function () {
      * Computes the optimal, local alignment.
      * @constructor
      * @augments Alignment
+     * @see https://doi.org/10.1016/0022-2836(81)90087-5
+     *
+     * Smith, Temple F., and Michael S. Waterman.
+     * "Identification of common molecular subsequences."
+     * Journal of molecular biology 147.1 (1981): 195-197.
      */
     function SmithWaterman() {
         smithWatermanInstance = this;

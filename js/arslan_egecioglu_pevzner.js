@@ -43,6 +43,11 @@ $(document).ready(function () {
     /**
      * Computes the optimal, normalized local alignment.
      * @constructor
+     * @see https://doi.org/10.1093/bioinformatics/17.4.327
+     *
+     * Arslan, Abdullah N., Ömer Eğecioğlu, and Pavel A. Pevzner.
+     * "A new approach to sequence comparison: normalized sequence alignment."
+     * Bioinformatics 17.4 (2001): 327-337.
      */
     function ArslanEgeciougluPevzner() {
         arslanEgeciougluPevznerInstance = this;

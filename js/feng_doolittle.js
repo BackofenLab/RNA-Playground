@@ -47,6 +47,11 @@ $(document).ready(function () {
      * between 1986 and 1997.
      * @constructor
      * @augments MultiSequenceAlignment
+     * @see https://doi.org/10.1016/S0076-6879(96)66023-6
+     *
+     * Feng, Da-Fei, and Russell F. Doolittle.
+     * "[21] Progressive alignment of amino acid sequences and construction of phylogenetic trees from them."
+     * Methods in enzymology 266 (1996): 368-382.
      */
     function FengDoolittle() {
         fengDoolittleInstance = this;

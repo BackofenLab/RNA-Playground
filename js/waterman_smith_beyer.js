@@ -42,6 +42,11 @@ $(document).ready(function () {
     /**
      * Computes the optimal, global subadditive alignment.
      * @constructor
+     * @see https://doi.org/10.1016/0001-8708(76)90202-4
+     *
+     * Waterman, Michael S., Temple F. Smith, and William A. Beyer.
+     * "Some biological sequence metrics."
+     * Advances in Mathematics 20.3 (1976): 367-387.
      */
     function WatermanSmithBeyer() {
         watermanSmithBeyerInstance = this;

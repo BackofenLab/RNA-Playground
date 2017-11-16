@@ -47,6 +47,11 @@ $(document).ready(function () {
      * Computes affine multi-alignments (non-optimal approach) with T-Coffee.
      * @constructor
      * @augments MultiSequenceAlignment
+     * @see https://doi.org/10.1006/jmbi.2000.4042
+     *
+     * Notredame, Cédric, Desmond G. Higgins, and Jaap Heringa.
+     * "T-Coffee: A novel method for fast and accurate multiple sequence alignment."
+     * Journal of molecular biology 302.1 (2000): 205-217.
      */
     function NotredameHigginsHeringa() {
         notredameHigginsHeringaInstance = this;

@@ -11,16 +11,15 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    if (loaded === ALGORITHMS.NEEDLEMAN_WUNSCH) {  // to avoid self execution on a script import
-        needlemanWunsch.startNeedlemanWunsch();
+    if (loaded === ALGORITHMS.HIRSCHBERG) {  // to avoid self execution on a script import
+        hirschberg.startHirschberg();
         loaded = ALGORITHMS.NONE;
     }
 });
 
 (function () {  // namespace
     // public methods
-    namespace("needlemanWunsch", startNeedlemanWunsch, NeedlemanWunsch,
-        initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getSuperclass);
+    namespace("hirschberg", startHirschberg, Hirschberg, getSuperclass);
 
     // instances
     var alignmentInstance;
@@ -29,27 +28,28 @@ $(document).ready(function () {
     /**
      * Function managing objects.
      */
-    function startNeedlemanWunsch() {
+    function startHirschberg() {
         var linearAlignmentInterface = new interfaces.linearAlignmentInterface.LinearAlignmentInterface();
-        linearAlignmentInterface.startLinearAlignmentAlgorithm(NeedlemanWunsch, ALGORITHMS.NEEDLEMAN_WUNSCH);
+        linearAlignmentInterface.startLinearAlignmentAlgorithm(Hirschberg, ALGORITHMS.HIRSCHBERG);
     }
 
     /*---- ALGORITHM ----*/
     /**
-     * Computes the optimal, global alignment.
+     * Simulates the Hirschberg algorithm
+     * with the Needleman-Wunsch algorithm.
      * @constructor
      * @augments Alignment
-     * @see https://doi.org/10.1016/0022-2836(70)90057-4
+     * @see https://dl.acm.org/citation.cfm?doid=360825.360861
      *
-     * Needleman, Saul B., and Christian D. Wunsch.
-     * "A general method applicable to the search for similarities in the amino acid sequence of two proteins."
-     * Journal of molecular biology 48.3 (1970): 443-453.
+     * Hirschberg, Daniel S.
+     * "A linear space algorithm for computing maximal common subsequences."
+     * Communications of the ACM 18.6 (1975): 341-343.
      */
-    function NeedlemanWunsch() {
+    function Hirschberg() {
         needlemanWunschInstance = this;
 
         // variables
-        this.type = ALGORITHMS.NEEDLEMAN_WUNSCH;
+        this.type = ALGORITHMS.HIRSCHBERG;
         this.numberOfTracebacks = 0;
 
         // inheritance
@@ -146,7 +146,7 @@ $(document).ready(function () {
         var outputData = alignmentInstance.getOutput();
 
         var lowerRightCorner = new bases.alignment.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
-        
+
         outputData.moreTracebacks = false;
         outputData.tracebackPaths =
             alignmentInstance.getGlobalTraces([lowerRightCorner], inputData, outputData, -1, alignmentInstance.getNeighboured);
