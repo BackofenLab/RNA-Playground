@@ -135,8 +135,11 @@ $(document).ready(function () {
         input.sequenceA = inputData.sequenceA;
         input.sequenceB = inputData.sequenceB;
 
-        input.sequenceAPositions = createCharacterPositions(input.sequenceA);
-        input.sequenceBPositions = createCharacterPositions(input.sequenceB);
+        input.matrixHeight = inputData.sequenceA.length + 1;
+        input.matrixWidth = inputData.sequenceB.length + 1;
+
+        input.matrixRows = createMatrixPositions(input.matrixHeight);
+        input.matrixColumns = createMatrixPositions(input.matrixWidth);
 
         input.calculationType = inputData.calculationType;
 
@@ -144,20 +147,17 @@ $(document).ready(function () {
         input.insertion = inputData.deletion;
         input.match = inputData.match;
         input.mismatch = inputData.mismatch;
-
-        input.matrixHeight = inputData.sequenceA.length + 1;
-        input.matrixWidth = inputData.sequenceB.length + 1;
     }
 
     /**
-     * Creates for each character a position in an array.
+     * Creates an array of positions.
      * Hint: Gives more information about the position of a submatrix in the initial matrix.
-     * @param sequence {string} - The sequence in which for every character a position is created.
+     * @param numberPositions {number} - The number of positions to create.
      */
-    function createCharacterPositions(sequence) {
+    function createMatrixPositions(numberPositions) {
         var positions = [];
 
-        for (var i = 0; i < sequence.length; i++) {
+        for (var i = 0; i < numberPositions; i++) {
             positions.push(i);
         }
 
@@ -174,14 +174,14 @@ $(document).ready(function () {
      */
     function computeAllRecursionData(input, recursionNumbers) {
         debugger;
-        if (input.matrixHeight === 1)
+        if (input.matrixRows <= 1)
             return;
 
         // [1] find trace-cell
         var forwardMatrix = computeForwardSequenceMatrix(input);
-        var backwardMatrix = computeBackwardSequenceMatrix(deepCopy(input));  // deep copy, because else reversed strings are saved
+        var backwardMatrix = computeBackwardSequenceMatrix(shallowCopy(input));  // shallow copy, because else reversed strings are saved
 
-        var minimumRowPosI = Math.ceil(input.matrixHeight / 2);
+        var minimumRowPosI = Math.ceil((input.matrixHeight - 1) / 2);  // Math.ceil(n/2)
 
         var forwardRow = forwardMatrix[minimumRowPosI];
         var backwardRow = backwardMatrix[minimumRowPosI];
@@ -195,11 +195,11 @@ $(document).ready(function () {
 
         // [2] divide and conquer
         recursionNumbers.push(1);
-        computeAllRecursionData(initializedUpperMatrixInput(deepCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
+        computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
         recursionNumbers.pop();
 
         recursionNumbers.push(2);
-        computeAllRecursionData(initializedLowerMatrixInput(deepCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
+        computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
         recursionNumbers.pop();
     }
 
@@ -218,8 +218,8 @@ $(document).ready(function () {
      * @param input {Object} - The object which should be copied.
      * @return {Object} - Copy of the Object.
      */
-    function deepCopy(input) {
-        return jQuery.extend(true, {}, input);
+    function shallowCopy(input) {
+        return jQuery.extend(false, {}, input);
     }
 
     /**
@@ -281,14 +281,14 @@ $(document).ready(function () {
     function createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers) {
         outputData.firstSequences.push(input.sequenceA);
         outputData.secondSequences.push(input.sequenceB);
-        outputData.definedVerticalMatrixPositions.push(input.sequenceAPositions);
-        outputData.definedHorizontalMatrixPositions.push(input.sequenceBPositions);
+        outputData.definedVerticalMatrixPositions.push(input.matrixRows);
+        outputData.definedHorizontalMatrixPositions.push(input.matrixColumns);
 
         outputData.forwardRows.push(forwardRow);
         outputData.mirroredBackwardRows.push(mirroredBackwardRow);
         outputData.addedRows.push(sumRow);
         outputData.minimum.push([minimumRowPosI, minimumColumnPosJ]);
-        outputData.recursionNumbersContainer.push(recursionNumbers);
+        outputData.recursionNumbersContainer.push(recursionNumbers.slice());
     }
 
     /**
@@ -306,11 +306,12 @@ $(document).ready(function () {
          * .____________|
          * i
          */
-        input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(0, minimumRowPosI).join(SYMBOLS.EMPTY);  // without i
-        input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(0, minimumColumnPosJ + 1).join(SYMBOLS.EMPTY);  // with j
+        // Hint: There is one row and one column more than affiliated sequence size.
+        input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(0, minimumRowPosI - 1).join(SYMBOLS.EMPTY);  // without i
+        input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(0, minimumColumnPosJ).join(SYMBOLS.EMPTY);  // with j
 
-        input.sequenceAPositions = input.sequenceAPositions.slice(0, minimumRowPosI);  // without i
-        input.sequenceBPositions = input.sequenceBPositions.slice(0, minimumColumnPosJ + 1);  // with j
+        input.matrixRows = input.matrixRows.slice(0, minimumRowPosI);  // without i
+        input.matrixColumns = input.matrixColumns.slice(0, minimumColumnPosJ + 1);  // with j
 
         input.matrixHeight = input.sequenceA.length + 1;
         input.matrixWidth = input.sequenceB.length + 1;
@@ -337,17 +338,17 @@ $(document).ready(function () {
          * .         |        |
          * n         |        |
          */
+        // Hint: There is one row and one column more than affiliated sequence size.
+        input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(minimumRowPosI).join(SYMBOLS.EMPTY);  // without i
+        input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(minimumColumnPosJ - 1).join(SYMBOLS.EMPTY);  // with j
 
-         input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(minimumRowPosI + 1).join(SYMBOLS.EMPTY);  // without i
-         input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(minimumColumnPosJ).join(SYMBOLS.EMPTY);  // with j
+        input.matrixRows = input.matrixRows.slice(minimumRowPosI + 1);  // without i
+        input.matrixColumns = input.matrixColumns.slice(minimumColumnPosJ);  // with j
 
-         input.sequenceAPositions = input.sequenceAPositions.slice(minimumRowPosI + 1);  // without i
-         input.sequenceBPositions = input.sequenceBPositions.slice(minimumColumnPosJ);  // with j
+        input.matrixHeight = inputData.sequenceA.length + 1;
+        input.matrixWidth = inputData.sequenceB.length + 1;
 
-         input.matrixHeight = inputData.sequenceA.length + 1;
-         input.matrixWidth = inputData.sequenceB.length + 1;
-
-         return input;
+        return input;
     }
 
     /**
