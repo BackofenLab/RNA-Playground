@@ -28,6 +28,7 @@ var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is rein
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have been updated
 
 var SMITH_WATERMAN_STOP = "0";
+var HIRSCHBERG_RIGHT_NODE = 2;
 
 // structs
 /**
