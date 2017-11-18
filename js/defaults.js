@@ -147,13 +147,17 @@ var LATEX = {
     POW2: "^2",
     SPACE: "\\phantom{-}",
     SUBORDINATE: "_",
+    SUM: "\\sum",
 
     FORMULA: {
         CURRENT: "D_{i,j}",
         CURRENT_P: "P_{i,j}",
         CURRENT_Q: "Q_{i,j}",
+        D: "D \\, \\,",
+        D_PRIME: "D\\,'",
         DELETION: "b_j = -",
         DIAGONAL: "D_{i-1,j-1}",
+        I_IS: "i = ",
         INSERTION: "a_i = -",
         GAP: "g(k)",
         LEFT: "D_{i,j-1}",
@@ -164,6 +168,7 @@ var LATEX = {
         MINIMIZE_HORIZONTAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i,j-k} & + & g(k) \\}",
         MINIMIZE_VERTICAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i-k,j} & + & g(k) \\}",
         MISMATCH: "a_i \\neq b_j",
+        TRACE: "Trace",
         TOP: "D_{i-1,j}",
         TOP_P: "P_{i-1,j}",
         ZERO: "0"
@@ -487,7 +492,7 @@ var CLUSTER_NAMES =
 
 var EMPTY_ALIGNMENT = [SYMBOLS.EMPTY, SYMBOLS.EMPTY, SYMBOLS.EMPTY];
 
-var GLOBAL_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.WATERMAN_SMITH_BEYER];
+var GLOBAL_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.HIRSCHBERG, ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.WATERMAN_SMITH_BEYER];
 var LOCAL_ALGORITHMS = [ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.SMITH_WATERMAN];
 var MULTI_SEQUENCE_ALGORITHMS = [ALGORITHMS.FENG_DOOLITTLE, ALGORITHMS.NOTREDAME_HIGGINS_HERINGA];
 

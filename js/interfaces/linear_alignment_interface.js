@@ -60,6 +60,7 @@ Author: Alexander Mattheis
      */
     function InputViewmodel(algorithmName) {
         var viewmodel = this;
+        var isHirschBerg = algorithmName === ALGORITHMS.HIRSCHBERG;
 
         if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
             this.sequence1 = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.SEQUENCE_1);
@@ -73,8 +74,6 @@ Author: Alexander Mattheis
             this.mismatch = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
             this.length = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.LENGTH);
         } else {
-            var isHirschBerg = algorithmName === ALGORITHMS.HIRSCHBERG;
-
             this.sequence1 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_1);
             this.sequence2 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_2);
 
@@ -82,34 +81,36 @@ Author: Alexander Mattheis
 
             // function
             this.gap = ko.observable(isHirschBerg ? -ALIGNMENT_DEFAULTS.FUNCTION.GAP : ALIGNMENT_DEFAULTS.FUNCTION.GAP);
-            this.match = ko.observable(isHirschBerg ? -ALIGNMENT_DEFAULTS.FUNCTION.MATCH : ALIGNMENT_DEFAULTS.FUNCTION.MATCH );
+            this.match = ko.observable(isHirschBerg ? -ALIGNMENT_DEFAULTS.FUNCTION.MATCH : ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
             this.mismatch = ko.observable(isHirschBerg ? -ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH : ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
         }
 
-        this.formula = ko.computed(
-            function getSelectedFormula() {
-                // to fire LaTeX-Code reinterpretation after the selected formula was changed
-                // HINT: only found solution which works on all browsers
-                setTimeout(function () {
-                    MathJax.Hub.Queue(["Typeset", MathJax.Hub])
-                }, REUPDATE_TIMEOUT_MS);
-
-                return getFormula(algorithmName, viewmodel);
-            }
-        );
-
-        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
-            this.subFormula = ko.computed(
-                function getSelectedSubFormula() {
+        if (!isHirschBerg) {
+            this.formula = ko.computed(
+                function getSelectedFormula() {
                     // to fire LaTeX-Code reinterpretation after the selected formula was changed
                     // HINT: only found solution which works on all browsers
                     setTimeout(function () {
                         MathJax.Hub.Queue(["Typeset", MathJax.Hub])
                     }, REUPDATE_TIMEOUT_MS);
 
-                    return getSubFormula();
+                    return getFormula(algorithmName, viewmodel);
                 }
             );
+
+            if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
+                this.subFormula = ko.computed(
+                    function getSelectedSubFormula() {
+                        // to fire LaTeX-Code reinterpretation after the selected formula was changed
+                        // HINT: only found solution which works on all browsers
+                        setTimeout(function () {
+                            MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+                        }, REUPDATE_TIMEOUT_MS);
+
+                        return getSubFormula();
+                    }
+                );
+            }
         }
     }
 

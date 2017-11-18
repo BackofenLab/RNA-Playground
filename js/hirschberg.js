@@ -106,8 +106,11 @@ $(document).ready(function () {
         hirschbergInstance.numberOfIterations = 0;
         outputData.maxNumberIterations = false;
 
-        computeAllRecursionData(input, [1]);
+        // to compute the global row
+        var currentGlobalRow = Math.ceil(input.sequenceA.length / 2);
+        computeAllRecursionData(input, [1], [currentGlobalRow]);
 
+        debugger;
         return [inputData, outputData];
     }
 
@@ -123,7 +126,8 @@ $(document).ready(function () {
         outputData.forwardRows = [];
         outputData.mirroredBackwardRows = [];
         outputData.addedRows = [];
-        outputData.minimum = [];  // stores [i=ceil(matrix.Height/2) + c , j + d]
+        outputData.minimum = [];  // stores [i=ceil(matrix.Height/2), j]
+        outputData.currentGlobalRow = [];  // the
         outputData.recursionNumbersContainer = [];  // stores the position within the computation tree
     }
 
@@ -170,9 +174,11 @@ $(document).ready(function () {
      * to find all possible submatrices.
      * @param input {Object} - The initialized Needleman-Wunsch input structure.
      * @param recursionNumbers {Array} - Contains information about recursion (i.e. [1, 1, 2] is upper, upper, lower).
+     * @param rowTree {Array} - Binary tree storing current row at its last position.
      * @see: Restricted to one path for better runtime! So, first founded minimum chosen for splitting.
      */
-    function computeAllRecursionData(input, recursionNumbers) {
+    function computeAllRecursionData(input, recursionNumbers, rowTree) {
+        debugger;
         var isRightNode = recursionNumbers[recursionNumbers.length-1] === HIRSCHBERG_RIGHT_NODE;
 
         // [1] find trace-cell
@@ -189,19 +195,23 @@ $(document).ready(function () {
 
         var minimumColumnPosJ = findMinimum(input, sumRow, isRightNode);
 
-        createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers);
+        createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers, rowTree);
 
         if (input.sequenceAPositions.length <= 1)
             return;
 
         // [2] divide and conquer
         recursionNumbers.push(1);
-        computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
+        rowTree.push(getNextRow(rowTree, false));
+        computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers, rowTree);
         recursionNumbers.pop();
+        rowTree.pop();
 
         recursionNumbers.push(2);
-        computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
+        rowTree.push(getNextRow(rowTree, true));
+        computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers, rowTree);
         recursionNumbers.pop();
+        rowTree.pop()
     }
 
     /**
@@ -291,7 +301,7 @@ $(document).ready(function () {
     /**
      * Creates a copy of the given recursion data to display it later on.
      */
-    function createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers) {
+    function createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers, rowTree) {
         outputData.firstSequences.push(input.sequenceA);
         outputData.secondSequences.push(input.sequenceB);
         outputData.firstSequencePositions.push(input.sequenceAPositions);
@@ -302,7 +312,28 @@ $(document).ready(function () {
         outputData.addedRows.push(sumRow);
 
         outputData.minimum.push([minimumRowPosI, minimumColumnPosJ]);
+        outputData.currentGlobalRow.push(rowTree[rowTree.length-1]);
+
         outputData.recursionNumbersContainer.push(recursionNumbers.slice());
+    }
+
+    /**
+     * Returns the next row.
+     * @param rowTree {Array} - Binary tree storing current row at its last position.
+     * @param right {boolean} - Tells if we have to compute the row for a right or a left node.
+     */
+    function getNextRow(rowTree, right) {
+        var lastRow;
+        var nextRow;
+
+        if (right)
+            nextRow = rowTree[rowTree.length - 1] + 1
+        else {
+            lastRow = rowTree[rowTree.length - 1] - 1;
+            nextRow = Math.ceil(lastRow / 2);
+        }
+
+        return nextRow;
     }
 
     /**
@@ -312,11 +343,11 @@ $(document).ready(function () {
      * @param minimumColumnPosJ {number} - The j-position on which the algorithm does a split.
      */
     function initializedUpperMatrixInput(input, minimumRowPosI, minimumColumnPosJ) {
-        input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(0, minimumRowPosI - 1).join(SYMBOLS.EMPTY);  // without i
-        input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(0, minimumColumnPosJ).join(SYMBOLS.EMPTY);  // with j
+        input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(0, minimumRowPosI - 1).join(SYMBOLS.EMPTY);
+        input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(0, minimumColumnPosJ).join(SYMBOLS.EMPTY);
 
-        input.sequenceAPositions = input.sequenceAPositions.slice(0, minimumRowPosI - 1);  // without i
-        input.sequenceBPositions = input.sequenceBPositions.slice(0, minimumColumnPosJ);  // with j
+        input.sequenceAPositions = input.sequenceAPositions.slice(0, minimumRowPosI - 1);
+        input.sequenceBPositions = input.sequenceBPositions.slice(0, minimumColumnPosJ);
 
         input.matrixHeight = input.sequenceA.length + 1;
         input.matrixWidth = input.sequenceB.length + 1;
@@ -332,11 +363,11 @@ $(document).ready(function () {
      */
     function initializedLowerMatrixInput(input, minimumRowPosI, minimumColumnPosJ) {
         // Hint: There is one row and one column more than affiliated sequence size.
-        input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(minimumRowPosI).join(SYMBOLS.EMPTY);  // without i
-        input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(minimumColumnPosJ - 1).join(SYMBOLS.EMPTY);  // with j
+        input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(minimumRowPosI).join(SYMBOLS.EMPTY);
+        input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(minimumColumnPosJ - 1).join(SYMBOLS.EMPTY);
 
-        input.sequenceAPositions = input.sequenceAPositions.slice(minimumRowPosI);  // without i
-        input.sequenceBPositions = input.sequenceBPositions.slice(minimumColumnPosJ - 1);  // with j
+        input.sequenceAPositions = input.sequenceAPositions.slice(minimumRowPosI);
+        input.sequenceBPositions = input.sequenceBPositions.slice(minimumColumnPosJ - 1);
 
         input.matrixHeight = input.sequenceA.length + 1;
         input.matrixWidth = input.sequenceB.length + 1;

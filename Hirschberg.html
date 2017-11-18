@@ -55,21 +55,57 @@ Author: Alexander Mattheis
 			</div>
 		</div>
 	</div>
-
-	<div class="row">
-		<div class="colW100">
-            <label>
-                <br>
-                <br>
-                Recursion:
-            </label>
-        </div>
-
-		<div class="colW600">
-			<span data-bind="text: $root.input.formula"></span>
-		</div>
-	</div>
 </div>
 
 <div id="algorithm_output">
+	<!-- ko foreach: $root.output.recursionNumbersContainer -->
+        <div class="recursion_header">
+            <!-- ko foreach: $data --><b><span data-bind="text: $data"></span>.</b><!-- /ko -->
+            <span data-bind="text: $root.output.traceFunctions()[$index()]"></span>
+            at <span data-bind="text: $root.output.currentGlobalRow()[$index()]"></span> <br>
+        </div>
+
+        <div class="main_output">
+            <table class="calculation">
+                <tbody>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <!-- ko foreach: $root.output.secondSequences()[$index()] -->
+                            <th>
+                                <span data-bind="text: $data"></span><sub><span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$index()][$index()]"></span></sub>
+                            </th>
+                        <!-- /ko -->
+                    </tr>
+
+                    <tr>
+                        <th><span data-bind="text: $root.output.matrixDLatex"></span></th>
+                        <!-- ko foreach: $root.output.forwardRows()[$index()] -->
+                            <td class="entry" data-bind="text: $data"></td>
+                        <!-- /ko -->
+                    </tr>
+
+                    <tr>
+                        <th><span data-bind="text: $root.output.matrixDPrimeLatex"></span></th>
+                        <!-- ko foreach: $root.output.mirroredBackwardRows()[$index()] -->
+                            <td class="entry" data-bind="text: $data"></td>
+                        <!-- /ko -->
+                    </tr>
+
+                    <tr class="thick_line">
+                        <th><span data-bind="text: $root.output.sum"></span></th>
+                        <!-- ko foreach: $root.output.addedRows()[$index()] -->
+                            <!-- ko if: $root.output.highlightPositions()[$parentContext.$index()][1] == $index() -->
+                                <td class="result_entry" data-bind="text: $data"></td>
+                            <!-- /ko -->
+
+                            <!-- ko if: $root.output.highlightPositions()[$parentContext.$index()][1] != $index() -->
+                                <td class="entry" data-bind="text: $data"></td>
+                            <!-- /ko -->
+                        <!-- /ko -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+	<!-- /ko -->
 </div>

@@ -241,6 +241,11 @@ th {
     overflow: auto;
 }
 
+.recursion_header + .main_output {  /* adjacent selector */
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
 .merge_steps {
     margin-bottom: 10px;
 }
@@ -328,6 +333,12 @@ th {
 
 .result_categories th {
     border-bottom: 1px solid #a0a0a0;
+}
+
+/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
+.result_entry {
+    background-color: #5582BC;
+    color: white;
 }
 
 .result_header {
@@ -439,8 +450,12 @@ th {
     width: 220px;
 }
 
+.thick_line {
+    border-top: 2px solid #a0a0a0;
+}
+
 .top_border {
-    border-top: 1px solid #a0a0a0;;
+    border-top: 1px solid #a0a0a0;
 }
 
 /*---- ID STYLING ----*/

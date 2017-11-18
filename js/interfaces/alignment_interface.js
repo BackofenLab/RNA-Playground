@@ -43,6 +43,7 @@ Author: Alexander Mattheis
     function imports() {
         // third party libs
         $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // to interpret static LaTeX code (Hirschberg algorithm)
 
         // design/controls logic
         /*
@@ -128,8 +129,10 @@ Author: Alexander Mattheis
 
             if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {  // if AEP
                 createAEPOutputViewmodel(viewmodel, outputData);
+            } else if (algorithmName === ALGORITHMS.HIRSCHBERG) {
+                createHirschbergOutputViewmodel(viewmodel, outputData);
             } else if (outputData.matrix !== undefined) {  // other algorithms
-                createOutputViewmodel(algorithmName, viewmodel, outputData);
+                createMainOutputViewmodel(algorithmName, viewmodel, outputData);
             }
         } else if (MULTI_SEQUENCE_ALGORITHMS.indexOf(algorithmName) >= 0) {  // if multi-sequence alignment algorithm
             if (algorithmName === ALGORITHMS.FENG_DOOLITTLE)
@@ -194,6 +197,8 @@ Author: Alexander Mattheis
                     }
                 }
             }
+        } else if (algorithmName === ALGORITHMS.HIRSCHBERG) {
+            // todo
         } else { // other algorithms
             for (var i = 0; i < outputData.matrix.length; i++)
                 for (var j = 0; j < outputData.matrix[0].length; j++)
@@ -356,11 +361,98 @@ Author: Alexander Mattheis
 
     /**
      * Creates the OutputViewmodel for some local and global alignment algorithms.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     */
+    function createHirschbergOutputViewmodel(viewmodel, outputData) {
+        var traceFunctionsData = getLaTeXTraceFunctions(outputData);
+        var rowData = getLaTeXRows(outputData);
+
+        // header
+        viewmodel.recursionNumbersContainer = ko.observable(outputData.recursionNumbersContainer);
+        viewmodel.traceFunctions = ko.observable(traceFunctionsData);
+        viewmodel.currentGlobalRow = ko.observable(rowData);
+
+        // table header (to avoid a problem between Knockout and MathJax the LaTeX code is generated in viewmodel and not in the view)
+        var matrixD = LATEX.MATH_REGION + LATEX.FORMULA.D + LATEX.MATH_REGION;
+        var matrixDPrime = LATEX.MATH_REGION + LATEX.FORMULA.D_PRIME + LATEX.MATH_REGION;
+        var sum = LATEX.MATH_REGION + LATEX.SUM + LATEX.MATH_REGION;
+
+        viewmodel.matrixDLatex = ko.observable(matrixD);
+        viewmodel.matrixDPrimeLatex = ko.observable(matrixDPrime);
+        viewmodel.sum = ko.observable(sum);
+
+        viewmodel.secondSequences = ko.observable(outputData.secondSequences);
+        viewmodel.secondSequencePositions = ko.observable(outputData.secondSequencePositions);
+
+        // addition table
+        viewmodel.forwardRows = ko.observable(outputData.forwardRows);
+        viewmodel.mirroredBackwardRows = ko.observable(outputData.mirroredBackwardRows);
+        viewmodel.addedRows = ko.observable(outputData.addedRows);
+        viewmodel.highlightPositions = ko.observable(outputData.minimum);
+
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
+    }
+    
+    function getLaTeXTraceFunctions(outputData) {
+        var traceFunctionData = [];
+
+        for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
+            var string = LATEX.MATH_REGION;  // starting LaTeX math region
+            string += LATEX.FORMULA.TRACE + SYMBOLS.BRACKET_LEFT;  // starting function
+
+            var firstSequence = outputData.firstSequences[k];
+            var firstSequencePositions = outputData.firstSequencePositions[k];
+
+            for (var i = 0; i < firstSequence.length; i++) {
+                string += firstSequence[i] + LATEX.SUBORDINATE + firstSequencePositions[i] ;
+                string += i < firstSequence.length - 1 ? SYMBOLS.COMMA : SYMBOLS.EMPTY;
+            }
+
+            string += SYMBOLS.VERTICAL_BAR;
+
+            var secondSequence = outputData.secondSequences[k];
+            var secondSequencePositions = outputData.secondSequencePositions[k];
+
+            for (var i = 0; i < secondSequence.length; i++) {
+                string += secondSequence[i] + LATEX.SUBORDINATE + secondSequencePositions[i] ;
+                string += i < secondSequence.length - 1 ? SYMBOLS.COMMA : SYMBOLS.EMPTY;
+            }
+
+            string += SYMBOLS.BRACKET_RIGHT;  // stopping function
+            string += LATEX.MATH_REGION;  // stopping LaTeX math region
+
+            traceFunctionData.push(string);
+        }
+
+        return traceFunctionData;
+    }
+
+    function getLaTeXRows(outputData) {
+        var rowsData = [];
+        var rows = outputData.currentGlobalRow;
+
+        for (var k = 0; k < rows.length; k++) {
+            var string = LATEX.MATH_REGION;  // starting LaTeX math region
+
+            string += LATEX.FORMULA.I_IS;  // starting function
+            string += rows[k];
+
+            string += LATEX.MATH_REGION;  // stopping LaTeX math region
+
+            rowsData.push(string);
+        }
+
+        return rowsData;
+    }
+
+    /**
+     * Creates the OutputViewmodel for some local and global alignment algorithms.
      * @param algorithmName {string} - The name of the algorithm which is executed.
      * @param viewmodel {Object} - The output viewmodel container which should be filled.
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
-    function createOutputViewmodel(algorithmName, viewmodel, outputData) {
+    function createMainOutputViewmodel(algorithmName, viewmodel, outputData) {
         viewmodel.matrix = ko.observableArray(outputData.matrix);
 
         for (var i = 0; i < outputData.matrix.length; i++) {
@@ -652,7 +744,7 @@ Author: Alexander Mattheis
      * @param group {Array} - The group which is resorted.
      * @param groupMemberNames {Array} - The group names which are resorted.
      * @param groupMemberRankings {Array} - The rankings which are sued to sort elements.
-     * @return {[sortedGroupMembers, sortedGroupMemberNames]} - The sorted group and names.
+     * @return {[finalSortedGroup, finalSortedGroupNames]} - The sorted group and names.
      */
     function getSortedGroup(group, groupMemberNames, groupMemberRankings) {
         var highestRanking = groupMemberRankings[1];
