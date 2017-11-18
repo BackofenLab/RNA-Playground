@@ -108,7 +108,6 @@ $(document).ready(function () {
 
         computeAllRecursionData(input, [1]);
 
-        debugger;
         return [inputData, outputData];
     }
 
