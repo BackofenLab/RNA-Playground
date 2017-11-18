@@ -108,6 +108,7 @@ $(document).ready(function () {
 
         computeAllRecursionData(input, [1]);
 
+        debugger;
         return [inputData, outputData];
     }
 
@@ -300,7 +301,7 @@ $(document).ready(function () {
         outputData.forwardRows.push(forwardRow);
         outputData.mirroredBackwardRows.push(mirroredBackwardRow);
         outputData.addedRows.push(sumRow);
-        
+
         outputData.minimum.push([minimumRowPosI, minimumColumnPosJ]);
         outputData.recursionNumbersContainer.push(recursionNumbers.slice());
     }
