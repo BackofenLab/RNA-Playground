@@ -108,7 +108,6 @@ $(document).ready(function () {
 
         computeAllRecursionData(input, [1]);
 
-        debugger;
         return [inputData, outputData];
     }
 
@@ -266,7 +265,7 @@ $(document).ready(function () {
         var minimumValue = Number.POSITIVE_INFINITY;
         var minimumPosition = -1;
 
-        if (right) {
+        if (right) {  // search minimum from right side
             for (var i = row.length - 1; i >= 0; i--) {
                 var currentValue = row[i];
 
@@ -275,7 +274,7 @@ $(document).ready(function () {
                     minimumPosition = i;
                 }
             }
-        } else {
+        } else {  // else from left side
             for (var i = 0; i < row.length; i++) {
                 var currentValue = row[i];
 
@@ -301,10 +300,8 @@ $(document).ready(function () {
         outputData.forwardRows.push(forwardRow);
         outputData.mirroredBackwardRows.push(mirroredBackwardRow);
         outputData.addedRows.push(sumRow);
-
-        var verticalStart = input.sequenceAPositions[0];
-        var horizontalStart = input.sequenceBPositions[0];
-            outputData.minimum.push([verticalStart + minimumRowPosI - 1,  horizontalStart + minimumColumnPosJ - 1]);
+        
+        outputData.minimum.push([minimumRowPosI, minimumColumnPosJ]);
         outputData.recursionNumbersContainer.push(recursionNumbers.slice());
     }
 
