@@ -106,7 +106,7 @@ $(document).ready(function () {
         hirschbergInstance.numberOfIterations = 0;
         outputData.maxNumberIterations = false;
 
-        computeAllRecursionData(input, [1]);
+        computeAllRecursionData(input, [HIRSCHBERG_UPPER_NODE]);
 
         debugger;
         return [inputData, outputData];
@@ -118,13 +118,18 @@ $(document).ready(function () {
     function initializeStructs() {
         outputData.firstSequences = [];
         outputData.secondSequences = [];
+
         outputData.firstSequencePositions = [];
         outputData.secondSequencePositions = [];
+
+        outputData.forwardMatrices = [];
+        outputData.backwardMatrices = [];
 
         outputData.forwardRows = [];
         outputData.mirroredBackwardRows = [];
         outputData.addedRows = [];
         outputData.minimum = [];  // stores [i=ceil(matrix.Height/2), j]
+
         outputData.recursionNumbersContainer = [];  // stores the position within the computation tree
     }
 
@@ -175,7 +180,7 @@ $(document).ready(function () {
      */
     function computeAllRecursionData(input, recursionNumbers) {
         debugger;
-        var isRightNode = recursionNumbers[recursionNumbers.length-1] === HIRSCHBERG_RIGHT_NODE;
+        var isRightNode = recursionNumbers[recursionNumbers.length-1] === HIRSCHBERG_LOWER_NODE;
         var isTerminalCase = input.sequenceAPositions.length <= 1;
 
         // [1] find trace-cell
@@ -192,17 +197,18 @@ $(document).ready(function () {
 
         var minimumColumnPosJ = findMinimum(input, sumRow, isRightNode, isTerminalCase);
 
-        createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers);
+        if (!isTerminalCase)
+            createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers);
 
         if (isTerminalCase)
             return;
 
         // [2] divide and conquer
-        recursionNumbers.push(1);
+        recursionNumbers.push(HIRSCHBERG_UPPER_NODE);
         computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
         recursionNumbers.pop();
 
-        recursionNumbers.push(2);
+        recursionNumbers.push(HIRSCHBERG_LOWER_NODE);
         computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
         recursionNumbers.pop();
     }
@@ -270,71 +276,60 @@ $(document).ready(function () {
         var minimumValue = Number.POSITIVE_INFINITY;
         var minimumPosition = -1;
 
-        var aCharacters = input.sequenceA;
-        var bCharacters = input.sequenceB;
+        var currentValue;
 
-        // if we have a terminal case with a character
-        // we have e.g. to look on the strings an create a match if possible
-        if (terminal && aCharacters.length > 0) {
-            minimumPosition = findMinimumForTerminalCase(aCharacters, bCharacters, right);
-        } else {
-            if (right) {  // search minimum from right side
-                for (var i = row.length - 1; i >= 0; i--) {
-                    var currentValue = row[i];
+        if (right) {  // search minimum from right side
+            for (var i = row.length - 1; i >= 0; i--) {
+                currentValue = row[i];
 
-                    if (currentValue < minimumValue) {
-                        minimumValue = currentValue;
-                        minimumPosition = i;
-                    }
+                if (currentValue < minimumValue) {
+                    minimumValue = currentValue;
+                    minimumPosition = i;
                 }
-            } else {  // else from left side
-                for (var i = 0; i < row.length; i++) {
-                    var currentValue = row[i];
+            }
+        } else {  // else from left side
+            for (var i = 0; i < row.length; i++) {
+                currentValue = row[i];
 
-                    if (currentValue < minimumValue) {
-                        minimumValue = currentValue;
-                        minimumPosition = i;
-                    }
+                if (currentValue < minimumValue) {
+                    minimumValue = currentValue;
+                    minimumPosition = i;
                 }
             }
         }
 
         return minimumPosition;
     }
+
 
     /**
      * Returns the minimum position for the given character in first string.
-     * @param aCharacters {string} - Characters from first string.
-     * @param bCharacters {string} - Characters from second string.
      * @param right {boolean} - Tells if we have to search the minimum from right to left.
      * @return {number} - The first minimum.
-     * todo: extend for match < mismatch and match < gap
      */
-    function findMinimumForTerminalCase(aCharacters, bCharacters, right) {
+    /* Only one approach which was tried to solve the terminal case problem.
+    function findMinimumForTerminalCase(input, right) {
         var minimumPosition = -1;
 
-        if (right) {
-            for (var i = bCharacters.length - 1; i >= 0; i--) {
-                if (bCharacters[i] === aCharacters[0]) {
-                    minimumPosition = i + 1;
-                    break;
-                }
-            }
-        } else {
-            for (var i = 0; i < bCharacters.length; i++) {
-                if (bCharacters[i] === aCharacters[0]) {
-                    minimumPosition = i + 1;
-                    break;
-                }
-            }
+        needlemanWunschInstance.setIO(input, {});
+        var alignments = needlemanWunschInstance.compute()[1].alignments;
+        var alignment = right ? alignments[0] : alignments[alignments.length-1];  // or the wrong one is used
+        var characterToSearch = input.sequenceA[0];
+
+        for (var i = 0; i < alignment[0].length; i++) {
+            if (alignment[0][i] === characterToSearch)
+                minimumPosition = i + 1;
         }
 
         return minimumPosition;
     }
+    */
 
     /**
      * Creates a copy of the given recursion data to display it later on.
      * @param input {Object} - The input with which Needleman-Wunsch was executed.
+     * @param forwardMatrix {Array} - The matrix computed with Needleman-Wunsch and ordinary order of sequences.
+     * @param backwardMatrix {Array} - The matrix computed with Needleman-Wunsch and reversed order of sequences.
      * @param forwardRow {Array} - The row computed with Needleman-Wunsch and ordinary order of sequences.
      * @param mirroredBackwardRow {Array} - The reversed row computed with Needleman-Wunsch and reversed order of sequences.
      * @param sumRow {Array} - The sum array of forwardRow and mirroredBackwardRow.
@@ -342,11 +337,14 @@ $(document).ready(function () {
      * @param minimumColumnPosJ {number} - The j-position on which the algorithm does a split.
      * @param recursionNumbers {Array} - Contains information about recursion (i.e. [1, 1, 2] is upper, upper, lower).
      */
-    function createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers) {
+    function createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers) {
         outputData.firstSequences.push(input.sequenceA);
         outputData.secondSequences.push(input.sequenceB);
         outputData.firstSequencePositions.push(input.sequenceAPositions);
         outputData.secondSequencePositions.push(input.sequenceBPositions);
+
+        outputData.forwardMatrices.push(forwardMatrix);
+        outputData.backwardMatrices.push(backwardMatrix);
 
         outputData.forwardRows.push(forwardRow);
         outputData.mirroredBackwardRows.push(mirroredBackwardRow);

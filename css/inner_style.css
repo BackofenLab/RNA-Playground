@@ -237,6 +237,7 @@ th {
 }
 
 .main_output {
+    padding-top: 5px;
     max-width: 600px;
     overflow: auto;
 }
@@ -393,6 +394,10 @@ th {
     clear: left;
     float: left;
     width: 161px;
+}
+
+.scrollable {
+    overflow-x: auto;
 }
 
 .selectable_entry {
