@@ -10,8 +10,8 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("interfaces.alignmentInterface", AlignmentInterface,
-        imports, sharedInterfaceOperations, roundValues, getDistanceTable, getDistanceTables,
-        reorderGroupSequences, getLibrariesData, sortWithClusterTuples, startProcessing);
+        imports, sharedInterfaceOperations, roundValues, getLaTeXTraceFunctions, getColumnData, getLaTeXFormula,
+        getDistanceTable, getDistanceTables, reorderGroupSequences, getLibrariesData, sortWithClusterTuples, startProcessing);
 
     // instances
     var alignmentInterfaceInstance;
@@ -29,6 +29,9 @@ Author: Alexander Mattheis
         this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
         this.roundValues = roundValues;
+        this.getLaTeXTraceFunctions = getLaTeXTraceFunctions;
+        this.getColumnData = getColumnData;
+        this.getLaTeXFormula = getLaTeXFormula;
         this.getDistanceTable = getDistanceTable;
         this.getDistanceTables = getDistanceTables;
         this.reorderGroupSequences = reorderGroupSequences;
@@ -366,24 +369,21 @@ Author: Alexander Mattheis
      */
     function createHirschbergOutputViewmodel(viewmodel, outputData) {
         var traceFunctionsData = getLaTeXTraceFunctions(outputData);
-        var rowData = getLaTeXRows(outputData);
+        var columnData = getColumnData(outputData);
 
         // header
-        viewmodel.recursionNumbersContainer = ko.observable(outputData.recursionNumbersContainer);
+        viewmodel.recursionNumbersContainer = ko.observable(outputData.recursionNumbersContainer).extend({ deferred: true });;
         viewmodel.traceFunctions = ko.observable(traceFunctionsData);
-        viewmodel.currentGlobalRow = ko.observable(rowData);
+        viewmodel.currentGlobalRow = ko.observable([]);
+        viewmodel.currentGlobalColumn = ko.observable(columnData);
 
         // table header (to avoid a problem between Knockout and MathJax the LaTeX code is generated in viewmodel and not in the view)
-        var matrixD = LATEX.MATH_REGION + LATEX.FORMULA.D + LATEX.MATH_REGION;
-        var matrixDPrime = LATEX.MATH_REGION + LATEX.FORMULA.D_PRIME + LATEX.MATH_REGION;
-        var sum = LATEX.MATH_REGION + LATEX.SUM + LATEX.MATH_REGION;
-
-        viewmodel.matrixDLatex = ko.observable(matrixD);
-        viewmodel.matrixDPrimeLatex = ko.observable(matrixDPrime);
-        viewmodel.sum = ko.observable(sum);
+        viewmodel.matrixDLatex = ko.observable(getLaTeXFormula(LATEX.FORMULA.D));
+        viewmodel.matrixDPrimeLatex = ko.observable(getLaTeXFormula(LATEX.FORMULA.D_PRIME));
+        viewmodel.sumLatex = ko.observable(getLaTeXFormula(LATEX.SUM));
 
         viewmodel.secondSequences = ko.observable(outputData.secondSequences);
-        viewmodel.secondSequencePositions = ko.observable(outputData.secondSequencePositions);
+        viewmodel.secondSequencePositions = ko.observable(outputData.secondSequencePositions).extend({ deferred: true });
 
         // addition table
         viewmodel.forwardRows = ko.observable(outputData.forwardRows);
@@ -393,7 +393,12 @@ Author: Alexander Mattheis
 
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
     }
-    
+
+    /**
+     * Returns the trace function for each round.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     * @return {Array} - The data which stores the trace function for each recursion round.
+     */
     function getLaTeXTraceFunctions(outputData) {
         var traceFunctionData = [];
 
@@ -428,22 +433,38 @@ Author: Alexander Mattheis
         return traceFunctionData;
     }
 
-    function getLaTeXRows(outputData) {
-        var rowsData = [];
-        var rows = outputData.currentGlobalRow;
+    /**
+     * Returns the minimum for each round.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     * @return {Array} - The data which stores the global minimum for each recursion round.
+     */
+    function getColumnData(outputData) {
+        var columns = [];
 
-        for (var k = 0; k < rows.length; k++) {
-            var string = LATEX.MATH_REGION;  // starting LaTeX math region
+        // iterate over all rounds
+        for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
 
-            string += LATEX.FORMULA.I_IS;  // starting function
-            string += rows[k];
+            var distanceToMinima = -1;  // because starting with +1
 
-            string += LATEX.MATH_REGION;  // stopping LaTeX math region
+            // iterate overall minima
+            for (var l = 0; l < outputData.addedRows.length; l++) {
+                if (outputData.minimum[k][1] === l)
+                    columns.push(outputData.secondSequencePositions[k][0] + distanceToMinima);
 
-            rowsData.push(string);
+                distanceToMinima++;
+            }
         }
 
-        return rowsData;
+        return columns;
+    }
+
+    /**
+     * Returns a LaTeX enclosed formula.
+     * @param formula {string} - The string which has to be enclosed in LaTeX math mode.
+     * @return {string} - The LaTeX math mode enclosed formula.
+     */
+    function getLaTeXFormula(formula) {
+        return LATEX.MATH_REGION + formula + LATEX.MATH_REGION;
     }
 
     /**
@@ -616,6 +637,7 @@ Author: Alexander Mattheis
     /**
      * Returns for a cluster-name, its position in the distance matrix.
      * @param clusterName {string} - The name of the cluster.
+     * @param remainingClusterNames {Array} - The remaining cluster names after execution of UPGMA.
      */
     function getPositionByName(clusterName, remainingClusterNames) {
         var position = -1;

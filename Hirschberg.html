@@ -60,9 +60,8 @@ Author: Alexander Mattheis
 <div id="algorithm_output">
 	<!-- ko foreach: $root.output.recursionNumbersContainer -->
         <div class="recursion_header">
-            <!-- ko foreach: $data --><b><span data-bind="text: $data"></span>.</b><!-- /ko -->
-            <span data-bind="text: $root.output.traceFunctions()[$index()]"></span>
-            at <span data-bind="text: $root.output.currentGlobalRow()[$index()]"></span> <br>
+            <h2><!-- ko foreach: $data --><span data-bind="text: $data"></span>.<!-- /ko -->
+            <span data-bind="text: $root.output.traceFunctions()[$index()]"></span></h2>
         </div>
 
         <div class="main_output">
@@ -93,7 +92,7 @@ Author: Alexander Mattheis
                     </tr>
 
                     <tr class="thick_line">
-                        <th><span data-bind="text: $root.output.sum"></span></th>
+                        <th><span data-bind="text: $root.output.sumLatex"></span></th>
                         <!-- ko foreach: $root.output.addedRows()[$index()] -->
                             <!-- ko if: $root.output.highlightPositions()[$parentContext.$index()][1] == $index() -->
                                 <td class="result_entry" data-bind="text: $data"></td>
@@ -103,6 +102,15 @@ Author: Alexander Mattheis
                                 <td class="entry" data-bind="text: $data"></td>
                             <!-- /ko -->
                         <!-- /ko -->
+                    </tr>
+
+                    <tr>
+                        <th class="hint" colspan=100%>
+                            <small>
+                                <b>Global Minimum:</b> <br>
+                                (i = <span data-bind="text: $root.output.currentGlobalRow()[$index()]"></span>, j = <span data-bind="text: $root.output.currentGlobalColumn()[$index()]"></span>)
+							</small>
+                        </th>
                     </tr>
                 </tbody>
             </table>

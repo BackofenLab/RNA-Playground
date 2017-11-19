@@ -106,9 +106,7 @@ $(document).ready(function () {
         hirschbergInstance.numberOfIterations = 0;
         outputData.maxNumberIterations = false;
 
-        // to compute the global row
-        var currentGlobalRow = Math.ceil(input.sequenceA.length / 2);
-        computeAllRecursionData(input, [1], [currentGlobalRow]);
+        computeAllRecursionData(input, [1]);
 
         debugger;
         return [inputData, outputData];
@@ -127,7 +125,6 @@ $(document).ready(function () {
         outputData.mirroredBackwardRows = [];
         outputData.addedRows = [];
         outputData.minimum = [];  // stores [i=ceil(matrix.Height/2), j]
-        outputData.currentGlobalRow = [];  // the
         outputData.recursionNumbersContainer = [];  // stores the position within the computation tree
     }
 
@@ -145,10 +142,10 @@ $(document).ready(function () {
         input.sequenceAPositions = createMatrixPositions(input.matrixHeight, 1);
         input.sequenceBPositions = createMatrixPositions(input.matrixWidth, 1);
 
-        input.calculationType = inputData.calculationType;
+        input.calculationType = ALIGNMENT_DEFAULTS.CALCULATION_HIRSCHBERG;
 
         input.deletion = inputData.deletion;
-        input.insertion = inputData.deletion;
+        input.insertion = inputData.insertion;
         input.match = inputData.match;
         input.mismatch = inputData.mismatch;
     }
@@ -174,12 +171,12 @@ $(document).ready(function () {
      * to find all possible submatrices.
      * @param input {Object} - The initialized Needleman-Wunsch input structure.
      * @param recursionNumbers {Array} - Contains information about recursion (i.e. [1, 1, 2] is upper, upper, lower).
-     * @param rowTree {Array} - Binary tree storing current row at its last position.
      * @see: Restricted to one path for better runtime! So, first founded minimum chosen for splitting.
      */
-    function computeAllRecursionData(input, recursionNumbers, rowTree) {
+    function computeAllRecursionData(input, recursionNumbers) {
         debugger;
         var isRightNode = recursionNumbers[recursionNumbers.length-1] === HIRSCHBERG_RIGHT_NODE;
+        var isTerminalCase = input.sequenceAPositions.length <= 1;
 
         // [1] find trace-cell
         var forwardMatrix = computeForwardSequenceMatrix(input);
@@ -193,25 +190,21 @@ $(document).ready(function () {
 
         var sumRow = addRows(forwardRow, mirroredBackwardRow);
 
-        var minimumColumnPosJ = findMinimum(input, sumRow, isRightNode);
+        var minimumColumnPosJ = findMinimum(input, sumRow, isRightNode, isTerminalCase);
 
-        createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers, rowTree);
+        createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers);
 
-        if (input.sequenceAPositions.length <= 1)
+        if (isTerminalCase)
             return;
 
         // [2] divide and conquer
         recursionNumbers.push(1);
-        rowTree.push(getNextRow(rowTree, false));
-        computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers, rowTree);
+        computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
         recursionNumbers.pop();
-        rowTree.pop();
 
         recursionNumbers.push(2);
-        rowTree.push(getNextRow(rowTree, true));
-        computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers, rowTree);
+        computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
         recursionNumbers.pop();
-        rowTree.pop()
     }
 
     /**
@@ -266,31 +259,72 @@ $(document).ready(function () {
     }
 
     /**
-     * Returns the first minimum position in the columns.
+     * Returns the minimum position of the given row.
+     * @param input {Object} - The input with which Needleman-Wunsch was executed.
      * @param row {Array} - The array in which it is searched for the minimum.
      * @param right {boolean} - Tells if we have to search the minimum from right to left.
+     * @param terminal {boolean} - Tells if we have to search the minimum for a terminal case.
      * @return {number} - The first minimum.
      */
-    function findMinimum(input, row, right) {
+    function findMinimum(input, row, right, terminal) {
         var minimumValue = Number.POSITIVE_INFINITY;
         var minimumPosition = -1;
 
-        if (right) {  // search minimum from right side
-            for (var i = row.length - 1; i >= 0; i--) {
-                var currentValue = row[i];
+        var aCharacters = input.sequenceA;
+        var bCharacters = input.sequenceB;
 
-                if (currentValue < minimumValue) {
-                    minimumValue = currentValue;
-                    minimumPosition = i;
+        // if we have a terminal case with a character
+        // we have e.g. to look on the strings an create a match if possible
+        if (terminal && aCharacters.length > 0) {
+            minimumPosition = findMinimumForTerminalCase(aCharacters, bCharacters, right);
+        } else {
+            if (right) {  // search minimum from right side
+                for (var i = row.length - 1; i >= 0; i--) {
+                    var currentValue = row[i];
+
+                    if (currentValue < minimumValue) {
+                        minimumValue = currentValue;
+                        minimumPosition = i;
+                    }
+                }
+            } else {  // else from left side
+                for (var i = 0; i < row.length; i++) {
+                    var currentValue = row[i];
+
+                    if (currentValue < minimumValue) {
+                        minimumValue = currentValue;
+                        minimumPosition = i;
+                    }
                 }
             }
-        } else {  // else from left side
-            for (var i = 0; i < row.length; i++) {
-                var currentValue = row[i];
+        }
 
-                if (currentValue < minimumValue) {
-                    minimumValue = currentValue;
-                    minimumPosition = i;
+        return minimumPosition;
+    }
+
+    /**
+     * Returns the minimum position for the given character in first string.
+     * @param aCharacters {string} - Characters from first string.
+     * @param bCharacters {string} - Characters from second string.
+     * @param right {boolean} - Tells if we have to search the minimum from right to left.
+     * @return {number} - The first minimum.
+     * todo: extend for match < mismatch and match < gap
+     */
+    function findMinimumForTerminalCase(aCharacters, bCharacters, right) {
+        var minimumPosition = -1;
+
+        if (right) {
+            for (var i = bCharacters.length - 1; i >= 0; i--) {
+                if (bCharacters[i] === aCharacters[0]) {
+                    minimumPosition = i + 1;
+                    break;
+                }
+            }
+        } else {
+            for (var i = 0; i < bCharacters.length; i++) {
+                if (bCharacters[i] === aCharacters[0]) {
+                    minimumPosition = i + 1;
+                    break;
                 }
             }
         }
@@ -300,8 +334,15 @@ $(document).ready(function () {
 
     /**
      * Creates a copy of the given recursion data to display it later on.
+     * @param input {Object} - The input with which Needleman-Wunsch was executed.
+     * @param forwardRow {Array} - The row computed with Needleman-Wunsch and ordinary order of sequences.
+     * @param mirroredBackwardRow {Array} - The reversed row computed with Needleman-Wunsch and reversed order of sequences.
+     * @param sumRow {Array} - The sum array of forwardRow and mirroredBackwardRow.
+     * @param minimumRowPosI {number} - The i-position on which the algorithm does a split.
+     * @param minimumColumnPosJ {number} - The j-position on which the algorithm does a split.
+     * @param recursionNumbers {Array} - Contains information about recursion (i.e. [1, 1, 2] is upper, upper, lower).
      */
-    function createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers, rowTree) {
+    function createDataCopy(input, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers) {
         outputData.firstSequences.push(input.sequenceA);
         outputData.secondSequences.push(input.sequenceB);
         outputData.firstSequencePositions.push(input.sequenceAPositions);
@@ -312,28 +353,8 @@ $(document).ready(function () {
         outputData.addedRows.push(sumRow);
 
         outputData.minimum.push([minimumRowPosI, minimumColumnPosJ]);
-        outputData.currentGlobalRow.push(rowTree[rowTree.length-1]);
 
         outputData.recursionNumbersContainer.push(recursionNumbers.slice());
-    }
-
-    /**
-     * Returns the next row.
-     * @param rowTree {Array} - Binary tree storing current row at its last position.
-     * @param right {boolean} - Tells if we have to compute the row for a right or a left node.
-     */
-    function getNextRow(rowTree, right) {
-        var lastRow;
-        var nextRow;
-
-        if (right)
-            nextRow = rowTree[rowTree.length - 1] + 1
-        else {
-            lastRow = rowTree[rowTree.length - 1] - 1;
-            nextRow = Math.ceil(lastRow / 2);
-        }
-
-        return nextRow;
     }
 
     /**

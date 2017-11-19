@@ -233,11 +233,15 @@ Author: Alexander Mattheis
      * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
-        alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
+        var algorithmType = viewmodels.visual.algorithm.type;
 
-        if (outputData.iterationData !== undefined)  // if AEP
+        alignmentInterfaceInstance.roundValues(algorithmType, outputData);
+
+        if (algorithmType === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)  // if AEP
             changeAEPOutput(outputData, viewmodels);
-        else if (outputData.matrix !== undefined) {
+        else if (algorithmType === ALGORITHMS.HIRSCHBERG) {
+            changeHirschbergOutput(outputData, viewmodels);
+        } else if (outputData.matrix !== undefined) {  // all other algorithms
             viewmodels.output.matrix(outputData.matrix);
 
             for (var i = 0; i < outputData.matrix.length; i++) {
@@ -430,5 +434,37 @@ Author: Alexander Mattheis
         }
 
         viewmodels.output.maxNumberIterations(outputData.maxNumberIterations);
+    }
+
+    /**
+     * Changes the output of Arslan-Egecioglu-Pevzner algorithm after processing the input.
+     * @param outputData {Object} - Contains all output data.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     */
+    function changeHirschbergOutput(outputData, viewmodels) {
+        var traceFunctionsData = alignmentInterfaceInstance.getLaTeXTraceFunctions(outputData);
+        var columnData = alignmentInterfaceInstance.getColumnData(outputData);
+
+        // header
+        viewmodels.output.recursionNumbersContainer(outputData.recursionNumbersContainer);
+        viewmodels.output.traceFunctions(traceFunctionsData);
+        viewmodels.output.currentGlobalRow([]);
+        viewmodels.output.currentGlobalColumn(columnData);
+
+        // table header (to avoid a problem between Knockout and MathJax the LaTeX code is generated in viewmodel and not in the view)
+        viewmodels.output.matrixDLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D));
+        viewmodels.output.matrixDPrimeLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_PRIME));
+        viewmodels.output.sumLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.SUM));
+
+        viewmodels.output.secondSequences(outputData.secondSequences);
+        viewmodels.output.secondSequencePositions(outputData.secondSequencePositions);
+
+        // addition table
+        viewmodels.output.forwardRows(outputData.forwardRows);
+        viewmodels.output.mirroredBackwardRows(outputData.mirroredBackwardRows);
+        viewmodels.output.addedRows(outputData.addedRows);
+        viewmodels.output.highlightPositions(outputData.minimum);
+
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
     }
 }());

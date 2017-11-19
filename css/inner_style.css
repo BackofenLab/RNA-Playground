@@ -241,11 +241,6 @@ th {
     overflow: auto;
 }
 
-.recursion_header + .main_output {  /* adjacent selector */
-    margin-top: 5px;
-    margin-bottom: 15px;
-}
-
 .merge_steps {
     margin-bottom: 10px;
 }
