@@ -168,7 +168,7 @@ Author: Alexander Mattheis
             if (i >= CLUSTER_NAMES.length)  // out of characters -> a2, b2, c2, ..., z2, a3, b3, ...
                 clusterNames.push(
                     LATEX.MATH_REGION
-                    + CLUSTER_NAMES[i % CLUSTER_NAMES.length] + LATEX.SUBORDINATE + currentEpisode +
+                    + CLUSTER_NAMES[i % CLUSTER_NAMES.length] + LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + currentEpisode + LATEX.CURLY_BRACKET_RIGHT +
                     LATEX.MATH_REGION);
         }
 

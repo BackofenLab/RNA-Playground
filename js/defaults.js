@@ -136,6 +136,8 @@ var LATEX = {
     ALPHA: "\\alpha",
     BEGIN_CASES: "\\begin{cases}",
     BETA: "\\beta",
+    CURLY_BRACKET_LEFT: "{",
+    CURLY_BRACKET_RIGHT: "}",
     DOT: "\\cdot",
     END_CASES: "\\end{cases}",
     FACTOR: " k",

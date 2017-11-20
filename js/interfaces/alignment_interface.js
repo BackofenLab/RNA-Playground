@@ -403,6 +403,7 @@ Author: Alexander Mattheis
      */
     function getLaTeXTraceFunctions(outputData) {
         var traceFunctionData = [];
+        debugger;
 
         for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
             var string = LATEX.MATH_REGION;  // starting LaTeX math region
@@ -412,7 +413,7 @@ Author: Alexander Mattheis
             var firstSequencePositions = outputData.firstSequencePositions[k];
 
             for (var i = 0; i < firstSequence.length; i++) {
-                string += firstSequence[i] + LATEX.SUBORDINATE + firstSequencePositions[i] ;
+                string += firstSequence[i] + LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + firstSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
                 string += i < firstSequence.length - 1 ? SYMBOLS.COMMA : SYMBOLS.EMPTY;
             }
 
@@ -422,7 +423,7 @@ Author: Alexander Mattheis
             var secondSequencePositions = outputData.secondSequencePositions[k];
 
             for (var i = 0; i < secondSequence.length; i++) {
-                string += secondSequence[i] + LATEX.SUBORDINATE + secondSequencePositions[i] ;
+                string += secondSequence[i] + LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + secondSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
                 string += i < secondSequence.length - 1 ? SYMBOLS.COMMA : SYMBOLS.EMPTY;
             }
 

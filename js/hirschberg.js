@@ -179,38 +179,37 @@ $(document).ready(function () {
      * @see: Restricted to one path for better runtime! So, first founded minimum chosen for splitting.
      */
     function computeAllRecursionData(input, recursionNumbers) {
-        debugger;
         var isRightNode = recursionNumbers[recursionNumbers.length-1] === HIRSCHBERG_LOWER_NODE;
         var isTerminalCase = input.sequenceAPositions.length <= 1;
 
-        // [1] find trace-cell
-        var forwardMatrix = computeForwardSequenceMatrix(input);
-        var backwardMatrix = computeBackwardSequenceMatrix(shallowCopy(input));  // shallow copy, because else reversed strings are saved
-
-        var minimumRowPosI = Math.ceil(input.sequenceAPositions.length / 2);
-
-        var forwardRow = forwardMatrix[minimumRowPosI];
-        var backwardRow = backwardMatrix[minimumRowPosI];
-        var mirroredBackwardRow = backwardRow.slice().reverse();  // create a new mirrored row
-
-        var sumRow = addRows(forwardRow, mirroredBackwardRow);
-
-        var minimumColumnPosJ = findMinimum(input, sumRow, isRightNode, isTerminalCase);
-
-        if (!isTerminalCase)
-            createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers);
-
         if (isTerminalCase)
             return;
+        else {
+            // [1] find trace-cell
+            var forwardMatrix = computeForwardSequenceMatrix(input);
+            var backwardMatrix = computeBackwardSequenceMatrix(shallowCopy(input));  // shallow copy, because else reversed strings are saved
 
-        // [2] divide and conquer
-        recursionNumbers.push(HIRSCHBERG_UPPER_NODE);
-        computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
-        recursionNumbers.pop();
+            var minimumRowPosI = Math.ceil(input.sequenceAPositions.length / 2);
 
-        recursionNumbers.push(HIRSCHBERG_LOWER_NODE);
-        computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
-        recursionNumbers.pop();
+            var forwardRow = forwardMatrix[minimumRowPosI];
+            var backwardRow = backwardMatrix[minimumRowPosI];
+            var mirroredBackwardRow = backwardRow.slice().reverse();  // create a new mirrored row
+
+            var sumRow = addRows(forwardRow, mirroredBackwardRow);
+
+            var minimumColumnPosJ = findMinimum(sumRow);
+
+            createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers);
+
+            // [2] divide and conquer
+            recursionNumbers.push(HIRSCHBERG_UPPER_NODE);
+            computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
+            recursionNumbers.pop();
+
+            recursionNumbers.push(HIRSCHBERG_LOWER_NODE);
+            computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
+            recursionNumbers.pop();
+        }
     }
 
     /**
@@ -266,35 +265,21 @@ $(document).ready(function () {
 
     /**
      * Returns the minimum position of the given row.
-     * @param input {Object} - The input with which Needleman-Wunsch was executed.
      * @param row {Array} - The array in which it is searched for the minimum.
-     * @param right {boolean} - Tells if we have to search the minimum from right to left.
-     * @param terminal {boolean} - Tells if we have to search the minimum for a terminal case.
      * @return {number} - The first minimum.
      */
-    function findMinimum(input, row, right, terminal) {
+    function findMinimum(row) {
         var minimumValue = Number.POSITIVE_INFINITY;
         var minimumPosition = -1;
 
         var currentValue;
 
-        if (right) {  // search minimum from right side
-            for (var i = row.length - 1; i >= 0; i--) {
-                currentValue = row[i];
+        for (var i = 0; i < row.length; i++) {
+            currentValue = row[i];
 
-                if (currentValue < minimumValue) {
-                    minimumValue = currentValue;
-                    minimumPosition = i;
-                }
-            }
-        } else {  // else from left side
-            for (var i = 0; i < row.length; i++) {
-                currentValue = row[i];
-
-                if (currentValue < minimumValue) {
-                    minimumValue = currentValue;
-                    minimumPosition = i;
-                }
+            if (currentValue < minimumValue) {
+                minimumValue = currentValue;
+                minimumPosition = i;
             }
         }
 
