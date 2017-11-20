@@ -43,17 +43,23 @@ TestCase("test_hirschberg", {
         assertEquals("ACG", outputData.secondSequences[2]);
 
         // positions
+        // 1
         assertEquals([1,2,3,4,5], outputData.firstSequencePositions[0]);
         assertEquals([1,2,3,4], outputData.secondSequencePositions[0]);
 
+        // 1.1
         assertEquals([1,2], outputData.firstSequencePositions[1]);
         assertEquals([1,2], outputData.secondSequencePositions[1]);
 
+        // 1.1.2
+
+
+        // 1.2
         assertEquals([4,5], outputData.firstSequencePositions[2]);
         assertEquals([2,3,4], outputData.secondSequencePositions[2]);
 
         // sums
-        assertEquals([7,2,0,2,7], outputData.addedRows[0]);
+        assertEquals([8,3,-2,0,5], outputData.addedRows[0]);
         assertEquals([3,-2,3], outputData.addedRows[1]);
         assertEquals([5,2,0,5], outputData.addedRows[2]);
 

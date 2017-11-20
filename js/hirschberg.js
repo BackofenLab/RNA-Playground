@@ -179,12 +179,12 @@ $(document).ready(function () {
      * @see: Restricted to one path for better runtime! So, first founded minimum chosen for splitting.
      */
     function computeAllRecursionData(input, recursionNumbers) {
-        var isRightNode = recursionNumbers[recursionNumbers.length-1] === HIRSCHBERG_LOWER_NODE;
+        debugger;
         var isTerminalCase = input.sequenceAPositions.length <= 1;
+        var isTotalTerminalCase = input.sequenceAPositions.length === 0;
+        var isRightNode = recursionNumbers[recursionNumbers.length-1] === HIRSCHBERG_LOWER_NODE;
 
-        if (isTerminalCase)
-            return;
-        else {
+        if (!isTotalTerminalCase) { // do not save
             // [1] find trace-cell
             var forwardMatrix = computeForwardSequenceMatrix(input);
             var backwardMatrix = computeBackwardSequenceMatrix(shallowCopy(input));  // shallow copy, because else reversed strings are saved
@@ -192,24 +192,26 @@ $(document).ready(function () {
             var minimumRowPosI = Math.ceil(input.sequenceAPositions.length / 2);
 
             var forwardRow = forwardMatrix[minimumRowPosI];
-            var backwardRow = backwardMatrix[minimumRowPosI];
+            var backwardRow = backwardMatrix[(backwardMatrix.length - 1) - minimumRowPosI];
             var mirroredBackwardRow = backwardRow.slice().reverse();  // create a new mirrored row
 
             var sumRow = addRows(forwardRow, mirroredBackwardRow);
 
-            var minimumColumnPosJ = findMinimum(sumRow);
+            var minimumColumnPosJ = findMinimum(sumRow, isRightNode);
 
             createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers);
-
-            // [2] divide and conquer
-            recursionNumbers.push(HIRSCHBERG_UPPER_NODE);
-            computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
-            recursionNumbers.pop();
-
-            recursionNumbers.push(HIRSCHBERG_LOWER_NODE);
-            computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
-            recursionNumbers.pop();
         }
+        if (isTerminalCase)
+            return;
+
+        // [2] divide and conquer
+        recursionNumbers.push(HIRSCHBERG_UPPER_NODE);
+        computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
+        recursionNumbers.pop();
+
+        recursionNumbers.push(HIRSCHBERG_LOWER_NODE);
+        computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
+        recursionNumbers.pop();
     }
 
     /**
@@ -266,20 +268,32 @@ $(document).ready(function () {
     /**
      * Returns the minimum position of the given row.
      * @param row {Array} - The array in which it is searched for the minimum.
+     * @param right {boolean} - Tells if we have to search the minimum from right to left.
      * @return {number} - The first minimum.
      */
-    function findMinimum(row) {
+    function findMinimum(row, right) {
         var minimumValue = Number.POSITIVE_INFINITY;
         var minimumPosition = -1;
 
         var currentValue;
 
-        for (var i = 0; i < row.length; i++) {
-            currentValue = row[i];
+        if (right) {  // search minimum from right side
+            for (var i = row.length - 1; i >= 0; i--) {
+                var currentValue = row[i];
 
-            if (currentValue < minimumValue) {
-                minimumValue = currentValue;
-                minimumPosition = i;
+                if (currentValue < minimumValue) {
+                    minimumValue = currentValue;
+                    minimumPosition = i;
+                }
+            }
+        } else {
+            for (var i = 0; i < row.length; i++) {
+                currentValue = row[i];
+
+                if (currentValue < minimumValue) {
+                    minimumValue = currentValue;
+                    minimumPosition = i;
+                }
             }
         }
 

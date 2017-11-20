@@ -151,6 +151,7 @@ TestCase("test_notredame_higgins_heringa", {
         inputData.mismatch = -1;
 
         inputData.useLocalLibrary = true;
+        inputData.totalNumberAlignments = 3;
 
         inputData.baseCostsLocal = 0;
         inputData.enlargementLocal = -2;
