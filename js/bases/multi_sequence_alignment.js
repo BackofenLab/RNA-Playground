@@ -158,6 +158,7 @@ Author: Alexander Mattheis
         } else {  // local
             outputData.alignmentsAndScoresLocal = [];
             outputData.tracebacks = [];
+            outputData.maxNumberOfAlignments = 0;
         }
 
         for (var j = 1; j < inputData.sequences.length; j++) {
@@ -180,6 +181,7 @@ Author: Alexander Mattheis
                     } else {  // local
                         outputData.alignmentsAndScoresLocal[[sequenceA, sequenceB]] = [alignment, ioData[1].score];
                         outputData.tracebacks[[sequenceA, sequenceB]] = ioData[1].tracebackPaths[0];
+                        outputData.maxNumberOfAlignments++;
                     }
                 }
             }

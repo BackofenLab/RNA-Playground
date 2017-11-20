@@ -101,6 +101,8 @@ $(document).ready(function () {
         inputData.matchLocal = inputViewmodel.matchLocal();
         inputData.mismatchLocal = inputViewmodel.mismatchLocal();
 
+        inputData.totalNumberAlignments = inputViewmodel.totalNumberAlignments();
+
         //inputData.maxNumberOptimalAlignments = inputViewmodel.maxNumberOptimalAlignments();
         //inputData.maxNumberOptimalAlignmentsLocal = inputViewmodel.maxNumberOptimalAlignmentsLocal();
     }
@@ -160,7 +162,7 @@ $(document).ready(function () {
         outputData.primaryGlobalWeightLib = computePairwiseWeights(outputData, true);
 
         if (inputData.useLocalLibrary) {
-            //keepBestLocalAlignments();
+            keepBestLocalAlignments(inputData.totalNumberAlignments);
             outputData.primaryLocalWeightLib = computePairwiseWeights(outputData, false);
             addSignals();
         } else  // only global library
@@ -188,17 +190,19 @@ $(document).ready(function () {
                     var alignment = [];
                     var traceback = [];
                     var sequenceIdentities = {};
+                    var noAlignment = false;
 
                     if (global) {
                         alignment = output.alignmentsAndScores[[sequenceA, sequenceB]][0];
                         sequenceIdentities = getSequenceIdentities(alignment, undefined);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
-                    }
-                    else {
-                        alignment = output.alignmentsAndScoresLocal[[sequenceA, sequenceB]][0];
+                    } else {
+                        noAlignment = output.alignmentsAndScoresLocal[[sequenceA, sequenceB]] === undefined;
+                        alignment = !noAlignment ? output.alignmentsAndScoresLocal[[sequenceA, sequenceB]][0] : EMPTY_ALIGNMENT;
+
                         traceback = output.tracebacks[[sequenceA, sequenceB]];
                         sequenceIdentities = getSequenceIdentities(alignment, traceback);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
                     }
-                    primaryWeightLib[[sequenceA, sequenceB]] = sequenceIdentities;
+                    if (!noAlignment) primaryWeightLib[[sequenceA, sequenceB]] = sequenceIdentities;
                 }
             }
         }
@@ -262,9 +266,15 @@ $(document).ready(function () {
         return L;
     }
 
-    function keepBestLocalAlignments(number) {
+    /**
+     * Keeps a user defined number of alignments with highest scores.
+     * @param keepNumber {number} - The number of alignments to keep.
+     */
+    function keepBestLocalAlignments(keepNumber) {
         var alignmentsAndScores = [];
+        var sequencePairs = [];
 
+        // get all alignments
         for (var j = 1; j < inputData.sequences.length; j++) {
             if (inputData.arrayPositionsOfRemovedSequences.indexOf(j) === -1) {  // only if the sequence is not a duplicate
                 for (var i = 0; i < j; i++) {
@@ -272,15 +282,32 @@ $(document).ready(function () {
                     var sequenceB = inputData.sequences[j];
 
                     alignmentsAndScores.push(outputData.alignmentsAndScoresLocal[[sequenceA, sequenceB]]);
+                    sequencePairs.push([sequenceA, sequenceB]);
                 }
             }
         }
 
-        alignmentsAndScores.sort(function (a,b) {
-           return a[1] - b[1];
+        // sort using the score, to remove worst alignments
+        var switches = [];
+
+        alignmentsAndScores.sort(function (a,b) {  // sorted in reverse order: 17 14 12 10 8 ...
+            var value = b[1] - a[1];
+            switches.push(value);
+            return value;
         });
 
-        // number of alignments to keep parameter
+        var i = 0;
+
+        sequencePairs.sort(function (a,b) {  // sort sequence-pairs with same order
+            return switches[i++];
+        });
+
+        var worstSequencePairs = sequencePairs.slice(keepNumber);
+
+        // removement of bad alignments
+        for (var i = 0; i < worstSequencePairs.length; i++) {
+            delete outputData.alignmentsAndScoresLocal[worstSequencePairs[i]];
+        }
     }
 
     /**

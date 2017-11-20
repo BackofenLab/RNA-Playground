@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.multiSequenceInterface", MultiSequenceInterface, startMultiSequenceInterface);
+    namespace("interfaces.multiSequenceInterface", MultiSequenceInterface, startMultiSequenceInterface, getMaxNumberOfAlignments);
 
     // instances
     var alignmentInterfaceInstance;
@@ -26,7 +26,11 @@ Author: Alexander Mattheis
         // inheritance
         alignmentInterfaceInstance = new interfaces.alignmentInterface.AlignmentInterface();
 
-        // public class methods
+        // flags
+        this.sequencesNumberChanged = false;
+        this.lastNumberOfSequences = 0;
+
+            // public class methods
         this.startMultiSequenceInterface = startMultiSequenceInterface;
     }
 
@@ -75,12 +79,16 @@ Author: Alexander Mattheis
         this.mismatch = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH);
 
         if (isTcoffee) {
+            multiSequenceInterfaceInstance.lastNumberOfSequences = viewmodel.sequences().length;
+
             this.baseCostsLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS_LOCAL);
             this.enlargementLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT_LOCAL);
             this.matchLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH_LOCAL);
             this.mismatchLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH_LOCAL);
 
             this.useLocalLibrary = ko.observable(MULTI_SEQUENCE_DEFAULTS.USE_LOCAL_LIBRARY);
+
+            this.totalNumberAlignments = ko.observable(getMaxNumberOfAlignments(viewmodel));
 
             // displayed dynamic formulas
             this.gapStartLocal = ko.computed(
@@ -138,6 +146,28 @@ Author: Alexander Mattheis
                 return getSubformula(viewmodel, false);
             }
         );
+    }
+
+    /**
+     * Computes the maximum number of alignments.
+     * @param inputViewmodel {Object} - The viewmodel which is used to find out the number of alignments.
+     * @return {number} - The number of existing alignments.
+     */
+    function getMaxNumberOfAlignments(inputViewmodel) {
+        var sequences = inputViewmodel.sequences();
+        var hashTable = {};
+
+        var uniqueSequences = sequences.filter(function(sequence) {
+            if (hashTable.hasOwnProperty(sequence))
+                return false;  // remove/filter
+
+            hashTable[sequence] = true;
+
+            return true;  // do not remove/ do not filter
+        });
+
+        var n = uniqueSequences.length;
+        return  (n * (n-1)) / 2;  // Gauss-formula
     }
 
     /**
@@ -229,6 +259,7 @@ Author: Alexander Mattheis
     function processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel) {
         visualViewmodel.removeAllContents();
 
+        debugger;
         // when page was loaded the inputs have not to be updated or you get wrong inputs
         if (inputProcessor.inputUpdatesActivated()) {
             inputViewmodel.sequences(getSequencesArray(inputViewmodel));
@@ -243,6 +274,21 @@ Author: Alexander Mattheis
                 inputViewmodel.enlargementLocal(Number($("#enlargement_local").val()));
                 inputViewmodel.matchLocal(Number($("#match_local").val()));
                 inputViewmodel.mismatchLocal(Number($("#mismatch_local").val()));
+
+                var maxNumberOfAlignments = getMaxNumberOfAlignments(inputViewmodel);
+
+                if (multiSequenceInterfaceInstance.sequencesNumberChanged) { // set to maximum
+                    inputViewmodel.totalNumberAlignments(maxNumberOfAlignments);
+                } else { // use user specified value, if possible
+                    var alignmentNumber = Number($("#total_number_alignments").val());
+
+                    if (alignmentNumber < 0)
+                        inputViewmodel.totalNumberAlignments(0);
+                    else if (alignmentNumber > maxNumberOfAlignments)
+                        inputViewmodel.totalNumberAlignments(maxNumberOfAlignments);
+                    else
+                        inputViewmodel.totalNumberAlignments(alignmentNumber);
+                }
             }
         } else
             inputProcessor.activateInputUpdates();
@@ -258,7 +304,15 @@ Author: Alexander Mattheis
     function getSequencesArray(inputViewmodel) {
         var sequenceArray = [];
 
-        for (var i = 0; i < inputViewmodel.sequences().length; i++) {
+        // setting flag
+        var currentNumberOfSequences = inputViewmodel.sequences().length;
+        var lastNumberOfSequences = multiSequenceInterfaceInstance.lastNumberOfSequences;
+
+        multiSequenceInterfaceInstance.sequencesNumberChanged = currentNumberOfSequences !== lastNumberOfSequences;
+        multiSequenceInterfaceInstance.lastNumberOfSequences = currentNumberOfSequences;  // change to current value
+
+        // change value
+        for (var i = 0; i < currentNumberOfSequences; i++) {
             sequenceArray.push($(".sequence_multi")[i].value.toUpperCase());
         }
 
@@ -391,14 +445,14 @@ Author: Alexander Mattheis
         viewmodels.output.newickString(outputData.newickString);
         viewmodels.visual.drawTree();
 
+        // alignments (using index of sequencePairsNames, so they have to stay above)
+        viewmodels.output.alignmentsGlobal(outputData.librariesData[4]);
+        viewmodels.output.alignmentsLocal(outputData.librariesData[5]);
+
         // libraries
         viewmodels.output.sequencePairsNames(outputData.librariesData[0]);
         viewmodels.output.libPositionPairs(outputData.librariesData[1]);
         viewmodels.output.primLibValues(outputData.librariesData[2]);
         viewmodels.output.extendedLibValues(outputData.librariesData[3]);
-
-        // alignments
-        viewmodels.output.alignmentsGlobal(outputData.librariesData[4]);
-        viewmodels.output.alignmentsLocal(outputData.librariesData[5]);
     }
 }());

@@ -10,7 +10,7 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("interfaces.alignmentInterface", AlignmentInterface,
-        imports, sharedInterfaceOperations, roundValues, getLaTeXTraceFunctions, getRowData, getColumnData, getLaTeXFormula,
+        imports, sharedInterfaceOperations, roundValues, getLaTeXTraceFunctions, getRowData, getLaTeXFormula,
         getDistanceTable, getDistanceTables, reorderGroupSequences, getLibrariesData, sortWithClusterTuples, startProcessing);
 
     // instances
@@ -31,7 +31,6 @@ Author: Alexander Mattheis
         this.roundValues = roundValues;
         this.getLaTeXTraceFunctions = getLaTeXTraceFunctions;
         this.getRowData = getRowData;
-        this.getColumnData = getColumnData;
         this.getLaTeXFormula = getLaTeXFormula;
         this.getDistanceTable = getDistanceTable;
         this.getDistanceTables = getDistanceTables;
@@ -371,13 +370,11 @@ Author: Alexander Mattheis
     function createHirschbergOutputViewmodel(viewmodel, outputData) {
         var traceFunctionsData = getLaTeXTraceFunctions(outputData);
         var rowData = getRowData(outputData);
-        var columnData = getColumnData(outputData);
 
         // header
         viewmodel.recursionNumbersContainer = ko.observable(outputData.recursionNumbersContainer).extend({ deferred: true });;
         viewmodel.traceFunctions = ko.observable(traceFunctionsData);
         viewmodel.currentGlobalRow = ko.observable(rowData);
-        viewmodel.currentGlobalColumn = ko.observable(columnData);
 
         // table header (to avoid a problem between Knockout and MathJax the LaTeX code is generated in viewmodel and not in the view)
         viewmodel.matrixDLatex = ko.observable(getLaTeXFormula(LATEX.FORMULA.D));
@@ -443,62 +440,13 @@ Author: Alexander Mattheis
      */
     function getRowData(outputData) {
         var rows = [];
-        var firstTime = true;
 
         // iterate over all rounds
         for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
-
-            var distanceToMinima = -1;  // because starting with +1
-            var forwardMatrix = outputData.forwardMatrices[k];
-
-            // iterate overall minima
-            for (var i = 0; i < forwardMatrix.length; i++) {
-                if (outputData.minimum[k][0] === i) {
-
-                    var currentPosition = outputData.firstSequencePositions[k][0];
-                    var finalPosition;
-
-                    // first time undefined: row = 0
-                    if (currentPosition === undefined && firstTime) {
-                        finalPosition = 1;
-                        firstTime = false;
-                    } else
-                        finalPosition = currentPosition;
-
-                    rows.push(finalPosition + distanceToMinima);
-                }
-
-                distanceToMinima++;
-            }
+            rows.push(outputData.firstSequencePositions[k][outputData.minimum[k][0]-1]);
         }
 
         return rows;
-    }
-
-    /**
-     * Returns the minimum for each round.
-     * @param outputData {Object} - The data which is used to fill the viewmodel.
-     * @return {Array} - The data which stores the global minimum for each recursion round.
-     */
-    function getColumnData(outputData) {
-        var columns = [];
-
-        // iterate over all rounds
-        for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
-
-            var distanceToMinima = -1;  // because starting with +1
-
-            debugger;
-            // iterate overall minima
-            for (var j = 0; j < outputData.addedRows.length; j++) {
-                if (outputData.minimum[k][1] === j)
-                    columns.push(outputData.secondSequencePositions[k][0] + distanceToMinima);
-
-                distanceToMinima++;
-            }
-        }
-
-        return columns;
     }
 
     /**
@@ -874,8 +822,8 @@ Author: Alexander Mattheis
         viewmodel.extendedLibValues = ko.observable(outputData.librariesData[3]);
 
         // alignments
-        viewmodel.alignmentsGlobal = ko.observable(outputData.librariesData[4]);
-        viewmodel.alignmentsLocal = ko.observable(outputData.librariesData[5]);
+        viewmodel.alignmentsGlobal = ko.observable(outputData.librariesData[4]).extend({ deferred: true });
+        viewmodel.alignmentsLocal = ko.observable(outputData.librariesData[5]).extend({ deferred: true });
     }
 
     /**

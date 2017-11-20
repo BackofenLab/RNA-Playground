@@ -443,14 +443,12 @@ Author: Alexander Mattheis
      */
     function changeHirschbergOutput(outputData, viewmodels) {
         var traceFunctionsData = alignmentInterfaceInstance.getLaTeXTraceFunctions(outputData);
-        var columnData = alignmentInterfaceInstance.getColumnData(outputData);
         var rowData = alignmentInterfaceInstance.getRowData(outputData);
 
         // header
         viewmodels.output.recursionNumbersContainer(outputData.recursionNumbersContainer);
         viewmodels.output.traceFunctions(traceFunctionsData);
         viewmodels.output.currentGlobalRow(rowData);
-        viewmodels.output.currentGlobalColumn(columnData);
 
         // table header (to avoid a problem between Knockout and MathJax the LaTeX code is generated in viewmodel and not in the view)
         viewmodels.output.matrixDLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D));
