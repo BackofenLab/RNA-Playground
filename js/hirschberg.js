@@ -197,7 +197,7 @@ $(document).ready(function () {
 
             var sumRow = addRows(forwardRow, mirroredBackwardRow);
 
-            var minimumColumnPosJ = findMinimum(sumRow, isRightNode);
+            var minimumColumnPosJ = findMinimum(sumRow);
 
             createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers);
         }
@@ -268,32 +268,20 @@ $(document).ready(function () {
     /**
      * Returns the minimum position of the given row.
      * @param row {Array} - The array in which it is searched for the minimum.
-     * @param right {boolean} - Tells if we have to search the minimum from right to left.
      * @return {number} - The first minimum.
      */
-    function findMinimum(row, right) {
+    function findMinimum(row) {
         var minimumValue = Number.POSITIVE_INFINITY;
         var minimumPosition = -1;
 
         var currentValue;
 
-        if (right) {  // search minimum from right side
-            for (var i = row.length - 1; i >= 0; i--) {
-                var currentValue = row[i];
+        for (var i = 0; i < row.length; i++) {
+            currentValue = row[i];
 
-                if (currentValue < minimumValue) {
-                    minimumValue = currentValue;
-                    minimumPosition = i;
-                }
-            }
-        } else {
-            for (var i = 0; i < row.length; i++) {
-                currentValue = row[i];
-
-                if (currentValue < minimumValue) {
-                    minimumValue = currentValue;
-                    minimumPosition = i;
-                }
+            if (currentValue < minimumValue) {
+                minimumValue = currentValue;
+                minimumPosition = i;
             }
         }
 
