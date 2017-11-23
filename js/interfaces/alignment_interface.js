@@ -816,10 +816,10 @@ Author: Alexander Mattheis
         viewmodel.newickString = ko.observable(outputData.newickString);
 
         // libraries
-        viewmodel.sequencePairsNames = ko.observable(outputData.librariesData[0]);
-        viewmodel.libPositionPairs = ko.observable(outputData.librariesData[1]);
-        viewmodel.primLibValues = ko.observable(outputData.librariesData[2]);
-        viewmodel.extendedLibValues = ko.observable(outputData.librariesData[3]);
+        viewmodel.sequencePairsNames = ko.observable(outputData.librariesData[0]).extend({ deferred: true });
+        viewmodel.libPositionPairs = ko.observable(outputData.librariesData[1]).extend({ deferred: true });
+        viewmodel.primLibValues = ko.observable(outputData.librariesData[2]).extend({ deferred: true });
+        viewmodel.extendedLibValues = ko.observable(outputData.librariesData[3]).extend({ deferred: true });
 
         // alignments
         viewmodel.alignmentsGlobal = ko.observable(outputData.librariesData[4]).extend({ deferred: true });
@@ -869,9 +869,11 @@ Author: Alexander Mattheis
                 // split positionKey to get an array
                 var splittedPositionKey = positionKey.split(SYMBOLS.COMMA);
 
-                tempPositionPairs.push([splittedPositionKey[0], splittedPositionKey[1]]);
-                tempPrimLibValues.push(valueL);
-                tempExtendedLibValues.push(valueEL);
+                if (valueEL !== 0) {
+                    tempPositionPairs.push([splittedPositionKey[0], splittedPositionKey[1]]);
+                    tempPrimLibValues.push(valueL);
+                    tempExtendedLibValues.push(valueEL);
+                }
             }
 
             if (tempPositionPairs.length !== 0) {  // don't show names of sequence pairs for which no L or EL exists

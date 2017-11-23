@@ -474,8 +474,8 @@ Author: Alexander Mattheis
         // going through each element of the path and look on the differences between vectors
         // to find out the type of difference vector (arrow)
         for (var i = 1; i < path.length; i++) {
-            var horizontalDifference = path[i].j - path[i - 1].j;
             var verticalDifference = path[i].i - path[i - 1].i;
+            var horizontalDifference = path[i].j - path[i - 1].j;
 
             if (verticalDifference === 1 && horizontalDifference === 1) {  // diagonal case
                 var aChar = inputData.sequenceA[currentPositionA];

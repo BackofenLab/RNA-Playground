@@ -78,12 +78,15 @@ TestCase("test_notredame_higgins_heringa", {
 
         // output: extended weight library
         assertEquals(100, outputData.extendedWeightLib[["ACGT","AT"]][[1,1]]);
+        assertEquals(50, outputData.extendedWeightLib[["ACGT","AT"]][[2,1]]);  // earlier zero-edge
         assertEquals(150, outputData.extendedWeightLib[["ACGT","AT"]][[4,2]]);
 
         assertEquals(200/3, outputData.extendedWeightLib[["ACGT","GCT"]][[1,1]]);
+        assertEquals(50, outputData.extendedWeightLib[["ACGT","GCT"]][[1,2]]);  // earlier zero-edge
         assertEquals(200/3, outputData.extendedWeightLib[["ACGT","GCT"]][[2,2]]);
         assertEquals(350/3, outputData.extendedWeightLib[["ACGT","GCT"]][[4,3]]);
 
+        assertEquals(200/3, outputData.extendedWeightLib[["AT","GCT"]][[1,1]]);  // earlier zero-edge
         assertEquals(50, outputData.extendedWeightLib[["AT","GCT"]][[1,2]]);
         assertEquals(350/3, outputData.extendedWeightLib[["AT","GCT"]][[2,3]]);
 
@@ -110,20 +113,21 @@ TestCase("test_notredame_higgins_heringa", {
         assertEquals(250, outputData.groupMatrices["ab"][4][2]);
 
         // matrix ab~c (mirrored, so really "c~ab")
-        assertEquals(100/3, outputData.groupMatrices["cab"][1][1]);
-        assertEquals(100/3, outputData.groupMatrices["cab"][1][2]);
-        assertEquals(100/3, outputData.groupMatrices["cab"][1][3]);
-        assertEquals(100/3, outputData.groupMatrices["cab"][1][4]);
+        debugger;
+        assertEquals(200/3, outputData.groupMatrices["cab"][1][1]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][1][2]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][1][3]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][1][4]);
 
-        assertEquals(100/3, outputData.groupMatrices["cab"][2][1]);
-        assertEquals(200/3, outputData.groupMatrices["cab"][2][2]);
-        assertEquals(200/3, outputData.groupMatrices["cab"][2][3]);
-        assertEquals(200/3, outputData.groupMatrices["cab"][2][4]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][2][1]);
+        assertEquals(100, outputData.groupMatrices["cab"][2][2]);
+        assertEquals(100, outputData.groupMatrices["cab"][2][3]);
+        assertEquals(100, outputData.groupMatrices["cab"][2][4]);
 
-        assertEquals(100/3, outputData.groupMatrices["cab"][3][1]);
-        assertEquals(200/3, outputData.groupMatrices["cab"][3][2]);
-        assertEquals(200/3, outputData.groupMatrices["cab"][3][3]);
-        assertEquals(550/3, outputData.groupMatrices["cab"][3][4]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][3][1]);
+        assertEquals(100, outputData.groupMatrices["cab"][3][2]);
+        assertEquals(100, outputData.groupMatrices["cab"][3][3]);
+        assertEquals(Math.round(650/3), Math.round(outputData.groupMatrices["cab"][3][4]));
 
         // output: final
         assertEquals(-5, outputData.score);
@@ -234,20 +238,20 @@ TestCase("test_notredame_higgins_heringa", {
         assertEquals(1100/3, outputData.groupMatrices["ab"][4][2]);
 
         // matrix ab~c (mirrored, so really "c~ab")
-        assertEquals(100/3, outputData.groupMatrices["cab"][1][1]);
-        assertEquals(100/3, outputData.groupMatrices["cab"][1][2]);
-        assertEquals(100/3, outputData.groupMatrices["cab"][1][3]);
-        assertEquals(100/3, outputData.groupMatrices["cab"][1][4]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][1][1]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][1][2]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][1][3]);
+        assertEquals(200/3, outputData.groupMatrices["cab"][1][4]);
 
-        assertEquals(100/3, outputData.groupMatrices["cab"][2][1]);
-        assertEquals(Math.round(350/3), Math.round(outputData.groupMatrices["cab"][2][2]));
-        assertEquals(Math.round(350/3), Math.round(outputData.groupMatrices["cab"][2][3]));
-        assertEquals(Math.round(350/3), Math.round(outputData.groupMatrices["cab"][2][4]));
+        assertEquals(200/3, outputData.groupMatrices["cab"][2][1]);
+        assertEquals(150, outputData.groupMatrices["cab"][2][2]);
+        assertEquals(150, outputData.groupMatrices["cab"][2][3]);
+        assertEquals(150, outputData.groupMatrices["cab"][2][4]);
 
-        assertEquals(100/3, outputData.groupMatrices["cab"][3][1]);
-        assertEquals(Math.round(350/3), Math.round(outputData.groupMatrices["cab"][3][2]));
-        assertEquals(Math.round(350/3), Math.round(outputData.groupMatrices["cab"][3][3]));
-        assertEquals(Math.round(925/3), Math.round(outputData.groupMatrices["cab"][3][4]));
+        assertEquals(200/3, outputData.groupMatrices["cab"][3][1]);
+        assertEquals(150, outputData.groupMatrices["cab"][3][2]);
+        assertEquals(150, outputData.groupMatrices["cab"][3][3]);
+        assertEquals(Math.round(1025/3), Math.round(outputData.groupMatrices["cab"][3][4]));
 
         // output: final
         assertEquals(-5, outputData.score);

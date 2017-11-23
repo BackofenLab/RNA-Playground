@@ -173,6 +173,7 @@ $(document).ready(function () {
      * Computes the sequence identity.
      * So, how much is identical between two sequences
      * with respect to the smaller sequence.
+     * Hint: Without symmetries L^{a,b}(i,j) = L^{b,a}(j,i).
      * @param output {Object} - The output which is used to compute a primary library.
      * @param global {boolean} - Tells if local or global data should be used for computation.
      */
@@ -194,13 +195,13 @@ $(document).ready(function () {
 
                     if (global) {
                         alignment = output.alignmentsAndScores[[sequenceA, sequenceB]][0];
-                        sequenceIdentities = getSequenceIdentities(alignment, undefined);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                        sequenceIdentities = getSequenceIdentities(sequenceA, sequenceB, alignment, undefined);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
                     } else {
                         noAlignment = output.alignmentsAndScoresLocal[[sequenceA, sequenceB]] === undefined;
                         alignment = !noAlignment ? output.alignmentsAndScoresLocal[[sequenceA, sequenceB]][0] : EMPTY_ALIGNMENT;
 
                         traceback = output.tracebacks[[sequenceA, sequenceB]];
-                        sequenceIdentities = getSequenceIdentities(alignment, traceback);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                        sequenceIdentities = getSequenceIdentities(sequenceA, sequenceB, alignment, traceback);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
                     }
                     if (!noAlignment) primaryWeightLib[[sequenceA, sequenceB]] = sequenceIdentities;
                 }
@@ -212,18 +213,20 @@ $(document).ready(function () {
 
     /**
      * Computes a structure L with elements
-     * containing the sequence identity.
+     * containing the sequence identity or zero.
      * @param alignment - The alignment for which you want compute a structure that returns position sequence identities.
+     * @param sequenceA - The first sequence which is used to create positions.
+     * @param sequenceB - The second sequence which is used to create positions.
      * @param traceback {Array} - The traceback of the alignment which tells the defined positions.
-     * @return {Object}
+     * @return {Object} - A structure containing the weights for specific positions.
      */
-    function getSequenceIdentities(alignment, traceback) {
+    function getSequenceIdentities(sequenceA, sequenceB, alignment, traceback) {
         var global = traceback === undefined;  // global alignments do not need the traceback to get defined positions
 
-        var sequenceA = alignment[0];
-        var sequenceB = alignment[2];
+        var alignedSequenceA = alignment[0];
+        var alignedSequenceB = alignment[2];
 
-        var sequenceLength = sequenceA.length;  // OR: sequenceB.length
+        var sequenceLength = alignedSequenceA.length;  // OR: alignedSequenceB.length
         var numCharactersInA = 0;
         var numCharactersInB = 0;
         var numMatches = 0;
@@ -236,23 +239,23 @@ $(document).ready(function () {
         for (var k = 0; k < sequenceLength; k++) {
             var currentPosition = global ? undefined : traceback[k+1];  // "+1" to jump over local end-position (with value 0)
 
-            if (sequenceA[k] === SYMBOLS.GAP) {  // means there is no gap in sequence b
+            if (alignedSequenceA[k] === SYMBOLS.GAP) {  // means there is no gap in sequence b
                 numCharactersInB++;
-            } else if (sequenceB[k] === SYMBOLS.GAP) {  // means there is no gap in sequence a
+            } else if (alignedSequenceB[k] === SYMBOLS.GAP) {  // means there is no gap in sequence a
                 numCharactersInA++;
             } else {  // match or mismatch
                 numCharactersInA++;
                 numCharactersInB++;
                 numMatchesOrMismatches++;
 
-                numMatches += sequenceA[k] === sequenceB[k] ? 1 : 0;  // if match, then increment
+                numMatches += alignedSequenceA[k] === alignedSequenceB[k] ? 1 : 0;  // if match, then increment
 
                 sequenceIdentity = (100 * numMatches) / numMatchesOrMismatches;
 
                 if (global)
                     L[[numCharactersInA, numCharactersInB]] = sequenceIdentity;  // creating key with non-final value
                 else  // local
-                    L[[currentPosition.i, currentPosition.j]] = sequenceIdentity;
+                    L[[currentPosition.i, currentPosition.j]] = sequenceIdentity;  // creating key with non-final value
             }
         }
 
@@ -263,7 +266,95 @@ $(document).ready(function () {
         for (var i = 0; i < definedKeys.length; i++)
             L[definedKeys[i]] = sequenceIdentity;  // overwriting wrong value
 
+        debugger;
+        createZeroEdgesKeys(L, sequenceA, sequenceB, traceback);
+
         return L;
+    }
+
+    /**
+     * Creates keys {i,j} of a structure L for the positions which have zero weight.
+     * This positions are later needed for the extension step.
+     * Hint: It is possible that such an edge with weight 0 gets a weight > 0 during extension.
+     * (common mistake to forget that)
+     * Hint 2: It is a separated function and this allows to turn it off for more performance (if needed).
+     * @param L {Object} - The structure which stores the weight.
+     * @param sequenceA - The first sequence which is used to create positions.
+     * @param sequenceB - The second sequence which is used to create positions.
+     * @param traceback {Array} - Contains position-information of a local sequences.
+     * @return {Object} - A structure containing the weights for specific positions.
+     */
+    function createZeroEdgesKeys(L, sequenceA, sequenceB, traceback) {
+        var global = traceback === undefined;  // global alignments do not need the traceback to get defined positions
+
+        var sequenceAPositions;
+        var sequenceBPositions;
+
+        if (global) {
+            sequenceAPositions = global ? getAllPositions(sequenceA) : positions[0];
+            sequenceBPositions = global ? getAllPositions(sequenceB) : positions[1];
+        } else {  // if local
+            debugger;
+            var positions = getPositionsFromTraceback(traceback);
+
+            sequenceAPositions = positions[0];
+            sequenceBPositions = positions[1];
+        }
+
+        for (var i = 0; i < sequenceAPositions.length; i++) {  // every position with every other position
+            var posI = sequenceAPositions[i];
+
+            for (var j = 0; j < sequenceBPositions.length; j++) {
+                var posJ = sequenceBPositions[j];
+
+                if (L[[posI,posJ]] === undefined)
+                    L[[posI,posJ]] = 0;
+            }
+        }
+
+        return L;
+    }
+
+    /**
+     * Returns all positions of a sequence starting. This is needed for local alignments.
+     * @param sequence {string} - The sequence from which all positions are needed to create a key.
+     */
+    function getAllPositions(sequence) {
+        var positions = [];
+
+        for (var i = 0; i < sequence.length; i++) {
+            positions.push(i + 1);  // "+1" because counting starts in this algorithm with 1
+        }
+
+        return positions;
+    }
+
+    /**
+     * Recomputes the defined positions of the aligned sequences used the given traceback path.
+     * @param path {Array} - Contains position-information of local sequences.
+     * @return {[positionsInA, positionsInB]} - The positions from sequences which are used this traceback.
+     */
+    function getPositionsFromTraceback(path) {
+        var positionsInA = [];
+        var positionsInB = [];
+
+        // go over the traceback and look if it was a match, mismatch or something else
+        for (var k = 1; k < path.length; k++) {
+            var verticalDifference = path[k].i - path[k - 1].i;
+            var horizontalDifference = path[k].j - path[k - 1].j;
+
+            if (verticalDifference === 1 && horizontalDifference === 1) {  // diagonal case
+                positionsInA.push(path[k].i);
+                positionsInB.push(path[k].j);
+            }  else if (horizontalDifference > 0) {  // horizontal case
+                positionsInB.push(path[k].j);
+            } else if (verticalDifference > 0) {  // vertical case
+                // Hint: for Gotoh really "else if" is needed because you can switch between matrices
+                positionsInA.push(path[k].i);
+            }
+        }
+
+        return [positionsInA, positionsInB];
     }
 
     /**
@@ -430,7 +521,7 @@ $(document).ready(function () {
         // iterate over each element in primary library (so over all ii')
         for (var i = 0; i < outerPrimLibKeys.length; i++) {
             var alignmentKey = outerPrimLibKeys[i].split(SYMBOLS.COMMA);  // [a,b]
-            var leftAlignmentKeyArgument = alignmentKey[0];  // a -> [character] = [ALIGNED SEQUENCE]
+            var leftAlignmentKeyArgument = alignmentKey[0];  // a -> [character] = [NOT ALIGNED SEQUENCE]
             var rightAlignmentKeyArgument = alignmentKey[1];  // b
 
             var innerPrimLibKeys = Object.keys(outputData.primaryWeightLib[outerPrimLibKeys[i]]);  // [(2,3), (2,5), ..., (5,7)]
@@ -704,13 +795,16 @@ $(document).ready(function () {
                 }
 
                 if (L !== undefined) {
-                    var argI = i - getNumberOfNeutrals(preSequenceA, i);
-                    var argJ = j - getNumberOfNeutrals(preSequenceB, j);
+                    // neutral symbols should produce always zero weight
+                    if (preSequenceA[i-1] !== SYMBOLS.NONE && preSequenceB[j-1] !== SYMBOLS.NONE) {  // "-1" because counting starts with 1
+                        var argI = i - getNumberOfNeutrals(preSequenceA, i);  // remove the number of neutrals to get the position within sequence
+                        var argJ = j - getNumberOfNeutrals(preSequenceB, j);
 
-                    if (switchArguments)
-                        weight += L[[argJ,argI]] !== undefined ? L[[argJ,argI]] : 0;
-                    else
-                        weight += L[[argI,argJ]] !== undefined ? L[[argI,argJ]] : 0;  // not defined positions have always score 0
+                        if (switchArguments)
+                            weight += L[[argJ,argI]] !== undefined ? L[[argJ,argI]] : 0;
+                        else
+                            weight += L[[argI,argJ]] !== undefined ? L[[argI,argJ]] : 0;  // not defined positions have always score 0
+                    }
                 }
             }
         }
@@ -727,7 +821,7 @@ $(document).ready(function () {
     function getNumberOfNeutrals(sequence, position) {
         var numOfNeutrals = 0;
 
-        for (var i = 0; i <= position; i++) {
+        for (var i = 0; i < position; i++) {  // exclusive the position, because counting starts with 1
             if (sequence[i] === SYMBOLS.NONE)
                 numOfNeutrals++;
         }

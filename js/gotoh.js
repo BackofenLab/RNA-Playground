@@ -210,6 +210,7 @@ $(document).ready(function () {
             }
         }
 
+        debugger;
         // score is stored in the right bottom cell
         outputData.score = outputData.matrix[inputData.matrixHeight - 1][inputData.matrixWidth - 1];
     }

@@ -25,7 +25,6 @@ load:
   - js/upgma.js
   - js/waterman_smith_beyer.js
 test:
-  - js/tests/test_hirschberg.js
   - js/tests/test_notredame_higgins_heringa.js
 
   - js/tests/test_arslan_egecioglu_pevzner.js
