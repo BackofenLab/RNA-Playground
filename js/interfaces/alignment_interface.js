@@ -816,10 +816,10 @@ Author: Alexander Mattheis
         viewmodel.newickString = ko.observable(outputData.newickString);
 
         // libraries
-        viewmodel.sequencePairsNames = ko.observable(outputData.librariesData[0]).extend({ deferred: true });
-        viewmodel.libPositionPairs = ko.observable(outputData.librariesData[1]).extend({ deferred: true });
-        viewmodel.primLibValues = ko.observable(outputData.librariesData[2]).extend({ deferred: true });
-        viewmodel.extendedLibValues = ko.observable(outputData.librariesData[3]).extend({ deferred: true });
+        viewmodel.sequencePairsNames = ko.observable(outputData.librariesData[0]);
+        viewmodel.libPositionPairs = ko.observable(outputData.librariesData[1]);
+        viewmodel.primLibValues = ko.observable(outputData.librariesData[2]);
+        viewmodel.extendedLibValues = ko.observable(outputData.librariesData[3]);
 
         // alignments
         viewmodel.alignmentsGlobal = ko.observable(outputData.librariesData[4]).extend({ deferred: true });
