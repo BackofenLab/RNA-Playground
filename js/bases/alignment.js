@@ -59,6 +59,8 @@ Author: Alexander Mattheis
         alignmentInstance = this;
         childInstance = child;
 
+        this.stopTraceback = false;
+
         // public methods
         this.getInput = getInput;
 
@@ -330,6 +332,10 @@ Author: Alexander Mattheis
                 if (alignmentInstance.stopTraceback)
                     break;
 
+                if (inputData.numberOfAlignmentsPerSequencePair !== undefined &&
+                    childInstance.numberOfTracebacks + 1 >= inputData.numberOfAlignmentsPerSequencePair)
+                    alignmentInstance.stopTraceback = true;
+
                 if (inputData.computeOneAlignment)  // extension to speed up Feng-Doolittle
                     alignmentInstance.stopTraceback = true;
 
@@ -393,12 +399,17 @@ Author: Alexander Mattheis
         for (var i = 0; i < neighboured.length; i++) {
             if (outputData.matrix[neighboured[i].i][neighboured[i].j] === 0  // stop criteria checks
                 || (pathLength !== -1 && path.length >= pathLength)
-                || outputData.moreTracebacks) {
+                || outputData.moreTracebacks
+                || alignmentInstance.stopTraceback) {
 
                 if (alignmentInstance.stopTraceback)
                     break;
 
-                if (inputData.computeOneAlignment)  // extension to speed up T-Coffee's local alignment
+                if (inputData.numberOfLocalAlignmentsPerSequencePair !== undefined &&
+                    childInstance.numberOfTracebacks + 1 >= inputData.numberOfLocalAlignmentsPerSequencePair)
+                    alignmentInstance.stopTraceback = true;
+
+                if (inputData.computeOneAlignment)  // extension to speed up Feng-Doolittle
                     alignmentInstance.stopTraceback = true;
 
                 path.push(neighboured[i]);

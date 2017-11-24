@@ -11,7 +11,6 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    debugger;
     if (loaded === ALGORITHMS.NEEDLEMAN_WUNSCH) {  // to avoid self execution on a script import
         needlemanWunsch.startNeedlemanWunsch();
         loaded = ALGORITHMS.NONE;

@@ -8,7 +8,7 @@ Author: Alexander Mattheis
 TestCase("test_notredame_higgins_heringa", {
     /**
      * Short sequences test.
-     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     * @see Test sequences are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_1": function () {
         var algorithm = new notredameHigginsHeringa.NotredameHigginsHeringa();
@@ -24,7 +24,9 @@ TestCase("test_notredame_higgins_heringa", {
         inputData.match = 1;
         inputData.mismatch = -1;
 
+        inputData.globalAlignmentsPerSequencePair = 1;
         inputData.useLocalLibrary = false;
+        inputData.localAlignmentsPerSequencePair = 1;
 
         algorithm.setIO(inputData, {});
 
@@ -138,7 +140,7 @@ TestCase("test_notredame_higgins_heringa", {
 
     /**
      * Short sequences test.
-     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     * @see Test sequences are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_2": function () {
         var algorithm = new notredameHigginsHeringa.NotredameHigginsHeringa();
@@ -154,8 +156,10 @@ TestCase("test_notredame_higgins_heringa", {
         inputData.match = 1;
         inputData.mismatch = -1;
 
+        inputData.globalAlignmentsPerSequencePair = 1;
         inputData.useLocalLibrary = true;
         inputData.totalNumberAlignments = 3;
+        inputData.localAlignmentsPerSequencePair = 1;
 
         inputData.baseCostsLocal = 0;
         inputData.enlargementLocal = -2;
@@ -217,8 +221,8 @@ TestCase("test_notredame_higgins_heringa", {
         assertEquals(Math.round(500/3), Math.round(outputData.extendedWeightLib[["ACGT","AT"]][[4,2]]));
 
         assertEquals(200/3, outputData.extendedWeightLib[["ACGT","GCT"]][[1,1]]);
-        assertEquals(Math.round(500/3),  Math.round(outputData.extendedWeightLib[["ACGT","GCT"]][[2,2]]));
-        assertEquals(Math.round(500/3),  Math.round(outputData.extendedWeightLib[["ACGT","GCT"]][[4,3]]));
+        assertEquals(Math.round(500/3), Math.round(outputData.extendedWeightLib[["ACGT","GCT"]][[2,2]]));
+        assertEquals(Math.round(500/3), Math.round(outputData.extendedWeightLib[["ACGT","GCT"]][[4,3]]));
 
         assertEquals(50, outputData.extendedWeightLib[["AT","GCT"]][[1,2]]);
         assertEquals(Math.round(650/3), Math.round(outputData.extendedWeightLib[["AT","GCT"]][[2,3]]));
@@ -258,5 +262,95 @@ TestCase("test_notredame_higgins_heringa", {
         assertEquals("GC_T", outputData.progressiveAlignment[0]);
         assertEquals("ACGT", outputData.progressiveAlignment[1]);
         assertEquals("A__T", outputData.progressiveAlignment[2]);
+    },
+
+    /**
+     * Two alignments test.
+     */
+    "test_3": function () {
+        var algorithm = new notredameHigginsHeringa.NotredameHigginsHeringa();
+
+        var inputData = {};
+        inputData.sequences = ["ACGT", "AT", "GCT"];
+
+        inputData.calculationType = "similarity";
+        inputData.arrayPositionsOfRemovedSequences = [];
+
+        inputData.baseCosts = 0;
+        inputData.enlargement = -2;
+        inputData.match = 1;
+        inputData.mismatch = -1;
+
+        inputData.globalAlignmentsPerSequencePair = 2;  // two alignments
+        inputData.useLocalLibrary = false;
+        inputData.totalNumberAlignments = 3;
+        inputData.localAlignmentsPerSequencePair = 1;
+
+        inputData.baseCostsLocal = 0;
+        inputData.enlargementLocal = -2;
+        inputData.matchLocal = 1;
+        inputData.mismatchLocal = -1;
+
+        algorithm.setIO(inputData, {});
+
+        var ioData = algorithm.compute();
+        var outputData = ioData[1];
+
+        // output: primary weight library
+        assertEquals(200, outputData.primaryWeightLib[["ACGT","AT"]][[1,1]]);
+        assertEquals(200, outputData.primaryWeightLib[["ACGT","AT"]][[4,2]]);
+
+        assertEquals(200/3, outputData.primaryWeightLib[["ACGT","GCT"]][[1,1]]);
+        assertEquals(200/3, outputData.primaryWeightLib[["ACGT","GCT"]][[2,2]]);
+        assertEquals(200/3, outputData.primaryWeightLib[["ACGT","GCT"]][[4,3]]);
+
+        assertEquals(50, outputData.primaryWeightLib[["AT","GCT"]][[1,1]]);
+        assertEquals(50, outputData.primaryWeightLib[["AT","GCT"]][[1,2]]);
+        assertEquals(100, outputData.primaryWeightLib[["AT","GCT"]][[2,3]]);
+    },
+
+    /**
+     * Two local alignments test.
+     */
+    "test_4": function () {
+        var algorithm = new notredameHigginsHeringa.NotredameHigginsHeringa();
+
+        var inputData = {};
+        inputData.sequences = ["ACGT", "AT", "GCT"];
+
+        inputData.calculationType = "similarity";
+        inputData.arrayPositionsOfRemovedSequences = [];
+
+        inputData.baseCosts = 0;
+        inputData.enlargement = -2;
+        inputData.match = 1;
+        inputData.mismatch = -1;
+
+        inputData.globalAlignmentsPerSequencePair = 1;  // two alignments
+        inputData.useLocalLibrary = true;
+        inputData.totalNumberAlignments = 3;
+        inputData.localAlignmentsPerSequencePair = 2;
+
+        inputData.baseCostsLocal = 0;
+        inputData.enlargementLocal = -2;
+        inputData.matchLocal = 1;
+        inputData.mismatchLocal = -1;
+
+        algorithm.setIO(inputData, {});
+
+        var ioData = algorithm.compute();
+        var outputData = ioData[1];
+
+        // output: primary weight library
+        assertEquals(200, outputData.primaryWeightLib[["ACGT","AT"]][[1,1]]);
+        assertEquals(200, outputData.primaryWeightLib[["ACGT","AT"]][[4,2]]);
+
+        assertEquals(200/3, outputData.primaryWeightLib[["ACGT","GCT"]][[1,1]]);
+        assertEquals(Math.round(500/3), Math.round(outputData.primaryWeightLib[["ACGT","GCT"]][[2,2]]));
+        assertEquals(100, outputData.primaryWeightLib[["ACGT","GCT"]][[3,1]]);
+        assertEquals(200/3, outputData.primaryWeightLib[["ACGT","GCT"]][[4,3]]);
+
+        assertEquals(50, outputData.primaryWeightLib[["AT","GCT"]][[1,2]]);
+        assertEquals(150, outputData.primaryWeightLib[["AT","GCT"]][[2,3]]);
     }
 });

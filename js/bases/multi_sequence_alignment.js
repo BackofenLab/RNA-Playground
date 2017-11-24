@@ -171,7 +171,9 @@ Author: Alexander Mattheis
                     var alignment = getAlignment(ioData);
 
                     if (global) {
-                        outputData.alignmentsAndScores[[sequenceA, sequenceB]] = [alignment, ioData[1].score];  // for faster access
+                        // for faster access: hash-table
+                        outputData.alignmentsAndScores[[sequenceA, sequenceB]]
+                            = [alignment, ioData[1].score, ioData[1].alignments];  // extension for T-Coffee: all alignments stored
 
                         outputData.alignmentLengths.push(getAlignmentLength(alignment));
                         outputData.gapNumbers.push(getNumberOfGaps(alignment));
@@ -179,8 +181,10 @@ Author: Alexander Mattheis
                         outputData.sequencePairs.push([sequenceA, sequenceB]);
                         outputData.similarities.push(ioData[1].score);
                     } else {  // local
-                        outputData.alignmentsAndScoresLocal[[sequenceA, sequenceB]] = [alignment, ioData[1].score];
-                        outputData.tracebacks[[sequenceA, sequenceB]] = ioData[1].tracebackPaths[0];
+                        outputData.alignmentsAndScoresLocal[[sequenceA, sequenceB]]
+                            = [alignment, ioData[1].score, ioData[1].alignments];  // extension for T-Coffee: all alignments stored
+
+                        outputData.tracebacks[[sequenceA, sequenceB]] = ioData[1].tracebackPaths;
                         outputData.maxNumberOfAlignments++;
                     }
                 }
@@ -221,9 +225,9 @@ Author: Alexander Mattheis
 
     /**
      * Computes Gotoh with the given input sequences and the function.
-     * @param {Object} - The algorithm with which the alignment data is computed.
+     * @param algorithm {Object} - The algorithm with which the alignment data is computed.
      * @param input {Object} - The initialized Gotoh input structure.
-     * @param input {Object} - The initialized Gotoh output structure.
+     * @param output {Object} - The initialized Gotoh output structure.
      * @param sequenceA {string} - The first sequence.
      * @param sequenceB {string} - The second sequence.
      * @return {Object} - Output data of Gotoh with the given sequences in the input.
@@ -235,7 +239,13 @@ Author: Alexander Mattheis
         input.matrixHeight = input.sequenceA.length + 1;
         input.matrixWidth = input.sequenceB.length + 1;
 
-        input.computeOneAlignment = true;  // speed up for Feng-Doolittle and other multi-alignment algorithms
+        if (algorithm.type === ALGORITHMS.FENG_DOOLITTLE)
+            input.computeOneAlignment = true;  // speed up for Feng-Doolittle and maybe later other multi-alignment algorithms
+        else {
+            input.computeOneAlignment = false;
+            input.numberOfAlignmentsPerSequencePair = inputData.globalAlignmentsPerSequencePair;
+            input.numberOfLocalAlignmentsPerSequencePair = inputData.localAlignmentsPerSequencePair;
+        }
         input.recomputeTraceback = output.tracebackPaths === undefined;
         algorithm.setIO(input, output);
 
@@ -591,7 +601,6 @@ Author: Alexander Mattheis
     function createProgressiveAlignment(treeBranches) {
         initializeGroups();
 
-        debugger;
         for (var i = 0; i < treeBranches.length; i++) {
             var treeBranch = treeBranches[i];
 

@@ -9,7 +9,7 @@ TestCase("test_sum_of_pairs", {
     /**
      * Gotoh alignment to test correctness.
      * Short sequences test.
-     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     * @see Test sequences are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_1": function () {
         var inputData = {};
@@ -48,7 +48,7 @@ TestCase("test_sum_of_pairs", {
 
     /**
      * Gotoh alignment to test correctness.
-     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     * @see Test sequences are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_3": function () {
         var inputData = {};
@@ -71,7 +71,7 @@ TestCase("test_sum_of_pairs", {
 
     /**
      * Needleman-Wunsch alignment to test correctness.
-     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     * @see Test sequences are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_4": function () {
         var inputData = {};
@@ -88,7 +88,7 @@ TestCase("test_sum_of_pairs", {
 
     /**
      * Needleman-Wunsch alignment to test correctness..
-     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     * @see Test sequences are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_5": function () {
         var inputData = {};
@@ -105,7 +105,7 @@ TestCase("test_sum_of_pairs", {
 
     /**
      * Needleman-Wunsch alignment to test correctness.
-     * @see Test values are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
+     * @see Test sequences are taken from project Algorithms for Bioninformatics of Alexander Mattheis.
      */
     "test_6": function () {
         var inputData = {};

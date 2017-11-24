@@ -8,7 +8,7 @@ Author: Alexander Mattheis
 TestCase("test_arslan_egecioglu_pevzner", {
     /**
      * Long sequences test.
-     * @see Test values are taken from lecture Bioinformatics I.
+     * @see Test sequences are taken from lecture Bioinformatics I.
      */
     "test_1": function () {
         var algorithm = new arslanEgeciougluPevzner.ArslanEgeciougluPevzner();

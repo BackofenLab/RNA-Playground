@@ -286,6 +286,9 @@ var MOVE = {
 
 var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
     CALCULATION: "similarity",
+    GLOBAL_ALIGNMENTS_PER_SEQUENCE: 1,
+    LOCAL_ALIGNMENTS_PER_SEQUENCE: 2,
+
     SEQUENCES: [
         "GARFIELD-THE-LAST-FAT-CAT",
         "GARFIELD-THE-FAST-CAT",
@@ -295,7 +298,7 @@ var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
         "GARFIELD-THE-LAST-FAT-CAT",
         "GARFIELD-THE-FAST-CAT",
         "GARFIELD-THE-VERY-FAST-CAT",
-        "THE-FAT-CAT"],  /* some bugfix for Knockout */
+        "THE-FAT-CAT"],  /* some bugfix for Knockout problem */
 
     USE_LOCAL_LIBRARY: false,
 
@@ -326,6 +329,8 @@ var MULTI_SYMBOLS = {
     DELIMITER: /-/g,
     GAP: /_/g,
     G_LITTLE_SPECIAL: /ğ/g,
+    MATCH: /\*/g,
+    MISMATCH: /\|/g,
     NONE: /#/g,
     NUMBERS: /[0-9]/g,
     STRINGS: /[^0-9]/g,

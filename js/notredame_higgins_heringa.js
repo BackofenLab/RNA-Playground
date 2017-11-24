@@ -11,7 +11,6 @@ Author: Alexander Mattheis
  * Defines tasks after page-loading.
  */
 $(document).ready(function () {
-    debugger;
     if (loaded === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {  // to avoid self execution on a script import
         notredameHigginsHeringa.startNotredameHigginsHeringa();
         loaded = ALGORITHMS.NONE;
@@ -103,8 +102,8 @@ $(document).ready(function () {
 
         inputData.totalNumberAlignments = inputViewmodel.totalNumberAlignments();
 
-        //inputData.maxNumberOptimalAlignments = inputViewmodel.maxNumberOptimalAlignments();
-        //inputData.maxNumberOptimalAlignmentsLocal = inputViewmodel.maxNumberOptimalAlignmentsLocal();
+        inputData.globalAlignmentsPerSequencePair = inputViewmodel.globalAlignmentsPerSequencePair();
+        inputData.localAlignmentsPerSequencePair = inputViewmodel.localAlignmentsPerSequencePair();
     }
 
     /**
@@ -146,6 +145,7 @@ $(document).ready(function () {
     function computePairwiseGlobalAlignmentData() {
         multiSequenceAlignmentInstance.setIO(inputData, outputData);
         multiSequenceAlignmentInstance.computePairwiseData(gotohInstance);
+
     }
 
     function computePairwiseLocalAlignmentData() {
@@ -161,8 +161,10 @@ $(document).ready(function () {
         // Hint: conversion of double sequences into alignment edges is directly done during the computations of pairwise weights
         outputData.primaryGlobalWeightLib = computePairwiseWeights(outputData, true);
 
+        debugger;
         if (inputData.useLocalLibrary) {
-            keepBestLocalAlignments(inputData.totalNumberAlignments);
+            if (inputData.localAlignmentsPerSequencePair === 1)
+                keepBestLocalAlignments(inputData.totalNumberAlignments);
             outputData.primaryLocalWeightLib = computePairwiseWeights(outputData, false);
             addSignals();
         } else  // only global library
@@ -188,20 +190,27 @@ $(document).ready(function () {
                     var sequenceA = inputData.sequences[i];
                     var sequenceB = inputData.sequences[j];
 
-                    var alignment = [];
-                    var traceback = [];
+                    var alignments = [];
+                    var tracebacks = [];
                     var sequenceIdentities = {};
                     var noAlignment = false;
 
                     if (global) {
-                        alignment = output.alignmentsAndScores[[sequenceA, sequenceB]][0];
-                        sequenceIdentities = getSequenceIdentities(sequenceA, sequenceB, alignment, undefined);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                        alignments = output.alignmentsAndScores[[sequenceA, sequenceB]][2];
+
+                        sequenceIdentities  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                            = getSequenceIdentities(sequenceA, sequenceB, alignments, undefined);  // alignments: extension not contained in original
+
                     } else {
                         noAlignment = output.alignmentsAndScoresLocal[[sequenceA, sequenceB]] === undefined;
-                        alignment = !noAlignment ? output.alignmentsAndScoresLocal[[sequenceA, sequenceB]][0] : EMPTY_ALIGNMENT;
 
-                        traceback = output.tracebacks[[sequenceA, sequenceB]];
-                        sequenceIdentities = getSequenceIdentities(sequenceA, sequenceB, alignment, traceback);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                        if (!noAlignment) {
+                            alignments = output.alignmentsAndScoresLocal[[sequenceA, sequenceB]][2];
+                            tracebacks = output.tracebacks[[sequenceA, sequenceB]];
+                            sequenceIdentities
+                                = getSequenceIdentities(sequenceA, sequenceB, alignments, tracebacks);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                        } else
+                            sequenceIdentities = 0;
                     }
                     if (!noAlignment) primaryWeightLib[[sequenceA, sequenceB]] = sequenceIdentities;
                 }
@@ -214,19 +223,19 @@ $(document).ready(function () {
     /**
      * Computes a structure L with elements
      * containing the sequence identity or zero.
-     * @param alignment - The alignment for which you want compute a structure that returns position sequence identities.
+     * @param alignments - The alignments for which you want compute a structure that returns position sequence identities.
      * @param sequenceA - The first sequence which is used to create positions.
      * @param sequenceB - The second sequence which is used to create positions.
-     * @param traceback {Array} - The traceback of the alignment which tells the defined positions.
+     * @param tracebacks {Array} - The tracebacks of local alignments which tell the defined positions.
      * @return {Object} - A structure containing the weights for specific positions.
      */
-    function getSequenceIdentities(sequenceA, sequenceB, alignment, traceback) {
-        var global = traceback === undefined;  // global alignments do not need the traceback to get defined positions
+    function getSequenceIdentities(sequenceA, sequenceB, alignments, tracebacks) {
+        var global = tracebacks === undefined;  // global alignments do not need the traceback to get defined positions
 
-        var alignedSequenceA = alignment[0];
-        var alignedSequenceB = alignment[2];
+        var alignedSequenceA = alignments[0][0];
+        var alignedSequenceB = alignments[0][2];
 
-        var sequenceLength = alignedSequenceA.length;  // OR: alignedSequenceB.length
+        var alignmentLength = alignedSequenceA.length;  // OR: alignedSequenceB.length
         var numCharactersInA = 0;
         var numCharactersInB = 0;
         var numMatches = 0;
@@ -235,9 +244,9 @@ $(document).ready(function () {
 
         var L = {};
 
-        // iterate over each position to create keys L_{i,j}
-        for (var k = 0; k < sequenceLength; k++) {
-            var currentPosition = global ? undefined : traceback[k+1];  // "+1" to jump over local end-position (with value 0)
+        // iterate over each position to create keys L_{i,j} (defined positions)
+        for (var k = 0; k < alignmentLength; k++) {
+            var currentPosition = global ? undefined : tracebacks[0][k + 1];  // "+1" to jump over local end-position (with value 0)
 
             if (alignedSequenceA[k] === SYMBOLS.GAP) {  // means there is no gap in sequence b
                 numCharactersInB++;
@@ -266,10 +275,97 @@ $(document).ready(function () {
         for (var i = 0; i < definedKeys.length; i++)
             L[definedKeys[i]] = sequenceIdentity;  // overwriting wrong value
 
-        debugger;
-        createZeroEdgesKeys(L, sequenceA, sequenceB, traceback);
+        // new feature to enlarge sequence pool (not contained in original algorithm)
+        increaseDiversity(L, alignments, tracebacks, sequenceIdentity, alignmentLength, global);
+
+        if (global)
+            createZeroEdgesKeys(L, sequenceA, sequenceB, undefined);
+        else {  // local
+            for (var i = 0; i < tracebacks.length; i++)
+                createZeroEdgesKeys(L, sequenceA, sequenceB, tracebacks[i]);
+        }
 
         return L;
+    }
+
+    /**
+     * Increases the size of a pool.
+     * @param L {Object} - The structure which stores the weight.
+     * @param alignments - The alignments for which you want compute a structure that returns position sequence identities
+     * @param tracebacks {Array} - The tracebacks of local alignments which tell the defined positions.
+     * @param sequenceIdentity - The sequence identity for a global alignment like the one in alignments.
+     * @param alignmentLength - The sequence length for a global alignment like the one in alignments.
+     * @param global - Tells if it is a global or a local alignment.
+     */
+    function increaseDiversity(L, alignments, tracebacks, sequenceIdentity, alignmentLength, global) {
+        var startPos = new bases.alignment.Vector(0,0);
+
+        debugger;
+        // go over each alignment and add new positions
+        for (var i = 1; i < alignments.length; i++) {  // "i=1", to jump over the first alignment, because it's done
+            if (global)
+                addOptimalAlignment(L, alignments[i], alignmentLength, sequenceIdentity, startPos);
+            else {  // local
+                // for local alignment recompute sequence identity and length and set start position using tracebacks
+                sequenceIdentity = getSequenceIdentity(alignments[i]);
+                alignmentLength = alignments[i][0].length;
+                startPos = tracebacks[i][0];
+
+                addOptimalAlignment(L, alignments[i], alignmentLength, sequenceIdentity, startPos);
+            }
+        }
+    }
+
+    /**
+     * Creates weights for other computed optimal alignments and adds them to the library.
+     * This reduces the bias or in other words extends the diversity within the pool of sequences.
+     * Hint: This feature is not contained in the original algorithm.
+     * But, it was said that not only local alignments can be used in the pool of sequences.
+     * Hint 2: It is a separated function and this allows to turn it off for more performance (if needed).
+     * Hint 3: The parameter sequenceIdentity can be only used for global alignments, but not for local alignments.
+     * @param L {Object} - The structure which stores the weight.
+     * @param alignment {Array} - The alignment which is used to add something to the weight.
+     * @param alignmentLength {number} - The length of the alignment (number of columns).
+     * @param sequenceIdentity {number} - The sequence identity computed for an alignment like in the function input.
+     * @param startPos {Object} - The traceback start-position of a local alignment.
+     */
+    function addOptimalAlignment(L, alignment, alignmentLength, sequenceIdentity, startPos) {
+        var alignedSequenceA = alignment[0];
+        var alignedSequenceB = alignment[2];
+
+        var numCharactersInA = 0;
+        var numCharactersInB = 0;
+
+        // go over whole number of columns in the alignment of both sequences
+        for (var k = 0; k < alignmentLength; k++) {
+            if (alignedSequenceA[k] === SYMBOLS.GAP)  // means there is no gap in sequence b
+                numCharactersInB++;
+            else if (alignedSequenceB[k] === SYMBOLS.GAP)  // means there is no gap in sequence a
+                numCharactersInA++;
+            else {  // match
+                numCharactersInA++;
+                numCharactersInB++;
+
+                if (L[[startPos.i + numCharactersInA, startPos.j + numCharactersInB]] !== undefined)
+                    L[[startPos.i + numCharactersInA, startPos.j + numCharactersInB]] += sequenceIdentity;
+                else
+                    L[[startPos.i + numCharactersInA, startPos.j + numCharactersInB]] = sequenceIdentity;
+            }
+        }
+    }
+
+    /**
+     * Computes the sequence identity for an alignment.
+     * @param alignment {[alignedSequenceB, matchOrMismatchString, alignedSequenceA]} - The encoded alignment string.
+     * @return {number} - The sequence identity.
+     */
+    function getSequenceIdentity(alignment) {
+        var matchMismatchString = alignment[1];
+        var numMatches = (matchMismatchString.match(MULTI_SYMBOLS.MATCH) || []).length;  // match function returns null, if there is no match
+        var numMismatches = (matchMismatchString.match(MULTI_SYMBOLS.MISMATCH) || []).length;
+
+        var sequenceIdentity = (100 * numMatches) / (numMatches + numMismatches);
+        return sequenceIdentity !== Number.POSITIVE_INFINITY ? sequenceIdentity : 0;
     }
 
     /**
@@ -294,7 +390,6 @@ $(document).ready(function () {
             sequenceAPositions = global ? getAllPositions(sequenceA) : positions[0];
             sequenceBPositions = global ? getAllPositions(sequenceB) : positions[1];
         } else {  // if local
-            debugger;
             var positions = getPositionsFromTraceback(traceback);
 
             sequenceAPositions = positions[0];
@@ -318,6 +413,7 @@ $(document).ready(function () {
     /**
      * Returns all positions of a sequence starting. This is needed for local alignments.
      * @param sequence {string} - The sequence from which all positions are needed to create a key.
+     * @return {Array} - All positions of the sequence.
      */
     function getAllPositions(sequence) {
         var positions = [];
@@ -413,8 +509,6 @@ $(document).ready(function () {
      * Hint: Described on p.207: Combination of the libraries
      */
     function addSignals() {
-        debugger;
-
         var globalAlignmentKeys = Object.keys(outputData.primaryGlobalWeightLib);  // global alignments {{a,b}, {a,d}, ... {d,f}}
         var localAlignmentKeys = Object.keys(outputData.primaryLocalWeightLib);  // local alignments {{a,b}, {a,g}, ... {d,f}}
         var commonAlignmentKeys = getCommonArguments(globalAlignmentKeys, localAlignmentKeys);  // common alignments {{a,b}, {d,f}}
@@ -695,7 +789,7 @@ $(document).ready(function () {
      * Starts the creation of a progressive alignment under the computed, extended weight library as a scoring-function.
      */
     function startProgressiveAlignment() {
-        // use all pairwise scores, gaps, ... from alignments in step 1 to compute distances
+        // uses pairwise scores, gaps, ... from alignments in step 1 to compute distances
         // problem: we have local and global alignment data
         // ideas:
         // (1)  take average scores, gaps, ... and compute then distances for a distance matrix
@@ -709,6 +803,7 @@ $(document).ready(function () {
         // + original paper at p.206: Generating a primary library of alignments
         // (not all, only 10 local alignments for library computation used)
         // [2] we want create "global" progressive alignments
+        // [3] the runtime is critical for a real time application
 
         multiSequenceAlignmentInstance.setIO(inputData, outputData);
         multiSequenceAlignmentInstance.computeDistancesFromSimilarities();

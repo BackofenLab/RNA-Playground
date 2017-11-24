@@ -86,9 +86,11 @@ Author: Alexander Mattheis
             this.matchLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH_LOCAL);
             this.mismatchLocal = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH_LOCAL);
 
-            this.useLocalLibrary = ko.observable(MULTI_SEQUENCE_DEFAULTS.USE_LOCAL_LIBRARY);
+            this.globalAlignmentsPerSequencePair = ko.observable(MULTI_SEQUENCE_DEFAULTS.GLOBAL_ALIGNMENTS_PER_SEQUENCE);
 
+            this.useLocalLibrary = ko.observable(MULTI_SEQUENCE_DEFAULTS.USE_LOCAL_LIBRARY);
             this.totalNumberAlignments = ko.observable(getMaxNumberOfAlignments(viewmodel));
+            this.localAlignmentsPerSequencePair = ko.observable(MULTI_SEQUENCE_DEFAULTS.LOCAL_ALIGNMENTS_PER_SEQUENCE);
 
             // displayed dynamic formulas
             this.gapStartLocal = ko.computed(
