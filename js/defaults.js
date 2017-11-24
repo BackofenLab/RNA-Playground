@@ -115,8 +115,10 @@ var FILE_EXTENSIONS = {
  * Allowed max values for inputs.
  */
 var INPUT = {
-    LENGTH_MIN: 0,
+    ALIGNMENTS_MAX: 10,
+    ALIGNMENTS_MIN: 1,
     LENGTH_MAX: 1000,
+    LENGTH_MIN: 0,
     MAX: 10,  // abs: absolute value
     MIN: -10
 };

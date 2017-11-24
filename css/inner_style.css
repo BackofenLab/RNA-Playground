@@ -20,6 +20,11 @@ input[type="number"] {
     width: 35px;
 }
 
+label {
+    display: block; /* or text-align won't work*/
+    text-align: left;
+}
+
 small {
     font-weight: normal;
 }
@@ -122,6 +127,11 @@ th {
     width: 32px;
 }
 
+.column {
+    display: inline-block;
+    width: 180px;
+}
+
 .distances td, .distances th {
     max-width: none !important;
 }
@@ -217,6 +227,15 @@ th {
     border-width: 1px;
     padding-left: 8px;
     text-align: left;
+}
+
+.inner_column {
+    display: inline-block;
+    width: 100px;
+}
+
+.inner_row {
+    margin-bottom: 10px;
 }
 
 .input_heading {

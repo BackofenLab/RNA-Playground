@@ -277,6 +277,9 @@ Author: Alexander Mattheis
                 inputViewmodel.matchLocal(Number($("#match_local").val()));
                 inputViewmodel.mismatchLocal(Number($("#mismatch_local").val()));
 
+                inputViewmodel.globalAlignmentsPerSequencePair(Number($("#global_alignments_per_sequence_pair").val()));
+                inputViewmodel.localAlignmentsPerSequencePair(Number($("#local_alignments_per_sequence_pair").val()));
+
                 var maxNumberOfAlignments = getMaxNumberOfAlignments(inputViewmodel);
 
                 if (multiSequenceInterfaceInstance.sequencesNumberChanged) { // set to maximum

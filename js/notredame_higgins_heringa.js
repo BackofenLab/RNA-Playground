@@ -165,6 +165,7 @@ $(document).ready(function () {
         if (inputData.useLocalLibrary) {
             if (inputData.localAlignmentsPerSequencePair === 1)
                 keepBestLocalAlignments(inputData.totalNumberAlignments);
+
             outputData.primaryLocalWeightLib = computePairwiseWeights(outputData, false);
             addSignals();
         } else  // only global library
@@ -300,7 +301,6 @@ $(document).ready(function () {
     function increaseDiversity(L, alignments, tracebacks, sequenceIdentity, alignmentLength, global) {
         var startPos = new bases.alignment.Vector(0,0);
 
-        debugger;
         // go over each alignment and add new positions
         for (var i = 1; i < alignments.length; i++) {  // "i=1", to jump over the first alignment, because it's done
             if (global)

@@ -176,7 +176,6 @@ $(document).ready(function () {
         outputData.tracebackPaths = [];
         outputData.moreTracebacks = false;
 
-        debugger;
         for (var i = 0; i < backtraceStarts.length; i++) {
             var tracebackPaths = alignmentInstance.getLocalTraces([backtraceStarts[i]], inputData, outputData, -1, getNeighboured);
             outputData.tracebackPaths = outputData.tracebackPaths.concat(tracebackPaths);

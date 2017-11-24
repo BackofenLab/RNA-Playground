@@ -141,7 +141,10 @@ Author: Alexander Mattheis
             this.value = Math.round(this.value);
 
         if (e.type === "change") {
-            if (this.id === "length") {
+            if (this.id === "global_alignments_per_sequence_pair" || this.id === "local_alignments_per_sequence_pair") {
+                this.value = this.value >= INPUT.ALIGNMENTS_MIN ? this.value : INPUT.ALIGNMENTS_MIN;
+                this.value = this.value <= INPUT.ALIGNMENTS_MAX ? this.value : INPUT.ALIGNMENTS_MAX;
+            } else if (this.id === "length") {
                 this.value = this.value >= INPUT.LENGTH_MIN ? this.value : INPUT.LENGTH_MIN;
                 this.value = this.value <= INPUT.LENGTH_MAX ? this.value : INPUT.LENGTH_MAX;
             }

@@ -133,6 +133,23 @@ Author: Alexander Mattheis
     <!-- /ko -->
 
     <div class="row">
+        <div class="colW100"><label>Library Parameters:</label></div>
+
+        <div class="colW400">
+             <div class="inner_row">
+                 <div class="inner_column">
+                     Alignments per <br> sequence-pair
+                 </div>
+
+                 <div class="colW50">
+                     <input class="fx_parameter" data-bind="value: input.globalAlignmentsPerSequencePair"
+                            id="global_alignments_per_sequence_pair" type="number">
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
 		<div class="colW100"><label>Scoring in $s$:</label></div>
 
 		<div class="colW400">
@@ -171,10 +188,30 @@ Author: Alexander Mattheis
         <h2 class="input_heading">Local Library Parameters</h2>
 
         <div class="row">
-            <div class="colW100"><label>Total Number <br> Alignments:</label></div>
+            <div class="colW100"><label>Library Parameters:</label></div>
 
             <div class="colW400">
-                <input data-bind="value: input.totalNumberAlignments" id="total_number_alignments" type="number">
+                <div class="inner_row">
+                    <div class="column">
+                        Total Number Alignments
+                    </div>
+
+                    <div class="colW50">
+                        <input data-bind="enable: input.localAlignmentsPerSequencePair() == 1, value: input.totalNumberAlignments"
+                               id="total_number_alignments" type="number"> <br>
+                    </div>
+                </div>
+
+                 <div class="inner_row">
+                     <div class="column">
+                         Alignments per sequence-pair
+                     </div>
+
+                     <div class="colW50">
+                         <input class="fx_parameter" data-bind="value: input.localAlignmentsPerSequencePair"
+                                id="local_alignments_per_sequence_pair" type="number">
+                     </div>
+                </div>
             </div>
         </div>
 
