@@ -18,7 +18,7 @@ Author: Alexander Mattheis
         The advantage to traditional approaches like
         <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a>
         is that the results are much better since they are not based on single pairwise alignments,
-        but rather an arbitrary large pool of alignments with which a position specific scoring function is computed,
+        but rather an arbitrary large pool of pairwise alignments with which a position specific scoring function is computed,
         the so called extended library $EL^{a,b}_{i,j}$
         where $a,b$ are arbitrary sequences and $i,j$ are locations within these sequences.
         <br>
@@ -71,7 +71,8 @@ Author: Alexander Mattheis
         In the algorithm, it is possible to add information
         from arbitrary alignments to emphasize particularly important
         positions of together aligned sequences.
-        This is done in our case with local alignments, for which with the given sequence identity formula above
+        This is done in our case with local alignments and multiple optimal alignments of the same sequences,
+        for which with the given sequence identity formula above
         a local primary library is computed and added to the values of the global primary library
         i.e. $L^{a,b}_{i,j} = {L^{a,b}_{i,j}}_{loc} + {L^{a,b}_{i,j}}_{glob}$
         (originally ten alignments with highest scores are chosen for the local primary library).
@@ -79,6 +80,7 @@ Author: Alexander Mattheis
         <br>
         For a given input, the stated computation steps generate the
         <ul>
+            <li>pairwise alignments</li>
             <li>primary and extended library</li>
             <li>phylogenetic tree</li>
             <li>MSA via fusions</li>
@@ -487,30 +489,26 @@ Author: Alexander Mattheis
                             </td>
 
                             <td class="entry entry_start">
-                                <code data-bind="text: $root.output.alignmentsGlobal()[$index()][0]"></code> <br>
-                                <code data-bind="text: $root.output.alignmentsGlobal()[$index()][1]"></code> <br>
-                                <code data-bind="text: $root.output.alignmentsGlobal()[$index()][2]"></code>
+                                <!-- ko foreach: $root.output.alignmentsGlobal()[$index()] -->
+                                    <code data-bind="text: $data[0]"></code> <br>
+                                    <code data-bind="text: $data[1]"></code> <br>
+                                    <code data-bind="text: $data[2]"></code> <br>
+                                    <br>
+                                <!-- /ko -->
                             </td>
 
                             <td class="entry entry_start">
-                                <code data-bind="text: $root.output.alignmentsLocal()[$index()][0]"></code> <br>
-                                <code data-bind="text: $root.output.alignmentsLocal()[$index()][1]"></code> <br>
-                                <code data-bind="text: $root.output.alignmentsLocal()[$index()][2]"></code>
+                                <!-- ko foreach: $root.output.alignmentsLocal()[$index()] -->
+                                    <code data-bind="text: $data[0]"></code> <br>
+                                    <code data-bind="text: $data[1]"></code> <br>
+                                    <code data-bind="text: $data[2]"></code> <br>
+                                    <br>
+                                <!-- /ko -->
                             </td>
                         </tr>
                     <!-- /ko -->
                 </tbody>
             </table>
         </div>
-
-        <table class="pairwise_data_footer">
-            <tr>
-                <th>
-                    <small>
-                        <b>Hint:</b> Only one alignment per sequence-pair displayed.
-                    </small>
-                </th>
-            </tr>
-        </table>
     </div>
 </div>

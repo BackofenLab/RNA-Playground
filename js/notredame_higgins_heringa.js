@@ -208,8 +208,12 @@ $(document).ready(function () {
                         if (!noAlignment) {
                             alignments = output.alignmentsAndScoresLocal[[sequenceA, sequenceB]][2];
                             tracebacks = output.tracebacks[[sequenceA, sequenceB]];
-                            sequenceIdentities
-                                = getSequenceIdentities(sequenceA, sequenceB, alignments, tracebacks);  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+
+                            if (alignments.length > 0)
+                                sequenceIdentities  // alignment = [alignedSequenceA, matchMismatchString, alignedSequenceB]
+                                    = getSequenceIdentities(sequenceA, sequenceB, alignments, tracebacks);
+                            else
+                                sequenceIdentities = 0;
                         } else
                             sequenceIdentities = 0;
                     }

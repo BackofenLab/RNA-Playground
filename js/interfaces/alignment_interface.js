@@ -847,7 +847,10 @@ Author: Alexander Mattheis
             var alignmentKey = alignmentKeys[i];
             var alignmentAndScore = outputData.alignmentsAndScores[alignmentKey];
             var alignmentAndScoreLocal;
-            if (outputData.alignmentsAndScoresLocal !== undefined) alignmentAndScoreLocal = outputData.alignmentsAndScoresLocal[alignmentKey];
+
+            if (outputData.alignmentsAndScoresLocal !== undefined)
+                alignmentAndScoreLocal = outputData.alignmentsAndScoresLocal[alignmentKey];
+
             var positionKeys = Object.keys(outputData.primaryWeightLib[alignmentKey]);
 
             // split alignmentKey to get an array
@@ -885,8 +888,8 @@ Author: Alexander Mattheis
                 extendedLibValues.push(tempExtendedLibValues);
             }
 
-            alignmentsGlobal.push(alignmentAndScore[0]);
-            alignmentsLocal.push(alignmentAndScoreLocal !== undefined ? alignmentAndScoreLocal[0]: EMPTY_ALIGNMENT);
+            alignmentsGlobal.push(alignmentAndScore[2]);
+            alignmentsLocal.push(alignmentAndScoreLocal !== undefined ? alignmentAndScoreLocal[2]: []);
         }
 
         sortWithClusterTuples(sequencePairsNames, [positionPairs, primLibValues, extendedLibValues, alignmentsGlobal, alignmentsLocal]);
