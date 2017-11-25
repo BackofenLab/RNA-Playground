@@ -182,14 +182,13 @@ $(document).ready(function () {
         debugger;
         var isTerminalCase = input.sequenceAPositions.length <= 1;
         var isTotalTerminalCase = input.sequenceAPositions.length === 0;
-        var isRightNode = recursionNumbers[recursionNumbers.length-1] === HIRSCHBERG_LOWER_NODE;
 
         if (!isTotalTerminalCase) { // do not save
             // [1] find trace-cell
             var forwardMatrix = computeForwardSequenceMatrix(input);
             var backwardMatrix = computeBackwardSequenceMatrix(shallowCopy(input));  // shallow copy, because else reversed strings are saved
 
-            var minimumRowPosI = Math.ceil(input.sequenceAPositions.length / 2);
+            var minimumRowPosI = Math.floor(input.sequenceAPositions.length / 2);
 
             var forwardRow = forwardMatrix[minimumRowPosI];
             var backwardRow = backwardMatrix[(backwardMatrix.length - 1) - minimumRowPosI];
@@ -349,10 +348,10 @@ $(document).ready(function () {
      * @param minimumColumnPosJ {number} - The j-position on which the algorithm does a split.
      */
     function initializedUpperMatrixInput(input, minimumRowPosI, minimumColumnPosJ) {
-        input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(0, minimumRowPosI - 1).join(SYMBOLS.EMPTY);
+        input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(0, minimumRowPosI).join(SYMBOLS.EMPTY);
         input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(0, minimumColumnPosJ).join(SYMBOLS.EMPTY);
 
-        input.sequenceAPositions = input.sequenceAPositions.slice(0, minimumRowPosI - 1);
+        input.sequenceAPositions = input.sequenceAPositions.slice(0, minimumRowPosI);
         input.sequenceBPositions = input.sequenceBPositions.slice(0, minimumColumnPosJ);
 
         input.matrixHeight = input.sequenceA.length + 1;
@@ -369,11 +368,12 @@ $(document).ready(function () {
      */
     function initializedLowerMatrixInput(input, minimumRowPosI, minimumColumnPosJ) {
         // Hint: There is one row and one column more than affiliated sequence size.
+        debugger;
         input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(minimumRowPosI).join(SYMBOLS.EMPTY);
-        input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(minimumColumnPosJ - 1).join(SYMBOLS.EMPTY);
+        input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(minimumColumnPosJ).join(SYMBOLS.EMPTY);
 
         input.sequenceAPositions = input.sequenceAPositions.slice(minimumRowPosI);
-        input.sequenceBPositions = input.sequenceBPositions.slice(minimumColumnPosJ - 1);
+        input.sequenceBPositions = input.sequenceBPositions.slice(minimumColumnPosJ);
 
         input.matrixHeight = input.sequenceA.length + 1;
         input.matrixWidth = input.sequenceB.length + 1;
