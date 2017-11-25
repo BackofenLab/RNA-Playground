@@ -10,8 +10,8 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("interfaces.alignmentInterface", AlignmentInterface,
-        imports, sharedInterfaceOperations, roundValues, getLaTeXTraceFunctions, getRowData, getLaTeXFormula,
-        getDistanceTable, getDistanceTables, reorderGroupSequences, getLibrariesData, sortWithClusterTuples, startProcessing);
+        imports, sharedInterfaceOperations, roundValues, getLaTeXTraceFunctions, getRowData, getColumnData, getMinimaData,
+        getLaTeXFormula, getDistanceTable, getDistanceTables, reorderGroupSequences, getLibrariesData, sortWithClusterTuples, startProcessing);
 
     // instances
     var alignmentInterfaceInstance;
@@ -31,6 +31,8 @@ Author: Alexander Mattheis
         this.roundValues = roundValues;
         this.getLaTeXTraceFunctions = getLaTeXTraceFunctions;
         this.getRowData = getRowData;
+        this.getColumnData = getColumnData;
+        this.getMinimaData = getMinimaData;
         this.getLaTeXFormula = getLaTeXFormula;
         this.getDistanceTable = getDistanceTable;
         this.getDistanceTables = getDistanceTables;
@@ -370,9 +372,34 @@ Author: Alexander Mattheis
     function createHirschbergOutputViewmodel(viewmodel, outputData) {
         var traceFunctionsData = getLaTeXTraceFunctions(outputData);
         var rowData = getRowData(outputData);
+        var columnData = getColumnData(outputData);
+        var minimaData = getMinimaData(rowData, columnData);
+
+        // main output
+        viewmodel.forwardMatrices = ko.observable(outputData.forwardMatrices).extend({ deferred: true });
+        viewmodel.backwardMatrices = ko.observable(outputData.backwardMatrices).extend({ deferred: true });
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.forwardMatrices.length; i++) {
+            viewmodel.forwardMatrices[i] = ko.observableArray(outputData.forwardMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.forwardMatrices[i].length; j++) {
+                viewmodel.forwardMatrices[i][j] = ko.observableArray(outputData.forwardMatrices[i][j]).extend({ deferred: true });
+            }
+        }
+
+        for (var i = 0; i < outputData.backwardMatrices.length; i++) {
+            viewmodel.backwardMatrices[i] = ko.observableArray(outputData.backwardMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.backwardMatrices[i].length; j++) {
+                viewmodel.backwardMatrices[i][j] = ko.observableArray(outputData.backwardMatrices[i][j]).extend({ deferred: true });
+            }
+        }
 
         // header
-        viewmodel.recursionNumbersContainer = ko.observable(outputData.recursionNumbersContainer).extend({ deferred: true });;
+        viewmodel.recursionNumbersContainer = ko.observable(outputData.recursionNumbersContainer).extend({ deferred: true });
         viewmodel.traceFunctions = ko.observable(traceFunctionsData);
         viewmodel.currentGlobalRow = ko.observable(rowData);
 
@@ -388,7 +415,10 @@ Author: Alexander Mattheis
         viewmodel.forwardRows = ko.observable(outputData.forwardRows);
         viewmodel.mirroredBackwardRows = ko.observable(outputData.mirroredBackwardRows);
         viewmodel.addedRows = ko.observable(outputData.addedRows);
-        viewmodel.highlightPositions = ko.observable(outputData.minimum);
+        viewmodel.highlightPositions = ko.observable(outputData.relativeSplittingPoint);
+
+        // minima table
+        viewmodel.globalMinima = ko.observable(minimaData);
 
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
     }
@@ -434,7 +464,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Returns the minimum for each round.
+     * Returns the minimum position for each round.
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      * @return {Array} - The data which stores the global minimum for each recursion round.
      */
@@ -443,10 +473,68 @@ Author: Alexander Mattheis
 
         // iterate over all rounds
         for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
-            rows.push(outputData.firstSequencePositions[k][outputData.minimum[k][0]-1]);
+            rows.push(outputData.firstSequencePositions[k][outputData.relativeSplittingPoint[k][0]-1]);
         }
 
         return rows;
+    }
+
+    /**
+     * Returns the minimum positions for each round.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     * @return {Array} - The data which stores the global minimum for each recursion round.
+     */
+    function getColumnData(outputData) {
+        var columns = [];
+
+        // iterate over all rounds
+        for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
+            var roundColumns = [];
+
+            for (var j = 0; j < outputData.allMinimaPosJ[k].length; j++) {
+
+                var globalPosJ = outputData.secondSequencePositions[k][outputData.allMinimaPosJ[k][j]-1];
+
+                if (globalPosJ === undefined) {
+                    var firstDefinedPosition = outputData.secondSequencePositions[k][0];
+                    globalPosJ = firstDefinedPosition-1;
+                }
+
+                roundColumns.push(globalPosJ);
+            }
+
+            columns.push(roundColumns);
+        }
+
+        return columns;
+    }
+
+    /**
+     * Creates an array of minimum tuples with the given data.
+     * @param rows {Array} - The rows which contains minimum positions.
+     * @param columns {Array} - The columns which contains minimum positions.
+     * @return {Array} - String of minimum tuples.
+     */
+    function getMinimaData(rows, columns) {
+        var minimaArray = [];
+
+        for (var i = 0; i < rows.length; i++) {  // i is alos the current round
+            var minimaString = SYMBOLS.EMPTY;
+
+            for (var j = 0; j < columns[i].length; j++) {
+                if (j !== 0 && j % 3 === 0)  // three entries per line
+                    minimaString += SYMBOLS.NEW_LINE;
+
+                minimaString += SYMBOLS.BRACKET_LEFT + rows[i] + SYMBOLS.COMMA + columns[i][j] + SYMBOLS.BRACKET_RIGHT;
+
+                if (j < columns[i].length - 1)
+                    minimaString += SYMBOLS.COMMA + SYMBOLS.SPACE;
+            }
+
+            minimaArray.push(minimaString);
+        }
+
+        return minimaArray;
     }
 
     /**

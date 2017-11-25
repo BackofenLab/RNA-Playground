@@ -64,8 +64,8 @@ TestCase("test_hirschberg", {
         assertEquals([5,2,0,5], outputData.addedRows[2]);
 
         // local minimum
-        assertEquals([3,2], outputData.minimum[0]);
-        assertEquals([1,1], outputData.minimum[1]);
-        assertEquals([1,2], outputData.minimum[2]);
+        assertEquals([3,2], outputData.relativeSplittingPoint[0]);
+        assertEquals([1,1], outputData.relativeSplittingPoint[1]);
+        assertEquals([1,2], outputData.relativeSplittingPoint[2]);
     }
 });

@@ -444,6 +444,49 @@ Author: Alexander Mattheis
     function changeHirschbergOutput(outputData, viewmodels) {
         var traceFunctionsData = alignmentInterfaceInstance.getLaTeXTraceFunctions(outputData);
         var rowData = alignmentInterfaceInstance.getRowData(outputData);
+        var columnData = alignmentInterfaceInstance.getColumnData(outputData);
+        var minimaData = alignmentInterfaceInstance.getMinimaData(rowData, columnData);
+
+        debugger;
+        // main output
+        viewmodels.output.forwardMatrices(outputData.forwardMatrices);
+        viewmodels.output.backwardMatrices(outputData.backwardMatrices);
+
+        // iteration over each matrix in forward matrices
+        for (var i = 0; i < outputData.forwardMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.forwardMatrices.length)
+                viewmodels.output.forwardMatrices[i] = new Function();
+
+            viewmodels.output.forwardMatrices[i](outputData.forwardMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.forwardMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.forwardMatrices[i].length)
+                    viewmodels.output.forwardMatrices[i][j] = new Function();
+
+                viewmodels.output.forwardMatrices[i][j](outputData.forwardMatrices[i][j]);
+            }
+        }
+
+        // iteration over each matrix in backward matrices
+        for (var i = 0; i < outputData.backwardMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.backwardMatrices.length)
+                viewmodels.output.backwardMatrices[i] = new Function();
+
+            viewmodels.output.backwardMatrices[i](outputData.backwardMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.backwardMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.backwardMatrices[i].length)
+                    viewmodels.output.backwardMatrices[i][j] = new Function();
+
+                viewmodels.output.backwardMatrices[i][j](outputData.backwardMatrices[i][j]);
+            }
+        }
 
         // header
         viewmodels.output.recursionNumbersContainer(outputData.recursionNumbersContainer);
@@ -462,7 +505,10 @@ Author: Alexander Mattheis
         viewmodels.output.forwardRows(outputData.forwardRows);
         viewmodels.output.mirroredBackwardRows(outputData.mirroredBackwardRows);
         viewmodels.output.addedRows(outputData.addedRows);
-        viewmodels.output.highlightPositions(outputData.minimum);
+        viewmodels.output.highlightPositions(outputData.relativeSplittingPoint);
+
+        // minima table
+        viewmodels.output.globalMinima(minimaData);
 
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
     }

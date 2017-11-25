@@ -107,8 +107,8 @@ $(document).ready(function () {
         outputData.maxNumberIterations = false;
 
         computeAllRecursionData(input, [HIRSCHBERG_UPPER_NODE]);
+        processDiscoveredTracecells();
 
-        debugger;
         return [inputData, outputData];
     }
 
@@ -128,7 +128,10 @@ $(document).ready(function () {
         outputData.forwardRows = [];
         outputData.mirroredBackwardRows = [];
         outputData.addedRows = [];
-        outputData.minimum = [];  // stores [i=ceil(matrix.Height/2), j]
+        outputData.relativeSplittingPoint = [];  // stores local [i=floor(matrix.Height/2), j]
+        outputData.allMinimaPosJ = [];
+        outputData.tracecellLines = [];
+        outputData.globalPositionsI = [];
 
         outputData.recursionNumbersContainer = [];  // stores the position within the computation tree
     }
@@ -179,37 +182,34 @@ $(document).ready(function () {
      * @see: Restricted to one path for better runtime! So, first founded minimum chosen for splitting.
      */
     function computeAllRecursionData(input, recursionNumbers) {
-        debugger;
-        var isTerminalCase = input.sequenceAPositions.length <= 1;
-        var isTotalTerminalCase = input.sequenceAPositions.length === 0;
-
-        if (!isTotalTerminalCase) { // do not save
-            // [1] find trace-cell
-            var forwardMatrix = computeForwardSequenceMatrix(input);
-            var backwardMatrix = computeBackwardSequenceMatrix(shallowCopy(input));  // shallow copy, because else reversed strings are saved
-
-            var minimumRowPosI = Math.floor(input.sequenceAPositions.length / 2);
-
-            var forwardRow = forwardMatrix[minimumRowPosI];
-            var backwardRow = backwardMatrix[(backwardMatrix.length - 1) - minimumRowPosI];
-            var mirroredBackwardRow = backwardRow.slice().reverse();  // create a new mirrored row
-
-            var sumRow = addRows(forwardRow, mirroredBackwardRow);
-
-            var minimumColumnPosJ = findMinimum(sumRow);
-
-            createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers);
-        }
-        if (isTerminalCase)
+        if (input.sequenceAPositions.length <= 1)
             return;
+
+        // [1] find trace-cell
+        var forwardMatrix = computeForwardSequenceMatrix(input);
+        var backwardMatrix = computeBackwardSequenceMatrix(shallowCopy(input));  // shallow copy, because else reversed strings are saved
+
+        var splittingPosI = Math.floor(input.sequenceAPositions.length / 2);
+
+        var forwardRow = forwardMatrix[splittingPosI];
+        var backwardRow = backwardMatrix[(backwardMatrix.length - 1) - splittingPosI];
+        var mirroredBackwardRow = backwardRow.slice().reverse();  // create a new mirrored row
+
+        var sumRow = addRows(forwardRow, mirroredBackwardRow);
+
+        var allMinima = findAllMinima(sumRow);
+        var splittingPosJ = allMinima[0];
+
+        createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow,
+            splittingPosI, splittingPosJ, allMinima, recursionNumbers);
 
         // [2] divide and conquer
         recursionNumbers.push(HIRSCHBERG_UPPER_NODE);
-        computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
+        computeAllRecursionData(initializedUpperMatrixInput(shallowCopy(input), splittingPosI, splittingPosJ), recursionNumbers);
         recursionNumbers.pop();
 
         recursionNumbers.push(HIRSCHBERG_LOWER_NODE);
-        computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), minimumRowPosI, minimumColumnPosJ), recursionNumbers);
+        computeAllRecursionData(initializedLowerMatrixInput(shallowCopy(input), splittingPosI, splittingPosJ), recursionNumbers);
         recursionNumbers.pop();
     }
 
@@ -265,51 +265,41 @@ $(document).ready(function () {
     }
 
     /**
-     * Returns the minimum position of the given row.
+     * Returns all minimum positions of the given row.
      * @param row {Array} - The array in which it is searched for the minimum.
      * @return {number} - The first minimum.
      */
-    function findMinimum(row) {
+    function findAllMinima(row) {
+        var minimumValue = findMinima(row);
+        var minimumPositions = [];
+
+        for (var j = 0; j < row.length; j++) {
+            if (row[j] === minimumValue)
+                minimumPositions.push(j);
+        }
+
+        return minimumPositions;
+    }
+
+    /**
+     * Returns the minimum value of the given row.
+     * @param row {Array} - The array in which it is searched for the minimum.
+     * @return {number} - The first minimum.
+     */
+    function findMinima(row) {
         var minimumValue = Number.POSITIVE_INFINITY;
-        var minimumPosition = -1;
 
         var currentValue;
 
         for (var i = 0; i < row.length; i++) {
             currentValue = row[i];
 
-            if (currentValue < minimumValue) {
+            if (currentValue < minimumValue)
                 minimumValue = currentValue;
-                minimumPosition = i;
-            }
         }
 
-        return minimumPosition;
+        return minimumValue;
     }
-
-
-    /**
-     * Returns the minimum position for the given character in first string.
-     * @param right {boolean} - Tells if we have to search the minimum from right to left.
-     * @return {number} - The first minimum.
-     */
-    /* Only one approach which was tried to solve the terminal case problem.
-    function findMinimumForTerminalCase(input, right) {
-        var minimumPosition = -1;
-
-        needlemanWunschInstance.setIO(input, {});
-        var alignments = needlemanWunschInstance.compute()[1].alignments;
-        var alignment = right ? alignments[0] : alignments[alignments.length-1];  // or the wrong one is used
-        var characterToSearch = input.sequenceA[0];
-
-        for (var i = 0; i < alignment[0].length; i++) {
-            if (alignment[0][i] === characterToSearch)
-                minimumPosition = i + 1;
-        }
-
-        return minimumPosition;
-    }
-    */
 
     /**
      * Creates a copy of the given recursion data to display it later on.
@@ -319,11 +309,13 @@ $(document).ready(function () {
      * @param forwardRow {Array} - The row computed with Needleman-Wunsch and ordinary order of sequences.
      * @param mirroredBackwardRow {Array} - The reversed row computed with Needleman-Wunsch and reversed order of sequences.
      * @param sumRow {Array} - The sum array of forwardRow and mirroredBackwardRow.
-     * @param minimumRowPosI {number} - The i-position on which the algorithm does a split.
-     * @param minimumColumnPosJ {number} - The j-position on which the algorithm does a split.
+     * @param splittingPosI {number} - The i-position on which the algorithm does a split.
+     * @param splittingPosJ {number} - The j-position on which the algorithm does a split.
+     * @param allMinima {Array} - The relative j-positions.
      * @param recursionNumbers {Array} - Contains information about recursion (i.e. [1, 1, 2] is upper, upper, lower).
      */
-    function createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow, minimumRowPosI, minimumColumnPosJ, recursionNumbers) {
+    function createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow,
+                            splittingPosI, splittingPosJ, allMinima, recursionNumbers) {
         outputData.firstSequences.push(input.sequenceA);
         outputData.secondSequences.push(input.sequenceB);
         outputData.firstSequencePositions.push(input.sequenceAPositions);
@@ -336,9 +328,30 @@ $(document).ready(function () {
         outputData.mirroredBackwardRows.push(mirroredBackwardRow);
         outputData.addedRows.push(sumRow);
 
-        outputData.minimum.push([minimumRowPosI, minimumColumnPosJ]);
+        outputData.relativeSplittingPoint.push([splittingPosI, splittingPosJ]);
+        outputData.allMinimaPosJ.push(allMinima);
 
         outputData.recursionNumbersContainer.push(recursionNumbers.slice());
+
+        // create global trace-cells
+        var currentRound = outputData.recursionNumbersContainer.length;
+        var globalPosI = outputData.firstSequencePositions[currentRound-1][outputData.relativeSplittingPoint[currentRound-1][0]-1];
+
+        var lineTracecells = [];
+
+        for (var j = 0; j < allMinima.length; j++) {
+            var globalPosJ = outputData.secondSequencePositions[currentRound-1][allMinima[j]-1];
+
+            if (globalPosJ === undefined) {
+                var firstDefinedPosition = outputData.secondSequencePositions[currentRound-1][0];
+                globalPosJ = firstDefinedPosition-1;
+            }
+
+            lineTracecells.push(new bases.alignment.Vector(globalPosI, globalPosJ));
+        }
+
+        outputData.tracecellLines.push(lineTracecells);
+        outputData.globalPositionsI.push(globalPosI);
     }
 
     /**
@@ -379,6 +392,58 @@ $(document).ready(function () {
         input.matrixWidth = input.sequenceB.length + 1;
 
         return input;
+    }
+
+    /**
+     * Processes the tracecell-lines to get back one traceback.
+     */
+    function processDiscoveredTracecells() {
+        addEndings();
+        reorderTraceCellLines();  // for faster access during path creation
+        createPath();
+    }
+
+    /**
+     * The start cell and the end cell are not contained in the tracecell-lines
+     * and have to be added to create a path.
+     */
+    function addEndings() {
+        outputData.globalPositionsI.push(0);
+        outputData.tracecellLines.push([new bases.alignment.Vector(0,0)]);
+
+        var height = inputData.sequenceA.length;
+        var width = inputData.sequenceB.length;
+
+        outputData.globalPositionsI.push(height);
+        outputData.tracecellLines.push([new bases.alignment.Vector(height, width)]);
+    }
+
+    /**
+     * The tracecell-lines are not in the right order and have to be reordered.
+     */
+    function reorderTraceCellLines() {
+        var switches = [];
+
+        debugger;
+        outputData.globalPositionsI.sort(function (a, b) {
+            switches.push(a - b);
+            return switches[switches.length-1];
+        });
+
+        var i = 0;
+
+        outputData.tracecellLines.sort(function (a,b) {
+            return switches[i++];
+        });
+    }
+
+    /**
+     * Afterwards we have to go from bottom bottom right to top left
+     * of an imaginary matrix and select always one neighbour cell
+     * to get back a traceback.
+     */
+    function createPath() {
+
     }
 
     /**

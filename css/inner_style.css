@@ -229,6 +229,10 @@ th {
     text-align: left;
 }
 
+.horizontal {
+    overflow-y: auto !important;
+}
+
 .inner_column {
     display: inline-block;
     width: 100px;
@@ -265,22 +269,30 @@ th {
     margin-bottom: 10px;
 }
 
+.more_left {
+    padding-left: 5px !important;
+    width: 161px !important;
+}
+
 .newick_tree {
     margin-bottom: 10px;
 }
 
 .outcome {
     display: inline-block;
+    margin-top: 5px;
     padding-left: 30px;
+    margin-bottom: 10px;
 }
 
 .output {
     float: left;
+    margin-bottom: 10px;
 }
 
 .parameters {
     line-height: 180%;
-    padding-bottom: 30px;
+    padding-bottom: 10px;
 }
 
 .pairwise_data_footer th {
@@ -352,7 +364,7 @@ th {
 
 /* property values taken from project https://github.com/BackofenLab/RNA-Playground */
 .result_entry {
-    background-color: #5582BC;
+    background-color: rgba(79, 129, 189, 0.25);
     color: white;
 }
 
@@ -373,7 +385,7 @@ th {
     clear: left;
     float: left;
     max-height: 200px;
-    max-width: 160px;
+    max-width: 166px;
     overflow-y: scroll;
     vertical-align: top;
 }
@@ -384,7 +396,7 @@ th {
     height: 24px;
     padding-left: 10px;
     text-align: left;
-    width: 150px;
+    width: 156px;
 }
 
 .results_footer {
@@ -398,7 +410,7 @@ th {
     height: 24px;
     padding-left: 10px;
     text-align: left;
-    width: 150px;
+    width: 156px;
 }
 
 .results_header {
@@ -412,11 +424,13 @@ th {
     border-right: 1px solid #a0a0a0;
     clear: left;
     float: left;
-    width: 161px;
+    width: 167px;
 }
 
 .scrollable {
+    margin-top: -10px;
     overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .selectable_entry {
