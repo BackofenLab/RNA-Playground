@@ -11,7 +11,8 @@ Author: Alexander Mattheis
     // public methods
     namespace("postProcessing.visualizer", Visualizer,
         shareInformation, showFlow,
-        showTraceback, highlight, downloadTable, replaceInfinityStrings, redrawOverlay, drawTree, removeAllContents);
+        showTraceback, highlight, downloadTable, replaceInfinityStrings,
+        redrawOverlay, drawTree, markMinima, removeAllContents);
 
     // instances
     var visualizerInstance;
@@ -67,6 +68,7 @@ Author: Alexander Mattheis
         this.replaceInfinityStrings = replaceInfinityStrings;
         this.redrawOverlay = redrawOverlay;
         this.drawTree = drawTree;
+        this.markMinima = markMinima;
         this.removeAllContents = removeAllContents;
     }
 
@@ -573,7 +575,7 @@ Author: Alexander Mattheis
         } else {  // else if a non-iterative algorithm
             var path = visualizerInstance.output.tracebackPaths[traceNumber];
 
-            // check if you want maybe disable "unhighlight" last drawn path
+            // check if you want maybe disable (unhighlight) last drawn path
             if (visualizerInstance.lastPath.length > 0) {
                 var posI = visualizerInstance.lastPath[0].i + 1;
                 var posJ = visualizerInstance.lastPath[0].j + 1;
@@ -899,6 +901,27 @@ Author: Alexander Mattheis
                 for( var i = 0; i < svgTexts.length; i++ ){
                     svgTexts[i].setAttribute("y", (parseInt(svgTexts[i].attributes.getNamedItem("y").value) - heightAdjustment).toString());
                 }
+            }
+        }
+    }
+
+    /**
+     * Highlights minima in the matrix.
+     * @param tracecellTable {Element} - The table in which the minimas has to be marked.
+     */
+    function markMinima(tracecellTable) {
+        var tracecellLines = visualizerInstance.output.tracecellLines;
+        var tracecellLinesKeys = Object.keys(tracecellLines);
+
+        for (var i = 0; i < tracecellLinesKeys.length; i++) {
+            var key = tracecellLinesKeys[i];
+            var tracecell = tracecellLines[key];
+
+            for (var j = 0; j < tracecell.length; j++) {
+                var posI = tracecell[j].i;  // hint: there can be empty lines
+                var posJ = tracecell[j].j;
+
+                tracecellTable.rows[posI + 1].cells[posJ + 1].classList.add("selected");  // "+1" because in the first line, there is the header
             }
         }
     }

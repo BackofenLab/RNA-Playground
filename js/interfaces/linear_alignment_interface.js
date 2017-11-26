@@ -470,8 +470,6 @@ Author: Alexander Mattheis
             }
         }
 
-        viewmodels.output.alignments(outputData.alignments);
-
         // iteration over each matrix in backward matrices
         for (var i = 0; i < outputData.backwardMatrices.length; i++) {
             // new variables (rows) are not automatically functions...
@@ -489,6 +487,11 @@ Author: Alexander Mattheis
                 viewmodels.output.backwardMatrices[i][j](outputData.backwardMatrices[i][j]);
             }
         }
+
+        viewmodels.output.alignments(outputData.alignments);
+
+        // matrix of all minima
+        viewmodels.output.tracecellLines(outputData.tracecellLines);
 
         // header
         viewmodels.output.recursionNumbersContainer(outputData.recursionNumbersContainer);
@@ -509,7 +512,7 @@ Author: Alexander Mattheis
         viewmodels.output.addedRows(outputData.addedRows);
         viewmodels.output.highlightPositions(outputData.relativeSplittingPoint);
 
-        // minima table
+        // minima result table
         viewmodels.output.globalMinima(minimaData);
 
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions

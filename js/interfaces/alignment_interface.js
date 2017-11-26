@@ -400,6 +400,9 @@ Author: Alexander Mattheis
 
         viewmodel.alignments = ko.observableArray(outputData.alignments);
 
+        // matrix of all minima
+        viewmodel.tracecellLines = ko.observable(outputData.tracecellLines).extend({ deferred: true });
+
         // header
         viewmodel.recursionNumbersContainer = ko.observable(outputData.recursionNumbersContainer).extend({ deferred: true });
         viewmodel.traceFunctions = ko.observable(traceFunctionsData);

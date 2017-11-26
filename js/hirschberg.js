@@ -106,6 +106,7 @@ $(document).ready(function () {
         hirschbergInstance.numberOfIterations = 0;
         outputData.maxNumberIterations = false;
 
+        debugger;
         if (input.sequenceAPositions.length > 1 && input.sequenceBPositions.length > 1) {
             computeAllRecursionData(input, [HIRSCHBERG_UPPER_NODE]);
             processDiscoveredTracecells();
@@ -134,7 +135,7 @@ $(document).ready(function () {
         outputData.addedRows = [];
         outputData.relativeSplittingPoint = [];  // stores local [i=floor(matrix.Height/2), j]
         outputData.allMinimaPosJ = [];
-        outputData.tracecellLines = [];
+        outputData.tracecellLines = {};
         outputData.globalPositionsI = [];
 
         outputData.recursionNumbersContainer = [];  // stores the position within the computation tree
@@ -186,7 +187,7 @@ $(document).ready(function () {
      * @see: Restricted to one path for better runtime! So, first founded minimum chosen for splitting.
      */
     function computeAllRecursionData(input, recursionNumbers) {
-        if (input.sequenceAPositions.length <= 1)
+        if (input.sequenceAPositions.length <= 1 || input.sequenceBPositions.length === 0)
             return;
 
         // [1] find trace-cell
@@ -341,7 +342,7 @@ $(document).ready(function () {
         var globalPosI = outputData.firstSequencePositions[currentRound-1][outputData.relativeSplittingPoint[currentRound-1][0]-1];
         var globalMinimaPositions = getGlobalRowTracecells(allMinima, currentRound, globalPosI);
 
-        outputData.tracecellLines.push(globalMinimaPositions);
+        outputData.tracecellLines[globalMinimaPositions[0].i] = globalMinimaPositions;
         outputData.globalPositionsI.push(globalMinimaPositions[0].i);
     }
 
@@ -413,7 +414,6 @@ $(document).ready(function () {
      */
     function processDiscoveredTracecells() {
         addEndings();
-        reorderTraceCellLines();  // for faster access during path creation
 
         var lowerRightCorner = new bases.alignment.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
         outputData.tracebackPaths = computeTraceback([lowerRightCorner]);
@@ -440,12 +440,12 @@ $(document).ready(function () {
     function addLine(matrix, reversedStringsMatrix, row) {
         var allMinima = getMinimaPositions(matrix, reversedStringsMatrix, row);
 
-        outputData.tracecellLines.push(allMinima);
+        outputData.tracecellLines[row] = allMinima;
         outputData.globalPositionsI.push(row);
     }
 
     /**
-     * Returns all horizontal positions with a minima from a given row.
+     * Returns from a given row of an imaginary matrix (full strings) all horizontal minima.
      * @param matrix {Array} - The matrix for the strings in right order.
      * @param reversedStringsMatrix {Array} - The matrix for the reversed strings.
      * @param posI {number} - The vertical position from which you want all minima.
@@ -461,24 +461,6 @@ $(document).ready(function () {
         if (posI === 0)
             return getGlobalRowTracecells(findAllMinima(sumRow), 1, posI);
         return getGlobalRowTracecells(findAllMinima(sumRow), 1, posI);
-    }
-
-    /**
-     * The tracecell-lines are not in the right order and have to be reordered.
-     */
-    function reorderTraceCellLines() {
-        var switches = [];
-
-        outputData.globalPositionsI.sort(function (a, b) {
-            switches.push(a - b);
-            return switches[switches.length-1];
-        });
-
-        var i = 0;
-
-        outputData.tracecellLines.sort(function (a,b) {
-            return switches[i++];
-        });
     }
 
     /**
@@ -542,14 +524,14 @@ $(document).ready(function () {
         var left = position.j - 1;
         var up = position.i - 1;
 
-        var tracecellLine = outputData.tracecellLines[up];
+        var tracecellLine = outputData.tracecellLines[up];  // match is always one row above
 
-        if (tracecellLine !== undefined ) {
+        if (tracecellLine !== undefined) {  // if row above not defined, then there is no match
             var horizontalPos = -1;  // in tracecell-lines, not in the imaginary matrix
 
-            for (var j = 0; j < tracecellLine.length; j++) {
-                if (tracecellLine[j].j === left) {  // test for match or cell above
-                    horizontalPos = j;
+            for (var x = 0; x < tracecellLine.length; x++) {
+                if (tracecellLine[x].j === left) {  // test for match
+                    horizontalPos = x;
                     break;
                 }
             }
@@ -561,29 +543,34 @@ $(document).ready(function () {
     }
 
     /**
-     * Return the most top trace cell.
+     * Returns the nearest top trace cell.
      * @param position {Object} - The current vector position.
      * @return {Object} - The most left trace cell up from the given position.
      */
     function getNextVerticalTraceCell(position) {
-        debugger;
-        var tracecelLines = outputData.tracecellLines;
+        var tracecellLines = outputData.tracecellLines;
+
+        var up = position.i - 1;
 
         var verticalPos = -1;  // in tracecell-lines, not in the imaginary matrix
         var horizontalPos = -1;  // in tracecell-lines, not in the imaginary matrix
 
-        for (var i = 0; i < tracecelLines.length; i++) {
-            var tracecellLine = tracecelLines[i];
-            var mostRightCell = tracecellLine[tracecellLine.length-1];
+        while (up >= 0) {
+            if (outputData.tracecellLines[up] !== undefined) {   // search for first defined i-position above
+                var tracecellLine = outputData.tracecellLines[up];
+                var mostRightCell = tracecellLine[tracecellLine.length - 1];
 
-            if (mostRightCell.j === position.j) {
-                verticalPos = i;
-                horizontalPos = tracecellLine.length-1;  // in tracecell-lines, not in the imaginary matrix
-                break;
+                if (mostRightCell.j === position.j) {  // test if really above (same j-position)
+                    verticalPos = mostRightCell.i;
+                    horizontalPos = tracecellLine.length - 1;  // in tracecell-lines, not in the imaginary matrix
+                    break;
+                }
             }
+
+            up--;
         }
 
-        return verticalPos !== -1 && verticalPos !== position.i ? tracecelLines[verticalPos][horizontalPos] : undefined;
+        return horizontalPos !== -1 ? tracecellLines[verticalPos][horizontalPos] : undefined;
     }
 
     /**

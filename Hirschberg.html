@@ -8,7 +8,7 @@ Author: Alexander Mattheis
 <div id="algorithm_description">
     <div class="description">
         <a href="https://dl.acm.org/citation.cfm?doid=360825.360861">Daniel S. Hirschberg</a>
-        introduced 1974 an approach to compute the longest common sequence of two strings.
+        introduced 1974 an approach to compute the longest common subsequence of two strings.
         This approach can be easily been adapted to compute the global alignment of two sequences
         in quadratic time $O(n^2)$ and only linear space, instead of quadratic space like in the former
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a> algorithm.
@@ -129,6 +129,75 @@ Author: Alexander Mattheis
                             <b>Hint:</b> Only one traceback computed.
                         </small>
                     </th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <h2>Computed Tracecells</h2>
+    <div class="output">
+        <div class="main_output">
+            <table class="calculation tracecells_table">
+                <thead>
+                    <tr>
+                        <th><small><b>Trace-<br>cells</b></small></th>
+                        <th></th>
+                        <!-- ko foreach: input.sequence2 -->
+                            <th data-bind="drawChar: [$data, $index()+1]"></th>
+                        <!-- /ko -->
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- ko foreach: $root.output.forwardMatrices()[0] --> <!-- to get i-indexes = $parentContext.$index() -->
+                        <tr>
+                            <!-- ko if: $index() == 0 -->
+                                <th></th>
+                            <!-- /ko -->
+
+                            <!-- ko if: $index() > 0 -->
+                                <th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
+                            <!-- /ko -->
+
+                            <!-- ko foreach: $root.output.forwardMatrices()[0][0] --> <!-- to get j-indexes = $index() -->
+                                <td class="entry">o</td>
+                            <!-- /ko -->
+                        </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="outcome">
+        <div class ="ancillary_output">
+            <table class="results_header">
+                <thead>
+                    <tr>
+                        <th>
+                            Minima
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="results_with_scrollbar">
+                <table class="results horizontal">
+                    <tbody>
+                        <!-- ko foreach: $root.output.recursionNumbersContainer -->
+                            <tr>
+                                <td class="entry entry_start more_left">
+                                    <code data-bind="text: $root.output.globalMinima()[$index()]"></code>
+                                </td>
+                            </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="results_footer">
+                <tr>
+                    <th></th>
                 </tr>
             </table>
         </div>
