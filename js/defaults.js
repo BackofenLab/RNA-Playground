@@ -17,6 +17,7 @@ Author: Alexander Mattheis
 /* HINT: alphabetically ordered (also within definitions) and structures after constants */
 
 // constants
+var END_SO_ON = ".."
 var EPSILON = 0.000000001;  // some very low number to test against
 
 var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant
@@ -26,6 +27,7 @@ var HIRSCHBERG_UPPER_NODE = 1;
 
 var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 var MAX_NUMBER_ITERATIONS = 5;  // number of iterations in algorithm with convergence
+var MAX_TRACE_FUNCTION_ARG_LEN = 10;  // tells the allowed length of an argument to avoid a string which goes over the page border
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have been updated

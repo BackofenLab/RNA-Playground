@@ -92,100 +92,98 @@ Author: Alexander Mattheis
     </div>
 
     <h2>Recursions <!-- ko foreach: $data --><span data-bind="text: $data"></span>.<!-- /ko --></h2>
-    <div class="scrollable">
         <!-- ko foreach: $root.output.recursionNumbersContainer -->
             <div>
                 <h3>Split <!-- ko foreach: $data --><span data-bind="text: $data"></span>.<!-- /ko --></h3>
-				<span class="trace_function" data-bind="text: $root.output.traceFunctions()[$index()]"></span> <br>
+                <span class="trace_function" data-bind="text: $root.output.traceFunctions()[$index()]"></span> <br>
 
-				<div class="output">
-					<div class="main_output">
-						<table class="calculation">
-							<tbody>
-								<tr>
-									<th>
-										<small>
-											<b>Row:</b> <br>
-											i = <span data-bind="text: $root.output.currentGlobalRow()[$index()]"></span>
-										</small>
-									</th>
+                <div class="output">
+                    <div class="main_output">
+                        <table class="calculation">
+                            <tbody>
+                                <tr>
+                                    <th>
+                                        <small>
+                                            <b>Row:</b> <br>
+                                            i = <span data-bind="text: $root.output.currentGlobalRow()[$index()]"></span>
+                                        </small>
+                                    </th>
 
-									<th></th>
+                                    <th></th>
 
-									<!-- ko foreach: $root.output.secondSequences()[$index()] -->
-										<th>
-											<span data-bind="text: $data"></span><sub>
-											<span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$index()][$index()]"></span></sub>
-										</th>
-									<!-- /ko -->
-								</tr>
+                                    <!-- ko foreach: $root.output.secondSequences()[$index()] -->
+                                        <th>
+                                            <span data-bind="text: $data"></span><sub>
+                                            <span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$index()][$index()]"></span></sub>
+                                        </th>
+                                    <!-- /ko -->
+                                </tr>
 
-								<tr>
-									<th><span data-bind="text: $root.output.matrixDLatex"></span></th>
-									<!-- ko foreach: $root.output.forwardRows()[$index()] -->
-										<td class="entry" data-bind="text: $data"></td>
-									<!-- /ko -->
-								</tr>
+                                <tr>
+                                    <th><span data-bind="text: $root.output.matrixDLatex"></span></th>
+                                    <!-- ko foreach: $root.output.forwardRows()[$index()] -->
+                                        <td class="entry" data-bind="text: $data"></td>
+                                    <!-- /ko -->
+                                </tr>
 
-								<tr>
-									<th><span data-bind="text: $root.output.matrixDPrimeLatex"></span></th>
-									<!-- ko foreach: $root.output.mirroredBackwardRows()[$index()] -->
-										<td class="entry" data-bind="text: $data"></td>
-									<!-- /ko -->
-								</tr>
+                                <tr>
+                                    <th><span data-bind="text: $root.output.matrixDPrimeLatex"></span></th>
+                                    <!-- ko foreach: $root.output.mirroredBackwardRows()[$index()] -->
+                                        <td class="entry" data-bind="text: $data"></td>
+                                    <!-- /ko -->
+                                </tr>
 
-								<tr class="thick_line">
-									<th><span data-bind="text: $root.output.sumLatex"></span></th>
-									<!-- ko foreach: $root.output.addedRows()[$index()] -->
-										<!-- ko if: $root.output.highlightPositions()[$parentContext.$index()][1] == $index() -->
-											<td class="result_entry" data-bind="text: $data"></td>
-										<!-- /ko -->
+                                <tr class="thick_line">
+                                    <th><span data-bind="text: $root.output.sumLatex"></span></th>
+                                    <!-- ko foreach: $root.output.addedRows()[$index()] -->
+                                        <!-- ko if: $root.output.highlightPositions()[$parentContext.$index()][1] == $index() -->
+                                            <td class="result_entry" data-bind="text: $data"></td>
+                                        <!-- /ko -->
 
-										<!-- ko if: $root.output.highlightPositions()[$parentContext.$index()][1] != $index() -->
-											<td class="entry" data-bind="text: $data"></td>
-										<!-- /ko -->
-									<!-- /ko -->
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
+                                        <!-- ko if: $root.output.highlightPositions()[$parentContext.$index()][1] != $index() -->
+                                            <td class="entry" data-bind="text: $data"></td>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-				<div class="outcome">
-					<div class ="ancillary_output">
-						<table class="results_header">
-							<thead>
-								<tr>
-									<th>
-										Minima
-									</th>
-								</tr>
-							</thead>
-						</table>
+                <div class="outcome">
+                    <div class ="ancillary_output">
+                        <table class="results_header">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Minima
+                                    </th>
+                                </tr>
+                            </thead>
+                        </table>
 
-						<div class="results_with_scrollbar">
-							<table class="results horizontal">
-								<tbody>
-									 <tr>
-										<td class="entry entry_start more_left">
-											<code data-bind="text: $root.output.globalMinima()[$index()]"></code>
-										</td>
-									 </tr>
-								</tbody>
-							</table>
-						</div>
+                        <div class="results_with_scrollbar">
+                            <table class="results horizontal">
+                                <tbody>
+                                     <tr>
+                                        <td class="entry entry_start more_left">
+                                            <code data-bind="text: $root.output.globalMinima()[$index()]"></code>
+                                        </td>
+                                     </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-						<table class="results_footer">
-							<tr>
-								<th></th>
-							</tr>
-						</table>
-					</div>
-				</div>
+                        <table class="results_footer">
+                            <tr>
+                                <th></th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <br>
             <br>
         <!-- /ko -->
-    </div>
 </div>

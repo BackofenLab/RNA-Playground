@@ -440,6 +440,11 @@ Author: Alexander Mattheis
             var firstSequencePositions = outputData.firstSequencePositions[k];
 
             for (var i = 0; i < firstSequence.length; i++) {
+                if (i >= MAX_TRACE_FUNCTION_ARG_LEN) {  // cut after a certain number of arguments
+                    string += SYMBOLS.SPACE + END_SO_ON;
+                    break;
+                }
+
                 string += firstSequence[i] + LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + firstSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
                 string += i < firstSequence.length - 1 ? SYMBOLS.COMMA : SYMBOLS.EMPTY;
             }
@@ -450,6 +455,11 @@ Author: Alexander Mattheis
             var secondSequencePositions = outputData.secondSequencePositions[k];
 
             for (var i = 0; i < secondSequence.length; i++) {
+                if (i >= MAX_TRACE_FUNCTION_ARG_LEN) {  // cut after a certain number of arguments
+                    string += SYMBOLS.SPACE + END_SO_ON;
+                    break;
+                }
+
                 string += secondSequence[i] + LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + secondSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
                 string += i < secondSequence.length - 1 ? SYMBOLS.COMMA : SYMBOLS.EMPTY;
             }
