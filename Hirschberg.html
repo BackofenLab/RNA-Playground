@@ -82,11 +82,52 @@ Author: Alexander Mattheis
                             <!-- /ko -->
 
                             <!-- ko foreach: $root.output.forwardMatrices()[0][0] --> <!-- to get j-indexes = $index() -->
-                                <td class="entry"></td>
+                                <td class="entry">o</td>
                             <!-- /ko -->
                         </tr>
                     <!-- /ko -->
                 </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="outcome">
+        <div class ="ancillary_output">
+            <table class="results_header">
+                <thead>
+					<tr>
+						<th>
+							Result <br>
+                            <small>
+                                The result for which the normalized score was computed is marked blue.
+                            </small>
+						</th>
+					</tr>
+                </thead>
+            </table>
+
+            <div class="results_with_scrollbar">
+                <table class="results">
+                    <tbody>
+                        <tr>
+                            <td class="selectable_entry selectable_entry_start">
+                                <code data-bind="text: $root.output.alignments()[0][0]"></code> <br>
+                                <code data-bind="text: $root.output.alignments()[0][1]"></code> <br>
+                                <code data-bind="text: $root.output.alignments()[0][2]"></code>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="results_footer">
+                <tr>
+                    <th>
+                        <small>
+                            <b>Hint:</b> Only one traceback computed.
+                        </small>
+                    </th>
+                </tr>
             </table>
         </div>
     </div>

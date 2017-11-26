@@ -470,6 +470,8 @@ Author: Alexander Mattheis
             }
         }
 
+        viewmodels.output.alignments(outputData.alignments);
+
         // iteration over each matrix in backward matrices
         for (var i = 0; i < outputData.backwardMatrices.length; i++) {
             // new variables (rows) are not automatically functions...

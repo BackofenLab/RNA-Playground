@@ -106,8 +106,12 @@ $(document).ready(function () {
         hirschbergInstance.numberOfIterations = 0;
         outputData.maxNumberIterations = false;
 
-        computeAllRecursionData(input, [HIRSCHBERG_UPPER_NODE]);
-        processDiscoveredTracecells();
+        debugger;
+        if (input.sequenceAPositions.length > 1 && input.sequenceBPositions.length > 1) {
+            computeAllRecursionData(input, [HIRSCHBERG_UPPER_NODE]);
+            processDiscoveredTracecells();
+            createAlignments();
+        }
 
         return [inputData, outputData];
     }
@@ -267,7 +271,7 @@ $(document).ready(function () {
     /**
      * Returns all minimum positions of the given row.
      * @param row {Array} - The array in which it is searched for the minimum.
-     * @return {number} - The first minimum.
+     * @return {Array} - The minimum positions.
      */
     function findAllMinima(row) {
         var minimumValue = findMinima(row);
@@ -333,10 +337,22 @@ $(document).ready(function () {
 
         outputData.recursionNumbersContainer.push(recursionNumbers.slice());
 
-        // create global trace-cells
         var currentRound = outputData.recursionNumbersContainer.length;
         var globalPosI = outputData.firstSequencePositions[currentRound-1][outputData.relativeSplittingPoint[currentRound-1][0]-1];
+        var globalMinimaPositions = getGlobalRowTracecells(allMinima, currentRound, globalPosI);
 
+        outputData.tracecellLines.push(globalMinimaPositions);
+        outputData.globalPositionsI.push(globalMinimaPositions[0].i);
+    }
+
+    /**
+     * Returns the global minima positions from a row.
+     * @param allMinima {Array} - The relative j-positions.
+     * @param currentRound {number} - The current recursion round.
+     * @param globalPosI {number} - The global i-positions.
+     * @param {Array} - The global positions with minima from a line.
+     */
+    function getGlobalRowTracecells(allMinima, currentRound, globalPosI) {
         var lineTracecells = [];
 
         for (var j = 0; j < allMinima.length; j++) {
@@ -350,8 +366,7 @@ $(document).ready(function () {
             lineTracecells.push(new bases.alignment.Vector(globalPosI, globalPosJ));
         }
 
-        outputData.tracecellLines.push(lineTracecells);
-        outputData.globalPositionsI.push(globalPosI);
+        return lineTracecells;
     }
 
     /**
@@ -381,7 +396,6 @@ $(document).ready(function () {
      */
     function initializedLowerMatrixInput(input, minimumRowPosI, minimumColumnPosJ) {
         // Hint: There is one row and one column more than affiliated sequence size.
-        debugger;
         input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).slice(minimumRowPosI).join(SYMBOLS.EMPTY);
         input.sequenceB = input.sequenceB.split(SYMBOLS.EMPTY).slice(minimumColumnPosJ).join(SYMBOLS.EMPTY);
 
@@ -400,22 +414,53 @@ $(document).ready(function () {
     function processDiscoveredTracecells() {
         addEndings();
         reorderTraceCellLines();  // for faster access during path creation
-        createPath();
+
+        var lowerRightCorner = new bases.alignment.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
+        outputData.tracebackPaths = computeTraceback([lowerRightCorner]);
     }
 
     /**
-     * The start cell and the end cell are not contained in the tracecell-lines
+     * The start-row and the end-row are not contained in the tracecell-lines
      * and have to be added to create a path.
      */
     function addEndings() {
-        outputData.globalPositionsI.push(0);
-        outputData.tracecellLines.push([new bases.alignment.Vector(0,0)]);
+        var matrix = outputData.forwardMatrices[0];
+        var reversedStringsMatrix = outputData.backwardMatrices[0];
 
-        var height = inputData.sequenceA.length;
-        var width = inputData.sequenceB.length;
+        addLine(matrix, reversedStringsMatrix, 0);  // first line
+        addLine(matrix, reversedStringsMatrix, inputData.sequenceA.length);  // last line
+    }
 
-        outputData.globalPositionsI.push(height);
-        outputData.tracecellLines.push([new bases.alignment.Vector(height, width)]);
+    /**
+     * Adds a line to tracecell-lines.
+     * @param matrix {Array} - The matrix for the strings in right order.
+     * @param reversedStringsMatrix {Array} - The matrix for the reversed strings.
+     * @param row {number} - The row which ahould be added.
+     */
+    function addLine(matrix, reversedStringsMatrix, row) {
+        var allMinima = getMinimaPositions(matrix, reversedStringsMatrix, row);
+
+        outputData.tracecellLines.push(allMinima);
+        outputData.globalPositionsI.push(row);
+    }
+
+    /**
+     * Returns all horizontal positions with a minima from a given row.
+     * @param matrix {Array} - The matrix for the strings in right order.
+     * @param reversedStringsMatrix {Array} - The matrix for the reversed strings.
+     * @param posI {number} - The vertical position from which you want all minima.
+     * @return {Array} - All minima.
+     */
+    function getMinimaPositions(matrix, reversedStringsMatrix, posI) {
+        var row = matrix[posI];
+        var backwardRow = reversedStringsMatrix[(reversedStringsMatrix.length - 1) - posI];
+        var reversedBackwardRow = backwardRow.slice().reverse();
+
+        var sumRow = addRows(row, reversedBackwardRow);
+
+        if (posI === 0)
+            return getGlobalRowTracecells(findAllMinima(sumRow), 1, posI);
+        return getGlobalRowTracecells(findAllMinima(sumRow), 1, posI);
     }
 
     /**
@@ -424,7 +469,6 @@ $(document).ready(function () {
     function reorderTraceCellLines() {
         var switches = [];
 
-        debugger;
         outputData.globalPositionsI.sort(function (a, b) {
             switches.push(a - b);
             return switches[switches.length-1];
@@ -440,10 +484,139 @@ $(document).ready(function () {
     /**
      * Afterwards we have to go from bottom bottom right to top left
      * of an imaginary matrix and select always one neighbour cell
-     * to get back a traceback.
+     * to get back a traceback and such way find an alignment.
      */
-    function createPath() {
+    function computeTraceback(path) {
+        var paths = [];
+        globalTraceback(paths, path, getNeighboured);
+        return paths;
+    }
 
+    /**
+     * Returns one neighbour to which you can go from the current cell position used as input.
+     * @param position {Object} - Current cell position in matrix.
+     * @return {Array} - Contains neighboured positions as Vector-objects.
+     */
+    function getNeighboured(position) {
+        var neighboured = [];
+
+        // retrieve neighbours (order is important)
+        var horizontalTraceCell = getNextHorizontalTraceCell(position);
+        var matchTraceCell = getMatchCell(position);
+        var verticalTraceCell = getNextVerticalTraceCell(position);
+
+        // add
+        if (horizontalTraceCell !== undefined)
+            neighboured.push(horizontalTraceCell);
+        else if (matchTraceCell !== undefined)
+            neighboured.push(matchTraceCell);
+        else
+            neighboured.push(verticalTraceCell);
+
+        return neighboured;
+    }
+
+    /**
+     * Return the most left trace cell.
+     * @param position {Object} - The current vector position.
+     * @return {Object} - The most left trace cell up from the given position.
+     */
+    function getNextHorizontalTraceCell(position) {
+        var tracecellLine = outputData.tracecellLines[position.i];
+
+        if (tracecellLine !== undefined) {
+            var nextPosition = tracecellLine[0];
+
+            return nextPosition.j !== position.j ? nextPosition : undefined;
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Looks in the next line above for a match.
+     * @param position {Object} - The current vector position.
+     * @return {Object} - The most left trace cell up from the given position.
+     */
+    function getMatchCell(position) {
+        var left = position.j - 1;
+        var up = position.i - 1;
+
+        var tracecellLine = outputData.tracecellLines[up];
+
+        if (tracecellLine !== undefined ) {
+            var horizontalPos = -1;  // in tracecell-lines, not in the imaginary matrix
+
+            for (var j = 0; j < tracecellLine.length; j++) {
+                if (tracecellLine[j].j === left) {  // test for match or cell above
+                    horizontalPos = j;
+                    break;
+                }
+            }
+
+            return horizontalPos !== -1 ? tracecellLine[horizontalPos] : undefined;
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Return the most top trace cell.
+     * @param position {Object} - The current vector position.
+     * @return {Object} - The most left trace cell up from the given position.
+     */
+    function getNextVerticalTraceCell(position) {
+        debugger;
+        var tracecelLines = outputData.tracecellLines;
+
+        var verticalPos = -1;  // in tracecell-lines, not in the imaginary matrix
+        var horizontalPos = -1;  // in tracecell-lines, not in the imaginary matrix
+
+        for (var i = 0; i < tracecelLines.length; i++) {
+            var tracecellLine = tracecelLines[i];
+            var mostRightCell = tracecellLine[tracecellLine.length-1];
+
+            if (mostRightCell.j === position.j) {
+                verticalPos = i;
+                horizontalPos = tracecellLine.length-1;  // in tracecell-lines, not in the imaginary matrix
+                break;
+            }
+        }
+
+        return verticalPos !== -1 && verticalPos !== position.i ? tracecelLines[verticalPos][horizontalPos] : undefined;
+    }
+
+    /**
+     * Computing one global traceback.
+     * with special stop criteria on the matrix cells as path-nodes.
+     * @param paths {Array} - Array of paths.
+     * @param path {Array} - Array containing the first vector element from which on you want find a path.
+     * @param neighbourFunction {Function} - The function which have to be used to retrieve neighbours.
+     * @see It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
+     */
+    function globalTraceback(paths, path, neighbourFunction) {
+        var currentPosition = path[path.length - 1];
+        var neighboured = neighbourFunction(currentPosition);
+
+        if ((neighboured[0].i === 0 && neighboured[0].j === 0)) {  // stop criteria checks
+            path.push(neighboured[0]);
+            paths.push(path.slice());  // creating a shallow copy
+            path.pop();
+        } else {  // executing procedure with a successor
+            path.push(neighboured[0]);
+            globalTraceback(paths, path, neighbourFunction);
+            path.pop();
+        }
+    }
+
+    /**
+     * Creates the alignments.
+     * @augments Alignment.createAlignments()
+     */
+    function createAlignments() {
+        alignmentInstance.setIO(inputData, outputData);
+        alignmentInstance.createAlignments();
+        outputData = alignmentInstance.getOutput();
     }
 
     /**
