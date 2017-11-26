@@ -106,12 +106,12 @@ $(document).ready(function () {
         hirschbergInstance.numberOfIterations = 0;
         outputData.maxNumberIterations = false;
 
-        debugger;
         if (input.sequenceAPositions.length > 1 && input.sequenceBPositions.length > 1) {
             computeAllRecursionData(input, [HIRSCHBERG_UPPER_NODE]);
             processDiscoveredTracecells();
             createAlignments();
-        }
+        } else
+            computeWithNeedlemanWunsch(input);
 
         return [inputData, outputData];
     }
@@ -501,15 +501,15 @@ $(document).ready(function () {
         var neighboured = [];
 
         // retrieve neighbours (order is important)
-        var horizontalTraceCell = getNextHorizontalTraceCell(position);
         var matchTraceCell = getMatchCell(position);
+        var horizontalTraceCell = getNextHorizontalTraceCell(position);
         var verticalTraceCell = getNextVerticalTraceCell(position);
 
         // add
-        if (horizontalTraceCell !== undefined)
-            neighboured.push(horizontalTraceCell);
-        else if (matchTraceCell !== undefined)
+        if (matchTraceCell !== undefined)
             neighboured.push(matchTraceCell);
+        else if (horizontalTraceCell !== undefined)
+            neighboured.push(horizontalTraceCell);
         else
             neighboured.push(verticalTraceCell);
 
@@ -617,6 +617,17 @@ $(document).ready(function () {
         alignmentInstance.setIO(inputData, outputData);
         alignmentInstance.createAlignments();
         outputData = alignmentInstance.getOutput();
+    }
+
+    /**
+     * The initialized Needleman-Wunsch input.
+     * @param input
+     */
+    function computeWithNeedlemanWunsch(input) {
+        needlemanWunschInstance.setIO(input, outputData);
+        var ioData = needlemanWunschInstance.compute();
+        ioData[1].forwardMatrices.push(ioData[1].matrix);
+        return ioData;
     }
 
     /**

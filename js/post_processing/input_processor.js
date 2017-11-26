@@ -67,6 +67,7 @@ Author: Alexander Mattheis
 
         var mainOutput = $(".main_output");  // output containing the calculation tables
         var calculationTable = mainOutput.find(".calculation");
+        var traceTable = mainOutput.find(".trace_table");
         var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
         var calculationVerticalTable = mainOutput.find(".calculation_vertical");
 
@@ -81,6 +82,8 @@ Author: Alexander Mattheis
         linkOverlay(viewmodels.visual, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
         linkSelectables(viewmodels.visual, calculationVerticalTable, calculationTable, calculationHorizontalTable,
             mainOutput, selectableEntryClass);
+
+        doSingleInitialHighlighting(viewmodels.visual);
     }
 
     /**
@@ -268,6 +271,7 @@ Author: Alexander Mattheis
      */
     function postProcess(viewmodels) {
         linkIterationTables(viewmodels.visual);  // iterative tables are not existing from the beginning and so they have to be relinked
+        doSingleInitialHighlighting(viewmodels.visual);
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
     }
 
@@ -309,7 +313,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Some algorithms has some initial highlighting.
+     * Some iterative algorithms has some initial highlighting.
      * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
      * @param iterationTablesArray {Array} - An array of tables.
      * @param mainOutput {Element} - The div containing only the calculation tables.
@@ -320,6 +324,25 @@ Author: Alexander Mattheis
         setTimeout(function () {
             visualViewmodel.showTraceback(0, undefined, undefined, undefined, iterationTablesArray, mainOutput[0]);
         }, REACTION_TIME_HIGHLIGHT);
+    }
+
+    /**
+     * Some algorithms with a single table has some initial highlighting.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     */
+    function doSingleInitialHighlighting(visualViewmodel) {
+        if (visualViewmodel.algorithm.type === ALGORITHMS.HIRSCHBERG) {
+
+            // the table exist after just after the display has updated,
+            // but the event is triggered before and so a delay is needed
+            setTimeout(function () {
+                var mainOutput = $(".main_output");  // output containing the calculation tables
+                var traceTable = mainOutput.find(".trace_table");
+
+                visualViewmodel.showTraceback(0, undefined, traceTable[0], undefined,
+                    undefined, mainOutput[0]);
+            }, REACTION_TIME_HIGHLIGHT);
+        }
     }
 
     /**
