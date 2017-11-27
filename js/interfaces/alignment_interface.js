@@ -426,6 +426,19 @@ Author: Alexander Mattheis
         // minima table
         viewmodel.globalMinima = ko.observable(minimaData);
 
+        // gimmicks/optimizations
+        viewmodel.showMatrices = ko.observable(false);
+
+        viewmodel.toggleVisibility = function() {
+            viewmodel.showMatrices(!viewmodel.showMatrices());
+        };
+
+        viewmodel.toggleLinkText = ko.computed(
+            function () {
+                return viewmodel.showMatrices() ? TOGGLE_LINK_TEXT.HIDE : TOGGLE_LINK_TEXT.SHOW;
+            }
+        );
+
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
     }
 

@@ -12,10 +12,17 @@ Author: Alexander Mattheis
         This approach can be easily been adapted to compute the global alignment of two sequences
         in quadratic time $O(nm)$ and only linear space, instead of quadratic space like in the former
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a> algorithm.
-      <br>
-      <br>
 
-      For the given input, the traceback steps are provided.
+        <br>
+        <br>
+
+        For the given input, the
+        <ul>
+            <li>recursions</li>
+            <li>computed tracecell matrix</li>
+            <li>final alignment and traceback</li>
+        </ul>
+        are visualized and represented in reversed order below. <br>
     </div>
 
     <div class="picture">
@@ -209,10 +216,16 @@ Author: Alexander Mattheis
     </div>
 
     <h2>Recursions <!-- ko foreach: $data --><span data-bind="text: $data"></span>.<!-- /ko --></h2>
+        <a href="#" data-bind="click: $root.output.toggleVisibility, text: $root.output.toggleLinkText"></a>
+
         <!-- ko foreach: $root.output.recursionNumbersContainer -->
             <div class="recursion">
                 <h3>Split <!-- ko foreach: $data --><span data-bind="text: $data"></span>.<!-- /ko --></h3>
                 <span class="trace_function" data-bind="text: $root.output.traceFunctions()[$index()]"></span> <br>
+
+                <div class="matrices" data-bind="visible: $root.output.showMatrices">
+
+                </div>
 
                 <div class="output">
                     <div class="main_output extra_large">
