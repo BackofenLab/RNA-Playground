@@ -9,42 +9,48 @@ Author: Alexander Mattheis
     <div class="description">
         <a href="https://dl.acm.org/citation.cfm?doid=360825.360861">Daniel S. Hirschberg</a>
         introduced 1974 an approach to compute the longest common subsequence of two strings.
-        This approach can be easily been adapted to compute the global alignment of two sequences
+        This approach can be adapted to compute the global alignment of two sequences
         in quadratic time $O(nm)$ and only linear space, instead of quadratic space like in the former
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a> algorithm.
+        The idea is that the tracebacks you get from a prefix- and a suffix-alignment are congruent
+        i.e. the traceback-cells are the same.
+        Because of this, a row of the prefix dynamic programming matrix (DPA)
+        and the suffix DPA (assuming same coordinate system) can be added to identify a traceback-cell as the minimum.
 
         <br>
         <br>
 
-        The idea is that the tracebacks you get from an alignment of ordinary and reversed sequences are isomorph
-        i.e. if you rotate the reversed sequences traceback-matrix by 180 degrees, then it will perfectly match
-        with the ordinary traceback-matrix. <br>
-        This can be exploited to compute the alignment of two strings in linear space,
-        because what can be recognized is that if you add the same row of the dynamic programming matrix (DPA)
-        and the rotated reversed sequences DPA (assuming same coordinate system),
-        then the cells through which the traceback will go are identifiable as the minimum.
-
-        <br>
-        <br>
-
-        You have just to compute the minimum first for the middle row $i = \lfloor n \rfloor$ where $n = |a|$, <br>
-        then split at position $(i,j)$ and compute in the upper matrix $DPA(a_1, .., a_i | b_1, .., b_j)$
-        and in the lower matrix $DPA(a_{i+1}, .., a_n | b_{j+1}, .., b_m) the minimum in its middle rows again <br>
+        To do the computation in linear time, the minima
+        have to be computed first for the middle row $i = \lfloor n \rfloor$, where $n = |a|$
+        and then you have to split the matrix sequences at the first minimum-position $(i,j)$
+        and compute in the resulting upper matrix $DPA(a_1, .., a_i | b_1, .., b_j)$
+        and in the resulting lower matrix $DPA(a_{i+1}, .., a_n | b_{j+1}, .., b_m)$ the minima in its middle rows again,
         where $m = |b|$ and $a, \, b$ are sequences. <br>
-        This splitting has to be done recursively until $n \leq 1$ or $m = 0$. <br>
-        Now, how to compute the middle row in linear space?
-        The idea is to compute always only two lines of the DPA
+        This splitting has to be done recursively until $n \leq 1$ or $m = 0$.
+        The algorithm works always only with two rows of the DPA
+        and reuse the last computed row, to calculate the next row
+        until the middle row is computed with the suffix and the prefix approach.
+        These two middle rows (one from prefix alignment and one from suffix alignment)
+        are then added together and thereby the traceback-cells become identifiable
+        as the minima. Important at this point is that the lower and upper matrices
+        rows have to be recalculated for the given, cutted input sequences of $a$ and $b$, because Hirschberg
+        does not store the full matrix.
 
         <br>
         <br>
 
+        Our implementation only stores the most left traceback-cell in the row to use less space,
+        but the path is nevertheless reconstructable. The last row minimum is computed separately
+        from this recursive approach.
         For the given input, the
         <ul>
             <li>recursions</li>
             <li>computed tracecell matrix</li>
             <li>final alignment and traceback</li>
         </ul>
-        are visualized and represented in reversed order below. <br>
+        are computed with the help of the
+        <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch">Needleman-Wunsch</a>
+        algorithm and represented reversed order below. <br>
     </div>
 
     <div class="picture">
@@ -52,6 +58,7 @@ Author: Alexander Mattheis
     </div>
 </div>
 
+<h1>Input:</h1>
 <div id="algorithm_input">
 	<div class="row">
 		<div class="colW100"><label>Sequence $a$:</label></div>
