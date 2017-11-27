@@ -404,9 +404,17 @@ $(document).ready(function () {
 
         var firstLine = 0;
         var lastLine = inputData.sequenceA.length;
+        var lastColumn = inputData.sequenceB.length;
 
+        // first line
         outputData.tracecellLines[firstLine] = new bases.alignment.Vector(0, 0);
-        outputData.tracecellLines[lastLine] = computeTracecell(matrix, reversedStringsMatrix, lastLine);
+
+        // second line
+        var tracecell = computeTracecell(matrix, reversedStringsMatrix, lastLine);
+
+        outputData.tracecellLines[lastLine] = tracecell;
+        outputData.relativeSplittingPoint.push([tracecell.i, tracecell.j]);  // needed for visualization
+        outputData.lastTracecellIsSource = tracecell.i === lastLine && tracecell.j === lastColumn;
     }
 
     /**

@@ -505,6 +505,11 @@ Author: Alexander Mattheis
             rows.push(outputData.firstSequencePositions[k][outputData.relativeSplittingPoint[k][0]-1]);
         }
 
+        if (outputData.recursionNumbersContainer.length > 0 && !outputData.lastTracecellIsSource) {  // add last row minimum position
+            var lastRound = outputData.relativeSplittingPoint.length - 1;
+            rows.push(outputData.firstSequencePositions[0][outputData.relativeSplittingPoint[lastRound][0]-1]);
+        }
+
         return rows;
     }
 
@@ -516,12 +521,24 @@ Author: Alexander Mattheis
     function getColumnData(outputData) {
         var columns = [];
 
+        var column;
         // iterate over all rounds
         for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
-            var column = outputData.secondSequencePositions[k][outputData.relativeSplittingPoint[k][1]-1];
+            column = outputData.secondSequencePositions[k][outputData.relativeSplittingPoint[k][1]-1];
 
             if (column === undefined)
                 column = outputData.secondSequencePositions[k][0] - 1;  // select first defined position and then "-1"
+
+            columns.push(column);
+        }
+
+        if (outputData.recursionNumbersContainer.length > 0 && !outputData.lastTracecellIsSource) {  // add last row minimum position
+            var lastRound = outputData.relativeSplittingPoint.length - 1;
+
+            column = outputData.secondSequencePositions[0][outputData.relativeSplittingPoint[lastRound][1]-1];
+
+            if (column === undefined)
+                column = outputData.secondSequencePositions[lastRound][1] - 1;  // select first defined position and then "-1"
 
             columns.push(column);
         }
