@@ -521,6 +521,7 @@ Author: Alexander Mattheis
     function getColumnData(outputData) {
         var columns = [];
 
+        debugger;
         var column;
         // iterate over all rounds
         for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
@@ -538,7 +539,7 @@ Author: Alexander Mattheis
             column = outputData.secondSequencePositions[0][outputData.relativeSplittingPoint[lastRound][1]-1];
 
             if (column === undefined)
-                column = outputData.secondSequencePositions[lastRound][1] - 1;  // select first defined position and then "-1"
+                column = outputData.secondSequencePositions[0][0] - 1;  // select first defined position and then "-1"
 
             columns.push(column);
         }
