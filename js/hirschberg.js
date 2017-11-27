@@ -202,11 +202,10 @@ $(document).ready(function () {
 
         var sumRow = addRows(forwardRow, mirroredBackwardRow);
 
-        var allMinima = findAllMinima(sumRow);
-        var splittingPosJ = allMinima[0];
+        var splittingPosJ = findMinimum(sumRow);
 
         createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow,
-            splittingPosI, splittingPosJ, allMinima, recursionNumbers);
+            splittingPosI, splittingPosJ, recursionNumbers);
 
         // [2] divide and conquer
         recursionNumbers.push(HIRSCHBERG_UPPER_NODE);
@@ -270,40 +269,26 @@ $(document).ready(function () {
     }
 
     /**
-     * Returns all minimum positions of the given row.
-     * @param row {Array} - The array in which it is searched for the minimum.
-     * @return {Array} - The minimum positions.
-     */
-    function findAllMinima(row) {
-        var minimumValue = findMinima(row);
-        var minimumPositions = [];
-
-        for (var j = 0; j < row.length; j++) {
-            if (row[j] === minimumValue)
-                minimumPositions.push(j);
-        }
-
-        return minimumPositions;
-    }
-
-    /**
-     * Returns the minimum value of the given row.
+     * Returns the minimum position of the given row.
      * @param row {Array} - The array in which it is searched for the minimum.
      * @return {number} - The first minimum.
      */
-    function findMinima(row) {
+    function findMinimum(row) {
         var minimumValue = Number.POSITIVE_INFINITY;
+        var minimumPosition = -1;
 
         var currentValue;
 
         for (var i = 0; i < row.length; i++) {
             currentValue = row[i];
 
-            if (currentValue < minimumValue)
+            if (currentValue < minimumValue) {
                 minimumValue = currentValue;
+                minimumPosition = i;
+            }
         }
 
-        return minimumValue;
+        return minimumPosition;
     }
 
     /**
@@ -314,13 +299,14 @@ $(document).ready(function () {
      * @param forwardRow {Array} - The row computed with Needleman-Wunsch and ordinary order of sequences.
      * @param mirroredBackwardRow {Array} - The reversed row computed with Needleman-Wunsch and reversed order of sequences.
      * @param sumRow {Array} - The sum array of forwardRow and mirroredBackwardRow.
-     * @param splittingPosI {number} - The i-position on which the algorithm does a split.
-     * @param splittingPosJ {number} - The j-position on which the algorithm does a split.
-     * @param allMinima {Array} - The relative j-positions.
+     * @param splittingPosI {number} - The relative i-position on which the algorithm does a split.
+     * @param splittingPosJ {number} - The relative j-position on which the algorithm does a split.
      * @param recursionNumbers {Array} - Contains information about recursion (i.e. [1, 1, 2] is upper, upper, lower).
      */
     function createDataCopy(input, forwardMatrix, backwardMatrix, forwardRow, mirroredBackwardRow, sumRow,
-                            splittingPosI, splittingPosJ, allMinima, recursionNumbers) {
+                            splittingPosI, splittingPosJ, recursionNumbers) {
+        var currentRound = outputData.recursionNumbersContainer.length;
+
         outputData.firstSequences.push(input.sequenceA);
         outputData.secondSequences.push(input.sequenceB);
         outputData.firstSequencePositions.push(input.sequenceAPositions);
@@ -334,40 +320,29 @@ $(document).ready(function () {
         outputData.addedRows.push(sumRow);
 
         outputData.relativeSplittingPoint.push([splittingPosI, splittingPosJ]);
-        outputData.allMinimaPosJ.push(allMinima);
-
         outputData.recursionNumbersContainer.push(recursionNumbers.slice());
 
-        var currentRound = outputData.recursionNumbersContainer.length;
-        var globalPosI = outputData.firstSequencePositions[currentRound-1][outputData.relativeSplittingPoint[currentRound-1][0]-1];
-        var globalMinimaPositions = getGlobalRowTracecells(allMinima, currentRound, globalPosI);
-
-        outputData.tracecellLines[globalMinimaPositions[0].i] = globalMinimaPositions;
-        outputData.globalPositionsI.push(globalMinimaPositions[0].i);
+        var globalTracecell = getGlobalTracecell(splittingPosI, splittingPosJ, currentRound);
+        outputData.tracecellLines[globalTracecell.i] = globalTracecell;
     }
 
     /**
-     * Returns the global minima positions from a row.
-     * @param allMinima {Array} - The relative j-positions.
+     * Returns from a given row of an imaginary matrix (of full strings) the tracecell with the first horizontal minima vector.
+     * @param splittingPosI {number} - The relative i-position on which the algorithm does a split.
+     * @param splittingPosJ {number} - The relative j-position on which the algorithm does a split.
      * @param currentRound {number} - The current recursion round.
-     * @param globalPosI {number} - The global i-positions.
-     * @param {Array} - The global positions with minima from a line.
+     * @return {Object} - A vector.
      */
-    function getGlobalRowTracecells(allMinima, currentRound, globalPosI) {
-        var lineTracecells = [];
+    function getGlobalTracecell(splittingPosI, splittingPosJ, currentRound) {
+        var globalPosI = outputData.firstSequencePositions[currentRound][splittingPosI-1];
+        var globalPosJ = outputData.secondSequencePositions[currentRound][splittingPosJ-1];
 
-        for (var j = 0; j < allMinima.length; j++) {
-            var globalPosJ = outputData.secondSequencePositions[currentRound-1][allMinima[j]-1];
-
-            if (globalPosJ === undefined) {
-                var firstDefinedPosition = outputData.secondSequencePositions[currentRound-1][0];
-                globalPosJ = firstDefinedPosition-1;
-            }
-
-            lineTracecells.push(new bases.alignment.Vector(globalPosI, globalPosJ));
+        if (globalPosJ === undefined)  {  // then return first defined position
+            var firstDefinedPosition = outputData.secondSequencePositions[currentRound][0];
+            globalPosJ = firstDefinedPosition-1;
         }
 
-        return lineTracecells;
+        return new bases.alignment.Vector(globalPosI, globalPosJ);
     }
 
     /**
@@ -420,47 +395,36 @@ $(document).ready(function () {
     }
 
     /**
-     * The start-row and the end-row are not contained in the tracecell-lines
+     * The start-row and the end-row minimum positions are not contained in the tracecell-lines
      * and have to be added to create a path.
      */
     function addEndings() {
         var matrix = outputData.forwardMatrices[0];
         var reversedStringsMatrix = outputData.backwardMatrices[0];
 
-        addLine(matrix, reversedStringsMatrix, 0);  // first line
-        addLine(matrix, reversedStringsMatrix, inputData.sequenceA.length);  // last line
+        var firstLine = 0;
+        var lastLine = inputData.sequenceA.length;
+
+        outputData.tracecellLines[firstLine] = new bases.alignment.Vector(0, 0);
+        outputData.tracecellLines[lastLine] = computeTracecell(matrix, reversedStringsMatrix, lastLine);
     }
 
     /**
-     * Adds a line to tracecell-lines.
+     * Returns from a given row of an imaginary matrix (of full strings) the tracecell with the first horizontal minima position.
      * @param matrix {Array} - The matrix for the strings in right order.
      * @param reversedStringsMatrix {Array} - The matrix for the reversed strings.
-     * @param row {number} - The row which ahould be added.
+     * @param posI {number} - The vertical position (local and global, because working on full matrix) from which you want a minima.
+     * @return {Object} - The vector.
      */
-    function addLine(matrix, reversedStringsMatrix, row) {
-        var allMinima = getMinimaPositions(matrix, reversedStringsMatrix, row);
-
-        outputData.tracecellLines[row] = allMinima;
-        outputData.globalPositionsI.push(row);
-    }
-
-    /**
-     * Returns from a given row of an imaginary matrix (full strings) all horizontal minima.
-     * @param matrix {Array} - The matrix for the strings in right order.
-     * @param reversedStringsMatrix {Array} - The matrix for the reversed strings.
-     * @param posI {number} - The vertical position from which you want all minima.
-     * @return {Array} - All minima.
-     */
-    function getMinimaPositions(matrix, reversedStringsMatrix, posI) {
+    function computeTracecell(matrix, reversedStringsMatrix, posI) {
         var row = matrix[posI];
         var backwardRow = reversedStringsMatrix[(reversedStringsMatrix.length - 1) - posI];
         var reversedBackwardRow = backwardRow.slice().reverse();
 
         var sumRow = addRows(row, reversedBackwardRow);
+        var localPosJ = findMinimum(sumRow);
 
-        if (posI === 0)
-            return getGlobalRowTracecells(findAllMinima(sumRow), 1, posI);
-        return getGlobalRowTracecells(findAllMinima(sumRow), 1, posI);
+        return getGlobalTracecell(posI, localPosJ, 0);
     }
 
     /**
@@ -483,94 +447,59 @@ $(document).ready(function () {
         var neighboured = [];
 
         // retrieve neighbours (order is important)
-        var matchTraceCell = getMatchCell(position);
         var horizontalTraceCell = getNextHorizontalTraceCell(position);
         var verticalTraceCell = getNextVerticalTraceCell(position);
 
         // add
-        if (matchTraceCell !== undefined)
-            neighboured.push(matchTraceCell);
-        else if (horizontalTraceCell !== undefined)
+        if (horizontalTraceCell !== undefined)
             neighboured.push(horizontalTraceCell);
-        else
+        else if (verticalTraceCell !== undefined)
             neighboured.push(verticalTraceCell);
+        else  // match
+            neighboured.push(new bases.alignment.Vector(position.i - 1, position.j - 1));
 
         return neighboured;
     }
 
     /**
-     * Return the most left trace cell.
+     * Returns the next horizontal tracecell.
      * @param position {Object} - The current vector position.
      * @return {Object} - The most left trace cell up from the given position.
      */
     function getNextHorizontalTraceCell(position) {
         var tracecellLine = outputData.tracecellLines[position.i];
 
-        if (tracecellLine !== undefined) {
-            var nextPosition = tracecellLine[0];
+        if (tracecellLine !== undefined) {  // only tracecell lines which are not empty are stored
+            var nextPosition = tracecellLine;
 
-            return nextPosition.j !== position.j ? nextPosition : undefined;
+            return nextPosition.j !== position.j ? nextPosition : undefined;  // if it's not again the same tracecell
         }
 
         return undefined;
     }
 
     /**
-     * Looks in the next line above for a match.
+     * Returns the next vertical tracecell.
      * @param position {Object} - The current vector position.
-     * @return {Object} - The most left trace cell up from the given position.
-     */
-    function getMatchCell(position) {
-        var left = position.j - 1;
-        var up = position.i - 1;
-
-        var tracecellLine = outputData.tracecellLines[up];  // match is always one row above
-
-        if (tracecellLine !== undefined) {  // if row above not defined, then there is no match
-            var horizontalPos = -1;  // in tracecell-lines, not in the imaginary matrix
-
-            for (var x = 0; x < tracecellLine.length; x++) {
-                if (tracecellLine[x].j === left) {  // test for match
-                    horizontalPos = x;
-                    break;
-                }
-            }
-
-            return horizontalPos !== -1 ? tracecellLine[horizontalPos] : undefined;
-        }
-
-        return undefined;
-    }
-
-    /**
-     * Returns the nearest top trace cell.
-     * @param position {Object} - The current vector position.
-     * @return {Object} - The most left trace cell up from the given position.
+     * @return {Object} - The nearest tracecell up from the given position.
      */
     function getNextVerticalTraceCell(position) {
-        var tracecellLines = outputData.tracecellLines;
-
         var up = position.i - 1;
 
-        var verticalPos = -1;  // in tracecell-lines, not in the imaginary matrix
-        var horizontalPos = -1;  // in tracecell-lines, not in the imaginary matrix
+        var tracecellLines = outputData.tracecellLines;
+        var tracecellLine = undefined;
 
+        // search for a defined tracecell-line
         while (up >= 0) {
-            if (outputData.tracecellLines[up] !== undefined) {   // search for first defined i-position above
-                var tracecellLine = outputData.tracecellLines[up];
-                var mostRightCell = tracecellLine[tracecellLine.length - 1];
-
-                if (mostRightCell.j === position.j) {  // test if really above (same j-position)
-                    verticalPos = mostRightCell.i;
-                    horizontalPos = tracecellLine.length - 1;  // in tracecell-lines, not in the imaginary matrix
-                    break;
-                }
+            if (outputData.tracecellLines[up] !== undefined  // if line above defined ..
+                && outputData.tracecellLines[up].j === position.j) {   // .. and if cell in line really above (same j-position)
+                tracecellLine = outputData.tracecellLines[up];
+                break;
             }
-
             up--;
         }
 
-        return horizontalPos !== -1 ? tracecellLines[verticalPos][horizontalPos] : undefined;
+        return tracecellLine !== undefined ? tracecellLine : undefined;
     }
 
     /**
@@ -607,8 +536,9 @@ $(document).ready(function () {
     }
 
     /**
-     * The initialized Needleman-Wunsch input.
-     * @param input
+     * Computes Needleman-Wunsch with the given input sequences.
+     * @param input {Object} - The initialized Needleman-Wunsch input.
+     * @param {[inputData, outputData]} - The Needleman-Wunsch output structure.
      */
     function computeWithNeedlemanWunsch(input) {
         needlemanWunschInstance.setIO(input, outputData);
@@ -640,6 +570,6 @@ $(document).ready(function () {
      * @return {Object} - Superclass instance.
      */
     function getSuperclass() {
-        return multiSequenceAlignmentInstance;
+        return alignmentInstance;
     }
 }());

@@ -917,12 +917,10 @@ Author: Alexander Mattheis
             var key = tracecellLinesKeys[i];
             var tracecell = tracecellLines[key];
 
-            for (var j = 0; j < tracecell.length; j++) {
-                var posI = tracecell[j].i;  // hint: there can be empty lines
-                var posJ = tracecell[j].j;
+            var posI = tracecell.i;  // hint: there can be empty lines
+            var posJ = tracecell.j;
 
-                tracecellTable.rows[posI + 1].cells[posJ + 1].classList.add("selected");  // "+1" because in the first line, there is the header
-            }
+            tracecellTable.rows[posI + 1].cells[posJ + 1].classList.add("selected");  // "+1" because in the first column/row, there is the header
         }
     }
 

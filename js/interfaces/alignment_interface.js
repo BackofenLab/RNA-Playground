@@ -371,6 +371,7 @@ Author: Alexander Mattheis
      */
     function createHirschbergOutputViewmodel(viewmodel, outputData) {
         var traceFunctionsData = getLaTeXTraceFunctions(outputData);
+        debugger;
         var rowData = getRowData(outputData);
         var columnData = getColumnData(outputData);
         var minimaData = getMinimaData(rowData, columnData);
@@ -479,7 +480,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Returns the minimum position for each round.
+     * Returns the horizontal minimum position for each round.
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      * @return {Array} - The data which stores the global minimum for each recursion round.
      */
@@ -495,7 +496,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Returns the minimum positions for each round.
+     * Returns the vertical minimum position for each round.
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      * @return {Array} - The data which stores the global minimum for each recursion round.
      */
@@ -504,52 +505,37 @@ Author: Alexander Mattheis
 
         // iterate over all rounds
         for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
-            var roundColumns = [];
+            var column = outputData.secondSequencePositions[k][outputData.relativeSplittingPoint[k][1]-1];
 
-            for (var j = 0; j < outputData.allMinimaPosJ[k].length; j++) {
+            if (column === undefined)
+                column = outputData.secondSequencePositions[k][0] - 1;  // select first defined position and then "-1"
 
-                var globalPosJ = outputData.secondSequencePositions[k][outputData.allMinimaPosJ[k][j]-1];
-
-                if (globalPosJ === undefined) {
-                    var firstDefinedPosition = outputData.secondSequencePositions[k][0];
-                    globalPosJ = firstDefinedPosition-1;
-                }
-
-                roundColumns.push(globalPosJ);
-            }
-
-            columns.push(roundColumns);
+            columns.push(column);
         }
 
         return columns;
     }
 
     /**
-     * Creates an array of minimum tuples with the given data.
+     * Creates a string of minimum position tuples with the given data.
      * @param rows {Array} - The rows which contains minimum positions.
      * @param columns {Array} - The columns which contains minimum positions.
      * @return {Array} - String of minimum tuples.
      */
     function getMinimaData(rows, columns) {
-        var minimaArray = [];
+        var minimaString = SYMBOLS.EMPTY;
 
-        for (var i = 0; i < rows.length; i++) {  // i is alos the current round
-            var minimaString = SYMBOLS.EMPTY;
+        for (var k = 0; k < rows.length; k++) {  // k is the current round
+            if (k !== 0 && k % 3 === 0)  // three entries per line
+                minimaString += SYMBOLS.NEW_LINE;
 
-            for (var j = 0; j < columns[i].length; j++) {
-                if (j !== 0 && j % 3 === 0)  // three entries per line
-                    minimaString += SYMBOLS.NEW_LINE;
+            minimaString += SYMBOLS.BRACKET_LEFT + rows[k] + SYMBOLS.COMMA + columns[k] + SYMBOLS.BRACKET_RIGHT;
 
-                minimaString += SYMBOLS.BRACKET_LEFT + rows[i] + SYMBOLS.COMMA + columns[i][j] + SYMBOLS.BRACKET_RIGHT;
-
-                if (j < columns[i].length - 1)
-                    minimaString += SYMBOLS.COMMA + SYMBOLS.SPACE;
-            }
-
-            minimaArray.push(minimaString);
+            if (k < rows.length - 1)
+                minimaString += SYMBOLS.COMMA + SYMBOLS.SPACE;
         }
 
-        return minimaArray;
+        return minimaString;
     }
 
     /**

@@ -184,13 +184,11 @@ Author: Alexander Mattheis
             <div class="results_with_scrollbar">
                 <table class="results horizontal">
                     <tbody>
-                        <!-- ko foreach: $root.output.recursionNumbersContainer -->
-                            <tr>
-                                <td class="entry entry_start more_left">
-                                    <code data-bind="text: $root.output.globalMinima()[$index()]"></code>
-                                </td>
-                            </tr>
-                        <!-- /ko -->
+                        <tr>
+                            <td class="entry entry_start more_left">
+                                <code data-bind="text: $root.output.globalMinima()"></code>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -205,7 +203,7 @@ Author: Alexander Mattheis
 
     <h2>Recursions <!-- ko foreach: $data --><span data-bind="text: $data"></span>.<!-- /ko --></h2>
         <!-- ko foreach: $root.output.recursionNumbersContainer -->
-            <div>
+            <div class="recursion">
                 <h3>Split <!-- ko foreach: $data --><span data-bind="text: $data"></span>.<!-- /ko --></h3>
                 <span class="trace_function" data-bind="text: $root.output.traceFunctions()[$index()]"></span> <br>
 
@@ -258,38 +256,6 @@ Author: Alexander Mattheis
                                     <!-- /ko -->
                                 </tr>
                             </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="outcome">
-                    <div class ="ancillary_output">
-                        <table class="results_header">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Minima
-                                    </th>
-                                </tr>
-                            </thead>
-                        </table>
-
-                        <div class="results_with_scrollbar">
-                            <table class="results horizontal">
-                                <tbody>
-                                     <tr>
-                                        <td class="entry entry_start more_left">
-                                            <code data-bind="text: $root.output.globalMinima()[$index()]"></code>
-                                        </td>
-                                     </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <table class="results_footer">
-                            <tr>
-                                <th></th>
-                            </tr>
                         </table>
                     </div>
                 </div>

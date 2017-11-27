@@ -224,7 +224,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Computes Gotoh with the given input sequences and the function.
+     * Computes Gotoh or Gotoh (Local) with the given input sequences and the function.
      * @param algorithm {Object} - The algorithm with which the alignment data is computed.
      * @param input {Object} - The initialized Gotoh input structure.
      * @param output {Object} - The initialized Gotoh output structure.
