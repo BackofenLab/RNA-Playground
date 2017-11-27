@@ -10,7 +10,7 @@ Author: Alexander Mattheis
         <a href="https://dl.acm.org/citation.cfm?doid=360825.360861">Daniel S. Hirschberg</a>
         introduced 1974 an approach to compute the longest common subsequence of two strings.
         This approach can be easily been adapted to compute the global alignment of two sequences
-        in quadratic time $O(n^2)$ and only linear space, instead of quadratic space like in the former
+        in quadratic time $O(nm)$ and only linear space, instead of quadratic space like in the former
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a> algorithm.
       <br>
       <br>
@@ -175,7 +175,10 @@ Author: Alexander Mattheis
                 <thead>
                     <tr>
                         <th>
-                            Minima
+                            Minima <br>
+                            <small>
+                                The computed minima are marked blue.
+                            </small>
                         </th>
                     </tr>
                 </thead>
@@ -185,7 +188,7 @@ Author: Alexander Mattheis
                 <table class="results horizontal">
                     <tbody>
                         <tr>
-                            <td class="entry entry_start more_left">
+                            <td class="entry entry_start more_left selected">
                                 <code data-bind="text: $root.output.globalMinima()"></code>
                             </td>
                         </tr>
@@ -195,7 +198,11 @@ Author: Alexander Mattheis
 
             <table class="results_footer">
                 <tr>
-                    <th></th>
+                    <th>
+                        <small>
+                            <b>Hint:</b> In computation-order.
+                        </small>
+                    </th>
                 </tr>
             </table>
         </div>
@@ -208,7 +215,7 @@ Author: Alexander Mattheis
                 <span class="trace_function" data-bind="text: $root.output.traceFunctions()[$index()]"></span> <br>
 
                 <div class="output">
-                    <div class="main_output">
+                    <div class="main_output extra_large">
                         <table class="calculation">
                             <tbody>
                                 <tr>
@@ -247,7 +254,7 @@ Author: Alexander Mattheis
                                     <th><span data-bind="text: $root.output.sumLatex"></span></th>
                                     <!-- ko foreach: $root.output.addedRows()[$index()] -->
                                         <!-- ko if: $root.output.highlightPositions()[$parentContext.$index()][1] == $index() -->
-                                            <td class="result_entry" data-bind="text: $data"></td>
+                                            <td class="selected" data-bind="text: $data"></td>
                                         <!-- /ko -->
 
                                         <!-- ko if: $root.output.highlightPositions()[$parentContext.$index()][1] != $index() -->

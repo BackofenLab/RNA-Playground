@@ -167,6 +167,10 @@ th {
     position: relative;
 }
 
+.extra_large {
+    max-width: 800px !important;
+}
+
 .final {
     margin-bottom: 10px;
 }
@@ -360,12 +364,6 @@ th {
 
 .result_categories th {
     border-bottom: 1px solid #a0a0a0;
-}
-
-/* property values taken from project https://github.com/BackofenLab/RNA-Playground */
-.result_entry {
-    background-color: rgba(79, 129, 189, 0.25);
-    color: white;
 }
 
 .result_header {

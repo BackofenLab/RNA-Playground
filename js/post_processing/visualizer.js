@@ -811,17 +811,19 @@ Author: Alexander Mattheis
 
         var currentTable;
 
-        // going over the whole path and set right-positioned arrows by a recalculation
-        for (var j = 0; j < path.length; j++) {
-            currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
+        if (path !== undefined) {
+            // going over the whole path and set right-positioned arrows by a recalculation
+            for (var j = 0; j < path.length; j++) {
+                currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
 
-            var posI = path[j].i + 1;
-            var posJ = path[j].j + 1;
+                var posI = path[j].i + 1;
+                var posJ = path[j].j + 1;
 
-            placeArrow(currentTable, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode);
-            lastPosI = posI;
-            lastPosJ = posJ;
-            lastTable = currentTable;
+                placeArrow(currentTable, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode);
+                lastPosI = posI;
+                lastPosJ = posJ;
+                lastTable = currentTable;
+            }
         }
     }
 
@@ -913,6 +915,10 @@ Author: Alexander Mattheis
         var tracecellLines = visualizerInstance.output.tracecellLines;
         var tracecellLinesKeys = Object.keys(tracecellLines);
 
+        var height = visualizerInstance.input.matrixHeight;
+        var width = visualizerInstance.input.matrixWidth;
+        debugger;
+
         for (var i = 0; i < tracecellLinesKeys.length; i++) {
             var key = tracecellLinesKeys[i];
             var tracecell = tracecellLines[key];
@@ -920,8 +926,12 @@ Author: Alexander Mattheis
             var posI = tracecell.i;  // hint: there can be empty lines
             var posJ = tracecell.j;
 
+            // if in-between cell
             tracecellTable.rows[posI + 1].cells[posJ + 1].classList.add("selected");  // "+1" because in the first column/row, there is the header
         }
+
+        tracecellTable.rows[1].cells[1].classList.add("selected_red");  // mark top left cell
+        tracecellTable.rows[height].cells[width].classList.add("selected_green");  // mark bottom right cell
     }
 
     /**
