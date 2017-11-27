@@ -453,7 +453,7 @@ Author: Alexander Mattheis
 
         for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
             var string = LATEX.MATH_REGION;  // starting LaTeX math region
-            string += LATEX.FORMULA.TRACE + SYMBOLS.BRACKET_LEFT;  // starting function
+            string += LATEX.FORMULA.DPA + SYMBOLS.BRACKET_LEFT;  // starting function
 
             var firstSequence = outputData.firstSequences[k];
             var firstSequencePositions = outputData.firstSequencePositions[k];

@@ -16,6 +16,28 @@ Author: Alexander Mattheis
         <br>
         <br>
 
+        The idea is that the tracebacks you get from an alignment of ordinary and reversed sequences are isomorph
+        i.e. if you rotate the reversed sequences traceback-matrix by 180 degrees, then it will perfectly match
+        with the ordinary traceback-matrix. <br>
+        This can be exploited to compute the alignment of two strings in linear space,
+        because what can be recognized is that if you add the same row of the dynamic programming matrix (DPA)
+        and the rotated reversed sequences DPA (assuming same coordinate system),
+        then the cells through which the traceback will go are identifiable as the minimum.
+
+        <br>
+        <br>
+
+        You have just to compute the minimum first for the middle row $i = \lfloor n \rfloor$ where $n = |a|$, <br>
+        then split at position $(i,j)$ and compute in the upper matrix $DPA(a_1, .., a_i | b_1, .., b_j)$
+        and in the lower matrix $DPA(a_{i+1}, .., a_n | b_{j+1}, .., b_m) the minimum in its middle rows again <br>
+        where $m = |b|$ and $a, \, b$ are sequences. <br>
+        This splitting has to be done recursively until $n \leq 1$ or $m = 0$. <br>
+        Now, how to compute the middle row in linear space?
+        The idea is to compute always only two lines of the DPA
+
+        <br>
+        <br>
+
         For the given input, the
         <ul>
             <li>recursions</li>

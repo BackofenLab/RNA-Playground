@@ -165,6 +165,7 @@ var LATEX = {
         D_PRIME: "D\\,'",
         DELETION: "b_j = -",
         DIAGONAL: "D_{i-1,j-1}",
+        DPA: "DPA",
         I_IS: "i = ",
         INSERTION: "a_i = -",
         GAP: "g(k)",
@@ -176,7 +177,6 @@ var LATEX = {
         MINIMIZE_HORIZONTAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i,j-k} & + & g(k) \\}",
         MINIMIZE_VERTICAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i-k,j} & + & g(k) \\}",
         MISMATCH: "a_i \\neq b_j",
-        TRACE: "Trace",
         TOP: "D_{i-1,j}",
         TOP_P: "P_{i-1,j}",
         ZERO: "0"
