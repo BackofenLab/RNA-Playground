@@ -10,86 +10,89 @@ Author: Alexander Mattheis
         <a href="http://dx.doi.org/10.1006/jmbi.2000.4042">C&eacute;dric Notredame, Desmond G. Higgins and Jaap Heringa</a>
         introduced 2000 an approach that
         allows a very accurate computation of multiple sequence alignments (MSA),
-        the Tree-based Consistency Objective Function for alignment Evaluation (short: <em>T-coffee</em>).
+        the Tree-based Consistency Objective Function For alignmEnt Evaluation (short: <em>T-coffee</em>).
         It's a tree-based approach,
         because it uses a progressive alignment strategy
-        under a consistency based function with a guide tree
+        under a consistency-based function
         (tree can be computed with <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">UPGMA</a>).
         The advantage to traditional approaches like
         <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a>
-        is that the results are much better since they are not based on single pairwise alignments,
-        but rather an arbitrary large pool of pairwise alignments with which a position specific scoring function is computed,
-        the so called extended library $EL^{a,b}_{i,j}$
-        where $a,b$ are arbitrary sequences and $i,j$ are locations within these sequences.
+        is that the results are not based on single pairwise alignments for a 
+	set of input sequences $\mathbb{S}$,
+        but rather on an arbitrary large pool of pairwise alignments on $\mathbb{S}$ from
+	which a position specific scoring function is derived.
+        This so called extended library $EL^{a,b}_{i,j}$ provides for each
+        pair of sequences $a,b \in \mathbb{S}$ and respective positions $i,j$ a score.
         <br>
         <br>
-	    But, first the primary library $L^{a,b}_{i,j}$ is computed.
-        It stores information about the accuracy of an alignment $\mathcal{A}(a,b)$.
-        This is done with the formula for the sequence identity:
+	To this end, first a primary library $L^{a,b}_{i,j}$ is computed.
+        It covers the information how often a certain pair of sequence positions
+	$a_i$ and $b_j$ were aligned within the set of input alignments. This is 
+	weighted by the 'accuracy' of the respective alignments $\mathcal{A}(a,b)$
+        based on sequence identity:
 
         $$
+        \quad 
+        L^{a,b}_{i,j} = \sum_{\mathcal{A}(a,b)}\begin{cases}
+	weight \big(\mathcal{A}(a,b) \big)
+	& \text{if } \binom{a_i}{b_j} \in \mathcal{A}(a,b)\\
+	0 & \text{else}
+	\end{cases}
+	$$
+
+        where $L^{a,b}_{i,j} = L^{b,a}_{j,i}$ and
+
+	$$
         \quad
-        L^{a,b}_{i,j} = weight \big(\mathcal{A}(a,b) \big)
-        = \frac {matches \big(\mathcal{A}(a,b) \big)}
-                {matches \big(\mathcal{A}(a,b) \big) + mismatches \big(\mathcal{A}(a,b) \big)} \cdot 100 \quad \forall i,j
+	weight \big(\mathcal{A}(a,b) \big)
+        = \frac {matches \big(\mathcal{A}(a,b) \big) \cdot 100}
+                {matches \big(\mathcal{A}(a,b) \big) + mismatches \big(\mathcal{A}(a,b) \big)}.
         $$
 
-        where $L^{a,b}_{i,j} = L^{b,a}_{j,i}$ ($L^{a,b}_{i,j} = 0$ for not defined locations $i,j$) <br>
-        The extended library instead is calculated to gather consistency information
-        concerning all other alignments (i.e. to emphasize columns with matches), different to $\mathcal{A}(a,b)$.
-        That is done by the consideration of all sequence triples,
-        as shown in the following formula:
+        Subsequently, the extended library $EL^{a,b}_{i,j}$ is calculated to gather consistency information, 
+	i.e. 'indirect alignments' of $a_i$ with $b_j$ when both are aligned to some $c_k$
+	(while taking all possible sequences $c$ into account).
+        Thus, all sequence triples from $\mathbb{S}$ are considered, which leads to the following formula:
 
         $$
         \quad
         EL^{a,b}_{i,j}
-        = L^{a,b}_{i,j} + \sum_{x \in \mathbb{S} \setminus \{a,b\}} \sum_{k \in Loc(x)} min \big(L^{a,x}_{i,k}, L^{x,b}_{k,j} \big)
+        = L^{a,b}_{i,j} + \sum_{c \in \mathbb{S} \setminus \{a,b\}} \sum_{1 \leq k \leq|c|} min \big(L^{a,c}_{i,k}, L^{c,b}_{k,j} \big).
         $$
 
-        where <br>
-        <div class="row">
-            <div class="colW150">$\mathbb{S} \setminus \{a,b\}$</div>
-            <div class="colW400">set of all sequences different from $\{a,b\}$</div>
-	    </div>
-
-        <div class="row">
-            <div class="colW150">$Loc(x)$</div>
-            <div class="colW400">set of all locations/positions in $x$</div>
-        </div>
-
-        Afterwards this scoring function $EL^{a,b}_{i,j}$ is used in a modified neighbour joining (fusion) process
-        of <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
+        Finally, this scoring function $EL$ is used in a progressive alignment scheme (see
+        <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>)
         to compute a multiple sequence alignment.
         Unlike in the <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a> approach,
-        the whole columns of two groups aligned together.
-        Therefore, the average alignment score of two columns is used
-        (all chars of first column aligned with all chars of second column).
-        And gaps are ignored by setting $\alpha = \beta = 0$, because the library
-        is computed on alignments in which such parameters have been already applied.
+        the whole columns (aligned positions of all sequences) of two groups are used to 
+	score/compute their joint alignment.
+        To this end, the average alignment score of two columns is used
+        (all chars of first column aligned with all chars of second column) 
+	while gaps are ignored by setting $\alpha = \beta = 0$.
+	The latter is based on the idea that the library already indirectly 
+	reflects the gap scoring that was present in the underlying input alignments.
         <br>
         <br>
         In the algorithm, it is possible to add information
         from arbitrary alignments to emphasize particularly important
-        positions of together aligned sequences.
-        This is done in our case with local alignments and multiple optimal alignments of the same sequences,
-        for which with the given sequence identity formula above
-        a local primary library is computed and added to the values of the global primary library
-        i.e. $L^{a,b}_{i,j} = {L^{a,b}_{i,j}}_{loc} + {L^{a,b}_{i,j}}_{glob}$
-        (originally ten alignments with highest scores are chosen for the local primary library).
+        positions of aligned sequences.
+        Here, you can use (multiple optimal) global and local alignments of the input sequences
+	using the <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">Gotoh</a> algorithm.
+        Each alignment is used in the formula from above to compute $L$.
         <br>
         <br>
-        For a given input, the stated computation steps generate the
+        For a given input, the computation steps are
         <ul>
             <li>pairwise alignments</li>
             <li>primary and extended library</li>
             <li>phylogenetic tree</li>
-            <li>MSA via fusions</li>
+            <li>MSA via progressive alignment</li>
             <li>multiple sequence alignment (MSA) with SoP score</li>
         </ul>
-        and are represented in reversed order below.
+        which are represented in reverse order below.
         The sum-of-pairs (SoP) score of the final MSA is simply the score sum of all pairwise
-        alignments within the MSA, i.e. of pairwise row combinations where overlying gap columns are removed
-        since we are using an affine gap cost model.
+        alignments within the MSA, i.e. the global alignment scores of pairwise row 
+	combinations where gap-only columns are removed.
     </div>
 
     <div class="picture">
@@ -138,19 +141,13 @@ Author: Alexander Mattheis
     <!-- /ko -->
 
     <div class="row">
-        <div class="colW100"><label>Library Parameters:</label></div>
+        <div class="colW100"><label>Alignments:</label></div>
 
         <div class="colW400">
-             <div class="inner_row">
-                 <div class="inner_column">
-                     Alignments per <br> sequence-pair
-                 </div>
-
-                 <div class="colW50">
-                     <input class="fx_parameter" data-bind="value: input.globalAlignmentsPerSequencePair"
+            max. # 
+            <input class="fx_parameter" data-bind="value: input.globalAlignmentsPerSequencePair"
                             id="global_alignments_per_sequence_pair" type="number">
-                 </div>
-            </div>
+            optimal alignment(s) per sequence pair
         </div>
     </div>
 
@@ -162,6 +159,7 @@ Author: Alexander Mattheis
                 Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
                 Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
             </span>
+		in similarity scoring
 		</div>
     </div>
 
