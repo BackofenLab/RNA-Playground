@@ -8,14 +8,14 @@ Author: Alexander Mattheis
 <div id="algorithm_description">
     <div class="description">
         <a href="https://dl.acm.org/citation.cfm?doid=360825.360861">Daniel S. Hirschberg</a>
-        introduced 1974 an approach to compute the longest common subsequence of two strings.
+        introduced 1975 (submitted 1974) an approach to compute the longest common subsequence of two strings.
         This approach can be adapted to compute the global alignment of two sequences
         in quadratic time $O(nm)$ and only linear space, instead of quadratic space like in the former
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a> algorithm.
         The idea is that the tracebacks you get from a prefix- and a suffix-alignment are congruent
         i.e. the traceback-cells are the same.
-        Because of this, a row of the prefix dynamic programming matrix (DPA)
-        and the suffix DPA (assuming same coordinate system) can be added to identify a traceback-cell as the minimum.
+        Because of this, a row of the prefix dynamic programming matrix (DPM)
+        and the suffix DPM (assuming same coordinate system) can be added to identify a traceback-cell as the minimum.
 
         <br>
         <br>
@@ -23,11 +23,11 @@ Author: Alexander Mattheis
         To do the computation in linear time, the minima
         have to be computed first for the middle row $i = \lfloor n \rfloor$, where $n = |a|$
         and then you have to split the matrix sequences at the first minimum-position $(i,j)$
-        and compute in the resulting upper matrix $DPA(a_1, .., a_i | b_1, .., b_j)$
-        and in the resulting lower matrix $DPA(a_{i+1}, .., a_n | b_{j+1}, .., b_m)$ the minima in its middle rows again,
+        and compute in the resulting upper matrix $DPM(a_1, .., a_i | b_1, .., b_j)$
+        and in the resulting lower matrix $DPM(a_{i+1}, .., a_n | b_{j+1}, .., b_m)$ the minima in its middle rows again,
         where $m = |b|$ and $a, \, b$ are sequences. <br>
         This splitting has to be done recursively until $n \leq 1$ or $m = 0$.
-        The algorithm works always only with two rows of the DPA
+        The algorithm works always only with two rows of the DPM
         and reuse the last computed row, to calculate the next row
         until the middle row is computed with the suffix and the prefix approach.
         These two middle rows (one from prefix alignment and one from suffix alignment)
@@ -220,7 +220,7 @@ Author: Alexander Mattheis
             </table>
 
             <div class="results_with_scrollbar">
-                <table class="results horizontal">
+                <table class="results">
                     <tbody>
                         <tr>
                             <td class="entry entry_start more_left selected">
@@ -252,9 +252,52 @@ Author: Alexander Mattheis
                 <span class="trace_function" data-bind="text: $root.output.traceFunctions()[$index()]"></span> <br>
 
                 <div class="matrices" data-bind="visible: $root.output.showMatrices">
+                    <h4>Forward Matrices</h4>
+                    <!-- ko foreach: $root.output.prefixTwoRowsCharacters()[$index()] -->
+                        <div class="main_output extra_large">
+                            <table class="calculation">
+                                <tbody>
+                                    <tr>
+                                        <th>
+                                            <small>
+                                                <span data-bind="text: $root.output.matrixDLatex"></span>
+                                            </small>
+                                        </th>
 
+                                        <th></th>
+
+                                        <!-- ko foreach: $root.output.secondSequences()[$parentContext.$index()] -->
+                                            <th>
+                                                <span data-bind="text: $data"></span><sub>
+                                                <span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
+                                            </th>
+                                        <!-- /ko -->
+                                    </tr>
+
+                                    <tr>
+                                        <th>
+                                            <span data-bind="text: $data[0]"></span>
+                                            <sub>
+                                                <span data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span>
+                                            </sub>
+                                        </th>
+                                    </tr>
+
+                                    <tr>
+                                        <th>
+                                            <span data-bind="text: $data[1]"></span>
+                                            <sub>
+                                                <span data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span>
+                                            </sub>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    <!-- /ko -->
                 </div>
 
+                 <h4>Addition</h4>
                 <div class="output">
                     <div class="main_output extra_large">
                         <table class="calculation">

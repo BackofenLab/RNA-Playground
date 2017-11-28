@@ -10,8 +10,10 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods
     namespace("interfaces.alignmentInterface", AlignmentInterface,
-        imports, sharedInterfaceOperations, roundValues, getLaTeXTraceFunctions, getRowData, getColumnData, getMinimaData,
-        getLaTeXFormula, getDistanceTable, getDistanceTables, reorderGroupSequences, getLibrariesData, sortWithClusterTuples, startProcessing);
+        imports, sharedInterfaceOperations, roundValues, getLaTeXTraceFunctions,
+        getRowData, getColumnData, getMinimaData, getTwoRowsSubmatricesData,
+        getLaTeXFormula, getDistanceTable, getDistanceTables, reorderGroupSequences,
+        getLibrariesData, sortWithClusterTuples, startProcessing);
 
     // instances
     var alignmentInterfaceInstance;
@@ -33,6 +35,7 @@ Author: Alexander Mattheis
         this.getRowData = getRowData;
         this.getColumnData = getColumnData;
         this.getMinimaData = getMinimaData;
+        this.getTwoRowsSubmatricesData = getTwoRowsSubmatricesData;
         this.getLaTeXFormula = getLaTeXFormula;
         this.getDistanceTable = getDistanceTable;
         this.getDistanceTables = getDistanceTables;
@@ -187,7 +190,7 @@ Author: Alexander Mattheis
                     outputData.librariesData[3][i][j] = round(extendedLibValues[i][j], 1);
                 }
             }
-        } else if (algorithmName === ALGORITHMS.FENG_DOOLITTLE) {  // if Feng-Doolittle or UPGMA
+        } else if (algorithmName === ALGORITHMS.FENG_DOOLITTLE) {  // if Feng-Doolittle or UPGMA (algorithms in which distance tables displayed)
             // iterate over each distance matrix
             for (var k = 0; k < outputData.distanceMatrices.length; k++) {
 
@@ -203,7 +206,7 @@ Author: Alexander Mattheis
                 }
             }
         } else if (algorithmName === ALGORITHMS.HIRSCHBERG) {
-            // todo
+            // do nothing, because there is nothing to round
         } else { // other algorithms
             for (var i = 0; i < outputData.matrix.length; i++)
                 for (var j = 0; j < outputData.matrix[0].length; j++)
@@ -370,11 +373,27 @@ Author: Alexander Mattheis
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
     function createHirschbergOutputViewmodel(viewmodel, outputData) {
-        var traceFunctionsData = getLaTeXTraceFunctions(outputData);
         debugger;
+        var traceFunctionsData = getLaTeXTraceFunctions(outputData);
         var rowData = getRowData(outputData);
         var columnData = getColumnData(outputData);
         var minimaData = getMinimaData(rowData, columnData);
+        var twoRowsData = getTwoRowsSubmatricesData(outputData);
+
+        // get matrices data
+        var twoRowsMatrices = twoRowsData[0];
+        var twoRowsCharacters = twoRowsData[1];
+        var twoRowsCharactersPositions = twoRowsData[2];
+
+        // divide data in forward and backward
+        var forwardTwoRowsMatrices = twoRowsMatrices[0];
+        var backwardTwoRowsMatrices = twoRowsMatrices[1];
+
+        var forwardTwoRowsCharacters = twoRowsCharacters[0];
+        var backwardTwoRowsCharacters = twoRowsCharacters[1];
+
+        var forwardTwoRowsCharactersPositions = twoRowsCharactersPositions[0];
+        var backwardTwoRowsCharactersPositions = twoRowsCharactersPositions[1];
 
         // main output
         viewmodel.forwardMatrices = ko.observable(outputData.forwardMatrices).extend({ deferred: true });
@@ -403,6 +422,7 @@ Author: Alexander Mattheis
 
         // matrix of all minima
         viewmodel.tracecellLines = ko.observable(outputData.tracecellLines).extend({ deferred: true });
+        viewmodel.globalMinima = ko.observable(minimaData);
 
         // header
         viewmodel.recursionNumbersContainer = ko.observable(outputData.recursionNumbersContainer).extend({ deferred: true });
@@ -423,9 +443,6 @@ Author: Alexander Mattheis
         viewmodel.addedRows = ko.observable(outputData.addedRows);
         viewmodel.highlightPositions = ko.observable(outputData.relativeSplittingPoint);
 
-        // minima table
-        viewmodel.globalMinima = ko.observable(minimaData);
-
         // gimmicks/optimizations
         viewmodel.showMatrices = ko.observable(false);
 
@@ -439,6 +456,27 @@ Author: Alexander Mattheis
             }
         );
 
+        // generated two rows submatrices (intermediate steps)
+        viewmodel.prefixTwoRowsCharacters = ko.observable(forwardTwoRowsCharacters).extend({ deferred: true });
+        viewmodel.suffixTwoRowsCharacters = ko.observable(backwardTwoRowsCharacters);
+
+        viewmodel.prefixTwoRowsCharactersPositions = ko.observable(forwardTwoRowsCharactersPositions).extend({ deferred: true });
+        viewmodel.suffixTwoRowsCharactersPositions = ko.observable(backwardTwoRowsCharactersPositions);
+
+        /*
+        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
+                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({ deferred: true });
+            }
+        }
+        */
+
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
     }
 
@@ -449,11 +487,10 @@ Author: Alexander Mattheis
      */
     function getLaTeXTraceFunctions(outputData) {
         var traceFunctionData = [];
-        debugger;
 
         for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
             var string = LATEX.MATH_REGION;  // starting LaTeX math region
-            string += LATEX.FORMULA.DPA + SYMBOLS.BRACKET_LEFT;  // starting function
+            string += LATEX.FORMULA.DPM + SYMBOLS.BRACKET_LEFT;  // starting function
 
             var firstSequence = outputData.firstSequences[k];
             var firstSequencePositions = outputData.firstSequencePositions[k];
@@ -521,7 +558,6 @@ Author: Alexander Mattheis
     function getColumnData(outputData) {
         var columns = [];
 
-        debugger;
         var column;
         // iterate over all rounds
         for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
@@ -567,6 +603,162 @@ Author: Alexander Mattheis
         }
 
         return minimaString;
+    }
+
+    /**
+     * Returns the data to create submatrices with two rows.
+     * @return {Object} - The submatrices data.
+     */
+    function getTwoRowsSubmatricesData(outputData) {
+        var submatricesOfEachRound = [];
+        var substringsOfEachRound = [];
+        var subpositionsOfEachRound = [];
+
+        var forwardSubmatricesOfEachRound = [];
+        var forwardSubstringsOfEachRound = [];
+        var forwardSubpositionsOfEachRound = [];
+
+        var backwardSubmatricesOfEachRound = [];
+        var backwardSubstringsOfEachRound = [];
+        var backwardSubpositionsOfEachRound = [];
+
+        var forwardMatrices = outputData.forwardMatrices;
+        var backwardMatrices = outputData.backwardMatrices;
+        var splittingPoints = outputData.relativeSplittingPoint;
+        var leftStrings = outputData.firstSequences;
+        var leftStringsPositions = outputData.firstSequencePositions;
+
+        if (forwardMatrices.length > 1) {
+            for (var k = 0; k < forwardMatrices.length; k++) {  // or: backwardMatrices.length
+                var splittingPosI = splittingPoints[k][0];
+
+                var forwardData = getTwoRowsForwardData(forwardMatrices[k], leftStrings[k], leftStringsPositions[k], splittingPosI);
+                var backwardData = getTwoRowsBackwardData(backwardMatrices[k], leftStrings[k], leftStringsPositions[k], splittingPosI);
+
+                var twoRowsForwardMatrices = forwardData[0];
+                var twoRowsBackwardMatrices = backwardData[0];
+
+                var twoRowsForwardStrings = forwardData[1];
+                var twoRowsBackwardStrings = backwardData[1];
+
+                var twoRowsForwardPositions = forwardData[2];
+                var twoRowsBackwardPositions = backwardData[2];
+
+                forwardSubmatricesOfEachRound.push(twoRowsForwardMatrices);
+                backwardSubmatricesOfEachRound.push(twoRowsBackwardMatrices);
+
+                forwardSubstringsOfEachRound.push(twoRowsForwardStrings);
+                backwardSubstringsOfEachRound.push(twoRowsBackwardStrings);
+
+                forwardSubpositionsOfEachRound.push(twoRowsForwardPositions);
+                backwardSubpositionsOfEachRound.push(twoRowsBackwardPositions);
+            }
+        }
+
+        return [[forwardSubmatricesOfEachRound, backwardSubmatricesOfEachRound],
+            [forwardSubstringsOfEachRound, backwardSubstringsOfEachRound],
+            [forwardSubpositionsOfEachRound, backwardSubpositionsOfEachRound]];
+    }
+
+    /**
+     * Returns the forward data in an array of two rows.
+     * @param forwardMatrix {Array} - The forward matrix from which the two-rows submatrices are generated.
+     * @param leftString {Array} - The string from the column on the left side with the characters
+     * @param leftPositions {Array} - The character positions of the column string on the left in an imaginary matrix.
+     * @param posI {number} - The row until which the two-rows submatrices are generated.
+     * @return {[twoRowsMatrices, twoRowsCharacters, twoRowsLeftPositions]} - Data to visualize two-matrices.
+     */
+    function getTwoRowsForwardData(forwardMatrix, leftString, leftPositions, posI) {
+        var twoRowsMatrices = [];
+        var twoRowsCharacters = [];
+        var twoRowsLeftPositions = [];
+
+        var upperRow = [];
+        var lowerRow = [];
+        var upperChar = SYMBOLS.EMPTY;
+        var lowerChar = SYMBOLS.EMPTY;
+        var upperPos = -1;
+        var lowerPos = -1;
+
+        for (var i = 1; i <= posI; i++) {
+            upperRow = forwardMatrix[i-1];
+            lowerRow = forwardMatrix[i];
+
+            if (i - 1 === 0) {
+                upperChar = SYMBOLS.EMPTY;
+                lowerChar = leftString[i - 1];
+
+                upperPos = SYMBOLS.EMPTY;
+                lowerPos = leftPositions[i - 1];
+            }
+            else {
+                upperChar = leftString[i - 2];
+                lowerChar = leftString[i - 1];
+
+                upperPos = leftPositions[i - 2];
+                lowerPos = leftPositions[i - 1];
+            }
+
+            twoRowsMatrices.push([upperRow, lowerRow]);
+            twoRowsCharacters.push([upperChar, lowerChar]);
+            twoRowsLeftPositions.push([upperPos, lowerPos]);
+        }
+
+        return [twoRowsMatrices, twoRowsCharacters, twoRowsLeftPositions];
+    }
+
+    /**
+     * Returns the backward data in an array of two rows.
+     * @param backwardMatrix {Array} - The backward matrix from which the two-rows submatrices are generated.
+     * @param leftString {Array} - The string from the column on the left side with the characters
+     * @param leftPositions {Array} - The character positions of the column string on the left in an imaginary matrix.
+     * @param posI {number} - The row until which the two-rows submatrices are generated.
+     * @return {[twoRowsMatrices, twoRowsCharacters, twoRowsLeftPositions]} - Data to visualize two-matrices.
+     */
+    function getTwoRowsBackwardData(backwardMatrix, leftString, leftPositions, posI) {
+        var twoRowsMatrices = [];
+        var twoRowsCharacters = [];
+        var twoRowsLeftPositions = [];
+
+        var upperRow = [];
+        var lowerRow = [];
+        var upperChar = SYMBOLS.EMPTY;
+        var lowerChar = SYMBOLS.EMPTY;
+        var upperPos = -1;
+        var lowerPos = -1;
+
+        var rotatedBackwardMatrix = getRotatedMatrix(backwardMatrix);
+
+        for (var i = rotatedBackwardMatrix.length - 1; i > posI; i--) {
+            upperRow = rotatedBackwardMatrix[i-1];
+            lowerRow = rotatedBackwardMatrix[i];
+
+            upperChar = leftString[i-1];
+            lowerChar = leftString[i];
+
+            upperPos = leftPositions[i-1];
+            lowerPos = leftPositions[i];
+
+            twoRowsMatrices.push([upperRow, lowerRow]);
+            twoRowsCharacters.push([upperChar, lowerChar]);
+            twoRowsLeftPositions.push([upperPos, lowerPos]);
+        }
+
+        return [twoRowsMatrices, twoRowsCharacters, twoRowsLeftPositions];
+    }
+
+    /**
+     * Rotates the given matrix by 180 degrees.
+     * @param backwardMatrix {Array} - An array of the several rows of the matrix.
+     * @return {Array} - The rotated matrix.
+     */
+    function getRotatedMatrix(backwardMatrix) {
+        var rotatedMatrix = [];
+
+        for (var i = backwardMatrix.length - 1; i >= 0; i--)
+            rotatedMatrix.push(backwardMatrix[i].reverse());
+
+        return rotatedMatrix;
     }
 
     /**

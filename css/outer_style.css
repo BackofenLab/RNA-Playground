@@ -80,6 +80,14 @@ h3 {
     padding-left: 5px !important;
 }
 
+h4 {
+    color: gray !important;
+    font-family: sans-serif !important;
+    margin-bottom: 5px;
+    margin-left: 0px;
+    padding-left: 5px !important;
+}
+
 h5 {
     background-color: transparent !important;  /* overwriting corporate-design.css */
     color: #8148B1;

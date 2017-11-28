@@ -233,10 +233,6 @@ th {
     text-align: left;
 }
 
-.horizontal {
-    overflow-y: auto !important;
-}
-
 .inner_column {
     display: inline-block;
     width: 100px;
@@ -275,7 +271,6 @@ th {
 
 .more_left {
     padding-left: 5px !important;
-    width: 161px !important;
 }
 
 .newick_tree {

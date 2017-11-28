@@ -446,6 +446,22 @@ Author: Alexander Mattheis
         var rowData = alignmentInterfaceInstance.getRowData(outputData);
         var columnData = alignmentInterfaceInstance.getColumnData(outputData);
         var minimaData = alignmentInterfaceInstance.getMinimaData(rowData, columnData);
+        var twoRowsData = alignmentInterfaceInstance.getTwoRowsSubmatricesData(outputData);
+
+        // get matrices data
+        var twoRowsMatrices = twoRowsData[0];
+        var twoRowsCharacters = twoRowsData[1];
+        var twoRowsCharactersPositions = twoRowsData[2];
+
+        // divide data in forward and backward
+        var forwardTwoRowsMatrices = twoRowsMatrices[0];
+        var backwardTwoRowsMatrices = twoRowsMatrices[1];
+
+        var forwardTwoRowsCharacters = twoRowsCharacters[0];
+        var backwardTwoRowsCharacters = twoRowsCharacters[1];
+
+        var forwardTwoRowsCharactersPositions = twoRowsCharactersPositions[0];
+        var backwardTwoRowsCharactersPositions = twoRowsCharactersPositions[1];;
 
         debugger;
         // main output
@@ -492,6 +508,7 @@ Author: Alexander Mattheis
 
         // matrix of all minima
         viewmodels.output.tracecellLines(outputData.tracecellLines);
+        viewmodels.output.globalMinima(minimaData);
 
         // header
         viewmodels.output.recursionNumbersContainer(outputData.recursionNumbersContainer);
@@ -512,8 +529,12 @@ Author: Alexander Mattheis
         viewmodels.output.addedRows(outputData.addedRows);
         viewmodels.output.highlightPositions(outputData.relativeSplittingPoint);
 
-        // minima result table
-        viewmodels.output.globalMinima(minimaData);
+        // generated two rows submatrices (intermediate steps)
+        viewmodels.output.prefixTwoRowsCharacters(forwardTwoRowsCharacters);
+        viewmodels.output.suffixTwoRowsCharacters(backwardTwoRowsCharacters);
+
+        viewmodels.output.prefixTwoRowsCharactersPositions(forwardTwoRowsCharactersPositions);
+        viewmodels.output.suffixTwoRowsCharactersPositions(backwardTwoRowsCharactersPositions);
 
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
     }

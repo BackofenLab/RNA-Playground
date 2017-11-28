@@ -165,7 +165,7 @@ var LATEX = {
         D_PRIME: "D\\,'",
         DELETION: "b_j = -",
         DIAGONAL: "D_{i-1,j-1}",
-        DPA: "DPA",
+        DPM: "DPM",
         I_IS: "i = ",
         INSERTION: "a_i = -",
         GAP: "g(k)",
