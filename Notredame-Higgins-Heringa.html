@@ -10,7 +10,7 @@ Author: Alexander Mattheis
         <a href="http://dx.doi.org/10.1006/jmbi.2000.4042">C&eacute;dric Notredame, Desmond G. Higgins and Jaap Heringa</a>
         introduced 2000 an approach that
         allows a very accurate computation of multiple sequence alignments (MSA),
-        the Tree-based Consistency Objective Function For alignmEnt Evaluation (short: <em>T-coffee</em>).
+        the Tree-based Consistency Objective Function for Alignment Evaluation (short: <em>T-coffee</em>).
         It's a tree-based approach,
         because it uses a progressive alignment strategy
         under a consistency-based function
@@ -18,10 +18,10 @@ Author: Alexander Mattheis
         The advantage to traditional approaches like
         <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a>
         is that the results are not based on single pairwise alignments for a 
-	set of input sequences $\mathbb{S}$,
+	    set of input sequences $\mathbb{S}$,
         but rather on an arbitrary large pool of pairwise alignments on $\mathbb{S}$ from
-	which a position specific scoring function is derived.
-        This so called extended library $EL^{a,b}_{i,j}$ provides for each
+	    which a position specific scoring function is derived.
+        This, so called extended library $EL^{a,b}_{i,j}$ provides for each
         pair of sequences $a,b \in \mathbb{S}$ and respective positions $i,j$ a score.
         <br>
         <br>
@@ -33,25 +33,25 @@ Author: Alexander Mattheis
 
         $$
         \quad 
-        L^{a,b}_{i,j} = \sum_{\mathcal{A}(a,b)}\begin{cases}
-	weight \big(\mathcal{A}(a,b) \big)
-	& \text{if } \binom{a_i}{b_j} \in \mathcal{A}(a,b)\\
-	0 & \text{else}
-	\end{cases}
-	$$
+        L^{a,b}_{i,j} =
+        \begin{cases}
+            weight \big(\mathcal{A}(a,b) \big)  & \text{if } \binom{a_i}{b_j} \in \mathcal{A}(a,b)\\
+            0 & \text{else}
+        \end{cases}
+        $$
 
         where $L^{a,b}_{i,j} = L^{b,a}_{j,i}$ and
 
-	$$
+	    $$
         \quad
-	weight \big(\mathcal{A}(a,b) \big)
+	    weight \big(\mathcal{A}(a,b) \big)
         = \frac {matches \big(\mathcal{A}(a,b) \big) \cdot 100}
-                {matches \big(\mathcal{A}(a,b) \big) + mismatches \big(\mathcal{A}(a,b) \big)}.
+                {matches \big(\mathcal{A}(a,b) \big) + mismatches \big(\mathcal{A}(a,b) \big)}
         $$
 
         Subsequently, the extended library $EL^{a,b}_{i,j}$ is calculated to gather consistency information, 
-	i.e. 'indirect alignments' of $a_i$ with $b_j$ when both are aligned to some $c_k$
-	(while taking all possible sequences $c$ into account).
+	    i.e. 'indirect alignments' of $a_i$ with $b_j$ when both are aligned to some $c_k$
+	    (while taking all possible sequences $c$ into account).
         Thus, all sequence triples from $\mathbb{S}$ are considered, which leads to the following formula:
 
         $$
@@ -65,19 +65,19 @@ Author: Alexander Mattheis
         to compute a multiple sequence alignment.
         Unlike in the <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a> approach,
         the whole columns (aligned positions of all sequences) of two groups are used to 
-	score/compute their joint alignment.
+	    score/compute their joint alignment.
         To this end, the average alignment score of two columns is used
         (all chars of first column aligned with all chars of second column) 
-	while gaps are ignored by setting $\alpha = \beta = 0$.
-	The latter is based on the idea that the library already indirectly 
-	reflects the gap scoring that was present in the underlying input alignments.
+	    while gaps are ignored by setting $\alpha = \beta = 0$.
+	    The latter is based on the idea that the library already indirectly
+	    reflects the gap scoring that was present in the underlying input alignments.
         <br>
         <br>
         In the algorithm, it is possible to add information
         from arbitrary alignments to emphasize particularly important
         positions of aligned sequences.
         Here, you can use (multiple optimal) global and local alignments of the input sequences
-	using the <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">Gotoh</a> algorithm.
+	    using the <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">Gotoh</a> algorithm.
         Each alignment is used in the formula from above to compute $L$.
         <br>
         <br>
