@@ -463,19 +463,17 @@ Author: Alexander Mattheis
         viewmodel.prefixTwoRowsCharactersPositions = ko.observable(forwardTwoRowsCharactersPositions).extend({ deferred: true });
         viewmodel.suffixTwoRowsCharactersPositions = ko.observable(backwardTwoRowsCharactersPositions);
 
-        /*
-        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
+        viewmodel.prefixTwoRowsMatrices = ko.observableArray(forwardTwoRowsMatrices).extend({ deferred: true });
 
         // iteration over each matrix
-        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
-            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({ deferred: true });
+        for (var i = 0; i < forwardTwoRowsMatrices.length; i++) {
+            viewmodel.prefixTwoRowsMatrices[i] = ko.observableArray(forwardTwoRowsMatrices[i]).extend({ deferred: true });
 
             // iteration over each row of the matrix
-            for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
-                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({ deferred: true });
+            for (var j = 0; j < forwardTwoRowsMatrices[i].length; j++) {
+                viewmodel.prefixTwoRowsMatrices[i][j] = ko.observableArray(forwardTwoRowsMatrices[i][j]).extend({ deferred: true });
             }
         }
-        */
 
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
     }

@@ -536,6 +536,26 @@ Author: Alexander Mattheis
         viewmodels.output.prefixTwoRowsCharactersPositions(forwardTwoRowsCharactersPositions);
         viewmodels.output.suffixTwoRowsCharactersPositions(backwardTwoRowsCharactersPositions);
 
+        viewmodels.output.prefixTwoRowsMatrices(forwardTwoRowsMatrices);
+
+        // iteration over each matrix
+        for (var i = 0; i < forwardTwoRowsMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.prefixTwoRowsMatrices.length)
+                viewmodels.output.prefixTwoRowsMatrices[i] = new Function();
+
+            viewmodels.output.prefixTwoRowsMatrices[i](forwardTwoRowsMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < forwardTwoRowsMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.prefixTwoRowsMatrices[i].length)
+                    viewmodels.output.prefixTwoRowsMatrices[i][j] = new Function();
+
+                viewmodels.output.prefixTwoRowsMatrices[i][j](forwardTwoRowsMatrices[i][j]);
+            }
+        }
+
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
     }
 }());

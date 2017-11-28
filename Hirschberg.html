@@ -48,7 +48,7 @@ Author: Alexander Mattheis
             <li>computed tracecell matrix</li>
             <li>final alignment and traceback</li>
         </ul>
-        are computed with the help of the
+        are simulated with the help of the
         <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch">Needleman-Wunsch</a>
         algorithm and represented reversed order below. <br>
     </div>
@@ -253,15 +253,13 @@ Author: Alexander Mattheis
 
                 <div class="matrices" data-bind="visible: $root.output.showMatrices">
                     <h4>Forward Matrices</h4>
-                    <!-- ko foreach: $root.output.prefixTwoRowsCharacters()[$index()] -->
+                    <!-- ko foreach: $root.output.prefixTwoRowsMatrices()[$index()] -->
                         <div class="main_output extra_large">
                             <table class="calculation">
                                 <tbody>
                                     <tr>
                                         <th>
-                                            <small>
-                                                <span data-bind="text: $root.output.matrixDLatex"></span>
-                                            </small>
+                                            <span data-bind="text: $root.output.matrixDLatex"></span>
                                         </th>
 
                                         <th></th>
@@ -276,20 +274,28 @@ Author: Alexander Mattheis
 
                                     <tr>
                                         <th>
-                                            <span data-bind="text: $data[0]"></span>
+                                            <span data-bind="text: $root.output.prefixTwoRowsCharacters()[$parentContext.$index()][$index()][0]"></span>
                                             <sub>
                                                 <span data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span>
                                             </sub>
                                         </th>
+
+                                        <!-- ko foreach: $data[0] -->
+                                            <td class="entry" data-bind="text: $data"></td>
+                                        <!-- /ko -->
                                     </tr>
 
                                     <tr>
                                         <th>
-                                            <span data-bind="text: $data[1]"></span>
+                                            <span data-bind="text: $root.output.prefixTwoRowsCharacters()[$parentContext.$index()][$index()][1]"></span>
                                             <sub>
                                                 <span data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span>
                                             </sub>
                                         </th>
+
+                                        <!-- ko foreach: $data[1] -->
+                                            <td class="entry" data-bind="text: $data"></td>
+                                        <!-- /ko -->
                                     </tr>
                                 </tbody>
                             </table>
