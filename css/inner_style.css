@@ -453,6 +453,11 @@ th {
     color: white;
 }
 
+.selected_light_blue {
+    background-color: rgba(85, 130, 188, 0.18); /* Uni-Freiburg Logo blue */
+    color: white;
+}
+
 .selected_light_red {
     background-color: #F5CAD1;
     color: white;

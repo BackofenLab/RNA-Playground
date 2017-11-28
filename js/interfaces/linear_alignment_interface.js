@@ -538,7 +538,7 @@ Author: Alexander Mattheis
 
         viewmodels.output.prefixTwoRowsMatrices(forwardTwoRowsMatrices);
 
-        // iteration over each matrix
+        // iteration over each matrix (forward matrices)
         for (var i = 0; i < forwardTwoRowsMatrices.length; i++) {
             // new variables (rows) are not automatically functions...
             if (i >= viewmodels.output.prefixTwoRowsMatrices.length)
@@ -553,6 +553,26 @@ Author: Alexander Mattheis
                     viewmodels.output.prefixTwoRowsMatrices[i][j] = new Function();
 
                 viewmodels.output.prefixTwoRowsMatrices[i][j](forwardTwoRowsMatrices[i][j]);
+            }
+        }
+
+        viewmodels.output.suffixTwoRowsMatrices(backwardTwoRowsMatrices);
+
+        // iteration over each matrix (backward matrices)
+        for (var i = 0; i < backwardTwoRowsMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.suffixTwoRowsMatrices.length)
+                viewmodels.output.suffixTwoRowsMatrices[i] = new Function();
+
+            viewmodels.output.suffixTwoRowsMatrices[i](backwardTwoRowsMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < backwardTwoRowsMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.suffixTwoRowsMatrices[i].length)
+                    viewmodels.output.suffixTwoRowsMatrices[i][j] = new Function();
+
+                viewmodels.output.suffixTwoRowsMatrices[i][j](backwardTwoRowsMatrices[i][j]);
             }
         }
 

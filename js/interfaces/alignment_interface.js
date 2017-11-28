@@ -458,20 +458,32 @@ Author: Alexander Mattheis
 
         // generated two rows submatrices (intermediate steps)
         viewmodel.prefixTwoRowsCharacters = ko.observable(forwardTwoRowsCharacters).extend({ deferred: true });
-        viewmodel.suffixTwoRowsCharacters = ko.observable(backwardTwoRowsCharacters);
+        viewmodel.suffixTwoRowsCharacters = ko.observable(backwardTwoRowsCharacters).extend({ deferred: true });
 
         viewmodel.prefixTwoRowsCharactersPositions = ko.observable(forwardTwoRowsCharactersPositions).extend({ deferred: true });
-        viewmodel.suffixTwoRowsCharactersPositions = ko.observable(backwardTwoRowsCharactersPositions);
+        viewmodel.suffixTwoRowsCharactersPositions = ko.observable(backwardTwoRowsCharactersPositions).extend({ deferred: true });
 
         viewmodel.prefixTwoRowsMatrices = ko.observableArray(forwardTwoRowsMatrices).extend({ deferred: true });
 
-        // iteration over each matrix
+        // iteration over each matrix (forward matrices)
         for (var i = 0; i < forwardTwoRowsMatrices.length; i++) {
             viewmodel.prefixTwoRowsMatrices[i] = ko.observableArray(forwardTwoRowsMatrices[i]).extend({ deferred: true });
 
             // iteration over each row of the matrix
             for (var j = 0; j < forwardTwoRowsMatrices[i].length; j++) {
                 viewmodel.prefixTwoRowsMatrices[i][j] = ko.observableArray(forwardTwoRowsMatrices[i][j]).extend({ deferred: true });
+            }
+        }
+
+        viewmodel.suffixTwoRowsMatrices = ko.observableArray(backwardTwoRowsMatrices).extend({ deferred: true });
+
+        // iteration over each matrix (backward matrices)
+        for (var i = 0; i < backwardTwoRowsMatrices.length; i++) {
+            viewmodel.suffixTwoRowsMatrices[i] = ko.observableArray(backwardTwoRowsMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < backwardTwoRowsMatrices[i].length; j++) {
+                viewmodel.suffixTwoRowsMatrices[i][j] = ko.observableArray(backwardTwoRowsMatrices[i][j]).extend({ deferred: true });
             }
         }
 
@@ -725,17 +737,18 @@ Author: Alexander Mattheis
         var upperPos = -1;
         var lowerPos = -1;
 
+        debugger;
         var rotatedBackwardMatrix = getRotatedMatrix(backwardMatrix);
 
         for (var i = rotatedBackwardMatrix.length - 1; i > posI; i--) {
             upperRow = rotatedBackwardMatrix[i-1];
             lowerRow = rotatedBackwardMatrix[i];
 
-            upperChar = leftString[i-1];
-            lowerChar = leftString[i];
+            upperChar = leftString[i-2];
+            lowerChar = leftString[i-1];
 
-            upperPos = leftPositions[i-1];
-            lowerPos = leftPositions[i];
+            upperPos = leftPositions[i-2];
+            lowerPos = leftPositions[i-1];
 
             twoRowsMatrices.push([upperRow, lowerRow]);
             twoRowsCharacters.push([upperChar, lowerChar]);

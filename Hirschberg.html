@@ -252,7 +252,7 @@ Author: Alexander Mattheis
                 <span class="trace_function" data-bind="text: $root.output.traceFunctions()[$index()]"></span> <br>
 
                 <div class="matrices" data-bind="visible: $root.output.showMatrices">
-                    <h4>Forward Matrices</h4>
+                    <h4>Prefix Computation</h4>
                     <!-- ko foreach: $root.output.prefixTwoRowsMatrices()[$index()] -->
                         <div class="main_output extra_large">
                             <table class="calculation">
@@ -266,18 +266,16 @@ Author: Alexander Mattheis
 
                                         <!-- ko foreach: $root.output.secondSequences()[$parentContext.$index()] -->
                                             <th>
-                                                <span data-bind="text: $data"></span><sub>
-                                                <span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
+                                                <span data-bind="text: $data"></span><sub><span
+                                                    data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
                                             </th>
                                         <!-- /ko -->
                                     </tr>
 
                                     <tr>
                                         <th>
-                                            <span data-bind="text: $root.output.prefixTwoRowsCharacters()[$parentContext.$index()][$index()][0]"></span>
-                                            <sub>
-                                                <span data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span>
-                                            </sub>
+                                            <span data-bind="text: $root.output.prefixTwoRowsCharacters()[$parentContext.$index()][$index()][0]"></span><sub><span
+                                                data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span></sub>
                                         </th>
 
                                         <!-- ko foreach: $data[0] -->
@@ -287,10 +285,70 @@ Author: Alexander Mattheis
 
                                     <tr>
                                         <th>
-                                            <span data-bind="text: $root.output.prefixTwoRowsCharacters()[$parentContext.$index()][$index()][1]"></span>
-                                            <sub>
-                                                <span data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span>
-                                            </sub>
+                                            <span data-bind="text: $root.output.prefixTwoRowsCharacters()[$parentContext.$index()][$index()][1]"></span><sub><span
+                                                data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span></sub>
+                                        </th>
+
+                                        <!-- ko if: $index() < $root.output.prefixTwoRowsMatrices()[$parentContext.$index()].length - 1 -->
+                                            <!-- ko foreach: $data[1] -->
+                                                <td class="entry" data-bind="text: $data"></td>
+                                            <!-- /ko -->
+                                        <!-- /ko -->
+
+                                        <!-- ko if: $index() >= $root.output.prefixTwoRowsMatrices()[$parentContext.$index()].length - 1 -->
+                                            <!-- ko foreach: $data[1] -->
+                                                <td class="entry selected_light_blue" data-bind="text: $data"></td>
+                                            <!-- /ko -->
+                                        <!-- /ko -->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    <!-- /ko -->
+
+                    <h4>Suffix Computation</h4>
+                    <!-- ko foreach: $root.output.suffixTwoRowsMatrices()[$index()] -->
+                        <div class="main_output extra_large">
+                            <table class="calculation">
+                                <tbody>
+                                    <tr>
+                                        <th>
+                                            <span data-bind="text: $root.output.matrixDPrimeLatex"></span>
+                                        </th>
+
+                                        <th></th>
+
+                                        <!-- ko foreach: $root.output.secondSequences()[$parentContext.$index()] -->
+                                            <th>
+                                                <span data-bind="text: $data"></span><sub><span
+                                                    data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
+                                            </th>
+                                        <!-- /ko -->
+                                    </tr>
+
+                                    <tr>
+                                        <th>
+                                            <span data-bind="text: $root.output.suffixTwoRowsCharacters()[$parentContext.$index()][$index()][0]"></span><sub><span
+                                                data-bind="text: $root.output.suffixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span></sub>
+                                        </th>
+
+                                        <!-- ko if: $index() < $root.output.suffixTwoRowsMatrices()[$parentContext.$index()].length - 1 -->
+                                            <!-- ko foreach: $data[0] -->
+                                                <td class="entry" data-bind="text: $data"></td>
+                                            <!-- /ko -->
+                                        <!-- /ko -->
+
+                                        <!-- ko if: $index() >= $root.output.suffixTwoRowsMatrices()[$parentContext.$index()].length - 1 -->
+                                            <!-- ko foreach: $data[0] -->
+                                                <td class="entry selected_light_blue" data-bind="text: $data"></td>
+                                            <!-- /ko -->
+                                        <!-- /ko -->
+                                    </tr>
+
+                                    <tr>
+                                        <th>
+                                            <span data-bind="text: $root.output.suffixTwoRowsCharacters()[$parentContext.$index()][$index()][1]"></span><sub><span
+                                                data-bind="text: $root.output.suffixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span></sub>
                                         </th>
 
                                         <!-- ko foreach: $data[1] -->
@@ -301,6 +359,7 @@ Author: Alexander Mattheis
                             </table>
                         </div>
                     <!-- /ko -->
+
                 </div>
 
                  <h4>Addition</h4>
@@ -320,8 +379,7 @@ Author: Alexander Mattheis
 
                                     <!-- ko foreach: $root.output.secondSequences()[$index()] -->
                                         <th>
-                                            <span data-bind="text: $data"></span><sub>
-                                            <span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$index()][$index()]"></span></sub>
+                                            <span data-bind="text: $data"></span><sub><span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$index()][$index()]"></span></sub>
                                         </th>
                                     <!-- /ko -->
                                 </tr>
