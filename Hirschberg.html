@@ -25,8 +25,8 @@ Author: Alexander Mattheis
         the minima have to be computed first for the middle row $i = \lfloor n/2 \rfloor$, where $n = |a|$
         and then you have to split the matrix sequences at the first minimum-position $(i,j)$
         and compute in the resulting upper matrix $DPM(a_1, .., a_i | b_1, .., b_j)$
-        and in the resulting lower matrix $DPM(a_{i+1}, .., a_n | b_{j+1}, .., b_m)$ the minima in its middle rows again,
-        where $m = |b|$ and $a, \, b$ are sequences. <br />
+        and in the resulting lower matrix $DPM(a_{i+1}, .., a_n | b_{j+1}, .., b_m)$ the minima in its middle rows again
+        (character positions are like in the prefix DPM), where $m = |b|$ and $a, \, b$ are sequences. <br />
         This splitting has to be done recursively until $n \leq 1$ or $m = 0$.
         The algorithm works always only with two rows of the DPM
         and reuse the last computed row, to calculate the next row
@@ -106,9 +106,9 @@ Author: Alexander Mattheis
             <span data-bind="text: $root.input.formulaBackward"></span>
             <div class="group_hint">
 				<b>Hint:</b> <br />
-				The suffix scoring-function $s$ depends on the position of the sequence chars within the DP matrix. <br>
+				The suffix scoring-function $s$ depends on the position of the sequence chars within the DPM. <br>
                 Sometimes $s(a_{i+1}, b_{j+1})$ is written, if the chars are at the same position like in the
-                in prefix computation DP matrix.
+                in prefix computation DPM.
 			</div>
 		</div>
 	</div>
