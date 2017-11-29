@@ -266,16 +266,14 @@ Author: Alexander Mattheis
 
                                         <!-- ko foreach: $root.output.secondSequences()[$parentContext.$index()] -->
                                             <th>
-                                                <span data-bind="text: $data"></span><sub><span
-                                                    data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
+                                                <sub><span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
                                             </th>
                                         <!-- /ko -->
                                     </tr>
 
                                     <tr>
                                         <th>
-                                            <span data-bind="text: $root.output.prefixTwoRowsCharacters()[$parentContext.$index()][$index()][0]"></span><sub><span
-                                                data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span></sub>
+                                            <sub><span data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span></sub>
                                         </th>
 
                                         <!-- ko foreach: $data[0] -->
@@ -285,8 +283,7 @@ Author: Alexander Mattheis
 
                                     <tr>
                                         <th>
-                                            <span data-bind="text: $root.output.prefixTwoRowsCharacters()[$parentContext.$index()][$index()][1]"></span><sub><span
-                                                data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span></sub>
+                                            <sub><span data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span></sub>
                                         </th>
 
                                         <!-- ko if: $index() < $root.output.prefixTwoRowsMatrices()[$parentContext.$index()].length - 1 -->
@@ -320,16 +317,14 @@ Author: Alexander Mattheis
 
                                         <!-- ko foreach: $root.output.secondSequences()[$parentContext.$index()] -->
                                             <th>
-                                                <span data-bind="text: $data"></span><sub><span
-                                                    data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
+                                                <sub><span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
                                             </th>
                                         <!-- /ko -->
                                     </tr>
 
                                     <tr>
                                         <th>
-                                            <span data-bind="text: $root.output.suffixTwoRowsCharacters()[$parentContext.$index()][$index()][0]"></span><sub><span
-                                                data-bind="text: $root.output.suffixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span></sub>
+                                            <sub><span data-bind="text: $root.output.suffixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span></sub>
                                         </th>
 
                                         <!-- ko if: $index() < $root.output.suffixTwoRowsMatrices()[$parentContext.$index()].length - 1 -->
@@ -347,8 +342,7 @@ Author: Alexander Mattheis
 
                                     <tr>
                                         <th>
-                                            <span data-bind="text: $root.output.suffixTwoRowsCharacters()[$parentContext.$index()][$index()][1]"></span><sub><span
-                                                data-bind="text: $root.output.suffixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span></sub>
+                                            <sub><span data-bind="text: $root.output.suffixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span></sub>
                                         </th>
 
                                         <!-- ko foreach: $data[1] -->
@@ -379,7 +373,7 @@ Author: Alexander Mattheis
 
                                     <!-- ko foreach: $root.output.secondSequences()[$index()] -->
                                         <th>
-                                            <span data-bind="text: $data"></span><sub><span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$index()][$index()]"></span></sub>
+                                            <sub><span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$index()][$index()]"></span></sub>
                                         </th>
                                     <!-- /ko -->
                                 </tr>

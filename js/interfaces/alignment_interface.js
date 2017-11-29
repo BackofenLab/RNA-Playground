@@ -511,7 +511,7 @@ Author: Alexander Mattheis
                     break;
                 }
 
-                string += firstSequence[i] + LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + firstSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
+                string += firstSequence[i];  // + LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + firstSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
                 string += i < firstSequence.length - 1 ? SYMBOLS.COMMA : SYMBOLS.EMPTY;
             }
 
@@ -526,7 +526,7 @@ Author: Alexander Mattheis
                     break;
                 }
 
-                string += secondSequence[i] + LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + secondSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
+                string += secondSequence[i];  // + LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + secondSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
                 string += i < secondSequence.length - 1 ? SYMBOLS.COMMA : SYMBOLS.EMPTY;
             }
 
