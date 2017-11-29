@@ -14,11 +14,12 @@ Author: Alexander Mattheis
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a> algorithm.
         The idea is that the tracebacks you get from a prefix- and a suffix-alignment are congruent
         i.e. the traceback-cells are the same.
-        Because of this, a row of the prefix dynamic programming matrix (DPM)
-        and the suffix DPM (assuming same coordinate system) can be added to identify a traceback-cell as the minimum.
+        Because of this, row $i$ of the prefix dynamic programming matrix (DPM) $D$
+        and row $i$ of the suffix DPM $D'$ (assuming same coordinate system)
+        can be added to identify a traceback-cell as the minimum.
 
-        <br />
-        <br />
+        <br>
+        <br>
 
         To do the calculation in linear time,
         the minima have to be computed first for the middle row $i = \lfloor n/2 \rfloor$, where $n = |a|$
@@ -79,13 +80,30 @@ Author: Alexander Mattheis
 			<span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
 				Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
 				Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
-				Gap <input class="fx_parameter" data-bind="value: input.gap" id="gap" type="number">
+				Gap $\gamma$ <input class="fx_parameter" data-bind="value: input.gap" id="gap" type="number">
 			</span>
 
 			 <div class="group_hint">
 				<b>Hint:</b> <br />
 				For distance minimization, <br /> match scores should be negative and all other scores higher.
 			</div>
+		</div>
+	</div>
+
+    <div class="row">
+		<div class="colW100">
+            <label>
+                <br />
+                <br />
+                Recursion:
+            </label>
+        </div>
+
+		<div class="colW600">
+			<span data-bind="text: $root.input.formula"></span>
+            <br />
+            <br />
+            <span data-bind="text: $root.input.formulaBackward"></span>
 		</div>
 	</div>
 </div>
@@ -100,7 +118,7 @@ Author: Alexander Mattheis
                         <th><small><b>Trace</b></small></th>
                         <th></th>
                         <!-- ko foreach: input.sequence2 -->
-                            <th data-bind="drawChar: [$data, $index()+1]"></th>
+                            <th data-bind="drawChar: [$data, undefined]"></th>
                         <!-- /ko -->
                     </tr>
                 </thead>
@@ -113,7 +131,7 @@ Author: Alexander Mattheis
                             <!-- /ko -->
 
                             <!-- ko if: $index() > 0 -->
-                                <th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
+                                <th data-bind="drawChar: [$root.input.sequence1()[$index()-1], undefined]"></th>
                             <!-- /ko -->
 
                             <!-- ko foreach: $root.output.forwardMatrices()[0][0] --> <!-- to get j-indexes = $index() -->
@@ -178,7 +196,7 @@ Author: Alexander Mattheis
                         <th><small><b>Trace-<br />cells</b></small></th>
                         <th></th>
                         <!-- ko foreach: input.sequence2 -->
-                            <th data-bind="drawChar: [$data, $index()+1]"></th>
+                            <th data-bind="drawChar: [$data, undefined]"></th>
                         <!-- /ko -->
                     </tr>
                 </thead>
@@ -191,7 +209,7 @@ Author: Alexander Mattheis
                             <!-- /ko -->
 
                             <!-- ko if: $index() > 0 -->
-                                <th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
+                                <th data-bind="drawChar: [$root.input.sequence1()[$index()-1], undefined]"></th>
                             <!-- /ko -->
 
                             <!-- ko foreach: $root.output.forwardMatrices()[0][0] --> <!-- to get j-indexes = $index() -->

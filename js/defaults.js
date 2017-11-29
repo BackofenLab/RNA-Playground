@@ -159,15 +159,23 @@ var LATEX = {
 
     FORMULA: {
         CURRENT: "D_{i,j}",
+        CURRENT_BACKWARD: "D'_{i,j}",
         CURRENT_P: "P_{i,j}",
         CURRENT_Q: "Q_{i,j}",
-        D: "D \\, \\,",
-        D_PRIME: "D\\,'",
+        D: "D \\,",
+        D_BIG: /D/g,
+        D_BIG_UNDERSCORE: /D_/g,
+        D_PRIME: "D'",
+        D_PRIME_UNDERSCORE: "D'_",
         DELETION: "b_j = -",
         DIAGONAL: "D_{i-1,j-1}",
         DPM: "DPM",
         I_IS: "i = ",
+        I_MINUS_ONE: /i-1/g,
+        I_PLUS_ONE: "i+1",
         INSERTION: "a_i = -",
+        J_MINUS_ONE: /j-1/g,
+        J_PLUS_ONE: "i+1",
         GAP: "g(k)",
         LEFT: "D_{i,j-1}",
         LEFT_Q: "Q_{i,j-1}",
@@ -177,6 +185,7 @@ var LATEX = {
         MINIMIZE_HORIZONTAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i,j-k} & + & g(k) \\}",
         MINIMIZE_VERTICAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i-k,j} & + & g(k) \\}",
         MISMATCH: "a_i \\neq b_j",
+        S_BIG: "S",
         TOP: "D_{i-1,j}",
         TOP_P: "P_{i-1,j}",
         ZERO: "0"
@@ -208,6 +217,20 @@ var LATEX = {
         "\\begin{cases}"                            +
         "D_{i,j-1}      & + & g(1)		    \\\\"   +
         "Q_{i,j-1}      & + & \\beta"              +
+        "\\end{cases}",
+
+        HIRSCHBERG_BACKWARD:
+        "\\begin{cases}"                            +
+        "D'_{i+1,j+1}   & + &  s(a_i,b_j)   \\\\"   +
+        "D'_{i+1,j}     & + &  \\gamma      \\\\"   +
+        "D'_{i,j+1}     & + &  \\gamma"             +
+        "\\end{cases}",
+
+        HIRSCHBERG_FORWARD:
+        "\\begin{cases}"                            +
+        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
+        "D_{i-1,j}      & + & \\gamma       \\\\"   +
+        "D_{i,j-1} 		& + & \\gamma"             +
         "\\end{cases}",
 
         NEEDLEMAN_WUNSCH:
@@ -329,7 +352,6 @@ var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
 var MULTI_SYMBOLS = {
     BRACKET_LEFT: /\(/g,
     BRACKET_RIGHT: /\)/g,
-    D_BIG: /D/g,
     DELIMITER: /-/g,
     GAP: /_/g,
     G_LITTLE_SPECIAL: /ğ/g,
@@ -446,7 +468,6 @@ var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
     PLUS: "+",
     SEMICOLON: ";",
     SEPARATOR: "_",
-    S_BIG: "S",
     SPACE: " ",
     STAR: "*",
     VERTICAL_BAR: "|"

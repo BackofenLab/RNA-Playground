@@ -85,8 +85,20 @@ Author: Alexander Mattheis
             this.mismatch = ko.observable(isHirschBerg ? -ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH : ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
         }
 
-        if (!isHirschBerg) {
-            this.formula = ko.computed(
+        this.formula = ko.computed(
+            function getSelectedFormula() {
+                // to fire LaTeX-Code reinterpretation after the selected formula was changed
+                // HINT: only found solution which works on all browsers
+                setTimeout(function () {
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+                }, REUPDATE_TIMEOUT_MS);
+
+                return getFormula(algorithmName, viewmodel, false);
+            }
+        );
+
+        if (algorithmName === ALGORITHMS.HIRSCHBERG) {
+            this.formulaBackward = ko.computed(
                 function getSelectedFormula() {
                     // to fire LaTeX-Code reinterpretation after the selected formula was changed
                     // HINT: only found solution which works on all browsers
@@ -94,23 +106,23 @@ Author: Alexander Mattheis
                         MathJax.Hub.Queue(["Typeset", MathJax.Hub])
                     }, REUPDATE_TIMEOUT_MS);
 
-                    return getFormula(algorithmName, viewmodel);
+                    return getFormula(algorithmName, viewmodel, true);
                 }
             );
+        }
 
-            if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
-                this.subFormula = ko.computed(
-                    function getSelectedSubFormula() {
-                        // to fire LaTeX-Code reinterpretation after the selected formula was changed
-                        // HINT: only found solution which works on all browsers
-                        setTimeout(function () {
-                            MathJax.Hub.Queue(["Typeset", MathJax.Hub])
-                        }, REUPDATE_TIMEOUT_MS);
+        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
+            this.subFormula = ko.computed(
+                function getSelectedSubFormula() {
+                    // to fire LaTeX-Code reinterpretation after the selected formula was changed
+                    // HINT: only found solution which works on all browsers
+                    setTimeout(function () {
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+                    }, REUPDATE_TIMEOUT_MS);
 
-                        return getSubFormula();
-                    }
-                );
-            }
+                    return getSubFormula();
+                }
+            );
         }
     }
 
@@ -118,18 +130,27 @@ Author: Alexander Mattheis
      * Returns the LaTeX-code for formulas.
      * @param algorithmName {string} - The name of the algorithm.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
+     * @param secondRecursion {boolean} - Tells if the function is called a second time. If it is so, then second formula selected.
      * @return {string} - LaTeX code.
      */
-    function getFormula(algorithmName, viewmodel) {
+    function getFormula(algorithmName, viewmodel, secondRecursion) {
         var string = LATEX.MATH_REGION;  // starting LaTeX math region
 
         if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
             string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MAX;
         else
-            string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
+            if (secondRecursion)
+                string += LATEX.FORMULA.CURRENT_BACKWARD + SYMBOLS.EQUAL + LATEX.MIN;
+            else
+                string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
 
         if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
             string += LATEX.RECURSION.SMITH_WATERMAN_MODIFIED;
+        else if (algorithmName === ALGORITHMS.HIRSCHBERG)
+            if (secondRecursion)
+                string += LATEX.RECURSION.HIRSCHBERG_BACKWARD;
+            else
+                string += LATEX.RECURSION.HIRSCHBERG_FORWARD;
         else if (algorithmName === ALGORITHMS.NEEDLEMAN_WUNSCH)
             string += LATEX.RECURSION.NEEDLEMAN_WUNSCH;
         else
@@ -164,7 +185,13 @@ Author: Alexander Mattheis
         string += LATEX.END_CASES;  // stopping LaTeX case region
 
         if (algorithmName === ALGORITHMS.SMITH_WATERMAN || algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
-            string = string.replace(MULTI_SYMBOLS.D_BIG, SYMBOLS.S_BIG);
+            string = string.replace(LATEX.FORMULA.D_BIG, LATEX.FORMULA.S_BIG);
+
+        if (algorithmName === ALGORITHMS.HIRSCHBERG && secondRecursion) {
+            string = string.replace(LATEX.FORMULA.D_BIG_UNDERSCORE, LATEX.FORMULA.D_PRIME_UNDERSCORE);
+            string = string.replace(LATEX.FORMULA.I_MINUS_ONE, LATEX.FORMULA.I_PLUS_ONE);
+            string = string.replace(LATEX.FORMULA.J_MINUS_ONE, LATEX.FORMULA.J_PLUS_ONE);
+        }
 
         string += LATEX.MATH_REGION;  // stopping LaTeX math region
         return string;
