@@ -12,8 +12,8 @@ Author: Alexander Mattheis
             Abdullah N. Arslan, &Ouml;mer E&gbreve;ecio&gbreve;lu and Pavel A. Pevzner (2001)</a>
         computes the best normalized local alignments of two sequences.
         It identifies the local alignment that is best preserved with respect to the length of the aligned subsequences.
-        <br>
-        <br>
+        <br />
+        <br />
         The normalized local alignment algorithm tries
         to find the alignment $\mathcal{A}$ of two sequences
         with the highest normalized score
@@ -21,8 +21,8 @@ Author: Alexander Mattheis
         where $[\![\mathcal{A}]\!]$ is the length
         of the aligned subsequences (excluding gaps) and $L$ is a parameter
         to control the length-dependence of the normalized similarity score.
-        <br>
-        <br>
+        <br />
+        <br />
         To find a normalized local alignment,
         the fractional programming algorithm by
         <a href="http://pubsonline.informs.org/doi/abs/10.1287/mnsc.13.7.492">Werner Dinkelbach (1967)</a>
@@ -30,8 +30,8 @@ Author: Alexander Mattheis
         <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith and Waterman (1981)</a>.
         Fractional programming is a machine learning approach
         to solve problems in which the objective function $ns(\mathcal{A})$ is a fraction as given above.
-        <br>
-        <br>
+        <br />
+        <br />
 		Given a similarity scoring function $s(a_i,b_j)$ for two sequences $a$ and $b$.
 		To find $\lambda^*$ and the according best normalized alignment $\mathcal{A}$,
 		the <a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman</a>
@@ -41,8 +41,8 @@ Author: Alexander Mattheis
 		Given this, the best local alignment $\mathcal{A}^r$ with score $S^r$ using $s^r$ is identified and
 		the new lambda estimate $\lambda^r$ is computed by $\lambda^r= S^r/([\![\mathcal{A}^r]\!]+L)$.
 		This is iterated until $\lambda$ converges or a certain number of iterations is exceeded.
-        <br>
-        <br>
+        <br />
+        <br />
         For a given input, the according tables and scoring functions
         are shown for up to 5 iterations (or convergence) along with a list 
 		of according optimal local alignments.
@@ -50,7 +50,7 @@ Author: Alexander Mattheis
     </div>
 
     <div class="picture">
-        <img src="Arslan-Egecioglu-Pevzner-120x90.png">
+        <img src="Arslan-Egecioglu-Pevzner-120x90.png" />
     </div>
 </div>
 
@@ -79,8 +79,8 @@ Author: Alexander Mattheis
 			</span>
 
 			<div class="group_hint">
-				<b>Hint:</b> <br>
-				For similarity maximization, <br> match scores should be positive and all other scores lower.
+				<b>Hint:</b> <br />
+				For similarity maximization, <br /> match scores should be positive and all other scores lower.
 			</div>
 		</div>
 	</div>
@@ -92,25 +92,25 @@ Author: Alexander Mattheis
 
 	<div class="row">
 		<div class="colW100">
-			<br>
-			<br>
+			<br />
+			<br />
 			<label>
 				Recursion of
-				<br>iteration $r=1$:
+				<br />iteration $r=1$:
 			</label>
 		</div>
 
 		<div class="colW600">
 			<span data-bind="text: $root.input.formula"></span>
-			<br>
-			<br>
-			with <br>
+			<br />
+			<br />
+			with <br />
 			<span data-bind="text: $root.input.subFormula"></span>
-			<br>
-			<br>
+			<br />
+			<br />
 			where $\lambda^0 = 0$
-			<br>
-			<br>
+			<br />
+			<br />
 		</div>
 	</div>
 </div>
@@ -160,13 +160,13 @@ ObservableArrays of arrays and runtime for drawing. -->
 
 				<div class="parameters">
 					Score $s(\mathcal{A}^5)$:
-					<span data-bind="text: $root.output.score5"></span> <br>
+					<span data-bind="text: $root.output.score5"></span> <br />
 
 					Length $[\![\mathcal{A}^5]\!]$:
-					<span data-bind="text: $root.output.length5"></span> <br>
+					<span data-bind="text: $root.output.length5"></span> <br />
 
 					Normalized score $\lambda^5$:
-					<span data-bind="text: $root.output.lambda5"></span> <br>
+					<span data-bind="text: $root.output.lambda5"></span> <br />
 				</div>
 			</div>
 
@@ -176,7 +176,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 						<thead>
 							<tr>
 								<th>
-									Results <br>
+									Results <br />
 									<small>
 										The result for which the normalized score was computed is marked blue.
 									</small>
@@ -195,8 +195,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() == 0 -->
 													<tr>
 														<td class="entry entry_start selected">
-															<code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments5()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -204,8 +204,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() != 0 -->
 													<tr>
 														<td class="entry selected">
-															<code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments5()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -216,8 +216,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() == 0 -->
 													<tr>
 														<td class="entry entry_start">
-															<code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments5()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -225,8 +225,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() != 0 -->
 													<tr>
 														<td class="entry">
-															<code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments5()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments5()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments5()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -244,7 +244,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<th>
 								<small>
 									<!-- ko if: $root.output.moreTracebacks5 -->
-										<b>Hint:</b> Only the first ten results are computed. <br>
+										<b>Hint:</b> Only the first ten results are computed. <br />
 									<!-- /ko -->
 									<!-- ko if: $root.output.alignments5().length > 1 && $root.output.maxNumberIterations -->
 										<b>Hint:</b> Not marked alignments aren't used and only listed for completeness.
@@ -297,13 +297,13 @@ ObservableArrays of arrays and runtime for drawing. -->
 
 				<div class="parameters">
 					Score $s(\mathcal{A}^4)$:
-					<span data-bind="text: $root.output.score4"></span> <br>
+					<span data-bind="text: $root.output.score4"></span> <br />
 
 					Length $[\![\mathcal{A}^4]\!]$:
-					<span data-bind="text: $root.output.length4"></span> <br>
+					<span data-bind="text: $root.output.length4"></span> <br />
 
 					Normalized score $\lambda^4$:
-					<span data-bind="text: $root.output.lambda4"></span> <br>
+					<span data-bind="text: $root.output.lambda4"></span> <br />
 				</div>
 			</div>
 
@@ -313,7 +313,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 						<thead>
 							<tr>
 								<th>
-									Results <br>
+									Results <br />
 									<small>
 										The result for which the normalized score was computed is marked blue.
 									</small>
@@ -332,8 +332,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() == 0 -->
 													<tr>
 														<td class="entry entry_start selected">
-															<code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments4()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -341,8 +341,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() != 0 -->
 													<tr>
 														<td class="entry selected">
-															<code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments4()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -353,8 +353,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() == 0 -->
 													<tr>
 														<td class="entry entry_start">
-															<code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments4()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -362,8 +362,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() != 0 -->
 													<tr>
 														<td class="entry">
-															<code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments4()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments4()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments4()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -381,7 +381,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<th>
 								<small>
 									<!-- ko if: $root.output.moreTracebacks4 -->
-										<b>Hint:</b> Only the first ten results are computed. <br>
+										<b>Hint:</b> Only the first ten results are computed. <br />
 									<!-- /ko -->
 									<!-- ko if: $root.output.alignments4().length > 1 && $root.output.alignments5().length > 0 -->
 										<b>Hint:</b> Not marked alignments aren't used and only listed for completeness.
@@ -434,13 +434,13 @@ ObservableArrays of arrays and runtime for drawing. -->
 
 				<div class="parameters">
 					Score $s(\mathcal{A}^3)$:
-					<span data-bind="text: $root.output.score3"></span> <br>
+					<span data-bind="text: $root.output.score3"></span> <br />
 
 					Length $[\![\mathcal{A}^3]\!]$:
-					<span data-bind="text: $root.output.length3"></span> <br>
+					<span data-bind="text: $root.output.length3"></span> <br />
 
 					Normalized score $\lambda^3$:
-					<span data-bind="text: $root.output.lambda3"></span> <br>
+					<span data-bind="text: $root.output.lambda3"></span> <br />
 				</div>
 			</div>
 
@@ -450,7 +450,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 						<thead>
 							<tr>
 								<th>
-									Results <br>
+									Results <br />
 									<small>
 										The result for which the normalized score was computed is marked blue.
 									</small>
@@ -469,8 +469,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() == 0 -->
 													<tr>
 														<td class="entry entry_start selected">
-															<code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments3()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -478,8 +478,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() != 0 -->
 													<tr>
 														<td class="entry selected">
-															<code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments3()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -490,8 +490,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() == 0 -->
 													<tr>
 														<td class="entry entry_start">
-															<code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments3()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -499,8 +499,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() != 0 -->
 													<tr>
 														<td class="entry">
-															<code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments3()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments3()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments3()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -518,7 +518,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<th>
 								<small>
 									<!-- ko if: $root.output.moreTracebacks3 -->
-										<b>Hint:</b> Only the first ten results are computed. <br>
+										<b>Hint:</b> Only the first ten results are computed. <br />
 									<!-- /ko -->
 									<!-- ko if: $root.output.alignments3().length > 1 && $root.output.alignments4().length > 0 -->
 										<b>Hint:</b> Not marked alignments aren't used and only listed for completeness.
@@ -571,13 +571,13 @@ ObservableArrays of arrays and runtime for drawing. -->
 
 				<div class="parameters">
 					Score $s(\mathcal{A}^2)$:
-					<span data-bind="text: $root.output.score2"></span> <br>
+					<span data-bind="text: $root.output.score2"></span> <br />
 
 					Length $[\![\mathcal{A}^2]\!]$:
-					<span data-bind="text: $root.output.length2"></span> <br>
+					<span data-bind="text: $root.output.length2"></span> <br />
 
 					Normalized score $\lambda^2$:
-					<span data-bind="text: $root.output.lambda2"></span> <br>
+					<span data-bind="text: $root.output.lambda2"></span> <br />
 				</div>
 			</div>
 
@@ -587,7 +587,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 						<thead>
 							<tr>
 								<th>
-									Results <br>
+									Results <br />
 									<small>
 										The result for which the normalized score was computed is marked blue.
 									</small>
@@ -606,8 +606,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() == 0 -->
 													<tr>
 														<td class="entry entry_start selected">
-															<code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments2()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -615,8 +615,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() != 0 -->
 													<tr>
 														<td class="entry selected">
-															<code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments2()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -627,8 +627,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() == 0 -->
 													<tr>
 														<td class="entry entry_start">
-															<code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments2()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -636,8 +636,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() != 0 -->
 													<tr>
 														<td class="entry">
-															<code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments2()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments2()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments2()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -655,7 +655,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<th>
 								<small>
 									<!-- ko if: $root.output.moreTracebacks2 -->
-										<b>Hint:</b> Only the first ten results are computed. <br>
+										<b>Hint:</b> Only the first ten results are computed. <br />
 									<!-- /ko -->
 									<!-- ko if: $root.output.alignments2().length > 1 && $root.output.alignments3().length > 0 -->
 										<b>Hint:</b> Not marked alignments aren't used and only listed for completeness.
@@ -708,13 +708,13 @@ ObservableArrays of arrays and runtime for drawing. -->
 
 				<div class="parameters">
 					Score $s(\mathcal{A}^1)$:
-					<span data-bind="text: $root.output.score1"></span> <br>
+					<span data-bind="text: $root.output.score1"></span> <br />
 
 					Length $[\![\mathcal{A}^1]\!]$:
-					<span data-bind="text: $root.output.length1"></span> <br>
+					<span data-bind="text: $root.output.length1"></span> <br />
 
 					Normalized score $\lambda^1$:
-					<span data-bind="text: $root.output.lambda1"></span> <br>
+					<span data-bind="text: $root.output.lambda1"></span> <br />
 				</div>
 			</div>
 
@@ -724,7 +724,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 						<thead>
 							<tr>
 								<th>
-									Results <br>
+									Results <br />
 									<small>
 										The result for which the normalized score was computed is marked blue.
 									</small>
@@ -743,8 +743,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() == 0 -->
 													<tr>
 														<td class="entry entry_start selected">
-															<code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments1()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -752,8 +752,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() != 0 -->
 													<tr>
 														<td class="entry selected">
-															<code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments1()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -764,8 +764,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() == 0 -->
 													<tr>
 														<td class="entry entry_start">
-															<code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments1()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -773,8 +773,8 @@ ObservableArrays of arrays and runtime for drawing. -->
 											<!-- ko if: $index() != 0 -->
 													<tr>
 														<td class="entry">
-															<code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br>
-															<code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br>
+															<code data-bind="text: $root.output.alignments1()[$index()][0]"></code> <br />
+															<code data-bind="text: $root.output.alignments1()[$index()][1]"></code> <br />
 															<code data-bind="text: $root.output.alignments1()[$index()][2]"></code>
 														</td>
 													</tr>
@@ -792,7 +792,7 @@ ObservableArrays of arrays and runtime for drawing. -->
 							<th>
 								<small>
 									<!-- ko if: $root.output.moreTracebacks1 -->
-										<b>Hint:</b> Only the first ten results are computed. <br>
+										<b>Hint:</b> Only the first ten results are computed. <br />
 									<!-- /ko -->
 									<!-- ko if: $root.output.alignments1().length > 1 && $root.output.alignments2().length > 0 -->
 										<b>Hint:</b> Not marked alignments aren't used and only listed for completeness.
@@ -807,28 +807,28 @@ ObservableArrays of arrays and runtime for drawing. -->
 	<!-- /ko -->
 
 	<div class="iteration_footer">
-		<b>Hints:</b> <br>
+		<b>Hints:</b> <br />
 		<!-- ko if: $root.output.maxNumberIterations -->
-			Only first five iterations are computed. <br>
+			Only first five iterations are computed. <br />
 		<!-- /ko -->
 		Scores $s(\mathcal{A})$ and normalized scores $\lambda$ are rounded to four digits.
 	</div>
 
     <div class="download_area">
 		<!-- ko if: $root.output.matrix5().length > 0 -->
-        	<a class="table_download_5" href="#">Download Iteration 5 Table</a> <br>
+        	<a class="table_download_5" href="#">Download Iteration 5 Table</a> <br />
 		<!-- /ko -->
 
 		<!-- ko if: $root.output.matrix4().length > 0 -->
-        	<a class="table_download_4" href="#">Download Iteration 4 Table</a> <br>
+        	<a class="table_download_4" href="#">Download Iteration 4 Table</a> <br />
 		<!-- /ko -->
 
 		<!-- ko if: $root.output.matrix3().length > 0 -->
-        	<a class="table_download_3" href="#">Download Iteration 3 Table</a> <br>
+        	<a class="table_download_3" href="#">Download Iteration 3 Table</a> <br />
 		<!-- /ko -->
 
 		<!-- ko if: $root.output.matrix2().length > 0 -->
-        	<a class="table_download_2" href="#">Download Iteration 2 Table</a> <br>
+        	<a class="table_download_2" href="#">Download Iteration 2 Table</a> <br />
 		<!-- /ko -->
 
 		<!-- ko if: $root.output.matrix1().length > 0 -->

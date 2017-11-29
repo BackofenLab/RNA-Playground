@@ -23,8 +23,8 @@ Author: Alexander Mattheis
 	    which a position specific scoring function is derived.
         This so called extended library $EL^{a,b}_{i,j}$ provides for each
         pair of sequences $a,b \in \mathbb{S}$ and respective positions $i,j$ a score.
-        <br>
-        <br>
+        <br />
+        <br />
 	    To this end, first a primary library $L^{a,b}_{i,j}$ is computed.
         It covers the information how often a certain pair of sequence positions
 	    $a_i$ and $b_j$ were aligned within the set of input alignments. This is
@@ -71,16 +71,16 @@ Author: Alexander Mattheis
 	    while gaps are ignored by setting $\alpha = \beta = 0$.
 	    The latter is based on the idea that the library already indirectly
 	    reflects the gap scoring that was present in the underlying input alignments.
-        <br>
-        <br>
+        <br />
+        <br />
         In the algorithm, it is possible to add information
         from arbitrary alignments to emphasize particularly important
         positions of aligned sequences.
         Here, you can use (multiple optimal) global and local alignments of the input sequences
 	    using the <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">Gotoh</a> algorithm.
         Each alignment is used in the formula from above to compute $L$.
-        <br>
-        <br>
+        <br />
+        <br />
         For a given input, the computation steps are
         <ul>
             <li>pairwise alignments</li>
@@ -96,7 +96,7 @@ Author: Alexander Mattheis
     </div>
 
     <div class="picture">
-        <img src="Notredame-Higgins-Heringa-120x90.png">
+        <img src="Notredame-Higgins-Heringa-120x90.png" />
     </div>
 </div>
 
@@ -115,9 +115,9 @@ Author: Alexander Mattheis
 
                 <!-- ko if: $index() == $root.input.clusterNames().length-1 -->
                     <div class="group_hint">
-                        <b>Hint:</b> <br>
+                        <b>Hint:</b> <br />
                         The "+" and "-" buttons can be used to add or remove sequences.
-                        Duplicates of sequences <br>
+                        Duplicates of sequences <br />
                         are excluded from computations.
                         <!-- The distance formula
                         is not defined for two sequences of same type,
@@ -171,13 +171,13 @@ Author: Alexander Mattheis
                 Gap opening $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
                 Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
             </span>
-            <br>
-            <br>
+            <br />
+            <br />
             <span data-bind="text: $root.input.gapFunction"></span>
 
             <div class="group_hint">
-				<b>Hint:</b> <br>
-				For similarity maximization, <br> match scores should be positive and all other scores lower. <br>
+				<b>Hint:</b> <br />
+				For similarity maximization, <br /> match scores should be positive and all other scores lower. <br />
 			</div>
 		</div>
     </div>
@@ -201,7 +201,7 @@ Author: Alexander Mattheis
 
                     <div class="colW50">
                         <input data-bind="enable: input.localAlignmentsPerSequencePair() == 1, value: input.totalNumberAlignments"
-                               id="total_number_alignments" type="number"> <br>
+                               id="total_number_alignments" type="number"> <br />
                     </div>
                 </div>
 
@@ -237,13 +237,13 @@ Author: Alexander Mattheis
                     Gap opening $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCostsLocal" id="base_costs_local" type="number">
                     Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargementLocal" id="enlargement_local" type="number">
                 </span>
-                <br>
-                <br>
+                <br />
+                <br />
                 <span data-bind="text: $root.input.gapFunctionLocal"></span>
 
                 <div class="group_hint">
-                    <b>Hint:</b> <br>
-                    For similarity maximization, <br> match scores should be positive and all other scores lower. <br>
+                    <b>Hint:</b> <br />
+                    For similarity maximization, <br /> match scores should be positive and all other scores lower. <br />
                 </div>
             </div>
         </div>
@@ -269,7 +269,7 @@ Author: Alexander Mattheis
                     <tr>
                         <td class="entry entry_start">
                             <!-- ko foreach: $root.output.progressiveAlignment() -->
-                                <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br>
+                                <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br />
                             <!-- /ko -->
                         </td>
                     </tr>
@@ -323,23 +323,23 @@ Author: Alexander Mattheis
                     <!-- ko foreach: $root.output.firstGroups() -->
                         <tr>
                             <td class="entry entry_start">
-                                <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br>
+                                <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br />
                                 <!-- ko foreach: $root.output.firstGroups()[$index()] -->
-                                    <code data-bind="text: $data"></code> <br>
+                                    <code data-bind="text: $data"></code> <br />
                                 <!-- /ko -->
                             </td>
 
                             <td class="entry entry_start">
-                                <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br>
+                                <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br />
                                 <!-- ko foreach: $root.output.secondGroups()[$index()] -->
-                                    <code data-bind="text: $data"></code> <br>
+                                    <code data-bind="text: $data"></code> <br />
                                 <!-- /ko -->
                             </td>
 
                             <td class="entry entry_start">
-                                <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br>
+                                <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br />
                                 <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
-                                    <code data-bind="text: $data"></code> <br>
+                                    <code data-bind="text: $data"></code> <br />
                                 <!-- /ko -->
                             </td>
                         </tr>
@@ -380,9 +380,9 @@ Author: Alexander Mattheis
 
     <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
         <div class="group_hint">
-            <b>Visualization done with</b> <br>
-            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br>
-            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br>
+            <b>Visualization done with</b> <br />
+            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br />
+            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br />
             <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
                 PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
             </a>
@@ -423,24 +423,24 @@ Author: Alexander Mattheis
                             <td class="entry entry_start">
                                 <code>(</code><code data-bind="text: $data[0]"></code><code>,</code>
                                 <code data-bind="text: $data[1]"></code><code>)</code>
-                                <br>
+                                <br />
                             </td>
 
                             <td class="entry entry_start">
                                 <!-- ko foreach: $root.output.libPositionPairs()[$index()] -->
-                                    <code>(</code><code data-bind="text: $data"></code><code>)</code> <br>
+                                    <code>(</code><code data-bind="text: $data"></code><code>)</code> <br />
                                 <!-- /ko -->
                             </td>
 
                             <td class="entry entry_start">
                                 <!-- ko foreach: $root.output.primLibValues()[$index()] -->
-                                    <code data-bind="text: $data"></code> <br>
+                                    <code data-bind="text: $data"></code> <br />
                                 <!-- /ko -->
                             </td>
 
                             <td class="entry entry_start">
                                 <!-- ko foreach: $root.output.extendedLibValues()[$index()] -->
-                                    <code data-bind="text: $data"></code> <br>
+                                    <code data-bind="text: $data"></code> <br />
                                 <!-- /ko -->
                             </td>
                         </tr>
@@ -486,24 +486,24 @@ Author: Alexander Mattheis
                             <td class="entry entry_start">
                                 <code>(</code><code data-bind="text: $data[0]"></code><code>,</code>
                                 <code data-bind="text: $data[1]"></code><code>)</code>
-                                <br>
+                                <br />
                             </td>
 
                             <td class="entry entry_start">
                                 <!-- ko foreach: $root.output.alignmentsGlobal()[$index()] -->
-                                    <code data-bind="text: $data[0]"></code> <br>
-                                    <code data-bind="text: $data[1]"></code> <br>
-                                    <code data-bind="text: $data[2]"></code> <br>
-                                    <br>
+                                    <code data-bind="text: $data[0]"></code> <br />
+                                    <code data-bind="text: $data[1]"></code> <br />
+                                    <code data-bind="text: $data[2]"></code> <br />
+                                    <br />
                                 <!-- /ko -->
                             </td>
 
                             <td class="entry entry_start">
                                 <!-- ko foreach: $root.output.alignmentsLocal()[$index()] -->
-                                    <code data-bind="text: $data[0]"></code> <br>
-                                    <code data-bind="text: $data[1]"></code> <br>
-                                    <code data-bind="text: $data[2]"></code> <br>
-                                    <br>
+                                    <code data-bind="text: $data[0]"></code> <br />
+                                    <code data-bind="text: $data[1]"></code> <br />
+                                    <code data-bind="text: $data[2]"></code> <br />
+                                    <br />
                                 <!-- /ko -->
                             </td>
                         </tr>

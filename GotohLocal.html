@@ -11,14 +11,14 @@ Author: Alexander Mattheis
         and <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Smith-Waterman">Smith-Waterman</a>
         combined into one approach.
         It computes the local affine alignment of two sequences when using an affine gap scoring.
-        <br>
-        <br>
+        <br />
+        <br />
         In order to find such a local alignment, the global affince alignment algorithm by
         <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Osamu Gotoh (1982)</a>
         is extended with an additional case '0' in the recursion function for the matrix $S$.
         This lower bound on the similarity score excludes alignments with scores less than zero.
-        <br>
-        <br>
+        <br />
+        <br />
         For the given input, the according tables $S,P$ and $Q$ are provided along with a list
         of according optimal alignments. 
         On table cell selection, optimal traceback options are shown.
@@ -26,7 +26,7 @@ Author: Alexander Mattheis
     </div>
 
     <div class="picture">
-        <img src="GotohLocal-120x90.png">
+        <img src="GotohLocal-120x90.png" />
     </div>
 </div>
 
@@ -64,8 +64,8 @@ Author: Alexander Mattheis
             </span>
 
             <div class="group_hint">
-				<b>Hint:</b> <br>
-				For similarity maximization, <br> match scores should be positive and all other scores lower.
+				<b>Hint:</b> <br />
+				For similarity maximization, <br /> match scores should be positive and all other scores lower.
 			</div>
 		</div>
     </div>
@@ -73,22 +73,22 @@ Author: Alexander Mattheis
     <div class="row">
 		<div class="colW100">
             <label>
-                <br>
+                <br />
                 Recursions:
             </label>
         </div>
 
 		<div class="colW600">
             <span data-bind="text: $root.input.formulaP"></span>
-            <br>
-            <br>
+            <br />
+            <br />
             <span data-bind="text: $root.input.formulaQ"></span>
-            <br>
-            <br>
+            <br />
+            <br />
             <span data-bind="text: $root.input.formula"></span>
-            <br>
-            <br>
-            <br>
+            <br />
+            <br />
+            <br />
             <span data-bind="text: $root.input.gapFunction"></span>
 		</div>
 	</div>
@@ -136,9 +136,9 @@ Author: Alexander Mattheis
                 </tbody>
             </table>
 
-            <br>
-            <br>
-            <br>
+            <br />
+            <br />
+            <br />
 
             <table class="calculation">
                 <thead>
@@ -179,9 +179,9 @@ Author: Alexander Mattheis
                 </tbody>
             </table>
 
-            <br>
-            <br>
-            <br>
+            <br />
+            <br />
+            <br />
 
             <table class="calculation_horizontal">
                 <thead>
@@ -224,8 +224,8 @@ Author: Alexander Mattheis
         </div>
 
         <div class="download_area">
-            <a class="table_vertical_download" href="#">Download Table P</a> <br>
-            <a class="table_download" href="#">Download Table D</a> <br>
+            <a class="table_vertical_download" href="#">Download Table P</a> <br />
+            <a class="table_download" href="#">Download Table D</a> <br />
             <a class="table_horizontal_download" href="#">Download Table Q</a>
         </div>
     </div>
@@ -236,7 +236,7 @@ Author: Alexander Mattheis
                 <thead>
                     <tr>
                         <th>
-                            Results <br>
+                            Results <br />
                             <small>
                                 You can select a result to get the related traceback.
                             </small>
@@ -253,8 +253,8 @@ Author: Alexander Mattheis
                                 <!-- ko if: $index() == 0 -->
                                     <tr>
                                         <td class="selectable_entry selectable_entry_start">
-                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br />
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br />
                                             <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
                                         </td>
                                     </tr>
@@ -262,8 +262,8 @@ Author: Alexander Mattheis
                                 <!-- ko if: $index() != 0 -->
                                     <tr>
                                         <td class="selectable_entry">
-                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br />
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br />
                                             <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
                                         </td>
                                     </tr>

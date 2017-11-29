@@ -17,15 +17,15 @@ Author: Alexander Mattheis
         Because of this, a row of the prefix dynamic programming matrix (DPM)
         and the suffix DPM (assuming same coordinate system) can be added to identify a traceback-cell as the minimum.
 
-        <br>
-        <br>
+        <br />
+        <br />
 
-        To do the computation in linear time, the minima
-        have to be computed first for the middle row $i = \lfloor n \rfloor$, where $n = |a|$
+        To do the calculation in linear time,
+        the minima have to be computed first for the middle row $i = \lfloor n/2 \rfloor$, where $n = |a|$
         and then you have to split the matrix sequences at the first minimum-position $(i,j)$
         and compute in the resulting upper matrix $DPM(a_1, .., a_i | b_1, .., b_j)$
         and in the resulting lower matrix $DPM(a_{i+1}, .., a_n | b_{j+1}, .., b_m)$ the minima in its middle rows again,
-        where $m = |b|$ and $a, \, b$ are sequences. <br>
+        where $m = |b|$ and $a, \, b$ are sequences. <br />
         This splitting has to be done recursively until $n \leq 1$ or $m = 0$.
         The algorithm works always only with two rows of the DPM
         and reuse the last computed row, to calculate the next row
@@ -36,8 +36,8 @@ Author: Alexander Mattheis
         rows have to be recalculated for the given, cutted input sequences of $a$ and $b$, because Hirschberg
         does not store the full matrix.
 
-        <br>
-        <br>
+        <br />
+        <br />
 
         Our implementation only stores the most left traceback-cell in the row to use less space,
         but the path is nevertheless reconstructable. The last row minimum is computed separately
@@ -50,11 +50,11 @@ Author: Alexander Mattheis
         </ul>
         are simulated with the help of the
         <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch">Needleman-Wunsch</a>
-        algorithm and represented reversed order below. <br>
+        algorithm and represented reversed order below. <br />
     </div>
 
     <div class="picture">
-        <img src="Hirschberg-120x90.png">
+        <img src="Hirschberg-120x90.png" />
     </div>
 </div>
 
@@ -83,8 +83,8 @@ Author: Alexander Mattheis
 			</span>
 
 			 <div class="group_hint">
-				<b>Hint:</b> <br>
-				For distance minimization, <br> match scores should be negative and all other scores higher.
+				<b>Hint:</b> <br />
+				For distance minimization, <br /> match scores should be negative and all other scores higher.
 			</div>
 		</div>
 	</div>
@@ -132,7 +132,7 @@ Author: Alexander Mattheis
                 <thead>
 					<tr>
 						<th>
-							Result <br>
+							Result <br />
                             <small>
                                 The result for which the traceback was computed is marked blue.
                             </small>
@@ -147,8 +147,8 @@ Author: Alexander Mattheis
                         <!-- ko foreach: $root.output.alignments -->
                             <tr>
                                 <td class="entry entry_start selected">
-                                    <code data-bind="text: $data[0]"></code> <br>
-                                    <code data-bind="text: $data[1]"></code> <br>
+                                    <code data-bind="text: $data[0]"></code> <br />
+                                    <code data-bind="text: $data[1]"></code> <br />
                                     <code data-bind="text: $data[2]"></code>
                                 </td>
                             </tr>
@@ -175,7 +175,7 @@ Author: Alexander Mattheis
             <table class="calculation tracecells_table">
                 <thead>
                     <tr>
-                        <th><small><b>Trace-<br>cells</b></small></th>
+                        <th><small><b>Trace-<br />cells</b></small></th>
                         <th></th>
                         <!-- ko foreach: input.sequence2 -->
                             <th data-bind="drawChar: [$data, $index()+1]"></th>
@@ -210,7 +210,7 @@ Author: Alexander Mattheis
                 <thead>
                     <tr>
                         <th>
-                            Minima <br>
+                            Minima <br />
                             <small>
                                 The computed minima are marked blue.
                             </small>
@@ -249,7 +249,7 @@ Author: Alexander Mattheis
         <!-- ko foreach: $root.output.recursionNumbersContainer -->
             <div class="recursion">
                 <h3>Split <!-- ko foreach: $data --><span data-bind="text: $data"></span>.<!-- /ko --></h3>
-                <span class="trace_function" data-bind="text: $root.output.traceFunctions()[$index()]"></span> <br>
+                <span class="trace_function" data-bind="text: $root.output.traceFunctions()[$index()]"></span> <br />
 
                 <div class="matrices" data-bind="visible: $root.output.showMatrices">
                     <h4>Prefix Computation</h4>
@@ -370,7 +370,7 @@ Author: Alexander Mattheis
                                 <tr>
                                     <th>
                                         <small>
-                                            <b>Row:</b> <br>
+                                            <b>Row:</b> <br />
                                             i = <span data-bind="text: $root.output.currentGlobalRow()[$index()]"></span>
                                         </small>
                                     </th>
@@ -416,7 +416,7 @@ Author: Alexander Mattheis
                 </div>
             </div>
 
-            <br>
-            <br>
+            <br />
+            <br />
         <!-- /ko -->
 </div>
