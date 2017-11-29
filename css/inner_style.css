@@ -129,6 +129,7 @@ th {
 
 .column {
     display: inline-block;
+    text-align: left;
     width: 180px;
 }
 

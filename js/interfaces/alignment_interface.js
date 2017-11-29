@@ -13,7 +13,7 @@ Author: Alexander Mattheis
         imports, sharedInterfaceOperations, roundValues, getLaTeXTraceFunctions,
         getRowData, getColumnData, getMinimaData, getTwoRowsSubmatricesData,
         getLaTeXFormula, getDistanceTable, getDistanceTables, reorderGroupSequences,
-        getLibrariesData, sortWithClusterTuples, startProcessing);
+        getLibrariesData, removeNeutralSymbols, sortWithClusterTuples, startProcessing);
 
     // instances
     var alignmentInterfaceInstance;
@@ -41,6 +41,7 @@ Author: Alexander Mattheis
         this.getDistanceTables = getDistanceTables;
         this.reorderGroupSequences = reorderGroupSequences;
         this.getLibrariesData = getLibrariesData;
+        this.removeNeutralSymbols = removeNeutralSymbols;
         this.sortWithClusterTuples = sortWithClusterTuples;
         this.startProcessing = startProcessing;
     }
@@ -1120,6 +1121,8 @@ Author: Alexander Mattheis
     function createTcoffeeOutputViewmodel(algorithmName, viewmodel, outputData) {
         outputData.librariesData = getLibrariesData(outputData);
 
+        debugger;
+        removeNeutralSymbols(outputData);
         roundValues(algorithmName, outputData);
         alignmentInterfaceInstance.reorderGroupSequences(outputData);
 
@@ -1321,6 +1324,29 @@ Author: Alexander Mattheis
         clusterNumber = clusterNumber > 0 ? (clusterNumber - 1) : 0;  // see example above
 
         return clusterPosition + clusterNumber * CLUSTER_NAMES.length;
+    }
+
+    /**
+     * T-Coffee does not really needs a neutral symbol.
+     * It's just an implementation gimmick
+     * (to use same functions as in Feng-Doolittle and to avoid code duplicates).
+     * Because of this and to avoid confusion
+     * with the algorithm it is removed from all created groups (for simplicity).
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     */
+    function removeNeutralSymbols(outputData) {
+        var numJoinings =  outputData.firstGroups.length;
+
+        for (var i = 0; i < numJoinings; i++) {
+            for (var j = 0; j < outputData.firstGroups[i].length; j++)
+                outputData.firstGroups[i][j] = outputData.firstGroups[i][j].replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
+
+            for (var j = 0; j < outputData.secondGroups[i].length; j++)
+                outputData.secondGroups[i][j] = outputData.secondGroups[i][j].replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
+
+            for (var j = 0; j < outputData.joinedGroups[i].length; j++)
+                outputData.joinedGroups[i][j] = outputData.joinedGroups[i][j].replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
+        }
     }
 
     /**

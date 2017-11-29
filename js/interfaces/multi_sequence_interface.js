@@ -431,6 +431,7 @@ Author: Alexander Mattheis
     function changeTcoffeeOutput(outputData, viewmodels) {
         outputData.librariesData = alignmentInterfaceInstance.getLibrariesData(outputData);
 
+        alignmentInterfaceInstance.removeNeutralSymbols(outputData);
         alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
         alignmentInterfaceInstance.reorderGroupSequences(outputData);
 

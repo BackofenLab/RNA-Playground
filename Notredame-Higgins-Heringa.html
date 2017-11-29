@@ -46,7 +46,7 @@ Author: Alexander Mattheis
         \quad
 	    weight \big(\mathcal{A}(a,b) \big)
         = \frac {matches \big(\mathcal{A}(a,b) \big) \cdot 100}
-                {matches \big(\mathcal{A}(a,b) \big) + mismatches \big(\mathcal{A}(a,b) \big)}
+                {matches \big(\mathcal{A}(a,b) \big) + mismatches \big(\mathcal{A}(a,b) \big)} \text{.}
         $$
 
         Subsequently, the extended library $EL^{a,b}_{i,j}$ is calculated to gather consistency information, 
@@ -191,12 +191,12 @@ Author: Alexander Mattheis
         <h2 class="input_heading">Local Library Parameters</h2>
 
         <div class="row">
-            <div class="colW100"><label>Library Parameters:</label></div>
+            <div class="colW100"><label>Alignments:</label></div>
 
             <div class="colW400">
                 <div class="inner_row">
                     <div class="column">
-                        Total Number Alignments
+                        total number alignments
                     </div>
 
                     <div class="colW50">
@@ -207,12 +207,9 @@ Author: Alexander Mattheis
 
                  <div class="inner_row">
                      <div class="column">
-                         Alignments per sequence-pair
-                     </div>
-
-                     <div class="colW50">
-                         <input class="fx_parameter" data-bind="value: input.localAlignmentsPerSequencePair"
-                                id="local_alignments_per_sequence_pair" type="number">
+                         max. # <input class="fx_parameter" data-bind="value: input.localAlignmentsPerSequencePair"
+                                       id="local_alignments_per_sequence_pair" type="number">
+                         optimal alignment(s) per sequence pair
                      </div>
                 </div>
             </div>
