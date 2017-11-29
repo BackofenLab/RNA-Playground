@@ -10,7 +10,7 @@ Author: Alexander Mattheis
         <a href="http://dx.doi.org/10.1006/jmbi.2000.4042">C&eacute;dric Notredame, Desmond G. Higgins and Jaap Heringa</a>
         introduced 2000 an approach that
         allows a very accurate computation of multiple sequence alignments (MSA),
-        the Tree-based Consistency Objective Function for Alignment Evaluation (short: <em>T-coffee</em>).
+        the Tree-based Consistency Objective Function for AlignmEnt Evaluation (short: <em>T-coffee</em>).
         It's a tree-based approach,
         because it uses a progressive alignment strategy
         under a consistency-based function
@@ -21,7 +21,7 @@ Author: Alexander Mattheis
 	    set of input sequences $\mathbb{S}$,
         but rather on an arbitrary large pool of pairwise alignments on $\mathbb{S}$ from
 	    which a position specific scoring function is derived.
-        This, so called extended library $EL^{a,b}_{i,j}$ provides for each
+        This so called extended library $EL^{a,b}_{i,j}$ provides for each
         pair of sequences $a,b \in \mathbb{S}$ and respective positions $i,j$ a score.
         <br>
         <br>
@@ -31,12 +31,12 @@ Author: Alexander Mattheis
 	    weighted by the 'accuracy' of the respective alignments $\mathcal{A}(a,b)$
         based on sequence identity:
 
-        $$
-        \quad 
-        L^{a,b}_{i,j} =
-        \begin{cases}
-            weight \big(\mathcal{A}(a,b) \big)  & \text{if } \binom{a_i}{b_j} \in \mathcal{A}(a,b)\\
-            0 & \text{else}
+          $$
+        \quad
+        L^{a,b}_{i,j} = \sum_{\mathcal{A}(a,b)}\begin{cases}
+        weight \big(\mathcal{A}(a,b) \big)
+        & \text{if } \binom{a_i}{b_j} \in \mathcal{A}(a,b)\\
+        0 & \text{else}
         \end{cases}
         $$
 

@@ -28,7 +28,7 @@ Author: Alexander Mattheis
         changes needed to transfer one subsequence into the other.
         The dynamic programming approach tabularizes optimal subsolutions in matrix $S$,
         where an entry $S_{i,j}$ represents the maximal similarity score for any local alignment of the 
-        (sub)prefixes $a_{y..i}$ with $b_{x..j}$, where $x,y>0$ are so far unknown
+        (sub)prefixes $a_{x..i}$ with $b_{y..j}$, where $x,y>0$ are so far unknown
         and have to be identified via traceback.
         The according recursions are shown below. 
         Note, consecutive gap (insertions/deletions) scoring is done linearly.
