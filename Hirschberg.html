@@ -10,48 +10,49 @@ Author: Alexander Mattheis
         <a href="https://dl.acm.org/citation.cfm?doid=360825.360861">Daniel S. Hirschberg</a>
         introduced 1975 (submitted 1974) an approach to compute the longest common subsequence of two strings.
         This approach can be adapted to compute the global alignment of two sequences
-        in quadratic time $O(nm)$ and only linear space, instead of quadratic space like in the former
-        <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a> algorithm.
+        in quadratic time $O(nm)$ and only linear space, instead of quadratic space like in the original
+        <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch">Needleman-Wunsch (1970)</a> algorithm.
+        While it offers the optimal alignment <em>score</em> without changing the runtime,
+        additional efforts are needed to traceback an according alignment, since
+        the needed data was not stored.
         The idea is that the tracebacks you get from a prefix- and a suffix-alignment are congruent
         i.e. the traceback-cells are the same.
-        Because of this, row $i$ of the prefix dynamic programming matrix (DPM) $D$
-        and row $i$ of the suffix DPM $D'$ (assuming same coordinate system)
-        can be added to identify a traceback-cell as the minimum.
-
-        <br>
-        <br>
-
-        To do the calculation in linear time,
-        the minima have to be computed first for the middle row $i = \lfloor n/2 \rfloor$, where $n = |a|$
-        and then you have to split the matrix sequences at the first minimum-position $(i,j)$
-        and compute in the resulting upper matrix $DPM(a_1, .., a_i | b_1, .., b_j)$
-        and in the resulting lower matrix $DPM(a_{i+1}, .., a_n | b_{j+1}, .., b_m)$ the minima in its middle rows again
-        (character positions are like in the prefix DPM), where $m = |b|$ and $a, \, b$ are sequences. <br />
-        This splitting has to be done recursively until $n \leq 1$ or $m = 0$.
-        The algorithm works always only with two rows of the DPM
-        and reuse the last computed row, to calculate the next row
-        until the middle row is computed with the suffix and the prefix approach.
-        These two middle rows (one from prefix alignment and one from suffix alignment)
-        are then added together and thereby the traceback-cells become identifiable
-        as the minima. Important at this point is that the lower and upper matrices
-        rows have to be recalculated for the given, cutted input sequences of $a$ and $b$, because Hirschberg
-        does not store the full matrix.
+        Because of this, rows $i$ of the prefix dynamic programming matrix  $D$
+        and the suffix matrix $D'$ (when using same coordinate system, see recursions)
+        can be added to identify the row's cell that is passed by an optimal traceback.
 
         <br />
         <br />
 
-        Our implementation only stores the most left traceback-cell in the row to use less space,
-        but the path is nevertheless reconstructable. The last row minimum is computed separately
-        from this recursive approach.
-        For the given input, the
-        <ul>
-            <li>recursions</li>
-            <li>computed tracecell matrix</li>
-            <li>final alignment and traceback</li>
-        </ul>
-        are simulated with the help of the
-        <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch">Needleman-Wunsch</a>
-        algorithm and represented reversed order below. <br />
+        In detail, to enable traceback calculation in quadratic time a divide-and-conquer
+        strategy is applied. Here, we want to identify where the traceback "passes
+        through" the center row of the matrix.
+        To this end, first the middle row $i = \lfloor n/2 \rfloor$, where $n = |a|$
+        has to be computed for both matrices $D$ and $D'$. Given that $D_{i,j}$
+        holds the best prefix score up to and including $a_i,b_j$ and $D'_{i,j}$
+        provides the same for the suffixes starting in $a_{i+1},b_{j+1}$, the 
+        optimal overall alignment score can be found as the summation of some column $j$,
+        i.e. $\exists_{j} : D_{n,m} = D_{i,j}+D'_{i,j} = D'_{0,0}$.
+        This position $j$ provides a decomposition of the traceback problem into
+        the respective prefix and suffix strings for which the procedure is iterated
+        until (a) one of the substrings is empty or (b) only $a_n$ or $b_j$ is left, respectively.
+
+        <br />
+        <br />
+
+        In the following, only the leftmost optimal traceback-cell per row is identified. Note,
+        the introduced algorithm does not identify <em>all</em> traceback-cells.
+        Missing horizontal traceback-steps (within a row) have to be identified 
+        in an additional postprocessing.
+		In the following, we provide the series of the computed rows from the
+		$D$ and $D'$ matrix (optionally along with the computation details) and
+		the respective traceback subproblems, i.e. the according subsequences.
+		For each row $i$, the identified traceback-cell $j$ is highlighted.
+		Furthermore, we visualize all identified cells within a full matrix
+		representation along with a final complete traceback path and alignment.
+        <br />
+        <br />
+
     </div>
 
     <div class="picture">
@@ -85,7 +86,7 @@ Author: Alexander Mattheis
 
 			 <div class="group_hint">
 				<b>Hint:</b> <br />
-				For distance minimization, <br /> match scores should be negative and all other scores higher.
+				For distance minimization, match scores should be smaller than all other scores.
 			</div>
 		</div>
 	</div>
@@ -95,7 +96,7 @@ Author: Alexander Mattheis
             <label>
                 <br />
                 <br />
-                Recursion:
+                Recursions:
             </label>
         </div>
 
@@ -104,18 +105,16 @@ Author: Alexander Mattheis
             <br />
             <br />
             <span data-bind="text: $root.input.formulaBackward"></span>
-            <div class="group_hint">
-				<b>Hint:</b> <br />
-				The suffix scoring-function $s$ depends on the position of the sequence chars within the DPM. <br>
-                Sometimes $s(a_{i+1}, b_{j+1})$ is written, if the chars are at the same position like in the
-                in prefix computation DPM.
-			</div>
 		</div>
 	</div>
 </div>
 
 <h1>Output</h1>
 <div id="algorithm_output">
+    <div class="row">
+	Visualization of the final traceback path and the according optimal
+	alignment.
+	</div>
     <div class="output">
         <div class="main_output">
             <table class="calculation trace_table">
@@ -156,9 +155,9 @@ Author: Alexander Mattheis
                 <thead>
 					<tr>
 						<th>
-							Result <br />
+							Final alignment <br />
                             <small>
-                                The result for which the traceback was computed is marked blue.
+                                The alignment for which the traceback was computed is marked blue.
                             </small>
 						</th>
 					</tr>
@@ -193,13 +192,13 @@ Author: Alexander Mattheis
         </div>
     </div>
 
-    <h2>Computed Tracecells</h2>
+    <h2>Computed Traceback-cells</h2>
     <div class="output">
         <div class="main_output">
             <table class="calculation tracecells_table">
                 <thead>
                     <tr>
-                        <th><small><b>Trace-<br />cells</b></small></th>
+                        <th><small><b>Traced<br />cells</b></small></th>
                         <th></th>
                         <!-- ko foreach: input.sequence2 -->
                             <th data-bind="drawChar: [$data, undefined]"></th>
@@ -234,9 +233,11 @@ Author: Alexander Mattheis
                 <thead>
                     <tr>
                         <th>
-                            Minima <br />
+                            Cells with min. sum <br />
                             <small>
                                 The computed minima are marked blue.
+                                Red marks the traceback end, green
+                                marks the traceback start.
                             </small>
                         </th>
                     </tr>
@@ -290,14 +291,16 @@ Author: Alexander Mattheis
 
                                         <!-- ko foreach: $root.output.secondSequences()[$parentContext.$index()] -->
                                             <th>
-                                                <sub><span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
+                                            	<span data-bind="text: $data"></span><sub><span
+                                            		data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
                                             </th>
                                         <!-- /ko -->
                                     </tr>
 
                                     <tr>
                                         <th>
-                                            <sub><span data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span></sub>
+                                        	<span data-bind="text: $root.output.prefixTwoRowsCharacters()[$parentContext.$index()][$index()][0]"></span><sub><span 
+                                        		data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span></sub>
                                         </th>
 
                                         <!-- ko foreach: $data[0] -->
@@ -307,7 +310,8 @@ Author: Alexander Mattheis
 
                                     <tr>
                                         <th>
-                                            <sub><span data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span></sub>
+                                        	<span data-bind="text: $root.output.prefixTwoRowsCharacters()[$parentContext.$index()][$index()][1]"></span><sub><span 
+                                        		data-bind="text: $root.output.prefixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span></sub>
                                         </th>
 
                                         <!-- ko if: $index() < $root.output.prefixTwoRowsMatrices()[$parentContext.$index()].length - 1 -->
@@ -327,7 +331,7 @@ Author: Alexander Mattheis
                         </div>
                     <!-- /ko -->
 
-                    <h4>Suffix Computation</h4>
+                    <h4>Suffix Computation <small>(Note, row numbers <b>i</b> refer to the full-length Needleman-Wunsch matrix)</small></h4>
                     <!-- ko foreach: $root.output.suffixTwoRowsMatrices()[$index()] -->
                         <div class="main_output extra_large">
                             <table class="calculation">
@@ -337,18 +341,19 @@ Author: Alexander Mattheis
                                             <span data-bind="text: $root.output.matrixDPrimeLatex"></span>
                                         </th>
 
-                                        <th></th>
-
                                         <!-- ko foreach: $root.output.secondSequences()[$parentContext.$index()] -->
                                             <th>
-                                                <sub><span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
+                                            	<span data-bind="text: $data"></span><sub><span 
+                                            		data-bind="text: $root.output.secondSequencePositions()[$parentContext.$parentContext.$index()][$index()]"></span></sub>
                                             </th>
                                         <!-- /ko -->
+
+                                        <th></th>
                                     </tr>
 
                                     <tr>
                                         <th>
-                                            <sub><span data-bind="text: $root.output.suffixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span></sub>
+                                        	i=<span data-bind="text: $root.output.suffixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][0]"></span>
                                         </th>
 
                                         <!-- ko if: $index() < $root.output.suffixTwoRowsMatrices()[$parentContext.$index()].length - 1 -->
@@ -366,7 +371,7 @@ Author: Alexander Mattheis
 
                                     <tr>
                                         <th>
-                                            <sub><span data-bind="text: $root.output.suffixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span></sub>
+                                            i=<span data-bind="text: $root.output.suffixTwoRowsCharactersPositions()[$parentContext.$index()][$index()][1]"></span>
                                         </th>
 
                                         <!-- ko foreach: $data[1] -->
@@ -380,7 +385,7 @@ Author: Alexander Mattheis
 
                 </div>
 
-                 <h4>Addition</h4>
+                 <h4>Addition <small>(Note, row numbers <b>i</b> refer to the full-length Needleman-Wunsch matrix)</small></h4>
                 <div class="output">
                     <div class="main_output extra_large">
                         <table class="calculation">
@@ -397,7 +402,10 @@ Author: Alexander Mattheis
 
                                     <!-- ko foreach: $root.output.secondSequences()[$index()] -->
                                         <th>
-                                            <sub><span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$index()][$index()]"></span></sub>
+                                             <span data-bind="text: ($index()+1)"></span>
+<!-- 
+                                             <span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$index()][$index()]"></span>
+ -->
                                         </th>
                                     <!-- /ko -->
                                 </tr>

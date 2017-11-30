@@ -169,7 +169,7 @@ var LATEX = {
         D_PRIME_UNDERSCORE: "D'_",
         DELETION: "b_j = -",
         DIAGONAL: "D_{i-1,j-1}",
-        DPM: "DPM",
+        DPM: "\\text{Trace}",
         I_IS: "i = ",
         I_MINUS_ONE: /i-1/g,
         I_PLUS_ONE: "i+1",
