@@ -39,6 +39,7 @@ var SMITH_WATERMAN_STOP = "0";
  * Stores the implemented algorithm names.
  */
 var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript names without extension)
+    AGGLOMERATIVE_CLUSTERING: "agglomerative_clustering",
 	ARSLAN_EGECIOGLU_PEVZNER: "arslan_egecioglu_pevzner",
     FENG_DOOLITTLE: "feng_doolittle",
     GOTOH: "gotoh",

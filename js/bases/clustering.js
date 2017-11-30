@@ -20,7 +20,7 @@ Author: Alexander Mattheis
     var outputData = {};  // stores the output of the algorithm
 
     /**
-     * Contains functions to compute (hierarchical) agglomerative clustering.
+     * Contains functions to compute a clustering (at the moment only hierarchical agglomerative clustering).
      * It is used by agglomerative clustering algorithms as superclass
      * to avoid code duplicates.
      * @constructor
