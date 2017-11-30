@@ -46,8 +46,12 @@ Hint:   Some algorithms, structures and formats:
 	    <script type="text/javascript" src="js/libs/raphael-min.js"></script> <!-- SVG-rendering library -->
 	    <script type="text/javascript" src="js/libs/jsphylosvg.js"></script> <!-- to draw phylogenetic trees -->
 
-         <!-- IO -->
-        <script src="js/interfaces/alignment_interface.js"></script> <!-- stores viewmodels and interface functions of alignment algorithms -->
+        <!-- IO -->
+        <script src="js/interfaces/interface.js"></script> <!-- superclass for all interfaces -->
+
+        <script src="js/interfaces/alignment_interface.js"></script> <!-- superclass for all interfaces of alignment algorithms -->
+        <script src="js/interfaces/clustering_interface.js"></script> <!-- superclass for all interfaces of clustering algorithms -->
+
         <script src="js/interfaces/linear_alignment_interface.js"></script> <!-- stores viewmodels and interface functions of linear alignment algorithms -->
         <script src="js/interfaces/multi_sequence_interface.js"></script> <!-- stores viewmodels and interface functions of multi-sequence algorithms -->
         <script src="js/interfaces/subadditive_alignment_interface.js"></script> <!-- stores viewmodels and interface functions of subadditive alignment algorithms -->

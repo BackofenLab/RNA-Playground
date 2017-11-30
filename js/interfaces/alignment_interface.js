@@ -9,14 +9,14 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.alignmentInterface", AlignmentInterface,
-        imports, sharedInterfaceOperations, roundValues, getLaTeXTraceFunctions,
-        getRowData, getColumnData, getMinimaData, getTwoRowsSubmatricesData,
-        getLaTeXFormula, getDistanceTable, getDistanceTables, reorderGroupSequences,
-        getLibrariesData, removeNeutralSymbols, sortWithClusterTuples, startProcessing);
+    namespace("interfaces.alignmentInterface", AlignmentInterface, sharedInterfaceOperations,
+        roundValues, getLaTeXTraceFunctions, getRowData, getColumnData, getMinimaData, getTwoRowsSubmatricesData,
+        getLaTeXFormula, getDistanceTable, getDistanceTables, reorderGroupSequences, getLibrariesData,
+        removeNeutralSymbols, sortWithClusterTuples);
 
     // instances
     var alignmentInterfaceInstance;
+    var interfaceInstance;
 
     /**
      * Is used to work with the input and output (the interface) of an alignment algorithm.
@@ -27,8 +27,13 @@ Author: Alexander Mattheis
     function AlignmentInterface() {
         alignmentInterfaceInstance = this;
 
+        // inheritance
+        interfaceInstance = new interfaces.interface.Interface();
+
+        this.imports = interfaceInstance.imports;
+        this.startProcessing = interfaceInstance.startProcessing;
+
         // public class methods
-        this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
         this.roundValues = roundValues;
         this.getLaTeXTraceFunctions = getLaTeXTraceFunctions;
@@ -43,24 +48,6 @@ Author: Alexander Mattheis
         this.getLibrariesData = getLibrariesData;
         this.removeNeutralSymbols = removeNeutralSymbols;
         this.sortWithClusterTuples = sortWithClusterTuples;
-        this.startProcessing = startProcessing;
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        // third party libs
-        $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // to interpret static LaTeX code (Hirschberg algorithm)
-
-        // design/controls logic
-        /*
-        This two imports are very important!
-        Without an import the classes are not reinitialized correctly for the next algorithm!
-         */
-        $.getScript(PATHS.INPUT_PROCESSOR);
-        $.getScript(PATHS.VISUALIZER);
     }
 
     /**
@@ -69,53 +56,10 @@ Author: Alexander Mattheis
      * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
      * @param processInput {Function} - Function from the algorithm which should process the input.
      * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
+     * @augments Interface.sharedInterfaceOperations(..)
      */
     function sharedInterfaceOperations(Algorithm, inputViewmodel, processInput, changeOutput) {
-        var visualViewmodel = new postProcessing.visualizer.Visualizer();
-
-        var algorithm = new Algorithm();
-        var inputProcessor = new postProcessing.inputProcessor.InputProcessor();
-        processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel);
-        var outputViewmodel = new OutputViewmodel(algorithm.type,
-            edit(algorithm.type, inputProcessor, algorithm.getOutput(), visualViewmodel));
-
-        var viewmodels = {
-            input: inputViewmodel,
-            visual: visualViewmodel,
-            output: outputViewmodel
-        };
-
-        inputProcessor.linkElements(algorithm, viewmodels, processInput, changeOutput);
-        executeAlgorithmInterfaceCode(algorithm, viewmodels);
-
-        ko.applyBindings(viewmodels, document.getElementById("algorithm_view"));
-    }
-
-    /**
-     * Post edits a matrix and replaces for example values with LaTeX-symbols.
-     * @param algorithmName {string} - The name of the algorithm which is executed.
-     * @param inputProcessor {Object} - The unit processing the input.
-     * @param outputData {Object} - Contains all output data.
-     * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
-     * @return outputData {Object} - Changed output data.
-     */
-    function edit(algorithmName, inputProcessor, outputData, visualViewmodel) {
-        if (algorithmName === ALGORITHMS.GOTOH || algorithmName === ALGORITHMS.GOTOH_LOCAL) {
-            outputData.horizontalGaps = inputProcessor.postEdit(outputData.horizontalGaps, visualViewmodel);
-            outputData.verticalGaps = inputProcessor.postEdit(outputData.verticalGaps, visualViewmodel);
-        }
-
-        return outputData;
-    }
-
-    /**
-     * Executes code for specific algorithm interfaces.
-     * @param algorithm {Object} - The algorithm for which interface specific code is executed.
-     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
-     */
-    function executeAlgorithmInterfaceCode(algorithm, viewmodels) {
-        if (algorithm.type === ALGORITHMS.FENG_DOOLITTLE || algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)
-            viewmodels.visual.drawTree();
+        interfaceInstance.sharedInterfaceOperations(Algorithm, inputViewmodel, OutputViewmodel, processInput, changeOutput);
     }
 
     /*---- OUTPUT ----*/
@@ -374,7 +318,6 @@ Author: Alexander Mattheis
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
     function createHirschbergOutputViewmodel(viewmodel, outputData) {
-        debugger;
         var traceFunctionsData = getLaTeXTraceFunctions(outputData);
         var rowData = getRowData(outputData);
         var columnData = getColumnData(outputData);
@@ -1347,19 +1290,5 @@ Author: Alexander Mattheis
             for (var j = 0; j < outputData.joinedGroups[i].length; j++)
                 outputData.joinedGroups[i][j] = outputData.joinedGroups[i][j].replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
         }
-    }
-
-    /**
-     * Start processing the input from the user by computing the algorithm output.
-     * @param algorithm {Object} - Algorithm used to update the user interface.
-     * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
-     * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
-     */
-    function startProcessing(algorithm, inputViewmodel, visualViewmodel) {
-        algorithm.setInput(inputViewmodel);
-        var ioData = algorithm.compute();
-
-        // deep copy of the output before rounding to avoid information loss
-        visualViewmodel.shareInformation(algorithm, ioData[0], jQuery.extend(true, {}, ioData[1]));
     }
 }());

@@ -194,7 +194,7 @@ Author: Alexander Mattheis
 			// apply index shift by +1 for both sequences
 			string = string.replace(/a_i/g, "a_{i+1}").replace(/b_j/g, "b_{j+1}");
 			// add initialization information
-			string = string.replace(LATEX.MATH_REGION,LATEX.MATH_REGION+"\\begin{array}{l}");
+			string = string.replace(LATEX.MATH_REGION, LATEX.MATH_REGION +"\\begin{array}{l}");
 			string += "\\\\" + LATEX.FORMULA.D_PRIME_UNDERSCORE+"{n,m} = 0";
 			string += ", \\quad "+LATEX.FORMULA.D_PRIME_UNDERSCORE+"{n,j} = (m-j)\\gamma";
 			string += ", \\quad "+LATEX.FORMULA.D_PRIME_UNDERSCORE+"{i,m} = (n-i)\\gamma";
