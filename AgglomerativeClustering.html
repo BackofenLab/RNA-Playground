@@ -24,29 +24,40 @@ Author: Alexander Mattheis
             </li>
         </ul>
 
-        The principle is always the same,
-        you have a given a matrix of pairwise evolutionary distances between singleton clusters
-        (containing only one element)
+        And there exists many approaches and all of them have advantages and disadvantages.
+        For example UPGMA (or WPGMA) is very accurate.
+        It computes the average distance between all elements in the cluster,
+        when the distance to a cluster is recomputed.
+        Where as neighbour-joining is less accurate,
+        but faster - it looks only at the minimum distance during recomputations.
+
+        <br>
+        <br>
+
+        The principle of all agglomerative (bottom-up) approaches is always the same,
+        in the beginning you have given a matrix of pairwise evolutionary distances
+        between singleton clusters (containing only one element)
         and in this matrix you search for the entry with the lowest value $d_{min} = d_{i,j}$
         (where $i \neq j$). You merge the clusters $i$ and $j$ to a new cluster $ij = i \cup j$
-        and recompute the distances to the new cluster $ij = i \cup j$ with some distance formula $dist$
-        given with the approach.
+        and recompute the distances to the remaining clusters with some distance formula $dist$
+        given with the respective approach.
+        Afterwards the distance between $i,j$ and the merged cluster $ij$
+        in the tree is set to $\frac{d_{min}}{2}$.
+        These stated steps are iterated for $N - 1$ rounds,
+        where $N$ is number of input singleton clusters.
 
         <br>
         <br>
 
         For the given input, the
         <ul>
-            <li>recursions</li>
-            <li>computed tracecell matrix</li>
-            <li>final alignment and traceback</li>
+            <li>changing distance matrices</li>
+            <li>phylogenetic tree</li>
         </ul>
-        are simulated with the help of the
-        <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch">Needleman-Wunsch</a>
-        algorithm and represented reversed order below. <br />
+        are computed and displayed in reversed order.
     </div>
 
     <div class="picture">
-        <img src="Clustering-Algorithms-120x90.png" />
+        <img src="AgglomerativeClustering-120x90.png" />
     </div>
 </div>
