@@ -1,0 +1,55 @@
+<!--
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Author: Alexander Mattheis
+-->
+
+<div id="algorithm_description">
+    <div class="description">
+        Different hierarchical clustering algorithms were proposed to compute phylogenetic trees
+        from evolutionary distances:
+        <ul>
+            <li>
+                UPGMA (average linkage) by
+                <a href="https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902">Robert R. Sokal and Charles D. Michener (1958)</a>
+            </li>
+            <li>
+                WPGMA (simple average) by
+                <a href="http://journals.sagepub.com/doi/abs/10.1177/001316446602600201">Louis L. McQuitty (1967)</a>
+            </li>
+            <li>
+                neighbour-joining (single linkage) by
+                <a href="https://doi.org/10.1093/oxfordjournals.molbev.a040454">Naruya Saitou and Masatoshi Nei (1987)</a>
+            </li>
+        </ul>
+
+        The principle is always the same,
+        you have a given a matrix of pairwise evolutionary distances between singleton clusters
+        (containing only one element)
+        and in this matrix you search for the entry with the lowest value $d_{min} = d_{i,j}$
+        (where $i \neq j$). You merge the clusters $i$ and $j$ to a new cluster $ij = i \cup j$
+        and recompute the distances to the new cluster $ij = i \cup j$ with some distance formula $dist$
+        given with the approach.
+
+        <br>
+        <br>
+
+        Our implementation only stores the most left traceback-cell in the row to use less space,
+        but the path is nevertheless reconstructable. The last row minimum is computed separately
+        from this recursive approach.
+        For the given input, the
+        <ul>
+            <li>recursions</li>
+            <li>computed tracecell matrix</li>
+            <li>final alignment and traceback</li>
+        </ul>
+        are simulated with the help of the
+        <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch">Needleman-Wunsch</a>
+        algorithm and represented reversed order below. <br />
+    </div>
+
+    <div class="picture">
+        <img src="Clustering-Algorithms-120x90.png" />
+    </div>
+</div>
