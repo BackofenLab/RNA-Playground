@@ -18,8 +18,7 @@ Author: Alexander Mattheis
     var visualizerInstance;
 
     /**
-     * Contains functions for visualization
-     * and helper functions which easify the access on information.
+     * Contains functions for visualization and creation of downloadable files.
      * @constructor
      */
     function Visualizer() {
@@ -720,34 +719,8 @@ Author: Alexander Mattheis
         string += SYMBOLS.COMMA + upperString.split(SYMBOLS.EMPTY).toString() + SYMBOLS.NEW_LINE;
 
         // compute CSV
-        for (var i = 0; i < matrix.length; i++) {
-            if (i === 0)
-                string += SYMBOLS.COMMA;
-            else
-                string += leftString.charAt(i-1) + SYMBOLS.COMMA;
-
-            string += round(matrix[i]) + SYMBOLS.NEW_LINE;  // Hint: it is allowed to have a line break in the last line
-        }
-
+        string += formats.csvParser.getCSVData(matrix, leftString);
         return string;
-    }
-
-    /**
-     * Rounds values to four decimal places if it is possible.
-     * @param row {number} - The row of which values are rounded.
-     * @return {Array} - Row with rounded values and original values.
-     */
-    function round(row) {
-        var matrixRow = [];
-
-        for (var i = 0; i < row.length; i++) {
-            if (typeof row[i] === "number")
-                matrixRow.push(Math.round(row[i]*10000)/10000);
-            else
-                matrixRow.push(row[i]);
-        }
-
-        return matrixRow;
     }
 
     /**

@@ -46,11 +46,13 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript
     GOTOH_LOCAL: "gotoh_local",
     HIRSCHBERG: "hirschberg",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
+    NEIGHBOUR_JOINING: "neighbour_joining",
     NONE: "none",
     NOTREDAME_HIGGINS_HERINGA: "notredame_higgins_heringa",
     SMITH_WATERMAN: "smith_waterman",
     UPGMA: "upgma",
-    WATERMAN_SMITH_BEYER: "waterman_smith_beyer"
+    WATERMAN_SMITH_BEYER: "waterman_smith_beyer",
+    WPGMA: "wpgma"
 };
 
 /**
@@ -104,6 +106,20 @@ var CHARACTER = {
     NON_BASES: /[^a-zA-Z-]+/g,  // g to replace globally
     NUMBER: /[0-9]/,
     NUMBERS: /[-+]?[0-9]+\.[0-9]*/
+};
+
+/**
+ * Stores the default parameters for clustering algorithms.
+ */
+var AGGLOMERATIVE_CLUSTERING_DEFAULTS = {
+    APPROACHES: ["Neighbour Joining", "Unweighted PGMA", "Weighted PGMA"],
+    CSV_TABLE:  /* input from lecture */
+    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
+    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
+    "   ;    ;  0 ;  2 ;  6" + "\n" +
+    "   ;    ;    ;  0 ;  6" + "\n" +
+    "   ;    ;    ;    ;  0" ,
+    STANDARD_APPROACH: ["Unweighted PGMA"]
 };
 
 /**
@@ -317,7 +333,7 @@ var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
     GLOBAL_ALIGNMENTS_PER_SEQUENCE: 1,
     LOCAL_ALIGNMENTS_PER_SEQUENCE: 2,
 
-    SEQUENCES: [
+    SEQUENCES: [ /* input from T-Coffee paper */
         "GARFIELD-THE-LAST-FAT-CAT",
         "GARFIELD-THE-FAST-CAT",
         "GARFIELD-THE-VERY-FAST-CAT",

@@ -11,28 +11,28 @@ Author: Alexander Mattheis
         from evolutionary distances:
         <ul>
             <li>
-                UPGMA (average linkage) by
+                Unweighted Pair Group Method with Arithmetic Mean (average linkage) by <br />
                 <a href="https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902">Robert R. Sokal and Charles D. Michener (1958)</a>
             </li>
             <li>
-                WPGMA (simple average) by
+                Weighted Pair Group Method with Arithmetic Mean (simple average) by
                 <a href="http://journals.sagepub.com/doi/abs/10.1177/001316446602600201">Louis L. McQuitty (1967)</a>
             </li>
             <li>
-                neighbour-joining (single linkage) by
+                Neighbour-Joining (single linkage) by
                 <a href="https://doi.org/10.1093/oxfordjournals.molbev.a040454">Naruya Saitou and Masatoshi Nei (1987)</a>
             </li>
         </ul>
 
         And there exists many approaches and all of them have advantages and disadvantages.
-        For example UPGMA (or WPGMA) is very accurate.
+        For example Unweighted PGMA (or Weighted PGMA) is very accurate in computing distance between clusters.
         It computes the average distance between all elements in the cluster,
         when the distance to a cluster is recomputed.
-        Where as neighbour-joining is less accurate,
+        Where as Neighbour-Joining is less accurate,
         but faster - it looks only at the minimum distance during recomputations.
 
-        <br>
-        <br>
+        <br />
+        <br />
 
         The principle of all agglomerative (bottom-up) approaches is always the same,
         in the beginning you have given a matrix of pairwise evolutionary distances
@@ -46,18 +46,36 @@ Author: Alexander Mattheis
         These stated steps are iterated for $N - 1$ rounds,
         where $N$ is number of input singleton clusters.
 
-        <br>
-        <br>
+        <br />
+        <br />
 
         For the given input, the
         <ul>
             <li>changing distance matrices</li>
             <li>phylogenetic tree</li>
         </ul>
-        are computed and displayed in reversed order.
+        are computed and displayed.
     </div>
 
     <div class="picture">
         <img src="AgglomerativeClustering-120x90.png" />
     </div>
+</div>
+
+<div id="algorithm_input">
+    <div class="row">
+		<div class="colW100"><label>Approach:</label></div>
+
+		<div class="colW400">
+            <select class="selector" data-bind="options: input.availableApproaches, selectedOptions: input.selectedApproach"></select>
+        </div>
+	</div>
+
+    <div class="row">
+		<div class="colW100"><label>CSV-Data:</label></div>
+
+		<div class="colW400">
+            <textarea class="csv_data" data-bind="text: input.csvTable"></textarea>
+        </div>
+	</div>
 </div>

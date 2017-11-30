@@ -16,12 +16,11 @@ Author: Alexander Mattheis
     var inputProcessorInstance;
 
     /**
-     * Does all the post-processing
-     * like removing/updating wrong inputs.
-     * It defines how different
-     * input types behave and
-     * it is also used for forwarding input
+     * Does the forwarding of input
      * to the algorithms and the visualizer.
+     * In this connection, it post processes the input
+     * by removing/updating wrong inputs
+     * to the correct value.
      */
     function InputProcessor() {
         inputProcessorInstance = this;
@@ -67,7 +66,6 @@ Author: Alexander Mattheis
 
         var mainOutput = $(".main_output");  // output containing the calculation tables
         var calculationTable = mainOutput.find(".calculation");
-        var traceTable = mainOutput.find(".trace_table");
         var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
         var calculationVerticalTable = mainOutput.find(".calculation_vertical");
 

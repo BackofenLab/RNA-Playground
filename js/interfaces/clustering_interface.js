@@ -14,6 +14,7 @@ Author: Alexander Mattheis
     // instances
     var clusteringInterfaceInstance;
     var interfaceInstance;
+    var parserInstance;
 
     /**
      * Is used to work with the input and output (the interface) of an alignment algorithm.
@@ -53,9 +54,48 @@ Author: Alexander Mattheis
      * @constructor
      */
     function InputViewmodel(algorithmName) {
+        var viewmodel = this;
+
+        this.availableApproaches = ko.observableArray(AGGLOMERATIVE_CLUSTERING_DEFAULTS.APPROACHES);
+        this.selectedApproach = ko.observableArray(AGGLOMERATIVE_CLUSTERING_DEFAULTS.STANDARD_APPROACH);
+
+        this.csvTable = ko.observable(AGGLOMERATIVE_CLUSTERING_DEFAULTS.CSV_TABLE);
+
+        this.errorInput = ko.computed(function () {
+            return checkInput(viewmodel.csvTable());
+        });
+
+        this.distanceMatrix = ko.computed(function () {
+           return getDistanceMatrix(viewmodel.errorInput() === SYMBOLS.EMPTY, viewmodel.csvTable());
+        });
+
         setTimeout(function () {
             MathJax.Hub.Queue(["Typeset", MathJax.Hub])
         }, REUPDATE_TIMEOUT_MS);
+    }
+
+    /**
+     * Checks with the help of a CSV-parser, 
+     * if the input is correct or not and returns the error output.
+     * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
+     */
+    function checkInput(csvData) {
+    }
+
+    /**
+     * Returns the distance matrix object created by a CSV-parser.
+     * @param isCorrectData {boolean} - If false, it returns an empty object and else the distance matrix object.
+     * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
+     * @return {Object} - The distance matrix.
+     */
+    function getDistanceMatrix(isCorrectData, csvData) {
+        var distanceMatrix = {};
+
+        if (isCorrectData) {
+            // get data from parser
+        }
+
+        return distanceMatrix;
     }
 
     /**

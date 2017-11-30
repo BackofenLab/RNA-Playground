@@ -47,11 +47,12 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Sets the input data of the algorithm.
-     * @return {Object} - Contains all input data.
+     * Sets the algorithm input for an appropriate algorithm
+     * which is using the inputViewmodel properties in its computations.
+     * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
-    function setInput(input) {
-        inputData = input;
+    function setInput(inputViewmodel) {
+        //inputData.clusteringSubalgorithm = inputViewmodel.clusteringSubalgorithm();
     }
 
     /**

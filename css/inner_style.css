@@ -133,6 +133,13 @@ th {
     width: 180px;
 }
 
+.csv_data {
+    height: 97px;
+    width: 194px;
+    overflow: auto;
+    resize: none;
+}
+
 .distances td, .distances th {
     max-width: none !important;
 }
@@ -472,6 +479,10 @@ th {
 .selected_very_light_red {
     background-color: #FFEFEC;
     color: white;
+}
+
+.selector {
+    width: 200px;
 }
 
 .sequence {
