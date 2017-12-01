@@ -19,7 +19,6 @@ Author: Alexander Mattheis
 // constants
 var END_SO_ON = ".."
 var EPSILON = 0.000000001;  // some very low number to test against
-var ERROR_WRONG_NUMBER_OF_COLUMNS = "wrong number of columns in row: ";
 
 var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant
 
@@ -37,6 +36,20 @@ var SMITH_WATERMAN_STOP = "0";
 
 // structs
 /**
+ * Stores the default parameters for clustering algorithms.
+ */
+var AGGLOMERATIVE_CLUSTERING_DEFAULTS = {
+    APPROACHES: ["Neighbour Joining", "Unweighted PGMA", "Weighted PGMA"],
+    CSV_TABLE:  /* input from lecture */
+    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
+    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
+    "   ;    ;  0 ;  2 ;  6" + "\n" +
+    "   ;    ;    ;  0 ;  6" + "\n" +
+    "   ;    ;    ;    ;  0" ,
+    STANDARD_APPROACH: ["Unweighted PGMA"]
+};
+
+/**
  * Stores the implemented algorithm names.
  */
 var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript names without extension)
@@ -47,13 +60,10 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript
     GOTOH_LOCAL: "gotoh_local",
     HIRSCHBERG: "hirschberg",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
-    NEIGHBOUR_JOINING: "neighbour_joining",
     NONE: "none",
     NOTREDAME_HIGGINS_HERINGA: "notredame_higgins_heringa",
     SMITH_WATERMAN: "smith_waterman",
-    UPGMA: "upgma",
-    WATERMAN_SMITH_BEYER: "waterman_smith_beyer",
-    WPGMA: "wpgma"
+    WATERMAN_SMITH_BEYER: "waterman_smith_beyer"
 };
 
 /**
@@ -104,23 +114,11 @@ var CELL_PERCENT = {
 var CHARACTER = {
     BASE: /[a-zA-Z]/i,
     BASES: /^[a-zA-Z-]+$/,
+    CSV_SYMBOLS: /^[0-9;\n\s]+$/,
     NON_BASES: /[^a-zA-Z-]+/g,  // g to replace globally
+    NON_CSV_SYMBOLS: /[^0-9;\n\s]+/g,
     NUMBER: /[0-9]/,
     NUMBERS: /[-+]?[0-9]+\.[0-9]*/
-};
-
-/**
- * Stores the default parameters for clustering algorithms.
- */
-var AGGLOMERATIVE_CLUSTERING_DEFAULTS = {
-    APPROACHES: ["Neighbour Joining", "Unweighted PGMA", "Weighted PGMA"],
-    CSV_TABLE:  /* input from lecture */
-    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
-    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
-    "   ;    ;  0 ;  2 ;  6" + "\n" +
-    "   ;    ;    ;  0 ;  6" + "\n" +
-    "   ;    ;    ;    ;  0" ,
-    STANDARD_APPROACH: ["Unweighted PGMA"]
 };
 
 /**
@@ -129,6 +127,14 @@ var AGGLOMERATIVE_CLUSTERING_DEFAULTS = {
 var FILE_EXTENSIONS = {
     HYPERTEXT_MARKUP_LANGUAGE: ".html",
     JAVASCRIPT: ".js"
+};
+
+/**
+ * Stores all errors which can be displayed to the user.
+ */
+var ERRORS = {
+    DIFFERENT_NUMBER_OF_COLUMNS_AND_ROWS: "The number of columns and rows should be equal!",
+    WRONG_NUMBER_OF_COLUMNS_IN_ROW: "wrong number of columns in row: "
 };
 
 /**

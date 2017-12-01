@@ -11,9 +11,13 @@ Author: Alexander Mattheis
     // public methods
     namespace("formats.csvParser", checkInput, getCSVData, getMatrix);
 
+    function CommaSeparatedValueParser() {
+    }
+
     /**
-     * Checks with the help of a CSV-parser,
-     * if the input is correct or not and returns the error output.
+     * Checks if the number of columns equals the number of non-empty rows
+     * and checks if the number of column separators is the same in every line.
+     * If not, it returns the error output.
      * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
      * @return {string} - The error output, if it exists.
      */
@@ -21,6 +25,7 @@ Author: Alexander Mattheis
         var lines = csvData.split(SYMBOLS.NEW_LINE);
 
         var lastNumberOfSeparators = -1;
+        var nonEmptyLines = 0;
 
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i];
@@ -29,11 +34,15 @@ Author: Alexander Mattheis
                 var numberOfSeparators = (line.match(MULTI_SYMBOLS.SEPARATORS) || []).length;
 
                 if (lastNumberOfSeparators !== -1 && lastNumberOfSeparators !== numberOfSeparators)
-                    return ERROR_WRONG_NUMBER_OF_COLUMNS + (i + 1);  // "+1" because humans start counting with 1
+                    return ERRORS.WRONG_NUMBER_OF_COLUMNS_IN_ROW + (i + 1);  // "+1" because humans start counting with 1
 
                 lastNumberOfSeparators = numberOfSeparators;
+                nonEmptyLines++;
             }
         }
+
+        if (nonEmptyLines !== lastNumberOfSeparators + 1)  // #rows !== #columns
+            return ERRORS.DIFFERENT_NUMBER_OF_COLUMNS_AND_ROWS;
 
         return SYMBOLS.EMPTY;
     }
@@ -83,5 +92,73 @@ Author: Alexander Mattheis
      * @return {Object} - The distance matrix.
      */
     function getMatrix(csvData) {
+        var distances = [];
+        var lines = csvData.split(SYMBOLS.NEW_LINE);
+        var lineNumber = 0;
+
+        // read in all distances
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            var lineEntries = line.split(SYMBOLS.SEMICOLON);
+
+            for (var j = i + 1; j < lineEntries.length; j++) {  // "+1" because diagonal an every below it not saved
+                var lineEntry = lineEntries[j];
+
+                distances.push(Number(lineEntry));
+            }
+
+            lineNumber++;
+        }
+
+        // create a distance matrix object
+        var clusterNames = getClusterNames(lineNumber);
+        var distanceMatrix = {};
+
+        var k = 0;  // current distance value index
+        for (var i = 0; i < clusterNames.length; i++) {
+            var clusterName1 = clusterNames[i];
+
+            for (var j = i + 1; j < clusterNames.length; j++) {  // "+1" because diagonal an every below it not saved
+                var clusterName2 = clusterNames[j];
+
+                distanceMatrix[[clusterName1, clusterName2]] = distances[k++];
+            }
+        }
+
+        return distanceMatrix;
+    }
+
+    /**
+     * Returns names for clusters associated with the distance data.
+     * Hint: After all characters are depleted,
+     * a number is concatenated to the character
+     * to make this function generic.
+     * Hint 2: There is a similar function for sequences in another class.
+     * @param number {number} - The number of names you want create.
+     * @example:
+     * CLUSTER NAMES:
+     * a, b, c, ..., z,         FIRST EPISODE
+     * a2, b2, c2, ..., z2,     SECOND EPISODE
+     * a3, b3, ...              THIRD ...
+     * @return {Array} - The cluster names.
+     */
+    function getClusterNames(number) {
+        var clusterNames = [];
+        var currentEpisode = 1;
+
+        // for every pairwise distance we need a symbol
+        for (var i = 0; i < number; i++) {
+            if (i < CLUSTER_NAMES.length)
+                clusterNames.push(CLUSTER_NAMES[i]);  // add a, b, c, ..., z
+
+            if (i >= CLUSTER_NAMES.length && i % CLUSTER_NAMES.length === 0)  // out of characters
+                currentEpisode++;  // new episode
+
+            // out of characters -> a2, b2, c2, ..., z2, a3, b3, ...
+            if (i >= CLUSTER_NAMES.length)
+                clusterNames.push(CLUSTER_NAMES[i % CLUSTER_NAMES.length] + SYMBOLS.EMPTY + currentEpisode);
+        }
+
+        return clusterNames;
     }
 }());

@@ -113,9 +113,29 @@ Author: Alexander Mattheis
         var functionArguments = {"functionParameters": functionParameters};
         algorithmInput.find(".optimization_type").on("change", functionArguments, negateOptimizationParameters);
 
-        functionParameters.on("change", removeCriticalNumbers);
+        algorithmInput.on("keyup", ".csv_data", removeNonAllowedCSVSymbols);
         algorithmInput.on("keyup", ".sequence", removeNonAllowedBases);
         algorithmInput.on("keyup", ".sequence_multi", removeNonAllowedBases);
+        functionParameters.on("change", removeCriticalNumbers);
+    }
+
+    /**
+     * Removes non-allowed symbols from a CSV-input.
+     * Hint: The input has to be of class "sequence".
+     */
+    function removeNonAllowedCSVSymbols() {
+        if (!CHARACTER.CSV_SYMBOLS.test(this.value)) {
+            this.value = this.value.replace(CHARACTER.NON_CSV_SYMBOLS, SYMBOLS.EMPTY);
+        }
+    }
+
+    /**
+     * Removes non-english characters and special characters from an input-field.
+     * Hint: The input has to be of class "sequence".
+     */
+    function removeNonAllowedBases() {
+        if (!CHARACTER.BASES.test(this.value))
+            this.value = this.value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
     }
 
     /**
@@ -154,15 +174,6 @@ Author: Alexander Mattheis
                 this.value = this.value <= INPUT.MAX ? this.value : INPUT.MAX;
             }
         }
-    }
-
-    /**
-     * Removes non-english characters from an input-field.
-     * Hint: The input has to be of class "sequence".
-     */
-    function removeNonAllowedBases() {
-        if (!CHARACTER.BASES.test(this.value))
-            this.value = this.value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
     }
 
     /**

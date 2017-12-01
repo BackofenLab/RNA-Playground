@@ -93,9 +93,8 @@ Author: Alexander Mattheis
     function getDistanceMatrix(isCorrectData, csvData) {
         var distanceMatrix = {};
 
-        if (isCorrectData) {
-            // get data from parser
-        }
+        if (isCorrectData)
+            distanceMatrix = formats.csvParser.getMatrix(csvData);
 
         return distanceMatrix;
     }

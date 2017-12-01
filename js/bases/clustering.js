@@ -52,7 +52,9 @@ Author: Alexander Mattheis
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
-        //inputData.clusteringSubalgorithm = inputViewmodel.clusteringSubalgorithm();
+        inputData.clusteringSubalgorithm = inputViewmodel.selectedApproach();
+        outputData.distanceMatrix = inputViewmodel.distanceMatrix();  // the distance matrix is input and output
+        //inputData.numOfStartClusters =
     }
 
     /**
@@ -101,7 +103,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Initializes the size parameters of the clusters.
+     * Initializes the size-parameters of the clusters.
      * @param numOfIterations - The number of iterations the algorithm will do.
      */
     function initializeCardinalities(numOfIterations) {

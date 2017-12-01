@@ -29,9 +29,6 @@ Author: Alexander Mattheis
     function Upgma() {
         upgmaInstance = this;
 
-        // variables
-        this.type = ALGORITHMS.UPGMA;
-
         // inheritance
         clusteringInstance = new bases.clustering.Clustering(this);
 
