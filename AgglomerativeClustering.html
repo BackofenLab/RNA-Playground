@@ -39,10 +39,10 @@ Author: Alexander Mattheis
         between singleton clusters (containing only one element)
         and in this matrix you search for the entry with the lowest value $d_{min} = d_{i,j}$
         (where $i \neq j$). You merge the clusters $i$ and $j$ to a new cluster $ij = i \cup j$
-        and recompute the distances to the remaining clusters with some distance formula $dist$
+        and recompute the distances to the remaining clusters with some distance formula $\delta_1$
         given with the respective approach.
         Afterwards the distance between $i,j$ and the merged cluster $ij$
-        in the tree is recomputed with another formula.
+        in the tree is recomputed with a second formula $\delta_2$.
         These stated steps are iterated for $O(N)$ rounds,
         where $N$ is number of input singleton clusters.
 
