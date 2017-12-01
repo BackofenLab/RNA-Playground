@@ -42,8 +42,8 @@ Author: Alexander Mattheis
         and recompute the distances to the remaining clusters with some distance formula $dist$
         given with the respective approach.
         Afterwards the distance between $i,j$ and the merged cluster $ij$
-        in the tree is set to $\frac{d_{min}}{2}$.
-        These stated steps are iterated for $N - 1$ rounds,
+        in the tree is recomputed with another formula.
+        These stated steps are iterated for $O(N)$ rounds,
         where $N$ is number of input singleton clusters.
 
         <br />

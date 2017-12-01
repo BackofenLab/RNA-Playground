@@ -15,10 +15,9 @@ Author: Alexander Mattheis
      * Checks with the help of a CSV-parser,
      * if the input is correct or not and returns the error output.
      * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
-     * @return {string} - The error output.
+     * @return {string} - The error output, if it exists.
      */
     function checkInput(csvData) {
-
     }
 
     /**
