@@ -39,6 +39,11 @@ $(document).ready(function () {
      * Computes the optimal, global alignment.
      * @constructor
      * @augments Alignment
+     * @see https://doi.org/10.1016/0022-2836(70)90057-4
+     *
+     * Needleman, Saul B., and Christian D. Wunsch.
+     * "A general method applicable to the search for similarities in the amino acid sequence of two proteins."
+     * Journal of molecular biology 48.3 (1970): 443-453.
      */
     function NeedlemanWunsch() {
         needlemanWunschInstance = this;
@@ -95,10 +100,10 @@ $(document).ready(function () {
 
         // going through every matrix cell
         for (var i = 1; i < inputData.matrixHeight; i++) {
-            var bChar = inputData.sequenceB[i - 1];
+            var aChar = inputData.sequenceA[i - 1];
 
             for (var j = 1; j < inputData.matrixWidth; j++) {
-                var aChar = inputData.sequenceA[j - 1];
+                var bChar = inputData.sequenceB[j - 1];
 
                 outputData.matrix[i][j] = alignmentInstance.recursionFunction(aChar, bChar, i, j);
             }

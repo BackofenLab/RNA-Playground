@@ -20,6 +20,11 @@ input[type="number"] {
     width: 35px;
 }
 
+label {
+    display: block; /* or text-align won't work*/
+    text-align: left;
+}
+
 small {
     font-weight: normal;
 }
@@ -53,6 +58,13 @@ th {
 }
 
 /*---- CLASS STYLING ----*/
+.add_remove {
+    height: 22px;
+    padding: 0px;
+    text-align: center;
+    width: 22px;
+}
+
 .ancillary_output {
     clear: left;
     float: left;
@@ -85,7 +97,8 @@ th {
 }
 
 .calculation, .calculation_horizontal, .calculation_vertical,
-.calculation_1, .calculation_2, .calculation_3, .calculation_4, .calculation_5 {
+.calculation_1, .calculation_2, .calculation_3, .calculation_4, .calculation_5,
+.distances {
     border: solid 1px #a0a0a0;
     border-spacing: 0;
     border-width: 0 1px 0 0;
@@ -99,8 +112,8 @@ th {
 .calculation_2 td, .calculation_2 th,
 .calculation_3 td, .calculation_3 th,
 .calculation_4 td, .calculation_4 th,
-.calculation_5 td, .calculation_5 th
-{
+.calculation_5 td, .calculation_5 th,
+.distances td, .distances th {
     border: solid 1px #a0a0a0;
     border-width: 1px 0 1px 1px;
     /*
@@ -112,6 +125,33 @@ th {
     min-height: 24px;
     min-width: 32px;
     width: 32px;
+}
+
+.column {
+    display: inline-block;
+    text-align: left;
+    width: 180px;
+}
+
+.csv_data {
+    height: 97px;
+    width: 224px;
+    overflow: auto;
+    resize: none;
+}
+
+.distances td, .distances th {
+    max-width: none !important;
+}
+
+.distance_table {
+    max-width: 600px;
+    overflow: auto;
+}
+
+.distance_table_header {
+    padding-left: 10px;
+    text-align: left;
 }
 
 .download_area {
@@ -135,6 +175,59 @@ th {
     position: relative;
 }
 
+.error_hint {
+    color: #5582BC;
+}
+
+.extra_large {
+    max-width: 800px !important;
+}
+
+.final {
+    margin-bottom: 10px;
+}
+
+.final_result {
+    max-width: 246px;
+    overflow-x: scroll;
+    width: 244px;
+}
+
+.final_result td, .final_result th {
+    border-left: none;
+    border-right: none;
+    height: 24px;
+    padding-left: 10px;
+    width: 246px;
+}
+
+.final_result_footer td, .final_result_footer th {
+    border-top: none;
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 233px;
+}
+
+.final_result_header {
+    vertical-align: top;
+    width: 246px;
+}
+
+.final_result_header td, .final_result_header th {
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 246px;
+}
+
+.final_result_with_scrollbar {
+    border-bottom: 1px solid #a0a0a0;
+    border-left: 1px solid #a0a0a0;
+    border-right: 1px solid #a0a0a0;
+    width: 244px;
+}
+
 .group_hint {
     color: gray;
     font-size: smaller;
@@ -152,6 +245,20 @@ th {
     text-align: left;
 }
 
+.inner_column {
+    display: inline-block;
+    width: 100px;
+}
+
+.inner_row {
+    margin-bottom: 10px;
+}
+
+.input_heading {
+    margin-left: -15px;
+    margin-right: 20px;
+}
+
 .iteration {
     clear: both;
     padding-bottom: 30px;
@@ -164,36 +271,118 @@ th {
     padding: 5px;
 }
 
-.iteration_header h4 {
-    background-color: #ebebeb; /* Uni-Freiburg standard */
-    margin-bottom: 5px;
-    padding: 5px;
-}
-
 .main_output {
+    padding-top: 5px;
     max-width: 600px;
     overflow: auto;
 }
 
-.non_selectable_entry {
-    border-bottom: 0;
-    font-family: serif;
-    font-size: 1.1em;
-    position: relative;
+.merge_steps {
+    margin-bottom: 10px;
+}
+
+.more_left {
+    padding-left: 5px !important;
+}
+
+.newick_tree {
+    margin-bottom: 10px;
 }
 
 .outcome {
     display: inline-block;
+    margin-top: 5px;
     padding-left: 30px;
+    margin-bottom: 10px;
 }
 
 .output {
     float: left;
+    margin-bottom: 10px;
 }
 
 .parameters {
     line-height: 180%;
-    padding-bottom: 30px;
+    padding-bottom: 10px;
+}
+
+.pairwise_data_footer th {
+    border-top: none;
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 787px;
+}
+
+.pairwise_data_header {
+    clear: left;
+    float: left;
+    vertical-align: top;
+}
+
+.pairwise_data_header th {
+    border-bottom: 0px;
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 254px;
+}
+
+.result {
+    max-width: 800px;
+    overflow-x: scroll;
+    width: 798px;
+}
+
+.result td, .result th {
+    border-left: none;
+    border-right: none; /* other possibilities does not look bug-like on tablets/smartphone browsers */
+}
+
+.result td, .result th,
+.result_header td, .result_header th {
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 798px;
+}
+
+.result_categories {
+    max-height: 400px;
+    max-width: 800px;
+    overflow: scroll;
+    width: 798px;
+}
+
+.result_categories td,
+.result_categories th {
+    border: none;
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    vertical-align: top;
+    width: 798px; /* the only way it always works for a different number of columns */
+}
+
+.result_categories td {
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+.result_categories th {
+    border-bottom: 1px solid #a0a0a0;
+}
+
+.result_header {
+    vertical-align: top;
+    width: 800px;
+}
+
+.result_with_scrollbar {
+    border-bottom: 1px solid #a0a0a0;
+    border-left: 1px solid #a0a0a0;
+    border-right: 1px solid #a0a0a0;
+    width: 798px;
 }
 
 .results {
@@ -201,7 +390,7 @@ th {
     clear: left;
     float: left;
     max-height: 200px;
-    max-width: 160px;
+    max-width: 166px;
     overflow-y: scroll;
     vertical-align: top;
 }
@@ -212,7 +401,7 @@ th {
     height: 24px;
     padding-left: 10px;
     text-align: left;
-    width: 150px;
+    width: 156px;
 }
 
 .results_footer {
@@ -226,7 +415,7 @@ th {
     height: 24px;
     padding-left: 10px;
     text-align: left;
-    width: 150px;
+    width: 156px;
 }
 
 .results_header {
@@ -240,7 +429,13 @@ th {
     border-right: 1px solid #a0a0a0;
     clear: left;
     float: left;
-    width: 161px;
+    width: 167px;
+}
+
+.scrollable {
+    margin-top: -10px;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .selectable_entry {
@@ -270,6 +465,11 @@ th {
     color: white;
 }
 
+.selected_light_blue {
+    background-color: rgba(85, 130, 188, 0.18); /* Uni-Freiburg Logo blue */
+    color: white;
+}
+
 .selected_light_red {
     background-color: #F5CAD1;
     color: white;
@@ -285,10 +485,30 @@ th {
     color: white;
 }
 
+.selector {
+    width: 230px;
+}
+
+.sequence {
+    width: 200px;
+}
+
+.sequence_multi {
+    width: 220px;
+}
+
+.thick_line {
+    border-top: 2px solid #a0a0a0;
+}
+
+.top_border {
+    border-top: 1px solid #a0a0a0;
+}
+
 /*---- ID STYLING ----*/
 #algorithm_description .description {
     display: inline-block;
-    line-height: 140%;
+    line-height: 150%;
     vertical-align: top;
     width: 600px;
 }

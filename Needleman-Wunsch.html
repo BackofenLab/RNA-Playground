@@ -12,8 +12,8 @@ Author: Alexander Mattheis
         compute the optimal global alignment of two sequences.
         A minimizing variant was introduced 1974 by 
         <a href="https://doi.org/10.1137/0126070">Peter H. Sellers</a>.
-        <br>
-        <br>
+        <br />
+        <br />
         Under the assumption that both input sequences $a$ and $b$ stem from the same origin,
         a global alignment tries to identify matching parts and the 
         changes needed to transfer one sequence into the other.
@@ -22,8 +22,8 @@ Author: Alexander Mattheis
         where an entry $D_{i,j}$ represents the best score for aligning the 
         prefixes $a_{1..i}$ with $b_{1..j}$. The according recursions are shown below. 
         Note, consecutive gap (insertion/deletion) scoring is done linearly.
-        <br>
-        <br>
+        <br />
+        <br />
         For the given input, the final table $D$ is provided along with a list 
         of according optimal alignments. 
         On table cell selection, optimal traceback options are shown.
@@ -31,19 +31,21 @@ Author: Alexander Mattheis
     </div>
 
     <div class="picture">
-        <img src="Needleman-Wunsch-120x90.png">
+        <img src="Needleman-Wunsch-120x90.png" />
     </div>
 </div>
 
 <div id="algorithm_input">
 	<div class="row">
 		<div class="colW100"><label>Sequence $a$:</label></div>
-		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'" type="text"></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'"
+                                    title="Allowed are A-Z and '-'." type="text"></div>
 	</div>
 
 	<div class="row">
 		<div class="colW100"><label>Sequence $b$:</label></div>
-		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'" type="text"></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'"
+                                    title="Allowed are A-Z and '-'." type="text"></div>
 	</div>
 
     <div class="row">
@@ -69,8 +71,8 @@ Author: Alexander Mattheis
 			</span>
 
 			 <div class="group_hint">
-				<b>Hint:</b> <br>
-				For similarity maximization, <br> match scores should be positive and all other scores lower. <br>
+				<b>Hint:</b> <br />
+				For similarity maximization, <br /> match scores should be positive and all other scores lower. <br />
                 For distance minimization the reverse applies.
 			</div>
 		</div>
@@ -79,8 +81,8 @@ Author: Alexander Mattheis
 	<div class="row">
 		<div class="colW100">
             <label>
-                <br>
-                <br>
+                <br />
+                <br />
                 Recursion:
             </label>
         </div>
@@ -99,7 +101,7 @@ Author: Alexander Mattheis
 					<tr>
 						<th>$D$</th>
 						<th></th>
-                        <!-- ko foreach: input.sequence1 -->
+                        <!-- ko foreach: input.sequence2 -->
 							<th data-bind="drawChar: [$data, $index()+1]"></th>
                         <!-- /ko -->
 					</tr>
@@ -113,7 +115,7 @@ Author: Alexander Mattheis
                             <!-- /ko -->
 
                             <!-- ko if: $index() > 0 -->
-								<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+								<th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
                             <!-- /ko -->
 
                             <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
@@ -145,7 +147,7 @@ Author: Alexander Mattheis
                 <thead>
 					<tr>
 						<th>
-							Results <br>
+							Results <br />
 							<small>
 								You can select a result to get the related traceback.
 							</small>
@@ -162,8 +164,8 @@ Author: Alexander Mattheis
                                 <!-- ko if: $index() == 0 -->
                                     <tr>
                                         <td class="selectable_entry selectable_entry_start">
-                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br />
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br />
                                             <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
                                         </td>
                                     </tr>
@@ -171,8 +173,8 @@ Author: Alexander Mattheis
                                 <!-- ko if: $index() != 0 -->
                                     <tr>
                                         <td class="selectable_entry">
-                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br />
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br />
                                             <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
                                         </td>
                                     </tr>

@@ -13,8 +13,8 @@ TestCase("test_smith_waterman", {
         var algorithm = new smithWaterman.SmithWaterman();
 
         var inputData = {};
-        inputData.sequenceA = "AACG";
-        inputData.sequenceB = "AATCG";
+        inputData.sequenceB = "AACG";
+        inputData.sequenceA = "AATCG";
 
         inputData.calculationType = "similarity";
 
@@ -23,8 +23,8 @@ TestCase("test_smith_waterman", {
         inputData.match = 1;
         inputData.mismatch = -1;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -32,11 +32,11 @@ TestCase("test_smith_waterman", {
         var outputData = ioData[1];
 
         assertEquals(2, outputData.score);
-        assertEquals("AA", outputData.alignments[0][0]);
         assertEquals("AA", outputData.alignments[0][2]);
+        assertEquals("AA", outputData.alignments[0][0]);
 
-        assertEquals("CG", outputData.alignments[1][0]);
         assertEquals("CG", outputData.alignments[1][2]);
+        assertEquals("CG", outputData.alignments[1][0]);
     },
 
     /**
@@ -48,8 +48,8 @@ TestCase("test_smith_waterman", {
         var algorithm = new smithWaterman.SmithWaterman();
 
         var inputData = {};
-        inputData.sequenceA = "TCCGA";
-        inputData.sequenceB = "TACGCAGA";
+        inputData.sequenceB = "TCCGA";
+        inputData.sequenceA = "TACGCAGA";
 
         inputData.calculationType = "similarity";
 
@@ -58,8 +58,8 @@ TestCase("test_smith_waterman", {
         inputData.match = 1;
         inputData.mismatch = 0;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -67,17 +67,17 @@ TestCase("test_smith_waterman", {
         var outputData = ioData[1];
 
         assertEquals(3, outputData.score);
-        assertEquals("TCCG", outputData.alignments[0][0]);
-        assertEquals("TACG", outputData.alignments[0][2]);
+        assertEquals("TCCG", outputData.alignments[0][2]);
+        assertEquals("TACG", outputData.alignments[0][0]);
 
-        assertEquals("TCCGA", outputData.alignments[1][0]);
-        assertEquals("TACGC", outputData.alignments[1][2]);
+        assertEquals("TCCGA", outputData.alignments[1][2]);
+        assertEquals("TACGC", outputData.alignments[1][0]);
 
-        assertEquals("TCCG_A", outputData.alignments[2][0]);
-        assertEquals("TACGCA", outputData.alignments[2][2]);
+        assertEquals("TCCG_A", outputData.alignments[2][2]);
+        assertEquals("TACGCA", outputData.alignments[2][0]);
 
-        assertEquals("CCGA", outputData.alignments[3][0]);
-        assertEquals("CAGA", outputData.alignments[3][2]);
+        assertEquals("CCGA", outputData.alignments[3][2]);
+        assertEquals("CAGA", outputData.alignments[3][0]);
     },
 
     /**
@@ -89,8 +89,8 @@ TestCase("test_smith_waterman", {
         var algorithm = new smithWaterman.SmithWaterman();
 
         var inputData = {};
-        inputData.sequenceA = "CCCCGCGACTCGGGTTCAAGGG";
-        inputData.sequenceB = "GGGTGAGACCCCAGTTCAACCC";
+        inputData.sequenceB = "CCCCGCGACTCGGGTTCAAGGG";
+        inputData.sequenceA = "GGGTGAGACCCCAGTTCAACCC";
 
         inputData.calculationType = "similarity";
 
@@ -99,8 +99,8 @@ TestCase("test_smith_waterman", {
         inputData.match = 4;
         inputData.mismatch = -1;
 
-        inputData.matrixHeight = inputData.sequenceB.length + 1;
-        inputData.matrixWidth = inputData.sequenceA.length + 1;
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
 
         algorithm.setIO(inputData, {});
 
@@ -108,7 +108,7 @@ TestCase("test_smith_waterman", {
         var outputData = ioData[1];
 
         assertEquals(40, outputData.score);
-        assertEquals("GCGACTCGGGTTCAA", outputData.alignments[0][0]);
-        assertEquals("GAGACCCCAGTTCAA", outputData.alignments[0][2]);
+        assertEquals("GCGACTCGGGTTCAA", outputData.alignments[0][2]);
+        assertEquals("GAGACCCCAGTTCAA", outputData.alignments[0][0]);
     }
 });

@@ -9,11 +9,14 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.alignmentInterface", AlignmentInterface,
-        imports, sharedInterfaceOperations, roundValues, startProcessing);
+    namespace("interfaces.alignmentInterface", AlignmentInterface, sharedInterfaceOperations,
+        roundValues, getLaTeXTraceFunctions, getRowData, getColumnData, getMinimaData, getTwoRowsSubmatricesData,
+        getLaTeXFormula, getDistanceTable, getDistanceTables, reorderGroupSequences, getLibrariesData,
+        removeNeutralSymbols, sortWithClusterTuples);
 
     // instances
     var alignmentInterfaceInstance;
+    var interfaceInstance;
 
     /**
      * Is used to work with the input and output (the interface) of an alignment algorithm.
@@ -24,27 +27,27 @@ Author: Alexander Mattheis
     function AlignmentInterface() {
         alignmentInterfaceInstance = this;
 
+        // inheritance
+        interfaceInstance = new interfaces.interface.Interface();
+
+        this.imports = interfaceInstance.imports;
+        this.startProcessing = interfaceInstance.startProcessing;
+
         // public class methods
-        this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
-        this.startProcessing = startProcessing;
         this.roundValues = roundValues;
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        // third party libs
-        $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
-
-        // design/controls logic
-        /*
-        This two imports are very important!
-        Without an import the classes are not reinitialized correctly for the next algorithm!
-         */
-        $.getScript(PATHS.INPUT_PROCESSOR);
-        $.getScript(PATHS.VISUALIZER);
+        this.getLaTeXTraceFunctions = getLaTeXTraceFunctions;
+        this.getRowData = getRowData;
+        this.getColumnData = getColumnData;
+        this.getMinimaData = getMinimaData;
+        this.getTwoRowsSubmatricesData = getTwoRowsSubmatricesData;
+        this.getLaTeXFormula = getLaTeXFormula;
+        this.getDistanceTable = getDistanceTable;
+        this.getDistanceTables = getDistanceTables;
+        this.reorderGroupSequences = reorderGroupSequences;
+        this.getLibrariesData = getLibrariesData;
+        this.removeNeutralSymbols = removeNeutralSymbols;
+        this.sortWithClusterTuples = sortWithClusterTuples;
     }
 
     /**
@@ -53,56 +56,10 @@ Author: Alexander Mattheis
      * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
      * @param processInput {Function} - Function from the algorithm which should process the input.
      * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
+     * @augments Interface.sharedInterfaceOperations(..)
      */
     function sharedInterfaceOperations(Algorithm, inputViewmodel, processInput, changeOutput) {
-        var visualViewmodel = new postProcessing.visualizer.Visualizer();
-
-        var algorithm = new Algorithm();
-        var inputProcessor = new postProcessing.inputProcessor.InputProcessor();
-        processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel);
-        var outputViewmodel = new OutputViewmodel(algorithm.type,
-            edit(algorithm.type, inputProcessor, algorithm.getOutput(), visualViewmodel));
-
-        var viewmodels = {
-            input: inputViewmodel,
-            visual: visualViewmodel,
-            output: outputViewmodel
-        };
-
-        linkInputWithOutput(algorithm, viewmodels, inputProcessor, processInput, changeOutput);
-
-        ko.applyBindings(viewmodels, document.getElementById("algorithm_view"));
-    }
-
-    /**
-     * Post edits a matrix and replaces for example values with LaTeX-symbols.
-     * @param algorithmName {string} - The name of the algorithm which is executed.
-     * @param inputProcessor {Object} - The unit processing the input.
-     * @param outputData {Object} - Contains all output data.
-     * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
-     * @return outputData {Object} - Changed output data.
-     */
-    function edit(algorithmName, inputProcessor, outputData, visualViewmodel) {
-        if (algorithmName === ALGORITHMS.GOTOH || algorithmName === ALGORITHMS.GOTOH_LOCAL) {
-            outputData.horizontalGaps = inputProcessor.postEdit(outputData.horizontalGaps, visualViewmodel);
-            outputData.verticalGaps = inputProcessor.postEdit(outputData.verticalGaps, visualViewmodel);
-        }
-
-        return outputData;
-    }
-
-    /**
-     * Binding Viewmodel-functions to InputProcessor elements.
-     * This allows for example to highlight a selected entry from a table.
-     * @param algorithm {Object} - The algorithm used to update the user interface.
-     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
-     * @param inputProcessor {Object} - The unit processing the input.
-     * @param processInput {Function} - Function from the algorithm which should process the input.
-     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
-     */
-    function linkInputWithOutput(algorithm, viewmodels, inputProcessor, processInput, changeOutput) {
-        inputProcessor.linkElements(viewmodels.visual);
-        inputProcessor.updateGUI(algorithm, viewmodels, processInput, changeOutput);
+        interfaceInstance.sharedInterfaceOperations(Algorithm, inputViewmodel, OutputViewmodel, processInput, changeOutput);
     }
 
     /*---- OUTPUT ----*/
@@ -118,41 +75,33 @@ Author: Alexander Mattheis
      */
     function OutputViewmodel(algorithmName, outputData) {
         var viewmodel = this;
-        roundValues(outputData);
 
-        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
-            createAEPOutputViewmodel(viewmodel, outputData);
-        } else if (outputData.matrix !== undefined) {  // other algorithms
-            this.matrix = ko.observableArray(outputData.matrix);
+        if (GLOBAL_ALGORITHMS.indexOf(algorithmName) >= 0
+            || LOCAL_ALGORITHMS.indexOf(algorithmName) >= 0) {  // if basic local or global algorithm
+            roundValues(algorithmName, outputData);
 
-            for (var i = 0; i < outputData.matrix.length; i++) {
-                this.matrix[i] = ko.observableArray(outputData.matrix[i]);
+            if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {  // if AEP
+                createAEPOutputViewmodel(viewmodel, outputData);
+            } else if (algorithmName === ALGORITHMS.HIRSCHBERG) {
+                createHirschbergOutputViewmodel(viewmodel, outputData);
+            } else if (outputData.matrix !== undefined) {  // other algorithms
+                createMainOutputViewmodel(algorithmName, viewmodel, outputData);
             }
-
-            if (algorithmName === ALGORITHMS.GOTOH || algorithmName === ALGORITHMS.GOTOH_LOCAL) {  // special cases regarding possible algorithms
-                this.horizontalGaps = ko.observableArray(outputData.horizontalGaps);
-                this.verticalGaps = ko.observableArray(outputData.verticalGaps);
-
-                for (var i = 0; i < outputData.matrix.length; i++) {
-                    this.horizontalGaps[i] = ko.observableArray(outputData.horizontalGaps[i]);
-                    this.verticalGaps[i] = ko.observableArray(outputData.verticalGaps[i]);
-                }
-            }
-
-            this.alignments = ko.observableArray(outputData.alignments);
-
-            this.score = ko.observable(outputData.score);
-            this.moreTracebacks = ko.observable(outputData.moreTracebacks);
+        } else if (MULTI_SEQUENCE_ALGORITHMS.indexOf(algorithmName) >= 0) {  // if multi-sequence alignment algorithm
+            if (algorithmName === ALGORITHMS.FENG_DOOLITTLE)
+                createFengDoolittleOutputViewmodel(algorithmName, viewmodel, outputData);
+            else
+                createTcoffeeOutputViewmodel(algorithmName, viewmodel, outputData);
         }
     }
 
     /**
      * Rounds matrix values, scores and other parameters.
+     * @param algorithmName {string} - The name of the algorithm which is executed.
      * @param outputData {Object} - Output data which is modified.
      */
-    function roundValues(outputData) {
-        if (outputData.iterationData !== undefined) {  // AEP
-
+    function roundValues(algorithmName, outputData) {
+        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
             // every possibility
             for (var i = 0; i < outputData.iterationData.length; i++) {
                 // every round
@@ -173,6 +122,36 @@ Author: Alexander Mattheis
                 }
             }
 
+        } else if (algorithmName === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {
+            var alignmentPairsCount = outputData.librariesData[0].length;
+            var primLibValues = outputData.librariesData[2];
+            var extendedLibValues = outputData.librariesData[3];
+
+            for (var i = 0; i < alignmentPairsCount; i++) {
+                var positionPairsCount = outputData.librariesData[1][i].length;
+
+                for (var j = 0; j < positionPairsCount; j++) {
+                    outputData.librariesData[2][i][j] = round(primLibValues[i][j], 1);
+                    outputData.librariesData[3][i][j] = round(extendedLibValues[i][j], 1);
+                }
+            }
+        } else if (algorithmName === ALGORITHMS.FENG_DOOLITTLE) {  // if Feng-Doolittle or UPGMA (algorithms in which distance tables displayed)
+            // iterate over each distance matrix
+            for (var k = 0; k < outputData.distanceMatrices.length; k++) {
+
+                // iterate over each row
+                for (var i = 0; i < outputData.distanceMatrices[k].length; i++) {
+
+                    // iterate over each entry
+                    for (var j = 0; j < outputData.distanceMatrices[k][i].length; j++) {
+                        if (j > i)  // only the values upper the diagonal
+                            outputData.distanceMatrices[k][i][j]
+                                = round(outputData.distanceMatrices[k][i][j], 1);
+                    }
+                }
+            }
+        } else if (algorithmName === ALGORITHMS.HIRSCHBERG) {
+            // do nothing, because there is nothing to round
         } else { // other algorithms
             for (var i = 0; i < outputData.matrix.length; i++)
                 for (var j = 0; j < outputData.matrix[0].length; j++)
@@ -195,8 +174,8 @@ Author: Alexander Mattheis
 
     /**
      * Creates the AEP OutputViewmodel.
-     * @param viewmodel - The output viewmodel container which should be filled.
-     * @param outputData - The data which is used to fill the viewmodel.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
      * @see Not nice without array, but the only found way it's working without any bugs!
      */
     function createAEPOutputViewmodel(viewmodel, outputData) {
@@ -334,16 +313,993 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Start processing the input from the user by computing the algorithm output.
-     * @param algorithm {Object} - Algorithm used to update the user interface.
-     * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
-     * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
+     * Creates the OutputViewmodel for some local and global alignment algorithms.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
-    function startProcessing(algorithm, inputViewmodel, visualViewmodel) {
-        algorithm.setInput(inputViewmodel);
-        var ioData = algorithm.compute();
+    function createHirschbergOutputViewmodel(viewmodel, outputData) {
+        var traceFunctionsData = getLaTeXTraceFunctions(outputData);
+        var rowData = getRowData(outputData);
+        var columnData = getColumnData(outputData);
+        var minimaData = getMinimaData(rowData, columnData);
+        var twoRowsData = getTwoRowsSubmatricesData(outputData);
 
-        // deep copy of the output before rounding to avoid information loss
-        visualViewmodel.shareInformation(algorithm, ioData[0], jQuery.extend(true, {}, ioData[1]));
+        // get matrices data
+        var twoRowsMatrices = twoRowsData[0];
+        var twoRowsCharacters = twoRowsData[1];
+        var twoRowsCharactersPositions = twoRowsData[2];
+
+        // divide data in forward and backward
+        var forwardTwoRowsMatrices = twoRowsMatrices[0];
+        var backwardTwoRowsMatrices = twoRowsMatrices[1];
+
+        var forwardTwoRowsCharacters = twoRowsCharacters[0];
+        var backwardTwoRowsCharacters = twoRowsCharacters[1];
+
+        var forwardTwoRowsCharactersPositions = twoRowsCharactersPositions[0];
+        var backwardTwoRowsCharactersPositions = twoRowsCharactersPositions[1];
+
+        // main output
+        viewmodel.forwardMatrices = ko.observable(outputData.forwardMatrices).extend({ deferred: true });
+        viewmodel.backwardMatrices = ko.observable(outputData.backwardMatrices).extend({ deferred: true });
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.forwardMatrices.length; i++) {
+            viewmodel.forwardMatrices[i] = ko.observableArray(outputData.forwardMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.forwardMatrices[i].length; j++) {
+                viewmodel.forwardMatrices[i][j] = ko.observableArray(outputData.forwardMatrices[i][j]).extend({ deferred: true });
+            }
+        }
+
+        for (var i = 0; i < outputData.backwardMatrices.length; i++) {
+            viewmodel.backwardMatrices[i] = ko.observableArray(outputData.backwardMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.backwardMatrices[i].length; j++) {
+                viewmodel.backwardMatrices[i][j] = ko.observableArray(outputData.backwardMatrices[i][j]).extend({ deferred: true });
+            }
+        }
+
+        viewmodel.alignments = ko.observableArray(outputData.alignments);
+
+        // matrix of all minima
+        viewmodel.tracecellLines = ko.observable(outputData.tracecellLines).extend({ deferred: true });
+        viewmodel.globalMinima = ko.observable(minimaData);
+
+        // header
+        viewmodel.recursionNumbersContainer = ko.observable(outputData.recursionNumbersContainer).extend({ deferred: true });
+        viewmodel.traceFunctions = ko.observable(traceFunctionsData);
+        viewmodel.currentGlobalRow = ko.observable(rowData);
+
+        // table header (to avoid a problem between Knockout and MathJax the LaTeX code is generated in viewmodel and not in the view)
+        viewmodel.matrixDLatex = ko.observable(getLaTeXFormula(LATEX.FORMULA.D));
+        viewmodel.matrixDPrimeLatex = ko.observable(getLaTeXFormula(LATEX.FORMULA.D_PRIME));
+        viewmodel.sumLatex = ko.observable(getLaTeXFormula(LATEX.SUM));
+
+        viewmodel.secondSequences = ko.observable(outputData.secondSequences);
+        viewmodel.secondSequencePositions = ko.observable(outputData.secondSequencePositions).extend({ deferred: true });
+
+        // addition table
+        viewmodel.forwardRows = ko.observable(outputData.forwardRows);
+        viewmodel.mirroredBackwardRows = ko.observable(outputData.mirroredBackwardRows);
+        viewmodel.addedRows = ko.observable(outputData.addedRows);
+        viewmodel.highlightPositions = ko.observable(outputData.relativeSplittingPoint);
+
+        // gimmicks/optimizations
+        viewmodel.showMatrices = ko.observable(false);
+
+        viewmodel.toggleVisibility = function() {
+            viewmodel.showMatrices(!viewmodel.showMatrices());
+        };
+
+        viewmodel.toggleLinkText = ko.computed(
+            function () {
+                return viewmodel.showMatrices() ? TOGGLE_LINK_TEXT.HIDE : TOGGLE_LINK_TEXT.SHOW;
+            }
+        );
+
+        // generated two rows submatrices (intermediate steps)
+        viewmodel.prefixTwoRowsCharacters = ko.observable(forwardTwoRowsCharacters).extend({ deferred: true });
+        viewmodel.suffixTwoRowsCharacters = ko.observable(backwardTwoRowsCharacters).extend({ deferred: true });
+
+        viewmodel.prefixTwoRowsCharactersPositions = ko.observable(forwardTwoRowsCharactersPositions).extend({ deferred: true });
+        viewmodel.suffixTwoRowsCharactersPositions = ko.observable(backwardTwoRowsCharactersPositions).extend({ deferred: true });
+
+        viewmodel.prefixTwoRowsMatrices = ko.observableArray(forwardTwoRowsMatrices).extend({ deferred: true });
+
+        // iteration over each matrix (forward matrices)
+        for (var i = 0; i < forwardTwoRowsMatrices.length; i++) {
+            viewmodel.prefixTwoRowsMatrices[i] = ko.observableArray(forwardTwoRowsMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < forwardTwoRowsMatrices[i].length; j++) {
+                viewmodel.prefixTwoRowsMatrices[i][j] = ko.observableArray(forwardTwoRowsMatrices[i][j]).extend({ deferred: true });
+            }
+        }
+
+        viewmodel.suffixTwoRowsMatrices = ko.observableArray(backwardTwoRowsMatrices).extend({ deferred: true });
+
+        // iteration over each matrix (backward matrices)
+        for (var i = 0; i < backwardTwoRowsMatrices.length; i++) {
+            viewmodel.suffixTwoRowsMatrices[i] = ko.observableArray(backwardTwoRowsMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < backwardTwoRowsMatrices[i].length; j++) {
+                viewmodel.suffixTwoRowsMatrices[i][j] = ko.observableArray(backwardTwoRowsMatrices[i][j]).extend({ deferred: true });
+            }
+        }
+
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
+    }
+
+    /**
+     * Returns the trace function for each round.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     * @return {Array} - The data which stores the trace function for each recursion round.
+     */
+    function getLaTeXTraceFunctions(outputData) {
+        var traceFunctionData = [];
+
+        for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
+            var string = LATEX.MATH_REGION;  // starting LaTeX math region
+            string += LATEX.FORMULA.DPM + SYMBOLS.BRACKET_LEFT;  // starting function
+
+            var firstSequence = outputData.firstSequences[k];
+            var firstSequencePositions = outputData.firstSequencePositions[k];
+
+            string += "\\;";
+            
+            for (var i = 0; i < firstSequence.length; i++) {
+                if (i >= MAX_TRACE_FUNCTION_ARG_LEN) {  // cut after a certain number of arguments
+                    string += SYMBOLS.SPACE + END_SO_ON;
+                    break;
+                }
+
+                string += "\\texttt{";
+                string += firstSequence[i];
+                string += "}";
+                if (i==0 || i+1 == firstSequence.length) {
+                	string += LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + firstSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
+                }
+            }
+
+            string += "\\;"+SYMBOLS.VERTICAL_BAR+"\\;";
+
+            var secondSequence = outputData.secondSequences[k];
+            var secondSequencePositions = outputData.secondSequencePositions[k];
+
+            for (var i = 0; i < secondSequence.length; i++) {
+                if (i >= MAX_TRACE_FUNCTION_ARG_LEN) {  // cut after a certain number of arguments
+                    string += SYMBOLS.SPACE + END_SO_ON;
+                    break;
+                }
+
+                string += "\\texttt{";
+                string += secondSequence[i];
+                string += "}";
+                if (i==0 || i+1 == secondSequence.length) {
+                	string += LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + secondSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
+                }
+            }
+
+            string += "\\;";
+            string += SYMBOLS.BRACKET_RIGHT;  // stopping function
+            string += LATEX.MATH_REGION;  // stopping LaTeX math region
+
+            traceFunctionData.push(string);
+        }
+
+        return traceFunctionData;
+    }
+
+    /**
+     * Returns the horizontal minimum position for each round.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     * @return {Array} - The data which stores the global minimum for each recursion round.
+     */
+    function getRowData(outputData) {
+        var rows = [];
+
+        // iterate over all rounds
+        for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
+            rows.push(outputData.firstSequencePositions[k][outputData.relativeSplittingPoint[k][0]-1]);
+        }
+
+        if (outputData.recursionNumbersContainer.length > 0 && !outputData.lastTracecellIsSource) {  // add last row minimum position
+            var lastRound = outputData.relativeSplittingPoint.length - 1;
+            rows.push(outputData.firstSequencePositions[0][outputData.relativeSplittingPoint[lastRound][0]-1]);
+        }
+
+        return rows;
+    }
+
+    /**
+     * Returns the vertical minimum position for each round.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     * @return {Array} - The data which stores the global minimum for each recursion round.
+     */
+    function getColumnData(outputData) {
+        var columns = [];
+
+        var column;
+        // iterate over all rounds
+        for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
+            column = outputData.secondSequencePositions[k][outputData.relativeSplittingPoint[k][1]-1];
+
+            if (column === undefined)
+                column = outputData.secondSequencePositions[k][0] - 1;  // select first defined position and then "-1"
+
+            columns.push(column);
+        }
+
+        if (outputData.recursionNumbersContainer.length > 0 && !outputData.lastTracecellIsSource) {  // add last row minimum position
+            var lastRound = outputData.relativeSplittingPoint.length - 1;
+
+            column = outputData.secondSequencePositions[0][outputData.relativeSplittingPoint[lastRound][1]-1];
+
+            if (column === undefined)
+                column = outputData.secondSequencePositions[0][0] - 1;  // select first defined position and then "-1"
+
+            columns.push(column);
+        }
+
+        return columns;
+    }
+
+    /**
+     * Creates a string of minimum position tuples with the given data.
+     * @param rows {Array} - The rows which contains minimum positions.
+     * @param columns {Array} - The columns which contains minimum positions.
+     * @return {Array} - String of minimum tuples.
+     */
+    function getMinimaData(rows, columns) {
+        var minimaString = SYMBOLS.EMPTY;
+
+        for (var k = 0; k < rows.length; k++) {  // k is the current round
+            if (k !== 0 && k % 3 === 0)  // three entries per line
+                minimaString += SYMBOLS.NEW_LINE;
+
+            minimaString += SYMBOLS.BRACKET_LEFT + rows[k] + SYMBOLS.COMMA + columns[k] + SYMBOLS.BRACKET_RIGHT;
+
+            if (k < rows.length - 1)
+                minimaString += SYMBOLS.COMMA + SYMBOLS.SPACE;
+        }
+
+        return minimaString;
+    }
+
+    /**
+     * Returns the data to create submatrices with two rows.
+     * @return {Object} - The submatrices data.
+     */
+    function getTwoRowsSubmatricesData(outputData) {
+        var submatricesOfEachRound = [];
+        var substringsOfEachRound = [];
+        var subpositionsOfEachRound = [];
+
+        var forwardSubmatricesOfEachRound = [];
+        var forwardSubstringsOfEachRound = [];
+        var forwardSubpositionsOfEachRound = [];
+
+        var backwardSubmatricesOfEachRound = [];
+        var backwardSubstringsOfEachRound = [];
+        var backwardSubpositionsOfEachRound = [];
+
+        var forwardMatrices = outputData.forwardMatrices;
+        var backwardMatrices = outputData.backwardMatrices;
+        var splittingPoints = outputData.relativeSplittingPoint;
+        var leftStrings = outputData.firstSequences;
+        var leftStringsPositions = outputData.firstSequencePositions;
+
+        if (forwardMatrices.length > 1) {
+            for (var k = 0; k < forwardMatrices.length; k++) {  // or: backwardMatrices.length
+                var splittingPosI = splittingPoints[k][0];
+
+                var forwardData = getTwoRowsForwardData(forwardMatrices[k], leftStrings[k], leftStringsPositions[k], splittingPosI);
+                var backwardData = getTwoRowsBackwardData(backwardMatrices[k], leftStrings[k], leftStringsPositions[k], splittingPosI);
+
+                var twoRowsForwardMatrices = forwardData[0];
+                var twoRowsBackwardMatrices = backwardData[0];
+
+                var twoRowsForwardStrings = forwardData[1];
+                var twoRowsBackwardStrings = backwardData[1];
+
+                var twoRowsForwardPositions = forwardData[2];
+                var twoRowsBackwardPositions = backwardData[2];
+
+                forwardSubmatricesOfEachRound.push(twoRowsForwardMatrices);
+                backwardSubmatricesOfEachRound.push(twoRowsBackwardMatrices);
+
+                forwardSubstringsOfEachRound.push(twoRowsForwardStrings);
+                backwardSubstringsOfEachRound.push(twoRowsBackwardStrings);
+
+                forwardSubpositionsOfEachRound.push(twoRowsForwardPositions);
+                backwardSubpositionsOfEachRound.push(twoRowsBackwardPositions);
+            }
+        }
+
+        return [[forwardSubmatricesOfEachRound, backwardSubmatricesOfEachRound],
+            [forwardSubstringsOfEachRound, backwardSubstringsOfEachRound],
+            [forwardSubpositionsOfEachRound, backwardSubpositionsOfEachRound]];
+    }
+
+    /**
+     * Returns the forward data in an array of two rows.
+     * @param forwardMatrix {Array} - The forward matrix from which the two-rows submatrices are generated.
+     * @param leftString {Array} - The string from the column on the left side with the characters
+     * @param leftPositions {Array} - The character positions of the column string on the left in an imaginary matrix.
+     * @param posI {number} - The row until which the two-rows submatrices are generated.
+     * @return {[twoRowsMatrices, twoRowsCharacters, twoRowsLeftPositions]} - Data to visualize two-matrices.
+     */
+    function getTwoRowsForwardData(forwardMatrix, leftString, leftPositions, posI) {
+        var twoRowsMatrices = [];
+        var twoRowsCharacters = [];
+        var twoRowsLeftPositions = [];
+
+        var upperRow = [];
+        var lowerRow = [];
+        var upperChar = SYMBOLS.EMPTY;
+        var lowerChar = SYMBOLS.EMPTY;
+        var upperPos = -1;
+        var lowerPos = -1;
+
+        for (var i = 1; i <= posI; i++) {
+            upperRow = forwardMatrix[i-1];
+            lowerRow = forwardMatrix[i];
+
+            if (i - 1 === 0) {
+                upperChar = SYMBOLS.EMPTY;
+                lowerChar = leftString[i - 1];
+
+                upperPos = SYMBOLS.EMPTY;
+                lowerPos = leftPositions[i - 1];
+            }
+            else {
+                upperChar = leftString[i - 2];
+                lowerChar = leftString[i - 1];
+
+                upperPos = leftPositions[i - 2];
+                lowerPos = leftPositions[i - 1];
+            }
+
+            twoRowsMatrices.push([upperRow, lowerRow]);
+            twoRowsCharacters.push([upperChar, lowerChar]);
+            twoRowsLeftPositions.push([upperPos, lowerPos]);
+        }
+
+        return [twoRowsMatrices, twoRowsCharacters, twoRowsLeftPositions];
+    }
+
+    /**
+     * Returns the backward data in an array of two rows.
+     * @param backwardMatrix {Array} - The backward matrix from which the two-rows submatrices are generated.
+     * @param leftString {Array} - The string from the column on the left side with the characters
+     * @param leftPositions {Array} - The character positions of the column string on the left in an imaginary matrix.
+     * @param posI {number} - The row until which the two-rows submatrices are generated.
+     * @return {[twoRowsMatrices, twoRowsCharacters, twoRowsLeftPositions]} - Data to visualize two-matrices.
+     */
+    function getTwoRowsBackwardData(backwardMatrix, leftString, leftPositions, posI) {
+        var twoRowsMatrices = [];
+        var twoRowsCharacters = [];
+        var twoRowsLeftPositions = [];
+
+        var upperRow = [];
+        var lowerRow = [];
+        var upperChar = SYMBOLS.EMPTY;
+        var lowerChar = SYMBOLS.EMPTY;
+        var upperPos = -1;
+        var lowerPos = -1;
+
+        debugger;
+        var rotatedBackwardMatrix = getRotatedMatrix(backwardMatrix);
+
+        for (var i = rotatedBackwardMatrix.length - 1; i > posI; i--) {
+            upperRow = rotatedBackwardMatrix[i-1];
+            lowerRow = rotatedBackwardMatrix[i];
+
+            upperChar = leftString[i-2];
+            lowerChar = leftString[i-1];
+
+            upperPos = leftPositions[i-2];
+            lowerPos = leftPositions[i-1];
+
+            twoRowsMatrices.push([upperRow, lowerRow]);
+            twoRowsCharacters.push([upperChar, lowerChar]);
+            twoRowsLeftPositions.push([upperPos, lowerPos]);
+        }
+
+        return [twoRowsMatrices, twoRowsCharacters, twoRowsLeftPositions];
+    }
+
+    /**
+     * Rotates the given matrix by 180 degrees.
+     * @param backwardMatrix {Array} - An array of the several rows of the matrix.
+     * @return {Array} - The rotated matrix.
+     */
+    function getRotatedMatrix(backwardMatrix) {
+        var rotatedMatrix = [];
+
+        for (var i = backwardMatrix.length - 1; i >= 0; i--)
+            rotatedMatrix.push(backwardMatrix[i].reverse());
+
+        return rotatedMatrix;
+    }
+
+    /**
+     * Returns a LaTeX enclosed formula.
+     * @param formula {string} - The string which has to be enclosed in LaTeX math mode.
+     * @return {string} - The LaTeX math mode enclosed formula.
+     */
+    function getLaTeXFormula(formula) {
+        return LATEX.MATH_REGION + formula + LATEX.MATH_REGION;
+    }
+
+    /**
+     * Creates the OutputViewmodel for some local and global alignment algorithms.
+     * @param algorithmName {string} - The name of the algorithm which is executed.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     */
+    function createMainOutputViewmodel(algorithmName, viewmodel, outputData) {
+        viewmodel.matrix = ko.observableArray(outputData.matrix);
+
+        for (var i = 0; i < outputData.matrix.length; i++) {
+            viewmodel.matrix[i] = ko.observableArray(outputData.matrix[i]);
+        }
+
+        if (algorithmName === ALGORITHMS.GOTOH || algorithmName === ALGORITHMS.GOTOH_LOCAL) {  // special cases regarding possible algorithms
+            viewmodel.horizontalGaps = ko.observableArray(outputData.horizontalGaps);
+            viewmodel.verticalGaps = ko.observableArray(outputData.verticalGaps);
+
+            for (var i = 0; i < outputData.matrix.length; i++) {
+                viewmodel.horizontalGaps[i] = ko.observableArray(outputData.horizontalGaps[i]);
+                viewmodel.verticalGaps[i] = ko.observableArray(outputData.verticalGaps[i]);
+            }
+        }
+
+        viewmodel.alignments = ko.observableArray(outputData.alignments);
+
+        viewmodel.score = ko.observable(outputData.score);
+        viewmodel.moreTracebacks = ko.observable(outputData.moreTracebacks);
+    }
+
+    /**
+     * Creates the OutputViewmodel for Feng-Doolittle.
+     * @param algorithmName {string} - The name of the algorithm which is executed.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     */
+    function createFengDoolittleOutputViewmodel(algorithmName, viewmodel, outputData) {
+        // distance matrix
+        outputData.distanceMatrix
+            = getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined);
+
+        viewmodel.distanceMatrix =  ko.observableArray(outputData.distanceMatrix);
+
+        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
+            viewmodel.distanceMatrix[i] = ko.observableArray(outputData.distanceMatrix[i]);
+        }
+
+        // distance matrices
+        outputData.distanceMatrices = getDistanceTables(outputData);
+
+        roundValues(algorithmName, outputData);
+
+        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
+                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({ deferred: true });
+            }
+        }
+
+        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
+        viewmodel.minimums = ko.observable(outputData.minimums).extend({ deferred: true });
+
+        // merge steps
+        reorderGroupSequences(outputData);
+        viewmodel.guideAlignments = ko.observable(outputData.guideAlignments);
+        viewmodel.guideAlignmentsNames = ko.observable(outputData.guideAlignmentsNames);
+        viewmodel.firstGroups = ko.observable(outputData.firstGroups);
+        viewmodel.secondGroups = ko.observable(outputData.secondGroups);
+        viewmodel.firstGroupsNames = ko.observable(outputData.firstGroupsNames);
+        viewmodel.secondGroupsNames = ko.observable(outputData.secondGroupsNames);
+        viewmodel.joinedGroups = ko.observable(outputData.joinedGroups);
+        viewmodel.joinedGroupNames = ko.observable(outputData.joinedGroupNames);
+
+        // tree and final output
+        viewmodel.newickString = ko.observable(outputData.newickString);
+        viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
+        viewmodel.score = ko.observable(outputData.score);
+
+        // pairwise data
+        sortWithClusterTuples(outputData.sequencePairNames,
+            [outputData.alignmentLengths, outputData.similarities, outputData.gapNumbers, outputData.gapStarts]);
+        viewmodel.sequencePairNames = ko.observable(outputData.sequencePairNames);
+        viewmodel.alignmentLengths = ko.observable(outputData.alignmentLengths);
+        viewmodel.similarities = ko.observable(outputData.similarities);
+        viewmodel.gapNumbers = ko.observable(outputData.gapNumbers);
+        viewmodel.gapStarts = ko.observable(outputData.gapStarts);
+
+        viewmodel.showMatrices = ko.observable(false);
+
+        // gimmicks/optimizations
+        viewmodel.toggleVisibility = function() {
+            viewmodel.showMatrices(!viewmodel.showMatrices());
+        };
+
+        viewmodel.toggleLinkText = ko.computed(
+            function () {
+                return viewmodel.showMatrices() ? TOGGLE_LINK_TEXT.HIDE : TOGGLE_LINK_TEXT.SHOW;
+            }
+        );
+    }
+
+    /**
+     * Converts the distances stored in associative array into a real distance matrix.
+     * @param outputData - The output on which conversion is applied.
+     * @return {Object} - The outputData with converted distance matrices.
+     */
+    function getDistanceTables(outputData) {
+        var matrixLength = outputData.distanceMatrixLength;  // start length
+
+        // in each round the matrix gets smaller by one, because two matrices are merged
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            outputData.distanceMatrices[i]
+                = getDistanceTable(outputData.distanceMatrices[i], matrixLength-i, outputData.remainingClusters[i], outputData.keys[i]);
+        }
+
+        return outputData.distanceMatrices;
+    }
+
+    /**
+     * The distance matrix is an "associative array" and this has to be converted
+     * into a 2D-array which is displayable.
+     * Hint: "Associative arrays" do not have a defined order (browser-dependant).
+     */
+    function getDistanceTable(distanceMatrix, distanceMatrixLength, remainingClusters, matrixKeys) {
+        var matrix = createMatrix(distanceMatrixLength);
+        if (matrixKeys === undefined)
+            matrixKeys = Object.keys(distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...
+
+        // fill diagonals with zero
+        for (var i = 0; i < matrix.length; i++) {
+            for (var j = 0; j < matrix.length; j++) {
+                if (i === j)
+                    matrix[i][j] = 0;
+            }
+        }
+
+        // fill right upper half
+        for (var j = 0; j < matrixKeys.length; j++) {
+            var key = matrixKeys[j].split(SYMBOLS.COMMA);
+            var cluster1Position = getPositionByName(key[0], remainingClusters);
+            var cluster2Position = getPositionByName(key[1], remainingClusters);
+            var value = distanceMatrix[key];
+
+            matrix[cluster1Position][cluster2Position] = value;
+        }
+
+        return matrix;
+    }
+
+    /**
+     * Creates a matrix with the given size.
+     * @param size - The width and height of the matrix.
+     */
+    function createMatrix (size) {
+        var matrix = new Array(size);
+
+        for (var i = 0; i < size; i++) {
+            matrix[i] = [];
+        }
+
+        return matrix;
+    }
+
+    /**
+     * Returns for a cluster-name, its position in the distance matrix.
+     * @param clusterName {string} - The name of the cluster.
+     * @param remainingClusterNames {Array} - The remaining cluster names after execution of UPGMA.
+     */
+    function getPositionByName(clusterName, remainingClusterNames) {
+        var position = -1;
+
+        for (var i = 0; i < remainingClusterNames.length; i++) {
+            if (clusterName === remainingClusterNames[i]) {
+                position = i;
+                break;
+            }
+        }
+
+        return position;
+    }
+
+    /**
+     * Reordering groups in alphabetical order for increasing readability.
+     * @param outputData - The output on which conversion is applied.
+     */
+    function reorderGroupSequences(outputData) {
+        if (outputData.joinedGroupNames.length > 0) {
+            var finalGroupName = outputData.joinedGroupNames[outputData.joinedGroupNames.length-1];
+            var finalGroup = outputData.joinedGroups[outputData.joinedGroups.length-1];
+
+            var groupMemberNames = getIndividualElementNames(finalGroupName);
+            var groupMemberRankings = getRankings(groupMemberNames, finalGroup);
+
+            var reorderedGroups = [];
+            var reorderedGroupNames = [];
+
+            var reorderedFirstGroups = [];
+            var reorderedFirstGroupsNames = [];
+
+            var reorderedSecondGroups = [];
+            var reorderedSecondGroupsNames = [];
+
+            // iterate over all groups (result, group 1 and group 2)
+            for (var i = 0; i < outputData.joinedGroups.length; i++) {
+                var group = outputData.joinedGroups[i];
+                var group1 = outputData.firstGroups[i];
+                var group2 = outputData.secondGroups[i];
+
+                var memberNames = getIndividualElementNames(outputData.joinedGroupNames[i]);
+                var member1Names = getIndividualElementNames(outputData.firstGroupsNames[i]);
+                var member2Names = getIndividualElementNames(outputData.secondGroupsNames[i]);
+
+                var sortedGroupAndNames = getSortedGroup(group, memberNames, groupMemberRankings);
+                var sorted1GroupAndNames = getSortedGroup(group1, member1Names, groupMemberRankings);
+                var sorted2GroupAndNames = getSortedGroup(group2, member2Names, groupMemberRankings);
+
+                reorderedGroups.push(sortedGroupAndNames[0]);
+                reorderedGroupNames.push(sortedGroupAndNames[1]);
+
+                reorderedFirstGroups.push(sorted1GroupAndNames[0]);
+                reorderedFirstGroupsNames.push(sorted1GroupAndNames[1]);
+
+                reorderedSecondGroups.push(sorted2GroupAndNames[0]);
+                reorderedSecondGroupsNames.push(sorted2GroupAndNames[1]);
+            }
+
+            outputData.joinedGroups = reorderedGroups;
+            outputData.joinedGroupNames = reorderedGroupNames;
+
+            outputData.firstGroups = reorderedFirstGroups;
+            outputData.firstGroupsNames = reorderedFirstGroupsNames;
+
+            outputData.secondGroups = reorderedSecondGroups;
+            outputData.secondGroupsNames = reorderedSecondGroupsNames;
+
+            outputData.progressiveAlignment = reorderedGroups[reorderedGroups.length - 1];
+        }
+    }
+
+    /**
+     * Returns the individual names of the group members,
+     * where a name character separated by a comma from the name number.
+     * @param groupName - The group name from which the names extracted.
+     * @return {Array} - The array with the individual names.
+     */
+    function getIndividualElementNames(groupName) {
+        var names = [];
+
+        for (var i = 0; i < groupName.length; i++) {
+            var character = groupName[i];
+            var number = SYMBOLS.EMPTY;
+
+            while (i + 1 < groupName.length && groupName[i + 1].match(CHARACTER.NUMBER)) {
+                number += groupName[i + 1];
+                i++;
+            }
+            names.push(number.length > 0 ? character + SYMBOLS.COMMA + number : character);
+        }
+
+        return names;
+    }
+
+    /**
+     * Returns the rankings of the individual members.
+     * The ranking is the position within the cluster names.
+     * Hint: memberNames.length <= outputData.clusterNames.length (because duplicate sequences are removed)
+     * @param memberNames {Array} - The names of the used sequences (duplicate sequences are removed).
+     * @param group {Array} - The group of the members.
+     * @return {[rankings, highestRanking]} - The structure containing ranking and highest ranking.
+     */
+    function getRankings(memberNames, group) {
+        var rankings = {};
+        var highestRanking = Number.NEGATIVE_INFINITY;
+
+        for (var i = 0; i < memberNames.length; i++) {
+            var name = memberNames[i].split(SYMBOLS.COMMA);
+            var character = name[0];
+            var number = name.length > 1 ? (Number(name[1]) - 1) : 0;
+
+            var characterPosition = CLUSTER_NAMES.indexOf(character);
+            var sequence = group[i].replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);
+            rankings[sequence] = characterPosition + CLUSTER_NAMES.length * number;
+
+            if (highestRanking < rankings[sequence])
+                highestRanking = rankings[sequence];
+        }
+
+        return [rankings, highestRanking];
+    }
+
+    /**
+     * Resorts the group and the group names alphabetically in linear time by using two arrays.
+     * @param group {Array} - The group which is resorted.
+     * @param groupMemberNames {Array} - The group names which are resorted.
+     * @param groupMemberRankings {Array} - The rankings which are sued to sort elements.
+     * @return {[finalSortedGroup, finalSortedGroupNames]} - The sorted group and names.
+     */
+    function getSortedGroup(group, groupMemberNames, groupMemberRankings) {
+        var highestRanking = groupMemberRankings[1];
+
+        var sortedGroup = new Array(highestRanking);  // with empty positions
+        var sortedGroupNames = new Array(highestRanking);
+
+        var finalSortedGroup = [];  // without empty positions
+        var finalSortedGroupNames = SYMBOLS.EMPTY;  // without empty positions
+
+        // going over non sorted group
+        for (var i = 0; i < group.length; i++) {
+            var sequence = group[i].replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);
+            var sequenceRanking = groupMemberRankings[0][sequence];
+
+            sortedGroup[sequenceRanking] = group[i];
+            sortedGroupNames[sequenceRanking] = groupMemberNames !== undefined ? groupMemberNames[i] : SYMBOLS.EMPTY;
+        }
+
+        // going over sorted array with empties (to remove the empty positions)
+        for (var j = 0; j < sortedGroup.length; j++) {
+            if (sortedGroup[j] !== undefined) {
+                finalSortedGroup.push(sortedGroup[j]);
+                finalSortedGroupNames += sortedGroupNames[j].replace(SYMBOLS.COMMA, SYMBOLS.EMPTY);
+            }
+        }
+
+        return [finalSortedGroup, finalSortedGroupNames];
+    }
+
+    /**
+     * Creates the OutputViewmodel for T-coffee.
+     * @param algorithmName {string} - The name of the algorithm which is executed.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     */
+    function createTcoffeeOutputViewmodel(algorithmName, viewmodel, outputData) {
+        outputData.librariesData = getLibrariesData(outputData);
+
+        debugger;
+        removeNeutralSymbols(outputData);
+        roundValues(algorithmName, outputData);
+        alignmentInterfaceInstance.reorderGroupSequences(outputData);
+
+        // final output
+        viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
+        viewmodel.score = ko.observable(outputData.score);
+
+        // merge steps
+        viewmodel.firstGroups = ko.observable(outputData.firstGroups);
+        viewmodel.secondGroups = ko.observable(outputData.secondGroups);
+        viewmodel.firstGroupsNames = ko.observable(outputData.firstGroupsNames);
+        viewmodel.secondGroupsNames = ko.observable(outputData.secondGroupsNames);
+        viewmodel.joinedGroups = ko.observable(outputData.joinedGroups);
+        viewmodel.joinedGroupNames = ko.observable(outputData.joinedGroupNames);
+
+        // tree
+        viewmodel.newickString = ko.observable(outputData.newickString);
+
+        // libraries
+        viewmodel.sequencePairsNames = ko.observable(outputData.librariesData[0]);
+        viewmodel.libPositionPairs = ko.observable(outputData.librariesData[1]);
+        viewmodel.primLibValues = ko.observable(outputData.librariesData[2]);
+        viewmodel.extendedLibValues = ko.observable(outputData.librariesData[3]);
+
+        // alignments
+        viewmodel.alignmentsGlobal = ko.observable(outputData.librariesData[4]).extend({ deferred: true });
+        viewmodel.alignmentsLocal = ko.observable(outputData.librariesData[5]).extend({ deferred: true });
+    }
+
+    /**
+     * Returns the data needed to display from primary and extended library (also alignment data to avoid second loop).
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     * @return {[sequencePairsNames, positionPairs, primLibValues, extendedLibValues, alignmentsGlobal, alignmentsLocal]}
+     * - The data from primary library, extended library and alignment.
+     */
+    function getLibrariesData(outputData) {
+        var sequencePairsNames = [];
+        var alignmentsGlobal = [];
+        var alignmentsLocal = [];
+        var positionPairs = [];
+        var primLibValues = [];
+        var extendedLibValues = [];
+
+        var alignmentKeys = Object.keys(outputData.primaryWeightLib);
+
+        // iterate overall alignments
+        for (var i = 0; i < alignmentKeys.length; i++) {
+            var alignmentKey = alignmentKeys[i];
+            var alignmentAndScore = outputData.alignmentsAndScores[alignmentKey];
+            var alignmentAndScoreLocal;
+
+            if (outputData.alignmentsAndScoresLocal !== undefined)
+                alignmentAndScoreLocal = outputData.alignmentsAndScoresLocal[alignmentKey];
+
+            var positionKeys = Object.keys(outputData.primaryWeightLib[alignmentKey]);
+
+            // split alignmentKey to get an array
+            var splittedAlignmentKey = alignmentKey.split(SYMBOLS.COMMA);
+            var sequence1Name = outputData.nameOfSequence[splittedAlignmentKey[0]];
+            var sequence2Name = outputData.nameOfSequence[splittedAlignmentKey[1]];
+
+            var tempPositionPairs = [];
+            var tempPrimLibValues = [];
+            var tempExtendedLibValues = [];
+
+            // iterate overall positions in this alignments
+            for (var j = 0; j < positionKeys.length; j++) {
+                var positionKey = positionKeys[j];
+
+                var valueL = outputData.primaryWeightLib[alignmentKey][positionKey];  // primary library value
+                var valueEL = outputData.extendedWeightLib[alignmentKey][positionKey];  // extended library value
+
+                // split positionKey to get an array
+                var splittedPositionKey = positionKey.split(SYMBOLS.COMMA);
+
+                if (valueEL !== 0) {
+                    tempPositionPairs.push([splittedPositionKey[0], splittedPositionKey[1]]);
+                    tempPrimLibValues.push(valueL);
+                    tempExtendedLibValues.push(valueEL);
+                }
+            }
+
+            if (tempPositionPairs.length !== 0) {  // don't show names of sequence pairs for which no L or EL exists
+                sortWithNumberTuples(tempPositionPairs, [tempPrimLibValues, tempExtendedLibValues]);
+                
+                sequencePairsNames.push([sequence1Name, sequence2Name]);
+                positionPairs.push(tempPositionPairs);
+                primLibValues.push(tempPrimLibValues);
+                extendedLibValues.push(tempExtendedLibValues);
+            }
+
+            alignmentsGlobal.push(alignmentAndScore[2]);
+            alignmentsLocal.push(alignmentAndScoreLocal !== undefined ? alignmentAndScoreLocal[2]: []);
+        }
+
+        sortWithClusterTuples(sequencePairsNames, [positionPairs, primLibValues, extendedLibValues, alignmentsGlobal, alignmentsLocal]);
+        return [sequencePairsNames, positionPairs, primLibValues, extendedLibValues, alignmentsGlobal, alignmentsLocal];
+    }
+
+    /**
+     * Returns numerically sorted input arrays.
+     * @param positionPairs {Array} - Array of number tupels which is sorted and used to sort the input arrays.
+     * @param inputArrays {Array} - Input arrays.
+     */
+    function sortWithNumberTuples(positionPairs, inputArrays) {
+        var switches = [];
+
+        // documentation {sort} - https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+        positionPairs.sort(function (a,b) {
+            var leftNumberA = Number(a[0]);
+            var leftNumberB = Number(b[0]);
+
+            var rightNumberA = Number(a[1]);
+            var rightNumberB = Number(b[1]);
+
+            return switchOrNotSwitch(leftNumberA, leftNumberB, rightNumberA, rightNumberB, switches);
+        });
+
+        for (var j = 0; j < inputArrays.length; j++) {
+            var i = 0;
+
+            inputArrays[j].sort(function (a,b) {  // sort with the sorting determined above
+                return switches[i++];
+            });
+        }
+    }
+
+    /**
+     * Returns a number which tells you if you have to switch two tuples or not.
+     * @param leftNumberA {number} - The left number in a tuple A.
+     * @param leftNumberB {number} - The left number in a tuple B.
+     * @param rightNumberA {number} - The right number in a tuple A.
+     * @param rightNumberB {number}  - The right number in a tuple B.
+     * @param switches {Array} - Stores the switches and not-switches.
+     */
+    function switchOrNotSwitch(leftNumberA, leftNumberB, rightNumberA, rightNumberB, switches) {
+        var value = 0;
+
+        if (leftNumberA === leftNumberB) {
+            value = rightNumberB > rightNumberA ? -1 : (rightNumberB > rightNumberA ? 1 : 0);
+            switches.push(value);
+            return value;
+        }
+
+        value = leftNumberA - leftNumberB;
+        switches.push(value);
+        return value;
+    }
+
+    /**
+     * Returns cluster name sorted input arrays.
+     * @param sequencePairsNames {Array} - Array of cluster-tupels which is sorted and used to sort the input arrays.
+     * @param inputArrays {Array} - Input arrays.
+     * @return {Array} - Sorted Input arrays.
+     */
+    function sortWithClusterTuples(sequencePairsNames, inputArrays) {
+        var switches = [];
+
+        // documentation {sort} - https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+        sequencePairsNames.sort(function (a,b) {
+            var leftNumberA = getNumber(a[0]);
+            var leftNumberB = getNumber(b[0]);
+
+            var rightNumberA = getNumber(a[1]);
+            var rightNumberB = getNumber(b[1]);
+
+            return switchOrNotSwitch(leftNumberA, leftNumberB, rightNumberA, rightNumberB, switches);
+        });
+
+        for (var j = 0; j < inputArrays.length; j++) {
+            var i = 0;
+
+            inputArrays[j].sort(function (a,b) {  // sort with the sorting determined above
+                return switches[i++];
+            });
+        }
+    }
+
+    /**
+     * Translates a cluster-name into a number.
+     * @example: (with 26 characters)
+     * CLUSTER NAMES:
+     * a, b, c, ..., z,         FIRST EPISODE   (0 <= index < 26)
+     * a2, b2, c2, ..., z2,     SECOND EPISODE  (26 <= index < 52)
+     * a3, b3, ...              THIRD ...       (52 <= index < 78)
+     *
+     * CALCULATION:
+     * c = pos(a) + 0 * CLUSTER_NAMES.length = 2 + 0 = 2
+     * a2 = pos(a) + (2-1) * CLUSTER_NAMES.length = 0 + 26 = 26
+     * c2 = pos(a) + (2-1) * CLUSTER_NAMES.length = 2 + 26 = 28
+     * @param cluster
+     * @return {*}
+     */
+    function getNumber(cluster) {
+        // hint: Number("[empty]") is replaced with 0 in JS
+        var clusterNumber = Number(cluster.replace(MULTI_SYMBOLS.STRINGS, SYMBOLS.EMPTY));  // the episode
+        var clusterPosition = CLUSTER_NAMES.indexOf(cluster.replace(MULTI_SYMBOLS.NUMBERS, SYMBOLS.EMPTY));  // position in alphabet
+
+        clusterNumber = clusterNumber > 0 ? (clusterNumber - 1) : 0;  // see example above
+
+        return clusterPosition + clusterNumber * CLUSTER_NAMES.length;
+    }
+
+    /**
+     * T-Coffee does not really needs a neutral symbol.
+     * It's just an implementation gimmick
+     * (to use same functions as in Feng-Doolittle and to avoid code duplicates).
+     * Because of this and to avoid confusion
+     * with the algorithm it is removed from all created groups (for simplicity).
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     */
+    function removeNeutralSymbols(outputData) {
+        var numJoinings =  outputData.firstGroups.length;
+
+        for (var i = 0; i < numJoinings; i++) {
+            for (var j = 0; j < outputData.firstGroups[i].length; j++)
+                outputData.firstGroups[i][j] = outputData.firstGroups[i][j].replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
+
+            for (var j = 0; j < outputData.secondGroups[i].length; j++)
+                outputData.secondGroups[i][j] = outputData.secondGroups[i][j].replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
+
+            for (var j = 0; j < outputData.joinedGroups[i].length; j++)
+                outputData.joinedGroups[i][j] = outputData.joinedGroups[i][j].replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
+        }
     }
 }());

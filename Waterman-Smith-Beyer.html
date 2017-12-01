@@ -11,13 +11,13 @@ Author: Alexander Mattheis
         <a href="https://doi.org/10.1016/0001-8708(76)90202-4">
             Michael S. Waterman, Temple F. Smith and William A. Beyer (1976)</a>
         computes optimal global alignments for two sequences and 
-        allows for an arbitrary scoring of consecutive gaps (insertions/deletions).
+        allows an arbitrary scoring of consecutive gaps (insertions/deletions).
         Thus, it can incorporate the assumption that a single large insertion/deletion event is 
         biologically more likely to happen compared to many small insertions/deletions by 
         using e.g. a logarithmic or affine gap scoring function.
-        <br>
-        <br>
-        To this end, all possible gap lengths are explicitely considered within the recursion,
+        <br />
+        <br />
+        To this end, all possible gap lengths are explicitly considered within the recursion,
         which increases the time complexity from $O(n^2)$ to $O(n^3)$ when compared to the approach by
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman and Wunsch (1970)</a>
         that applies a linear gap scoring.
@@ -28,8 +28,8 @@ Author: Alexander Mattheis
         The dynamic programming approach tabularizes optimal subsolutions in matrix $D$.
         An entry $D_{i,j}$ represents the best score for the alignment of the 
         prefixes $a_{1..i}$ with $b_{1..j}$. The according recursion is shown below. 
-        <br>
-        <br>
+        <br />
+        <br />
         For the given input, the according table $D$ is provided along with a list 
         of according optimal alignments. 
         On table cell selection, optimal traceback options are shown.
@@ -37,19 +37,21 @@ Author: Alexander Mattheis
     </div>
 
     <div class="picture">
-        <img src="Waterman-Smith-Beyer-120x90.png">
+        <img src="Waterman-Smith-Beyer-120x90.png" />
     </div>
 </div>
 
 <div id="algorithm_input">
     <div class="row">
 		<div class="colW100"><label>Sequence $a$:</label></div>
-		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'" type="text"></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'"
+                                    title="Allowed are A-Z and '-'." type="text"></div>
 	</div>
 
 	<div class="row">
 		<div class="colW100"><label>Sequence $b$:</label></div>
-		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'" type="text"></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'"
+                                    title="Allowed are A-Z and '-'." type="text"></div>
 	</div>
 
     <div class="row">
@@ -90,13 +92,13 @@ Author: Alexander Mattheis
                                      name="functionGroup" type="radio" value="quadratic">
             </span>
 
-            <br>
-            <br>
+            <br />
+            <br />
 
             <span data-bind="text: $root.input.gapFunction"></span>
 
-            <br>
-            <br>
+            <br />
+            <br />
 
             <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
                 Gap opening $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
@@ -107,10 +109,10 @@ Author: Alexander Mattheis
 
     <div class="row">
 		<div class="colW100">
-            <br>
+            <br />
             <label>
-                <br>
-                <br>
+                <br />
+                <br />
                 Recursion:
             </label>
         </div>
@@ -119,8 +121,8 @@ Author: Alexander Mattheis
 			<span data-bind="text: $root.input.formula"></span>
 
             <div class="group_hint">
-                <b>Hint:</b> <br>
-                For similarity maximization, <br> match scores should be positive and all other scores lower. <br>
+                <b>Hint:</b> <br />
+                For similarity maximization, <br /> match scores should be positive and all other scores lower. <br />
                 For distance minimization the reverse applies.
             </div>
 		</div>
@@ -135,7 +137,7 @@ Author: Alexander Mattheis
 					<tr>
 						<th>$D$</th>
 						<th></th>
-                        <!-- ko foreach: input.sequence1 -->
+                        <!-- ko foreach: input.sequence2 -->
 							<th data-bind="drawChar: [$data, $index()+1]"></th>
                         <!-- /ko -->
 					</tr>
@@ -149,7 +151,7 @@ Author: Alexander Mattheis
                             <!-- /ko -->
 
                             <!-- ko if: $index() > 0 -->
-								<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+								<th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
                             <!-- /ko -->
 
                             <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
@@ -181,7 +183,7 @@ Author: Alexander Mattheis
                 <thead>
 					<tr>
 						<th>
-							Results <br>
+							Results <br />
 							<small>
 								You can select a result to get the related traceback.
 							</small>
@@ -198,8 +200,8 @@ Author: Alexander Mattheis
                                 <!-- ko if: $index() == 0 -->
                                     <tr>
                                         <td class="selectable_entry selectable_entry_start">
-                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br />
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br />
                                             <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
                                         </td>
                                     </tr>
@@ -207,8 +209,8 @@ Author: Alexander Mattheis
                                 <!-- ko if: $index() != 0 -->
                                     <tr>
                                         <td class="selectable_entry">
-                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br />
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br />
                                             <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
                                         </td>
                                     </tr>

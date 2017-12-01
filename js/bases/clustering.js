@@ -20,7 +20,7 @@ Author: Alexander Mattheis
     var outputData = {};  // stores the output of the algorithm
 
     /**
-     * Contains functions to compute (hierarchical) agglomerative clustering.
+     * Contains functions to compute a clustering (at the moment only hierarchical agglomerative clustering).
      * It is used by agglomerative clustering algorithms as superclass
      * to avoid code duplicates.
      * @constructor
@@ -29,7 +29,7 @@ Author: Alexander Mattheis
         clusteringInstance = this;
 
         // variables
-        this.nameIndex = 0;
+        this.nameIndex = 0;  // only really needed, if getNextClusterName() function is used
         this.remainingClusterNames = [];
         this.removedKeys = [];
         this.treeParts = [];  // storing the current incurred tree parts
@@ -47,11 +47,12 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Sets the input data of the algorithm.
-     * @return {Object} - Contains all input data.
+     * Sets the algorithm input for an appropriate algorithm
+     * which is using the inputViewmodel properties in its computations.
+     * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
-    function setInput(input) {
-        inputData = input;
+    function setInput(inputViewmodel) {
+        //inputData.clusteringSubalgorithm = inputViewmodel.clusteringSubalgorithm();
     }
 
     /**
@@ -61,7 +62,6 @@ Author: Alexander Mattheis
      */
     function compute() {
         var distanceMatrixCopy = jQuery.extend(true, {}, outputData.distanceMatrix);  // deep copy
-
         var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in hierarchical clustering algorithms
 
         initializeStructs();
@@ -74,6 +74,7 @@ Author: Alexander Mattheis
             computeDistances(subtree, i, numOfIterations);
         }
 
+        getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
         outputData.newickString = formats.newickFormat.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
         return [inputData, outputData];
@@ -91,6 +92,12 @@ Author: Alexander Mattheis
         // in which they were created to avoid a repeated tree traversal during the progressive alignment
         // and for possible step by step visualizations of tree-growthment with libraries
         outputData.treeBranches = [];
+
+        outputData.allClusterNames = outputData.clusterNames.slice();
+        outputData.remainingClusters = [jQuery.extend(true, [], clusteringInstance.remainingClusterNames)];
+        outputData.distanceMatrices = [];
+        outputData.keys = [];
+        outputData.minimums = [];
     }
 
     /**
@@ -98,10 +105,10 @@ Author: Alexander Mattheis
      * @param numOfIterations - The number of iterations the algorithm will do.
      */
     function initializeCardinalities(numOfIterations) {
-        clusteringInstance.nameIndex = numOfIterations + 1;  // current cluster-name set-size + 1
+        clusteringInstance.nameIndex = inputData.sequences.length;  // do not change that!
 
         for (var i = 0; i < clusteringInstance.nameIndex; i++)
-            outputData.cardinalities[CLUSTER_NAMES[i]] = 1;
+            outputData.cardinalities[outputData.clusterNames[i]] = 1;
     }
 
     /**
@@ -127,6 +134,8 @@ Author: Alexander Mattheis
             }
         }
 
+        outputData.minimums.push(Math.round(minValue*10)/10);  // only for visualization
+
         // create structure for better understandable access
         var minimum = {};
         minimum.cluster1Name = minKey[0];
@@ -150,6 +159,9 @@ Author: Alexander Mattheis
                 remainingKeys.push(keys[i]);
         }
 
+        outputData.distanceMatrices.push(jQuery.extend(true, {}, outputData.distanceMatrix));  // only for visualization the matrix of each round is stored
+        outputData.keys.push(remainingKeys);
+
         return remainingKeys;
     }
 
@@ -162,6 +174,7 @@ Author: Alexander Mattheis
     function mergeClusters(cluster1Name, cluster2Name) {
         var newClusterName = createNewCluster(cluster1Name, cluster2Name)
         removeEntriesWith(cluster1Name, cluster2Name);
+        outputData.allClusterNames.push(newClusterName);
         return newClusterName;
     }
 
@@ -173,7 +186,7 @@ Author: Alexander Mattheis
      * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function createNewCluster(cluster1Name, cluster2Name) {
-        var newClusterName = getNextClusterName();
+        var newClusterName = cluster1Name + cluster2Name;  // getNextClusterName();  // alternative name generation
 
         var firstClusterCardinality = outputData.cardinalities[cluster1Name];
         var SecondClusterCardinality = outputData.cardinalities[cluster2Name];
@@ -222,7 +235,7 @@ Author: Alexander Mattheis
             clusteringInstance.remainingClusterNames.splice(index, 1);
     }
 
-    /**
+    /** ALTERNATIVE from lecture.
      * Returns the next name of a cluster.
      * Hint: After all characters are depleted,
      * a number is concatenated to the character
@@ -234,6 +247,7 @@ Author: Alexander Mattheis
      * a3, b3, ...              THIRD ...       (52 <= index < 78)
      * @return {string} - Cluster name.
      */
+    /*
     function getNextClusterName() {
         var clusterName = SYMBOLS.EMPTY;
 
@@ -249,6 +263,7 @@ Author: Alexander Mattheis
 
         return clusterName;
     }
+    */
 
     /**
      * Appends a node with the given parameters to the hierarchical tree.
@@ -302,7 +317,7 @@ Author: Alexander Mattheis
      * Calculated distances in UPGMA are unweighted
      * with respect to the cluster-sizes. From this the "unweighted"-term results.
      * @example:
-     * dist(c, k = i union j) = [|i|*dist(c, i) + |j|*dist(c, j)] / [|i|+|j|]
+     * dist(c, k = i union j) = [|i|* dist(c, i) + |j|* dist(c, j)] / [|i|+|j|]
      * @param subtree {Object} - The subtree for the new cluster.
      * @param iteration {number} - The subtree for the new cluster.
      * @param subtree {maxNumIterations} - The subtree for the new cluster.
@@ -313,6 +328,8 @@ Author: Alexander Mattheis
 
         if (iteration === maxNumIterations-1)
             subtree.value = 0;
+
+        outputData.remainingClusters.push(jQuery.extend(true, [], clusteringInstance.remainingClusterNames));  // for visualization
     }
 
     /**

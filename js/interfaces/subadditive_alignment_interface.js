@@ -16,7 +16,7 @@ Author: Alexander Mattheis
     var subadditiveAlignmentInterfaceInstance;
 
     /**
-     * Is used to work with the input and output (the interface) of an affine alignment algorithm.
+     * Is used to work with the input and output (the interface) of a subadditive alignment algorithm.
      * @constructor
      * @augments AlignmentInterface
      */
@@ -402,6 +402,13 @@ Author: Alexander Mattheis
      * Processing the input from the user.
      * This function is executed by the Input-Processor
      * and it is dependant on the algorithm.
+     * It is needed by the algorithm
+     * to read in the current and not the last values of the inputs.
+     * The problem is that processInput can be only executed before the observable changes
+     * its values in the viewmodel and setting timeouts is not possible,
+     * because it's very hardware dependant.
+     * Also, some values have to be converted first for example
+     * into a number. This is why all values are reseted with JQuery.
      * @param algorithm {Object} - Algorithm used to update the user interface.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
@@ -444,11 +451,12 @@ Author: Alexander Mattheis
      * @param outputData {Object} - Contains all output data.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
+     * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
         if (viewmodels.input.subadditiveFunction !== undefined
             && viewmodels.input.subadditiveFunction() === SUBADDITIVE_FUNCTIONS.LOGARITHMIC)
-            alignmentInterfaceInstance.roundValues(outputData);
+            alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
 
         viewmodels.output.matrix(outputData.matrix);
 
@@ -460,7 +468,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix.length) {
                     viewmodels.output.matrix[i] = new Function();
                     viewmodels.output.verticalGaps[i] = new Function();

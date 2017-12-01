@@ -60,6 +60,7 @@ Author: Alexander Mattheis
      */
     function InputViewmodel(algorithmName) {
         var viewmodel = this;
+        var isHirschBerg = algorithmName === ALGORITHMS.HIRSCHBERG;
 
         if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
             this.sequence1 = ko.observable(NORMALIZED_ALIGNMENT_DEFAULTS.SEQUENCE_1);
@@ -76,12 +77,12 @@ Author: Alexander Mattheis
             this.sequence1 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_1);
             this.sequence2 = ko.observable(ALIGNMENT_DEFAULTS.SEQUENCE_2);
 
-            this.calculation = ko.observable(ALIGNMENT_DEFAULTS.CALCULATION);
+            this.calculation = ko.observable(isHirschBerg ? ALIGNMENT_DEFAULTS.CALCULATION_HIRSCHBERG : ALIGNMENT_DEFAULTS.CALCULATION);
 
             // function
-            this.gap = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.GAP);
-            this.match = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
-            this.mismatch = ko.observable(ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
+            this.gap = ko.observable(isHirschBerg ? -ALIGNMENT_DEFAULTS.FUNCTION.GAP : ALIGNMENT_DEFAULTS.FUNCTION.GAP);
+            this.match = ko.observable(isHirschBerg ? -ALIGNMENT_DEFAULTS.FUNCTION.MATCH : ALIGNMENT_DEFAULTS.FUNCTION.MATCH);
+            this.mismatch = ko.observable(isHirschBerg ? -ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH : ALIGNMENT_DEFAULTS.FUNCTION.MISMATCH);
         }
 
         this.formula = ko.computed(
@@ -92,9 +93,23 @@ Author: Alexander Mattheis
                     MathJax.Hub.Queue(["Typeset", MathJax.Hub])
                 }, REUPDATE_TIMEOUT_MS);
 
-                return getFormula(algorithmName, viewmodel);
+                return getFormula(algorithmName, viewmodel, false);
             }
         );
+
+        if (algorithmName === ALGORITHMS.HIRSCHBERG) {
+            this.formulaBackward = ko.computed(
+                function getSelectedFormula() {
+                    // to fire LaTeX-Code reinterpretation after the selected formula was changed
+                    // HINT: only found solution which works on all browsers
+                    setTimeout(function () {
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+                    }, REUPDATE_TIMEOUT_MS);
+
+                    return getFormula(algorithmName, viewmodel, true);
+                }
+            );
+        }
 
         if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
             this.subFormula = ko.computed(
@@ -115,18 +130,27 @@ Author: Alexander Mattheis
      * Returns the LaTeX-code for formulas.
      * @param algorithmName {string} - The name of the algorithm.
      * @param viewmodel {InputViewmodel} - The viewmodel of the view displaying the formula.
+     * @param secondRecursion {boolean} - Tells if the function is called a second time. If it is so, then second formula selected.
      * @return {string} - LaTeX code.
      */
-    function getFormula(algorithmName, viewmodel) {
+    function getFormula(algorithmName, viewmodel, secondRecursion) {
         var string = LATEX.MATH_REGION;  // starting LaTeX math region
 
         if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
             string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MAX;
         else
-            string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
+            if (secondRecursion)
+                string += LATEX.FORMULA.CURRENT_BACKWARD + SYMBOLS.EQUAL + LATEX.MIN;
+            else
+                string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
 
         if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
             string += LATEX.RECURSION.SMITH_WATERMAN_MODIFIED;
+        else if (algorithmName === ALGORITHMS.HIRSCHBERG)
+            if (secondRecursion)
+                string += LATEX.RECURSION.HIRSCHBERG_BACKWARD;
+            else
+                string += LATEX.RECURSION.HIRSCHBERG_FORWARD;
         else if (algorithmName === ALGORITHMS.NEEDLEMAN_WUNSCH)
             string += LATEX.RECURSION.NEEDLEMAN_WUNSCH;
         else
@@ -161,7 +185,21 @@ Author: Alexander Mattheis
         string += LATEX.END_CASES;  // stopping LaTeX case region
 
         if (algorithmName === ALGORITHMS.SMITH_WATERMAN || algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
-            string = string.replace(MULTI_SYMBOLS.D_BIG, SYMBOLS.S_BIG);
+            string = string.replace(LATEX.FORMULA.D_BIG, LATEX.FORMULA.S_BIG);
+
+        if (algorithmName === ALGORITHMS.HIRSCHBERG && secondRecursion) {
+            string = string.replace(LATEX.FORMULA.D_BIG_UNDERSCORE, LATEX.FORMULA.D_PRIME_UNDERSCORE);
+            string = string.replace(LATEX.FORMULA.I_MINUS_ONE, LATEX.FORMULA.I_PLUS_ONE);
+            string = string.replace(LATEX.FORMULA.J_MINUS_ONE, LATEX.FORMULA.J_PLUS_ONE);
+			// apply index shift by +1 for both sequences
+			string = string.replace(/a_i/g, "a_{i+1}").replace(/b_j/g, "b_{j+1}");
+			// add initialization information
+			string = string.replace(LATEX.MATH_REGION, LATEX.MATH_REGION +"\\begin{array}{l}");
+			string += "\\\\" + LATEX.FORMULA.D_PRIME_UNDERSCORE+"{n,m} = 0";
+			string += ", \\quad "+LATEX.FORMULA.D_PRIME_UNDERSCORE+"{n,j} = (m-j)\\gamma";
+			string += ", \\quad "+LATEX.FORMULA.D_PRIME_UNDERSCORE+"{i,m} = (n-i)\\gamma";
+			string += "\\end{array}";
+        }
 
         string += LATEX.MATH_REGION;  // stopping LaTeX math region
         return string;
@@ -184,6 +222,13 @@ Author: Alexander Mattheis
      * Processing the input from the user.
      * This function is executed by the Input-Processor
      * and it is dependant on the algorithm.
+     * It is needed by the algorithm
+     * to read in the current and not the last values of the inputs.
+     * The problem is that processInput can be only executed before the observable changes
+     * its values in the viewmodel and setting timeouts is not possible,
+     * because it's very hardware dependant.
+     * Also, some values have to be converted first for example
+     * into a number. This is why all values are reseted with JQuery.
      * @param algorithm {Object} - Algorithm used to update the user interface.
      * @param inputProcessor {Object} - The unit processing the input.
      * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
@@ -223,18 +268,22 @@ Author: Alexander Mattheis
      * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
-        alignmentInterfaceInstance.roundValues(outputData);
+        var algorithmType = viewmodels.visual.algorithm.type;
 
-        if (outputData.iterationData !== undefined)
+        alignmentInterfaceInstance.roundValues(algorithmType, outputData);
+
+        if (algorithmType === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)  // if AEP
             changeAEPOutput(outputData, viewmodels);
-        else if (outputData.matrix !== undefined) {
+        else if (algorithmType === ALGORITHMS.HIRSCHBERG) {
+            changeHirschbergOutput(outputData, viewmodels);
+        } else if (outputData.matrix !== undefined) {  // all other algorithms
             viewmodels.output.matrix(outputData.matrix);
 
             for (var i = 0; i < outputData.matrix.length; i++) {
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix.length)
                     viewmodels.output.matrix[i] = new Function();
 
@@ -261,7 +310,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix1.length)
                     viewmodels.output.matrix1[i] = new Function();
 
@@ -294,7 +343,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix2.length)
                     viewmodels.output.matrix2[i] = new Function();
 
@@ -327,7 +376,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix3.length)
                     viewmodels.output.matrix3[i] = new Function();
 
@@ -360,7 +409,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix4.length)
                     viewmodels.output.matrix4[i] = new Function();
 
@@ -393,7 +442,7 @@ Author: Alexander Mattheis
                 // new variables (rows) are not automatically functions
                 // and so we have to convert new variables manually into functions
                 // or we get the following error
-                // 'Uncaught TypeError: inputOutputViewmodel.output.tableValues[i] is not a function'
+                // 'Uncaught TypeError: viewmodels.output.matrix[i] is not a function'
                 if (i > viewmodels.output.matrix5.length)
                     viewmodels.output.matrix5[i] = new Function();
 
@@ -420,5 +469,148 @@ Author: Alexander Mattheis
         }
 
         viewmodels.output.maxNumberIterations(outputData.maxNumberIterations);
+    }
+
+    /**
+     * Changes the output of Arslan-Egecioglu-Pevzner algorithm after processing the input.
+     * @param outputData {Object} - Contains all output data.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     */
+    function changeHirschbergOutput(outputData, viewmodels) {
+        var traceFunctionsData = alignmentInterfaceInstance.getLaTeXTraceFunctions(outputData);
+        var rowData = alignmentInterfaceInstance.getRowData(outputData);
+        var columnData = alignmentInterfaceInstance.getColumnData(outputData);
+        var minimaData = alignmentInterfaceInstance.getMinimaData(rowData, columnData);
+        var twoRowsData = alignmentInterfaceInstance.getTwoRowsSubmatricesData(outputData);
+
+        // get matrices data
+        var twoRowsMatrices = twoRowsData[0];
+        var twoRowsCharacters = twoRowsData[1];
+        var twoRowsCharactersPositions = twoRowsData[2];
+
+        // divide data in forward and backward
+        var forwardTwoRowsMatrices = twoRowsMatrices[0];
+        var backwardTwoRowsMatrices = twoRowsMatrices[1];
+
+        var forwardTwoRowsCharacters = twoRowsCharacters[0];
+        var backwardTwoRowsCharacters = twoRowsCharacters[1];
+
+        var forwardTwoRowsCharactersPositions = twoRowsCharactersPositions[0];
+        var backwardTwoRowsCharactersPositions = twoRowsCharactersPositions[1];;
+
+        debugger;
+        // main output
+        viewmodels.output.forwardMatrices(outputData.forwardMatrices);
+        viewmodels.output.backwardMatrices(outputData.backwardMatrices);
+
+        // iteration over each matrix in forward matrices
+        for (var i = 0; i < outputData.forwardMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.forwardMatrices.length)
+                viewmodels.output.forwardMatrices[i] = new Function();
+
+            viewmodels.output.forwardMatrices[i](outputData.forwardMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.forwardMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.forwardMatrices[i].length)
+                    viewmodels.output.forwardMatrices[i][j] = new Function();
+
+                viewmodels.output.forwardMatrices[i][j](outputData.forwardMatrices[i][j]);
+            }
+        }
+
+        // iteration over each matrix in backward matrices
+        for (var i = 0; i < outputData.backwardMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.backwardMatrices.length)
+                viewmodels.output.backwardMatrices[i] = new Function();
+
+            viewmodels.output.backwardMatrices[i](outputData.backwardMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.backwardMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.backwardMatrices[i].length)
+                    viewmodels.output.backwardMatrices[i][j] = new Function();
+
+                viewmodels.output.backwardMatrices[i][j](outputData.backwardMatrices[i][j]);
+            }
+        }
+
+        viewmodels.output.alignments(outputData.alignments);
+
+        // matrix of all minima
+        viewmodels.output.tracecellLines(outputData.tracecellLines);
+        viewmodels.output.globalMinima(minimaData);
+
+        // header
+        viewmodels.output.recursionNumbersContainer(outputData.recursionNumbersContainer);
+        viewmodels.output.traceFunctions(traceFunctionsData);
+        viewmodels.output.currentGlobalRow(rowData);
+
+        // table header (to avoid a problem between Knockout and MathJax the LaTeX code is generated in viewmodel and not in the view)
+        viewmodels.output.matrixDLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D));
+        viewmodels.output.matrixDPrimeLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_PRIME));
+        viewmodels.output.sumLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.SUM));
+
+        viewmodels.output.secondSequences(outputData.secondSequences);
+        viewmodels.output.secondSequencePositions(outputData.secondSequencePositions);
+
+        // addition table
+        viewmodels.output.forwardRows(outputData.forwardRows);
+        viewmodels.output.mirroredBackwardRows(outputData.mirroredBackwardRows);
+        viewmodels.output.addedRows(outputData.addedRows);
+        viewmodels.output.highlightPositions(outputData.relativeSplittingPoint);
+
+        // generated two rows submatrices (intermediate steps)
+        viewmodels.output.prefixTwoRowsCharacters(forwardTwoRowsCharacters);
+        viewmodels.output.suffixTwoRowsCharacters(backwardTwoRowsCharacters);
+
+        viewmodels.output.prefixTwoRowsCharactersPositions(forwardTwoRowsCharactersPositions);
+        viewmodels.output.suffixTwoRowsCharactersPositions(backwardTwoRowsCharactersPositions);
+
+        viewmodels.output.prefixTwoRowsMatrices(forwardTwoRowsMatrices);
+
+        // iteration over each matrix (forward matrices)
+        for (var i = 0; i < forwardTwoRowsMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.prefixTwoRowsMatrices.length)
+                viewmodels.output.prefixTwoRowsMatrices[i] = new Function();
+
+            viewmodels.output.prefixTwoRowsMatrices[i](forwardTwoRowsMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < forwardTwoRowsMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.prefixTwoRowsMatrices[i].length)
+                    viewmodels.output.prefixTwoRowsMatrices[i][j] = new Function();
+
+                viewmodels.output.prefixTwoRowsMatrices[i][j](forwardTwoRowsMatrices[i][j]);
+            }
+        }
+
+        viewmodels.output.suffixTwoRowsMatrices(backwardTwoRowsMatrices);
+
+        // iteration over each matrix (backward matrices)
+        for (var i = 0; i < backwardTwoRowsMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.suffixTwoRowsMatrices.length)
+                viewmodels.output.suffixTwoRowsMatrices[i] = new Function();
+
+            viewmodels.output.suffixTwoRowsMatrices[i](backwardTwoRowsMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < backwardTwoRowsMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.suffixTwoRowsMatrices[i].length)
+                    viewmodels.output.suffixTwoRowsMatrices[i][j] = new Function();
+
+                viewmodels.output.suffixTwoRowsMatrices[i][j](backwardTwoRowsMatrices[i][j]);
+            }
+        }
+
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code of the trace functions
     }
 }());

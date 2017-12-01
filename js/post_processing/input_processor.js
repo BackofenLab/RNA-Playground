@@ -10,18 +10,17 @@ Author: Alexander Mattheis
 (function () {  // namespace
     // public methods (declaration)
     namespace("postProcessing.inputProcessor",
-        InputProcessor, activateInputUpdates, inputUpdatesActivated, linkElements, updateGUI, postEdit);
+        InputProcessor, activateInputUpdates, inputUpdatesActivated, linkElements, postEdit);
 
     // instances
     var inputProcessorInstance;
 
     /**
-     * Does all the post-processing
-     * like removing/updating wrong inputs.
-     * It defines how different
-     * input types behave and
-     * it is also used for forwarding input
+     * Does the forwarding of input
      * to the algorithms and the visualizer.
+     * In this connection, it post processes the input
+     * by removing/updating wrong inputs
+     * to the correct value.
      */
     function InputProcessor() {
         inputProcessorInstance = this;
@@ -33,7 +32,6 @@ Author: Alexander Mattheis
         this.activateInputUpdates = activateInputUpdates;
         this.inputUpdatesActivated = inputUpdatesActivated;
         this.linkElements = linkElements;
-        this.updateGUI = updateGUI;
         this.postEdit = postEdit;
     }
 
@@ -53,10 +51,13 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Linking static elements with a function.
-     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * Linking static and dynamic elements with a function.
+     * @param algorithm {Object} - Algorithm used to update the user interface.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @param processInput {Function} - Function from the algorithm which should process the input.
+     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
      */
-    function linkElements(visualViewmodel) {
+    function linkElements(algorithm, viewmodels, processInput, changeOutput) {
         fixBrowserBugs();
 
         // retrieve parameters
@@ -72,11 +73,15 @@ Author: Alexander Mattheis
 
         // linking (alphabetically sorted)
         linkBasicInputsBehaviour(algorithmInput, functionParameters);
-        linkDownloadLinks(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable);
-        linkIterationTables(visualViewmodel);
-        linkOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
-        linkSelectables(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable,
+        linkDownloadLinks(viewmodels.visual, calculationVerticalTable, calculationTable, calculationHorizontalTable);
+        linkDynamicallyCreatedButtons(algorithm, viewmodels, processInput, changeOutput);  // do not exist from beginning
+        linkGuiUpdater(algorithm, viewmodels, processInput, changeOutput);
+        linkIterationTables(viewmodels.visual);
+        linkOverlay(viewmodels.visual, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
+        linkSelectables(viewmodels.visual, calculationVerticalTable, calculationTable, calculationHorizontalTable,
             mainOutput, selectableEntryClass);
+
+        doSingleInitialHighlighting(viewmodels.visual);
     }
 
     /**
@@ -108,8 +113,9 @@ Author: Alexander Mattheis
         var functionArguments = {"functionParameters": functionParameters};
         algorithmInput.find(".optimization_type").on("change", functionArguments, negateOptimizationParameters);
 
-        functionParameters.on("focusout keypress", removeCriticalNumbers);
-        algorithmInput.find(".sequence").on("keyup", removeNonAllowedBases);
+        functionParameters.on("change", removeCriticalNumbers);
+        algorithmInput.on("keyup", ".sequence", removeNonAllowedBases);
+        algorithmInput.on("keyup", ".sequence_multi", removeNonAllowedBases);
     }
 
     /**
@@ -135,13 +141,15 @@ Author: Alexander Mattheis
         if (CHARACTER.NUMBERS.test(this.value))
             this.value = Math.round(this.value);
 
-        if (e.which === KEY_CODES.ENTER || e.type === "focusout") {
-            if (this.id === "length") {
+        if (e.type === "change") {
+            if (this.id === "global_alignments_per_sequence_pair" || this.id === "local_alignments_per_sequence_pair") {
+                this.value = this.value >= INPUT.ALIGNMENTS_MIN ? this.value : INPUT.ALIGNMENTS_MIN;
+                this.value = this.value <= INPUT.ALIGNMENTS_MAX ? this.value : INPUT.ALIGNMENTS_MAX;
+            } else if (this.id === "length") {
                 this.value = this.value >= INPUT.LENGTH_MIN ? this.value : INPUT.LENGTH_MIN;
                 this.value = this.value <= INPUT.LENGTH_MAX ? this.value : INPUT.LENGTH_MAX;
             }
-            else
-            {
+            else {
                 this.value = this.value >= INPUT.MIN ? this.value : INPUT.MIN;
                 this.value = this.value <= INPUT.MAX ? this.value : INPUT.MAX;
             }
@@ -197,6 +205,75 @@ Author: Alexander Mattheis
     }
 
     /**
+     * Dynamically created objects have to be bind on the whole document or they have to be rebinded.
+     * @param algorithm {Object} - Algorithm used to update the user interface.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @param processInput {Function} - Function from the algorithm which should process the input.
+     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
+     */
+    function linkDynamicallyCreatedButtons(algorithm, viewmodels, processInput, changeOutput) {
+        if (MULTI_SEQUENCE_ALGORITHMS.indexOf(algorithm.type) >= 0) {  // only multi-sequence algorithms have dynamic buttons
+            $(document).off("click", "**"); // remove delegated event handlers like the one below before reassignment
+
+            $(document).on("click", ".add_remove", function () {
+                update(algorithm, viewmodels, processInput, changeOutput);
+            });
+        }
+    }
+
+    /**
+     * Links the user interface update-function which allows
+     * to update the output after some kind of calculation with the input.
+     * @param algorithm {Object} - Algorithm used to update the user interface.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @param processInput {Function} - Function from the algorithm which should process the input.
+     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
+     */
+    function linkGuiUpdater(algorithm, viewmodels, processInput, changeOutput) {
+        var input = $("#algorithm_input");
+
+        input.on({
+            change: function () {
+                update(algorithm, viewmodels, processInput, changeOutput);
+            },
+
+            keypress: function (e) {
+                if (e.which === KEY_CODES.ENTER)
+                    update(algorithm, viewmodels, processInput, changeOutput);
+            }
+        });
+    }
+
+    /**
+     * Processes entered inputs with an algorithm to update the outputs.
+     * @param algorithm {Object} - Algorithm used to update the user interface.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @param processInput {Function} - Function from the algorithm which should process the input.
+     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
+     */
+    function update(algorithm, viewmodels, processInput, changeOutput) {
+        // avoids using not updated values (especially in displayed formulas)
+        // for example removeCriticalNumbers(e) needs to have enough time to be executed first on a value change (uses same event: [..].on(change))
+        setTimeout(function () {
+            processInput(algorithm, inputProcessorInstance, viewmodels.input, viewmodels.visual);
+            changeOutput(algorithm.getOutput(), inputProcessorInstance, viewmodels);
+            postProcess(viewmodels);
+        }, REUPDATE_TIMEOUT_MS);
+    }
+
+    /**
+     * Does post processing after some kind of input by keyboard or mouse.
+     * For example LaTeX-math is updated.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
+     * @see MathJax has to be executed as last one!
+     */
+    function postProcess(viewmodels) {
+        linkIterationTables(viewmodels.visual);  // iterative tables are not existing from the beginning and so they have to be relinked
+        doSingleInitialHighlighting(viewmodels.visual);
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
+    }
+
+    /**
      * Linking everything with tables for iterative algorithms.
      * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
      * @see Used for AEP.
@@ -234,16 +311,44 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Some algorithms has some initial highlighting.
+     * Some iterative algorithms has some initial highlighting.
      * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
      * @param iterationTablesArray {Array} - An array of tables.
      * @param mainOutput {Element} - The div containing only the calculation tables.
      */
     function doInitialHighlighting(visualViewmodel, mainOutput, iterationTablesArray) {
-        // the tables exist after just after the display has updated, but the event is triggered before and so a delay is needed
+        // the tables exist after just after the display has updated,
+        // but the event is triggered before and so a delay is needed
         setTimeout(function () {
             visualViewmodel.showTraceback(0, undefined, undefined, undefined, iterationTablesArray, mainOutput[0]);
         }, REACTION_TIME_HIGHLIGHT);
+    }
+
+    /**
+     * Some algorithms with a single table has some initial highlighting.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     */
+    function doSingleInitialHighlighting(visualViewmodel) {
+        if (visualViewmodel.algorithm.type === ALGORITHMS.HIRSCHBERG) {
+
+            // the table exist after just after the display has updated,
+            // but the event is triggered before and so a delay is needed
+            setTimeout(function () {
+                var mainOutput = $(".main_output");  // output containing the calculation tables
+                var traceTable = mainOutput.find(".trace_table");
+
+                visualViewmodel.showTraceback(0, undefined, traceTable[0], undefined,
+                    undefined, mainOutput[0]);
+            }, REACTION_TIME_HIGHLIGHT);
+
+            setTimeout(function () {
+                var mainOutput = $(".main_output");  // output containing the calculation tables
+                var tracecellsTable = mainOutput.find(".tracecells_table");
+
+                visualViewmodel.markMinima(tracecellsTable[0]);
+            }, REACTION_TIME_HIGHLIGHT);
+
+        }
     }
 
     /**
@@ -470,52 +575,6 @@ Author: Alexander Mattheis
         visualViewmodel.showFlow(cellCoordinates,
             calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], iterationTablesArray,
             mainOutput, -(number+1));  // MATRICES.ITERATION_NUMBER_i are negative
-    }
-
-    /**
-     * Updates the user interfaces of the loaded page.
-     * @param algorithm {Object} - Algorithm used to update the user interface.
-     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
-     * @param processInput {Function} - Function from the algorithm which should process the input.
-     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
-     */
-    function updateGUI(algorithm, viewmodels, processInput, changeOutput) {
-        var inputs = $("#algorithm_input").find("input");
-
-        inputs.on({
-            keypress: function (e) {
-                if (e.which === KEY_CODES.ENTER)
-                    update(algorithm, viewmodels, processInput, changeOutput);
-            },
-
-            change: function () {
-                update(algorithm, viewmodels, processInput, changeOutput);
-            }
-        });
-    }
-
-    /**
-     * Processes entered inputs with an algorithm to update the outputs.
-     * @param algorithm {Object} - Algorithm used to update the user interface.
-     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
-     * @param processInput {Function} - Function from the algorithm which should process the input.
-     * @param changeOutput {Function} - Function from the algorithm which should change the output after processing the input.
-     */
-    function update(algorithm, viewmodels, processInput, changeOutput) {
-        processInput(algorithm, inputProcessorInstance, viewmodels.input, viewmodels.visual);
-        changeOutput(algorithm.getOutput(), inputProcessorInstance, viewmodels);
-        postProcess(viewmodels);
-    }
-
-    /**
-     * Does post processing after some kind of input by keyboard or mouse.
-     * LaTeX-math is updated or wrong characters are removed.
-     * @param viewmodels {Object} - The viewmodels used to access visualization functions.
-     * @see MathJax has to be executed as last one!
-     */
-    function postProcess(viewmodels) {
-        linkIterationTables(viewmodels.visual);  // iterative tables are not existing from the beginning and so they have to be relinked
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
     }
 
     /**

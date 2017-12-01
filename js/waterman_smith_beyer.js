@@ -42,6 +42,11 @@ $(document).ready(function () {
     /**
      * Computes the optimal, global subadditive alignment.
      * @constructor
+     * @see https://doi.org/10.1016/0001-8708(76)90202-4
+     *
+     * Waterman, Michael S., Temple F. Smith, and William A. Beyer.
+     * "Some biological sequence metrics."
+     * Advances in Mathematics 20.3 (1976): 367-387.
      */
     function WatermanSmithBeyer() {
         watermanSmithBeyerInstance = this;
@@ -50,7 +55,7 @@ $(document).ready(function () {
         this.type = ALGORITHMS.WATERMAN_SMITH_BEYER;
         this.numberOfTracebacks = 0;
 
-        // inheritance
+        // instances
         alignmentInstance = new bases.alignment.Alignment(this);
 
         // public class methods
@@ -149,10 +154,10 @@ $(document).ready(function () {
     function computeMatrixAndScore() {
         // going through every matrix cell
         for (var i = 1; i < inputData.matrixHeight; i++) {
-            var bChar = inputData.sequenceB[i - 1];
+            var aChar = inputData.sequenceA[i - 1];
 
             for (var j = 1; j < inputData.matrixWidth; j++) {
-                var aChar = inputData.sequenceA[j - 1];
+                var bChar = inputData.sequenceB[j - 1];
 
                 if (inputData.calculationType === ALIGNMENT_TYPES.DISTANCE)
                     outputData.matrix[i][j] = recursionFunction(aChar, bChar, i, j, Math.min);
@@ -283,8 +288,8 @@ $(document).ready(function () {
         var up = position.i - 1;
 
         // retrieve values
-        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
-        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
+        var aChar = left >= 0 ? inputData.sequenceB[left] : SYMBOLS.EMPTY;
+        var bChar = up >= 0 ? inputData.sequenceA[up] : SYMBOLS.EMPTY;
 
         var currentValue = outputData.matrix[position.i][position.j];
 
