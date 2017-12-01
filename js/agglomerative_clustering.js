@@ -40,7 +40,7 @@ $(document).ready(function () {
      * @constructor
      * @augments Clustering
      *
-     * Neighbour Joining (single linkage) by
+     * Neighbour Joining by
      * Saitou, Naruya, and Masatoshi Nei.
      * "The neighbor-joining method: a new method for reconstructing phylogenetic trees."
      * Molecular biology and evolution 4.4 (1987): 406-425.
@@ -132,7 +132,7 @@ $(document).ready(function () {
      * @param distanceMatrix {Array} - The array from which you want the values.
      * @param cluster1Name {string} - The name of the first cluster.
      * @param cluster2Name {string} - The name of the second cluster.
-     * @return {number} - The value
+     * @return {number} - The value from an entry.
      */
     function getMatrixValue(distanceMatrix, cluster1Name, cluster2Name) {
         var value1 = distanceMatrix[[cluster1Name, cluster2Name]];

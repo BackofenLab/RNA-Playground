@@ -95,15 +95,6 @@ var CELL_PERCENT = {
 };
 
 /**
- * Stores the displayed clustering algorithm names.
- */
-var CLUSTERING_ALGORITHMS = {
-    NEIGHBOUR_JOINING: "Neighbour-Joining",
-    UPGMA: "Unweighted PGMA",
-    WPGMA: "Weighted PGMA"
-};
-
-/**
  * Defines allowed and disallowed input characters with regular expressions (regex).
  */
 var CHARACTER = {
@@ -114,6 +105,15 @@ var CHARACTER = {
     NON_CSV_SYMBOLS: /[^0-9;\n\s]+/g,
     NUMBER: /[0-9]/,
     NUMBERS: /[-+]?[0-9]+\.[0-9]*/
+};
+
+/**
+ * Stores the displayed clustering algorithm names.
+ */
+var CLUSTERING_ALGORITHMS = {
+    NEIGHBOUR_JOINING: "Neighbour-Joining",
+    UPGMA: "Unweighted PGMA",
+    WPGMA: "Weighted PGMA"
 };
 
 /**
@@ -137,7 +137,7 @@ var ERRORS = {
  */
 var HIERARCHICAL_CLUSTERING_DEFAULTS = {
     APPROACHES: [CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING, CLUSTERING_ALGORITHMS.UPGMA, CLUSTERING_ALGORITHMS.WPGMA],
-    CSV_TABLE:  /* input from lecture */
+    CSV_TABLE:  /* input from lecture Bioinformatics I */
     " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
     "   ;  0 ; 10 ; 10 ; 10" + "\n" +
     "   ;    ;  0 ;  2 ;  6" + "\n" +

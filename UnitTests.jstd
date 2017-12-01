@@ -35,3 +35,4 @@ test:
   - js/tests/test_sum_of_pairs.js
   - js/tests/test_upgma.js
   - js/tests/test_waterman_smith_beyer.js
+  - js/tests/test_wpgma.js
