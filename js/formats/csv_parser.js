@@ -18,6 +18,7 @@ Author: Alexander Mattheis
      * @return {string} - The error output, if it exists.
      */
     function checkInput(csvData) {
+
     }
 
     /**
