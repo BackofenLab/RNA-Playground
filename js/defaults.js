@@ -19,6 +19,7 @@ Author: Alexander Mattheis
 // constants
 var END_SO_ON = ".."
 var EPSILON = 0.000000001;  // some very low number to test against
+var ERROR_WRONG_NUMBER_OF_COLUMNS = "wrong number of columns in row: ";
 
 var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant
 
@@ -376,8 +377,9 @@ var MULTI_SYMBOLS = {
     MISMATCH: /\|/g,
     NONE: /#/g,
     NUMBERS: /[0-9]/g,
-    STRINGS: /[^0-9]/g,
-    SPACE: / /g
+    SEPARATORS: /;/g,
+    SPACE: / /g,
+    STRINGS: /[^0-9]/g
 };
 
 var NORMALIZED_ALIGNMENT_DEFAULTS = {

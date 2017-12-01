@@ -18,7 +18,24 @@ Author: Alexander Mattheis
      * @return {string} - The error output, if it exists.
      */
     function checkInput(csvData) {
+        var lines = csvData.split(SYMBOLS.NEW_LINE);
 
+        var lastNumberOfSeparators = -1;
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+
+            if (line.replace(MULTI_SYMBOLS.SPACE, SYMBOLS.EMPTY) !== SYMBOLS.EMPTY) {  // ignore empty lines
+                var numberOfSeparators = (line.match(MULTI_SYMBOLS.SEPARATORS) || []).length;
+
+                if (lastNumberOfSeparators !== -1 && lastNumberOfSeparators !== numberOfSeparators)
+                    return ERROR_WRONG_NUMBER_OF_COLUMNS + (i + 1);  // "+1" because humans start counting with 1
+
+                lastNumberOfSeparators = numberOfSeparators;
+            }
+        }
+
+        return SYMBOLS.EMPTY;
     }
 
     /**

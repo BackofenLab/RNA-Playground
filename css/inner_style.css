@@ -135,7 +135,7 @@ th {
 
 .csv_data {
     height: 97px;
-    width: 194px;
+    width: 224px;
     overflow: auto;
     resize: none;
 }
@@ -173,6 +173,10 @@ th {
     font-family: serif;
     font-size: 1.1em;
     position: relative;
+}
+
+.error_hint {
+    color: #5582BC;
 }
 
 .extra_large {
@@ -482,7 +486,7 @@ th {
 }
 
 .selector {
-    width: 200px;
+    width: 230px;
 }
 
 .sequence {

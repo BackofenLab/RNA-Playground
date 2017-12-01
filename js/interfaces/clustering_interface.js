@@ -81,6 +81,7 @@ Author: Alexander Mattheis
      * @return {string} - The error output, if it exists.
      */
     function checkInput(csvData) {
+        return formats.csvParser.checkInput(csvData);
     }
 
     /**
@@ -116,6 +117,16 @@ Author: Alexander Mattheis
      * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
      */
     function processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel) {
+        visualViewmodel.removeAllContents();
+
+        // when page was loaded the inputs have not to be updated or you get wrong inputs
+        if (inputProcessor.inputUpdatesActivated()) {
+            inputViewmodel.selectedApproach([$("#approach_selector option:selected").val()]);
+            inputViewmodel.csvTable($("#csv_table").val());
+        } else
+            inputProcessor.activateInputUpdates();
+
+        //clusteringInterfaceInstance.startProcessing(algorithm, inputViewmodel, visualViewmodel);
     }
 
     /**

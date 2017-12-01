@@ -67,7 +67,8 @@ Author: Alexander Mattheis
 		<div class="colW100"><label>Approach:</label></div>
 
 		<div class="colW400">
-            <select class="selector" data-bind="options: input.availableApproaches, selectedOptions: input.selectedApproach"></select>
+            <select class="selector" data-bind="options: input.availableApproaches, selectedOptions: input.selectedApproach"
+                    id="approach_selector"></select>
         </div>
 	</div>
 
@@ -75,7 +76,9 @@ Author: Alexander Mattheis
 		<div class="colW100"><label>CSV-Data:</label></div>
 
 		<div class="colW400">
-            <textarea class="csv_data" data-bind="text: input.csvTable"></textarea>
+            <textarea class="csv_data" data-bind="text: input.csvTable" id="csv_table"></textarea>
+            <br \>
+            <span class="error_hint" data-bind="text: input.errorInput"></span>
 
             <div class="group_hint">
                 <b>Hints:</b> <br />
