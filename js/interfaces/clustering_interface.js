@@ -57,10 +57,10 @@ Author: Alexander Mattheis
     function InputViewmodel(algorithmName) {
         var viewmodel = this;
 
-        this.availableApproaches = ko.observableArray(AGGLOMERATIVE_CLUSTERING_DEFAULTS.APPROACHES);
-        this.selectedApproach = ko.observableArray(AGGLOMERATIVE_CLUSTERING_DEFAULTS.STANDARD_APPROACH);
+        this.availableApproaches = ko.observableArray(HIERARCHICAL_CLUSTERING_DEFAULTS.APPROACHES);
+        this.selectedApproach = ko.observableArray(HIERARCHICAL_CLUSTERING_DEFAULTS.STANDARD_APPROACH);
 
-        this.csvTable = ko.observable(AGGLOMERATIVE_CLUSTERING_DEFAULTS.CSV_TABLE);
+        this.csvTable = ko.observable(HIERARCHICAL_CLUSTERING_DEFAULTS.CSV_TABLE);
 
         this.errorInput = ko.computed(function () {
             return checkInput(viewmodel.csvTable());

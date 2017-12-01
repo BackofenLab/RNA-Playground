@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("bases.clustering", Clustering, setInput, compute, getMatrixKeys, getOutput, setIO);
+    namespace("bases.clustering", Clustering, setInput, compute, getMatrixKeys, getInput, getOutput, setIO);
 
     // instances
     var childInstance;
@@ -21,7 +21,7 @@ Author: Alexander Mattheis
     var outputData = {};  // stores the output of the algorithm
 
     /**
-     * Contains functions to compute a clustering (at the moment only hierarchical agglomerative clustering).
+     * Contains functions to compute a hierarchical clustering (at the moment only hierarchical agglomerative clustering).
      * It is used by agglomerative clustering algorithms as superclass
      * to avoid code duplicates.
      * @constructor
@@ -41,6 +41,7 @@ Author: Alexander Mattheis
 
         // public methods
         this.setInput = setInput;
+        this.getInput = getInput;
         this.compute = compute;
         this.getMatrixKeys = getMatrixKeys;
         this.getOutput = getOutput;
@@ -334,6 +335,14 @@ Author: Alexander Mattheis
             subtree.value = 0;
 
         outputData.remainingClusters.push(jQuery.extend(true, [], clusteringInstance.remainingClusterNames));  // for visualization
+    }
+
+    /**
+     * Returns all algorithm output.
+     * @return {Object} - Contains all output of the algorithm.
+     */
+    function getInput() {
+        return inputData;
     }
 
     /**

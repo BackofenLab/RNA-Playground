@@ -36,20 +36,6 @@ var SMITH_WATERMAN_STOP = "0";
 
 // structs
 /**
- * Stores the default parameters for clustering algorithms.
- */
-var AGGLOMERATIVE_CLUSTERING_DEFAULTS = {
-    APPROACHES: ["Neighbour Joining", "Unweighted PGMA", "Weighted PGMA"],
-    CSV_TABLE:  /* input from lecture */
-    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
-    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
-    "   ;    ;  0 ;  2 ;  6" + "\n" +
-    "   ;    ;    ;  0 ;  6" + "\n" +
-    "   ;    ;    ;    ;  0" ,
-    STANDARD_APPROACH: ["Unweighted PGMA"]
-};
-
-/**
  * Stores the implemented algorithm names.
  */
 var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript names without extension)
@@ -109,6 +95,15 @@ var CELL_PERCENT = {
 };
 
 /**
+ * Stores the displayed clustering algorithm names.
+ */
+var CLUSTERING_ALGORITHMS = {
+    NEIGHBOUR_JOINING: "Neighbour-Joining",
+    UPGMA: "Unweighted PGMA",
+    WPGMA: "Weighted PGMA"
+};
+
+/**
  * Defines allowed and disallowed input characters with regular expressions (regex).
  */
 var CHARACTER = {
@@ -135,6 +130,20 @@ var FILE_EXTENSIONS = {
 var ERRORS = {
     DIFFERENT_NUMBER_OF_COLUMNS_AND_ROWS: "The number of columns and rows should be equal!",
     WRONG_NUMBER_OF_COLUMNS_IN_ROW: "wrong number of columns in row: "
+};
+
+/**
+ * Stores the default parameters for clustering algorithms.
+ */
+var HIERARCHICAL_CLUSTERING_DEFAULTS = {
+    APPROACHES: [CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING, CLUSTERING_ALGORITHMS.UPGMA, CLUSTERING_ALGORITHMS.WPGMA],
+    CSV_TABLE:  /* input from lecture */
+    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
+    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
+    "   ;    ;  0 ;  2 ;  6" + "\n" +
+    "   ;    ;    ;  0 ;  6" + "\n" +
+    "   ;    ;    ;    ;  0" ,
+    STANDARD_APPROACH: [CLUSTERING_ALGORITHMS.UPGMA]
 };
 
 /**

@@ -586,7 +586,8 @@ Author: Alexander Mattheis
     function getPhylogeneticTree() {
         inputData.numOfStartClusters = inputData.sequences.length - inputData.arrayPositionsOfRemovedSequences.length;
 
-        var clustering = new upgma.Upgma();
+        var clustering = new agglomerativeClustering.AgglomerativeClustering();
+        inputData.clusteringSubalgorithm = CLUSTERING_ALGORITHMS.UPGMA;
         clustering.setIO(inputData, outputData);
         var ioData = clustering.compute();
         return ioData[1].treeBranches;
