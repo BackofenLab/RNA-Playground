@@ -719,7 +719,8 @@ Author: Alexander Mattheis
         string += SYMBOLS.COMMA + upperString.split(SYMBOLS.EMPTY).toString() + SYMBOLS.NEW_LINE;
 
         // compute CSV
-        string += formats.csvParser.getCSVData(matrix, leftString);
+        var csvParser = new formats.csvParser.CsvParser();
+        string += csvParser.getCSVData(matrix, leftString);
         return string;
     }
 

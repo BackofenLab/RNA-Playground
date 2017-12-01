@@ -125,7 +125,7 @@ $(document).ready(function () {
         computeExtendedWeightPrimaryLibrary();
         startProgressiveAlignment();
 
-        outputData.score = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
+        outputData.score = multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
         return [inputData, outputData];
     }
 

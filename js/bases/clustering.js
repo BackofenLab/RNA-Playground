@@ -14,6 +14,7 @@ Author: Alexander Mattheis
     // instances
     var childInstance;
     var clusteringInstance;
+    var newickEncoderInstance;
 
     // shared variables
     var inputData = {};  // stores the input of the algorithm
@@ -27,6 +28,7 @@ Author: Alexander Mattheis
      */
     function Clustering(child) {
         clusteringInstance = this;
+        newickEncoderInstance = new formats.newickEncoder.NewickEncoder();
 
         // variables
         this.nameIndex = 0;  // only really needed, if getNextClusterName() function is used
@@ -78,7 +80,7 @@ Author: Alexander Mattheis
 
         getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
-        outputData.newickString = formats.newickFormat.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
+        outputData.newickString = newickEncoderInstance.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
         return [inputData, outputData];
     }
 

@@ -113,7 +113,7 @@ Paths are constant and so they are stored in the "defaults.js".
 Variables which are stored outside a constructor.
 
 /*---- variables ----*/
-Variables have to be always stored inside the constructor (if one exists)
+Variables have to be always stored inside the constructor
 to avoid variable conflicts with other classes in the same namespace.
 An exception are "shared variables" which are used between the "classes".
 

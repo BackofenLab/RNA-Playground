@@ -9,9 +9,16 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("formats.csvParser", checkInput, getCSVData, getMatrix);
+    namespace("formats.csvParser", CsvParser, checkInput, getCSVData, getMatrix);
 
-    function CommaSeparatedValueParser() {
+    /**
+     * Creates a "comma-separated values" parser.
+     * @constructor
+     */
+    function CsvParser() {
+        this.checkInput = checkInput;
+        this.getCSVData = getCSVData;
+        this.getMatrix = getMatrix;
     }
 
     /**

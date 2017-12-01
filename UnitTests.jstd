@@ -11,8 +11,7 @@ load:
   - js/bases/clustering.js
   - js/bases/multi_sequence_alignment.js
 
-  - js/formats/newick_format.js
-  - js/formats/scoring_functions.js
+  - js/formats/newick_encoder.js
 
   - js/arslan_egecioglu_pevzner.js
   - js/feng_doolittle.js

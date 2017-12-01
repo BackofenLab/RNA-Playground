@@ -27,6 +27,7 @@ Author: Alexander Mattheis
 
         // inheritance
         interfaceInstance = new interfaces.interface.Interface();
+        parserInstance = new formats.csvParser.CsvParser();
 
         this.startProcessing = interfaceInstance.startProcessing;
 
@@ -81,7 +82,7 @@ Author: Alexander Mattheis
      * @return {string} - The error output, if it exists.
      */
     function checkInput(csvData) {
-        return formats.csvParser.checkInput(csvData);
+        return parserInstance.checkInput(csvData);
     }
 
     /**
@@ -94,7 +95,7 @@ Author: Alexander Mattheis
         var distanceMatrix = {};
 
         if (isCorrectData)
-            distanceMatrix = formats.csvParser.getMatrix(csvData);
+            distanceMatrix = parserInstance.getMatrix(csvData);
 
         return distanceMatrix;
     }
