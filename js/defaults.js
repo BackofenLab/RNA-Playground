@@ -25,8 +25,8 @@ var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but 
 var HIRSCHBERG_LOWER_NODE = 2;
 var HIRSCHBERG_UPPER_NODE = 1;
 
-var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 var MAX_NUMBER_ITERATIONS = 5;  // number of iterations in algorithm with convergence
+var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 var MAX_TRACE_FUNCTION_ARG_LEN = 10;  // tells the allowed length of an argument to avoid a string which goes over the page border
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated

@@ -70,7 +70,7 @@ Author: Alexander Mattheis
         var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in hierarchical clustering algorithms
 
         initializeStructs();
-        initializeCardinalities(numOfIterations);
+        initializeCardinalities();
 
         for (var i = 0; i < numOfIterations; i++) {
             var minimum = determineMatrixMinimum();
@@ -107,10 +107,9 @@ Author: Alexander Mattheis
 
     /**
      * Initializes the size-parameters of the clusters.
-     * @param numOfIterations - The number of iterations the algorithm will do.
      */
-    function initializeCardinalities(numOfIterations) {
-        clusteringInstance.nameIndex = inputData.sequences.length;  // do not change that!
+    function initializeCardinalities() {
+        clusteringInstance.nameIndex = inputData.initialNamingIndex;  // do not change that!
 
         for (var i = 0; i < clusteringInstance.nameIndex; i++)
             outputData.cardinalities[outputData.clusterNames[i]] = 1;
@@ -240,7 +239,7 @@ Author: Alexander Mattheis
             clusteringInstance.remainingClusterNames.splice(index, 1);
     }
 
-    /** ALTERNATIVE from lecture.
+    /** ALTERNATIVE from lecture WS 2016/2017.
      * Returns the next name of a cluster.
      * Hint: After all characters are depleted,
      * a number is concatenated to the character

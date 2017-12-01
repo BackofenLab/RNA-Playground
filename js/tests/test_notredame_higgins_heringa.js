@@ -15,6 +15,7 @@ TestCase("test_notredame_higgins_heringa", {
 
         var inputData = {};
         inputData.sequences = ["ACGT", "AT", "GCT"];
+        inputData.initialNamingIndex = 3;
 
         inputData.calculationType = "similarity";
         inputData.arrayPositionsOfRemovedSequences = [];
@@ -147,6 +148,7 @@ TestCase("test_notredame_higgins_heringa", {
 
         var inputData = {};
         inputData.sequences = ["ACGT", "AT", "GCT"];
+        inputData.initialNamingIndex = 3;
 
         inputData.calculationType = "similarity";
         inputData.arrayPositionsOfRemovedSequences = [];
@@ -272,6 +274,7 @@ TestCase("test_notredame_higgins_heringa", {
 
         var inputData = {};
         inputData.sequences = ["ACGT", "AT", "GCT"];
+        inputData.initialNamingIndex = 3;
 
         inputData.calculationType = "similarity";
         inputData.arrayPositionsOfRemovedSequences = [];
@@ -317,6 +320,7 @@ TestCase("test_notredame_higgins_heringa", {
 
         var inputData = {};
         inputData.sequences = ["ACGT", "AT", "GCT"];
+        inputData.initialNamingIndex = 3;
 
         inputData.calculationType = "similarity";
         inputData.arrayPositionsOfRemovedSequences = [];

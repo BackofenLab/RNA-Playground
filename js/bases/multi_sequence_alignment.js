@@ -70,6 +70,7 @@ Author: Alexander Mattheis
     function setInput(inputViewmodel) {
         inputData.sequences = inputViewmodel.sequences();
         inputData.arrayPositionsOfRemovedSequences = getDuplicatePositions(inputData.sequences);
+        inputData.initialNamingIndex = inputData.sequences.length;
 
         inputData.calculationType = inputViewmodel.calculation();
 

@@ -18,7 +18,7 @@ TestCase("test_upgma", {
 
         inputData.clusteringSubalgorithm = CLUSTERING_ALGORITHMS.UPGMA;
         inputData.numOfStartClusters = 5;
-        inputData.sequences = ["a", "b", "c", "d", "e"];  // needed because of Feng-Doolittle
+        inputData.initialNamingIndex = 5;  // needed because of Feng-Doolittle
 
         outputData.distanceMatrix = {};
         outputData.distanceMatrix[["a", "b"]] = 6;
@@ -57,7 +57,7 @@ TestCase("test_upgma", {
 
         inputData.clusteringSubalgorithm = CLUSTERING_ALGORITHMS.UPGMA;
         inputData.numOfStartClusters = 3;
-        inputData.sequences = ["a", "b", "c"];  // needed because of Feng-Doolittle
+        inputData.initialNamingIndex = 3;  // needed because of Feng-Doolittle
 
         outputData.distanceMatrix = {};
         outputData.distanceMatrix[["a", "b"]] = 2;
@@ -88,7 +88,7 @@ TestCase("test_upgma", {
 
         inputData.clusteringSubalgorithm = CLUSTERING_ALGORITHMS.UPGMA;
         inputData.numOfStartClusters = 3;
-        inputData.sequences = ["a", "b", "c"];  // needed because of Feng-Doolittle
+        inputData.initialNamingIndex = 3;  // needed because of Feng-Doolittle
 
         outputData.distanceMatrix = {};
         outputData.distanceMatrix[["a", "b"]] = 3;
