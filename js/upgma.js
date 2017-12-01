@@ -51,7 +51,7 @@ Author: Alexander Mattheis
      * Calculated distances in UPGMA are unweighted
      * with respect to the cluster-sizes. From this the "unweighted"-term results.
      * @example:
-     * dist(c, k = i union j) = [|i|*dist(c, i) + |j|*dist(c, j)] / [|i|+|j|]
+     * dist(c, k = i union j) = [|i|* dist(c, i) + |j|* dist(c, j)] / [|i|+|j|]
      * @param subtree {Object} - The subtree for the new cluster.
      */
     function computeDistances(subtree) {

@@ -5,12 +5,12 @@ Supervisor: Martin Raden
 Author: Alexander Mattheis
 
 Hint:   Some algorithms, structures and formats:
-        - Feng-Doolittle
-        - Gotoh
-        - Needleman-Wunsch
+        - Feng-Doolittle (NW version)
+        - Gotoh (with PAM- and BLOSSUM-matrices)
+        - Needleman-Wunsch (with PAM- and BLOSSUM-matrices)
         - Newick format
-        - Sum-of-Pairs Score
-        - UPGMA
+        - Sum-of-Pairs score (non-affine)
+        - UPGMA/WPGMA
         have been also already been programmed before with Python
         in the project Algorithms for Bioninformatics by Daniel Maticzka and Omer Alkhnbashi.
 
@@ -43,10 +43,17 @@ Hint:   Some algorithms, structures and formats:
                 src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
         </script> <!-- to display LaTeX formulas -->
         <script src="js/libs/namespace.js"></script> <!-- to create namespaces -->
+	    <script type="text/javascript" src="js/libs/raphael-min.js"></script> <!-- SVG-rendering library -->
+	    <script type="text/javascript" src="js/libs/jsphylosvg.js"></script> <!-- to draw phylogenetic trees -->
 
         <!-- IO -->
-        <script src="js/interfaces/alignment_interface.js"></script> <!-- stores viewmodels and interface functions of alignment algorithms -->
+        <script src="js/interfaces/interface.js"></script> <!-- superclass for all interfaces -->
+
+        <script src="js/interfaces/alignment_interface.js"></script> <!-- superclass for all interfaces of alignment algorithms -->
+        <script src="js/interfaces/clustering_interface.js"></script> <!-- superclass for all interfaces of clustering algorithms -->
+
         <script src="js/interfaces/linear_alignment_interface.js"></script> <!-- stores viewmodels and interface functions of linear alignment algorithms -->
+        <script src="js/interfaces/multi_sequence_interface.js"></script> <!-- stores viewmodels and interface functions of multi-sequence algorithms -->
         <script src="js/interfaces/subadditive_alignment_interface.js"></script> <!-- stores viewmodels and interface functions of subadditive alignment algorithms -->
 
         <!-- CONTROLS "DESIGN/CONTROLS LOGIC" -->
@@ -55,7 +62,9 @@ Hint:   Some algorithms, structures and formats:
         <script src="js/loader.js"></script> <!-- loads algorithms into the alignment.html -->
 
         <!-- formats -->
+        <script src="js/formats/csv_parser.js"></script> <!-- allows to read and write csv data -->
         <script src="js/formats/newick_format.js"></script> <!-- stores string in Newick-format -->
+        <script src="js/formats/scoring_functions.js"></script> <!-- stores scoring-functions to evaluate MSA alignments -->
 
         <!-- post processing -->
         <script src="js/post_processing/input_processor.js"></script> <!-- does the post-processing of inputs -->
@@ -63,16 +72,21 @@ Hint:   Some algorithms, structures and formats:
 
         <!-- ALGORITHMS "LOGIC" -->
         <script src="js/bases/alignment.js"></script> <!-- stores basic alignment functions -->
+        <script src="js/bases/multi_sequence_alignment.js"></script> <!-- stores basic multi-sequence alignment functions -->
         <script src="js/bases/clustering.js"></script> <!-- stores basic clustering functions -->
+
         <script src="js/gotoh.js"></script> <!-- stores Gotoh algorithm -->
+        <script src="js/gotoh_local.js"></script> <!-- stores Gotoh (Local) algorithm -->
+        <script src="js/needleman_wunsch.js"></script> <!-- stores Gotoh (Local) algorithm -->
         <script src="js/smith_waterman.js"></script> <!-- stores Smith-Waterman algorithm -->
+        <script src="js/upgma.js"></script> <!-- stores an executable function for the upgma-formula -->
     </head>
 
     <body>
         <header>
             <div class="logo">
                 <a href="alignment.html">
-                    <h1>Bioinformatics Algorithms</h1>
+                    <h5>Bioinformatics Algorithms</h5>
                 </a>
             </div>
         </header>
@@ -91,10 +105,14 @@ Hint:   Some algorithms, structures and formats:
 
             <div id="algorithm_menu">
                 <ul>
-                    <li><a href="#">Arslan-Eğecioğlu-Pevzner</a></li>
+                    <li><a href="#">Agglomerative Clustering</a></li>
+                    <li><a href="#">Arslan-E&gbreve;ecio&gbreve;lu-Pevzner</a></li>
+                    <li><a href="#">Feng-Doolittle</a></li>
                     <li><a href="#">Gotoh</a></li>
                     <li><a href="#">Gotoh (Local)</a></li>
+                    <li><a href="#">Hirschberg</a></li>
                     <li><a href="#">Needleman-Wunsch</a></li>
+                    <li><a href="#">Notredame-Higgins-Heringa</a></li>
                     <li><a href="#">Smith-Waterman</a></li>
                     <li><a href="#">Waterman-Smith-Beyer</a></li>
                 </ul>

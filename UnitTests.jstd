@@ -6,23 +6,33 @@ load:
 
   - js/defaults.js
   - js/loader.js
-  - js/formats/newick_format.js
 
   - js/bases/alignment.js
   - js/bases/clustering.js
+  - js/bases/multi_sequence_alignment.js
+
+  - js/formats/newick_format.js
+  - js/formats/scoring_functions.js
 
   - js/arslan_egecioglu_pevzner.js
+  - js/feng_doolittle.js
   - js/gotoh.js
   - js/gotoh_local.js
+  - js/hirschberg.js
   - js/needleman_wunsch.js
+  - js/notredame_higgins_heringa.js
   - js/smith_waterman.js
   - js/upgma.js
   - js/waterman_smith_beyer.js
 test:
   - js/tests/test_arslan_egecioglu_pevzner.js
+  - js/tests/test_feng_doolittle.js
   - js/tests/test_gotoh.js
   - js/tests/test_gotoh_local.js
+  - js/tests/test_hirschberg.js
   - js/tests/test_needleman_wunsch.js
+  - js/tests/test_notredame_higgins_heringa.js
   - js/tests/test_smith_waterman.js
+  - js/tests/test_sum_of_pairs.js
   - js/tests/test_upgma.js
   - js/tests/test_waterman_smith_beyer.js

@@ -13,27 +13,27 @@ Author: Alexander Mattheis
         computes optimal local alignments of two sequences.
         This means it identifies the two subsequences that are best preserved,
         i.e. their alignment shows the maximal similarity scoring.
-        <br>
-        <br>
+        <br />
+        <br />
         In order to find such a local alignment, the global alignment algorithm by 
         <a href="https://doi.org/10.1016/0022-2836(70)90057-4">Needleman and Wunsch (1970)</a> or
         <a href="https://doi.org/10.1137/0126070">Sellers</a>
         is extended with an additional case '0'.
         This lower bound on the similarity score excludes 'too bad' alignments
         that are eventually 'not similar' (score < 0).
-        <br>
-        <br>
+        <br />
+        <br />
         A local alignment approach tries to identify the most similar subsequences
         that maximize the scoring of their matching parts and the 
         changes needed to transfer one subsequence into the other.
         The dynamic programming approach tabularizes optimal subsolutions in matrix $S$,
         where an entry $S_{i,j}$ represents the maximal similarity score for any local alignment of the 
-        (sub)prefixes $a_{x..i}$ with $b_{y..j}$, where $x,y>0$ are so far unknown 
-        and to be identified via traceback. 
+        (sub)prefixes $a_{x..i}$ with $b_{y..j}$, where $x,y>0$ are so far unknown
+        and have to be identified via traceback.
         The according recursions are shown below. 
         Note, consecutive gap (insertions/deletions) scoring is done linearly.
-        <br>
-        <br>
+        <br />
+        <br />
         For the given input, the according table $S$ is shown along with a list 
         of according optimal local alignments. 
         On table cell selection, optimal traceback options are shown.
@@ -41,19 +41,21 @@ Author: Alexander Mattheis
     </div>
 
     <div class="picture">
-        <img src="Smith-Waterman-120x90.png">
+        <img src="Smith-Waterman-120x90.png" />
     </div>
 </div>
 
 <div id="algorithm_input">
 	<div class="row">
 		<div class="colW100"><label>Sequence $a$:</label></div>
-		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'" type="text"></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'"
+                                    title="Allowed are A-Z and '-'." type="text"></div>
 	</div>
 
 	<div class="row">
 		<div class="colW100"><label>Sequence $b$:</label></div>
-		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'" type="text"></div>
+		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'"
+                                    title="Allowed are A-Z and '-'." type="text"></div>
 	</div>
 
 	<div class="row">
@@ -67,18 +69,18 @@ Author: Alexander Mattheis
 			</span>
 
 			<div class="group_hint">
-				<b>Hint:</b> <br>
-				For similarity maximization, <br> match scores should be positive and all other scores lower.
+				<b>Hint:</b> <br />
+				For similarity maximization, <br /> match scores should be positive and all other scores lower.
 			</div>
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="colW100">
-            <br>
+            <br />
             <label>
-                <br>
-                <br>
+                <br />
+                <br />
                 Recursion:
             </label>
         </div>
@@ -97,7 +99,7 @@ Author: Alexander Mattheis
 					<tr>
 						<th>$S$</th>
 						<th></th>
-                        <!-- ko foreach: input.sequence1 -->
+                        <!-- ko foreach: input.sequence2 -->
 							<th data-bind="drawChar: [$data, $index()+1]"></th>
                         <!-- /ko -->
 					</tr>
@@ -111,7 +113,7 @@ Author: Alexander Mattheis
                             <!-- /ko -->
 
                             <!-- ko if: $index() > 0 -->
-								<th data-bind="drawChar: [$root.input.sequence2()[$index()-1], $index()]"></th>
+								<th data-bind="drawChar: [$root.input.sequence1()[$index()-1], $index()]"></th>
                             <!-- /ko -->
 
                             <!-- ko foreach: $root.output.matrix[0] --> <!-- to get j-indexes = $index() -->
@@ -143,7 +145,7 @@ Author: Alexander Mattheis
                 <thead>
 					<tr>
 						<th>
-							Results <br>
+							Results <br />
 							<small>
 								You can select a result to get the related traceback.
 							</small>
@@ -160,8 +162,8 @@ Author: Alexander Mattheis
                                 <!-- ko if: $index() == 0 -->
                                     <tr>
                                         <td class="selectable_entry selectable_entry_start">
-                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br />
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br />
                                             <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
                                         </td>
                                     </tr>
@@ -169,8 +171,8 @@ Author: Alexander Mattheis
                                 <!-- ko if: $index() != 0 -->
                                     <tr>
                                         <td class="selectable_entry">
-                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br>
-                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br>
+                                            <code data-bind="text: $root.output.alignments()[$index()][0]"></code> <br />
+                                            <code data-bind="text: $root.output.alignments()[$index()][1]"></code> <br />
                                             <code data-bind="text: $root.output.alignments()[$index()][2]"></code>
                                         </td>
                                     </tr>

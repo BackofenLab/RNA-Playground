@@ -1,0 +1,90 @@
+<!--
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Author: Alexander Mattheis
+-->
+
+<div id="algorithm_description">
+    <div class="description">
+        Different agglomerative (hierarchical) clustering algorithms were proposed to compute phylogenetic trees
+        from evolutionary distances:
+        <ul>
+            <li>
+                Unweighted Pair Group Method with Arithmetic Mean (average linkage) by <br />
+                <a href="https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902">Robert R. Sokal and Charles D. Michener (1958)</a>
+            </li>
+            <li>
+                Weighted Pair Group Method with Arithmetic Mean (simple average) by
+                <a href="http://journals.sagepub.com/doi/abs/10.1177/001316446602600201">Louis L. McQuitty (1967)</a>
+            </li>
+            <li>
+                Neighbour-Joining by
+                <a href="https://doi.org/10.1093/oxfordjournals.molbev.a040454">Naruya Saitou and Masatoshi Nei (1987)</a>
+            </li>
+        </ul>
+
+        And there exists many approaches and all of them have advantages and disadvantages.
+        For example Unweighted PGMA (or Weighted PGMA) is only then a good tree computation method,
+        if the distances from the root to the leafs are always the same (ultrametric distance matrix).
+        In other cases the approach is unreliable.
+        Where from Neighbour-Joining is said that it is generally the better procedure
+        (giving biologically more relevant results).
+
+        <br />
+        <br />
+
+        The principle of all agglomerative (bottom-up) approaches is always the same,
+        in the beginning you have given a matrix of pairwise evolutionary distances
+        between singleton clusters (containing only one element)
+        and in this matrix you search for the entry with the lowest value $d_{min} = d_{i,j}$
+        (where $i \neq j$). You merge the clusters $i$ and $j$ to a new cluster $ij = i \cup j$
+        and recompute the distances to the remaining clusters with some distance formula $\delta_1$
+        given with the respective approach.
+        Afterwards the distance between $i,j$ and the merged cluster $ij$
+        in the tree is recomputed with a second formula $\delta_2$.
+        These stated steps are iterated for $O(N)$ rounds,
+        where $N$ is number of input singleton clusters.
+
+        <br />
+        <br />
+
+        For the given input, the
+        <ul>
+            <li>changing distance matrices</li>
+            <li>phylogenetic tree</li>
+        </ul>
+        are computed and displayed.
+    </div>
+
+    <div class="picture">
+        <img src="AgglomerativeClustering-120x90.png" />
+    </div>
+</div>
+
+<div id="algorithm_input">
+    <div class="row">
+		<div class="colW100"><label>Approach:</label></div>
+
+		<div class="colW400">
+            <select class="selector" data-bind="options: input.availableApproaches, selectedOptions: input.selectedApproach"
+                    id="approach_selector"></select>
+        </div>
+	</div>
+
+    <div class="row">
+		<div class="colW100"><label>CSV-Data:</label></div>
+
+		<div class="colW400">
+            <textarea class="csv_data" data-bind="text: input.csvTable" id="csv_table"></textarea>
+            <br \>
+            <span class="error_hint" data-bind="text: input.errorInput"></span>
+
+            <div class="group_hint">
+                <b>Hints:</b> <br />
+                The ";"-symbol is used as a column separator and every not-empty line
+                has to have the same number of separators or there won't be an output.
+            </div>
+        </div>
+	</div>
+</div>

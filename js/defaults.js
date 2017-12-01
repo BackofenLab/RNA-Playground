@@ -17,13 +17,19 @@ Author: Alexander Mattheis
 /* HINT: alphabetically ordered (also within definitions) and structures after constants */
 
 // constants
+var END_SO_ON = ".."
 var EPSILON = 0.000000001;  // some very low number to test against
+var ERROR_WRONG_NUMBER_OF_COLUMNS = "wrong number of columns in row: ";
 
 var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant
 
-var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
+var HIRSCHBERG_LOWER_NODE = 2;
+var HIRSCHBERG_UPPER_NODE = 1;
 
+var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 var MAX_NUMBER_ITERATIONS = 5;  // number of iterations in algorithm with convergence
+var MAX_TRACE_FUNCTION_ARG_LEN = 10;  // tells the allowed length of an argument to avoid a string which goes over the page border
+
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have been updated
 
@@ -34,15 +40,20 @@ var SMITH_WATERMAN_STOP = "0";
  * Stores the implemented algorithm names.
  */
 var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript names without extension)
+    AGGLOMERATIVE_CLUSTERING: "agglomerative_clustering",
 	ARSLAN_EGECIOGLU_PEVZNER: "arslan_egecioglu_pevzner",
     FENG_DOOLITTLE: "feng_doolittle",
     GOTOH: "gotoh",
     GOTOH_LOCAL: "gotoh_local",
+    HIRSCHBERG: "hirschberg",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
+    NEIGHBOUR_JOINING: "neighbour_joining",
     NONE: "none",
+    NOTREDAME_HIGGINS_HERINGA: "notredame_higgins_heringa",
     SMITH_WATERMAN: "smith_waterman",
     UPGMA: "upgma",
-    WATERMAN_SMITH_BEYER: "waterman_smith_beyer"
+    WATERMAN_SMITH_BEYER: "waterman_smith_beyer",
+    WPGMA: "wpgma"
 };
 
 /**
@@ -50,8 +61,9 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript
  */
 var ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
-    SEQUENCE_1: "AACG",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "AATCG",  // hint: UPPERCASE letters!
+    CALCULATION_HIRSCHBERG: "distance",
+    SEQUENCE_1: "AATCG",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "AACG",  // hint: UPPERCASE letters!
 
     FUNCTION: {
         GAP: -2,
@@ -87,13 +99,28 @@ var CELL_PERCENT = {
 };
 
 /**
- * Defines allowed and disallowed input characters.
+ * Defines allowed and disallowed input characters with regular expressions (regex).
  */
 var CHARACTER = {
     BASE: /[a-zA-Z]/i,
     BASES: /^[a-zA-Z-]+$/,
     NON_BASES: /[^a-zA-Z-]+/g,  // g to replace globally
+    NUMBER: /[0-9]/,
     NUMBERS: /[-+]?[0-9]+\.[0-9]*/
+};
+
+/**
+ * Stores the default parameters for clustering algorithms.
+ */
+var AGGLOMERATIVE_CLUSTERING_DEFAULTS = {
+    APPROACHES: ["Neighbour Joining", "Unweighted PGMA", "Weighted PGMA"],
+    CSV_TABLE:  /* input from lecture */
+    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
+    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
+    "   ;    ;  0 ;  2 ;  6" + "\n" +
+    "   ;    ;    ;  0 ;  6" + "\n" +
+    "   ;    ;    ;    ;  0" ,
+    STANDARD_APPROACH: ["Unweighted PGMA"]
 };
 
 /**
@@ -108,8 +135,10 @@ var FILE_EXTENSIONS = {
  * Allowed max values for inputs.
  */
 var INPUT = {
-    LENGTH_MIN: 0,
+    ALIGNMENTS_MAX: 10,
+    ALIGNMENTS_MIN: 1,
     LENGTH_MAX: 1000,
+    LENGTH_MIN: 0,
     MAX: 10,  // abs: absolute value
     MIN: -10
 };
@@ -129,6 +158,8 @@ var LATEX = {
     ALPHA: "\\alpha",
     BEGIN_CASES: "\\begin{cases}",
     BETA: "\\beta",
+    CURLY_BRACKET_LEFT: "{",
+    CURLY_BRACKET_RIGHT: "}",
     DOT: "\\cdot",
     END_CASES: "\\end{cases}",
     FACTOR: " k",
@@ -141,14 +172,28 @@ var LATEX = {
     POSITIVE_INFINITY: "$\\infty$",
     POW2: "^2",
     SPACE: "\\phantom{-}",
+    SUBORDINATE: "_",
+    SUM: "\\sum",
 
     FORMULA: {
         CURRENT: "D_{i,j}",
+        CURRENT_BACKWARD: "D'_{i,j}",
         CURRENT_P: "P_{i,j}",
         CURRENT_Q: "Q_{i,j}",
+        D: "D \\,",
+        D_BIG: /D/g,
+        D_BIG_UNDERSCORE: /D_/g,
+        D_PRIME: "D'",
+        D_PRIME_UNDERSCORE: "D'_",
         DELETION: "b_j = -",
         DIAGONAL: "D_{i-1,j-1}",
+        DPM: "\\text{Trace}",
+        I_IS: "i = ",
+        I_MINUS_ONE: /i-1/g,
+        I_PLUS_ONE: "i+1",
         INSERTION: "a_i = -",
+        J_MINUS_ONE: /j-1/g,
+        J_PLUS_ONE: "i+1",
         GAP: "g(k)",
         LEFT: "D_{i,j-1}",
         LEFT_Q: "Q_{i,j-1}",
@@ -158,6 +203,7 @@ var LATEX = {
         MINIMIZE_HORIZONTAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i,j-k} & + & g(k) \\}",
         MINIMIZE_VERTICAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i-k,j} & + & g(k) \\}",
         MISMATCH: "a_i \\neq b_j",
+        S_BIG: "S",
         TOP: "D_{i-1,j}",
         TOP_P: "P_{i-1,j}",
         ZERO: "0"
@@ -189,6 +235,20 @@ var LATEX = {
         "\\begin{cases}"                            +
         "D_{i,j-1}      & + & g(1)		    \\\\"   +
         "Q_{i,j-1}      & + & \\beta"              +
+        "\\end{cases}",
+
+        HIRSCHBERG_BACKWARD:
+        "\\begin{cases}"                            +
+        "D'_{i+1,j+1}   & + &  s(a_i,b_j)   \\\\"   +
+        "D'_{i+1,j}     & + &  \\gamma      \\\\"   +
+        "D'_{i,j+1}     & + &  \\gamma"             +
+        "\\end{cases}",
+
+        HIRSCHBERG_FORWARD:
+        "\\begin{cases}"                            +
+        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
+        "D_{i-1,j}      & + & \\gamma       \\\\"   +
+        "D_{i,j-1} 		& + & \\gamma"             +
         "\\end{cases}",
 
         NEEDLEMAN_WUNSCH:
@@ -269,23 +329,64 @@ var MOVE = {
     X_TO_Q: "xToQ"
 };
 
+var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
+    CALCULATION: "similarity",
+    GLOBAL_ALIGNMENTS_PER_SEQUENCE: 1,
+    LOCAL_ALIGNMENTS_PER_SEQUENCE: 2,
+
+    SEQUENCES: [ /* input from T-Coffee paper */
+        "GARFIELD-THE-LAST-FAT-CAT",
+        "GARFIELD-THE-FAST-CAT",
+        "GARFIELD-THE-VERY-FAST-CAT",
+        "THE-FAT-CAT"],
+    SEQUENCES_COPY: [
+        "GARFIELD-THE-LAST-FAT-CAT",
+        "GARFIELD-THE-FAST-CAT",
+        "GARFIELD-THE-VERY-FAST-CAT",
+        "THE-FAT-CAT"],  /* some bugfix for Knockout problem */
+
+    USE_LOCAL_LIBRARY: false,
+
+    FUNCTION: {
+        BASE_COSTS: -3,
+        BASE_COSTS_LOCAL: -3,
+
+        ENLARGEMENT: -2,
+        ENLARGEMENT_LOCAL: -3,
+
+        MATCH: 1,
+        MATCH_LOCAL: 2,
+
+        MISMATCH: -1,
+        MISMATCH_LOCAL: -2
+    }
+};
+
+
+
 /**
  * Symbols which are used to be for example globally replaced.
  */
 var MULTI_SYMBOLS = {
     BRACKET_LEFT: /\(/g,
     BRACKET_RIGHT: /\)/g,
-    D_BIG: /D/g,
     DELIMITER: /-/g,
+    GAP: /_/g,
     G_LITTLE_SPECIAL: /ğ/g,
-    SPACE: / /g
+    MATCH: /\*/g,
+    MISMATCH: /\|/g,
+    NONE: /#/g,
+    NUMBERS: /[0-9]/g,
+    SEPARATORS: /;/g,
+    SPACE: / /g,
+    STRINGS: /[^0-9]/g
 };
 
 var NORMALIZED_ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     LENGTH: 10,
-    SEQUENCE_1: "GCATTUGCCUU",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "CTTGACCATU",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "CTTGACCATU",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "GCATTUGCCUU",  // hint: UPPERCASE letters!
 
     FUNCTION: {
         GAP: -2,
@@ -320,6 +421,13 @@ var PATHS = {
     }
 };
 
+var PHYLOGENETIC_TREE = {
+    SVG_CANVAS: '<div id=\"phylogenetic_tree\"></div>',
+    SVG_CANVAS_NAME: "phylogenetic_tree",
+    SVG_DIMENSION_FACTOR: 40,
+    SVG_WIDTH: 450
+};
+
 /**
  * Stores HTML sub-tags.
  */
@@ -336,8 +444,8 @@ var SUB = {
 var SUBADDITIVE_ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     GAP_FUNCTION: "affine",
-    SEQUENCE_1: "CCGA",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "CG",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "CG",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "CCGA",  // hint: UPPERCASE letters!
 
     FUNCTION: {
         BASE_COSTS: -3,
@@ -360,6 +468,7 @@ var SUBADDITIVE_FUNCTIONS = {
  * Stores non-LaTeX symbols used in the program.
  */
 var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
+    ALIGN: "~",
     AND: "&",
     BRACKET_LEFT: "(",
     BRACKET_RIGHT: ")",
@@ -368,16 +477,16 @@ var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
     DUMMY: "/",  // have to be a non-letter
     EMPTY: "",
     EQUAL: "=",
-    GAP: "_",
+    GAP: "_",  // Hint: Do not change without a good reason! Can break the interface code!
     G_LITTLE: "g",
     INFINITY: "∞",
+    MINUS: "-",  // Hint: Do not change without a good reason! Can break the interface code! Regular expressions have to be changed.
     NEGATIVE_INFINITY: "-∞",
     NEW_LINE: "\n",
-    NONE: "#",
+    NONE: "#",  // Hint: Do not change without a good reason! Can break the interface code!
     PLUS: "+",
     SEMICOLON: ";",
     SEPARATOR: "_",
-    S_BIG: "S",
     SPACE: " ",
     STAR: "*",
     VERTICAL_BAR: "|"
@@ -422,15 +531,23 @@ var TABLE = {
     TEXT_FILE_ENCODING: "text/csv;charset=utf-8"
 };
 
+var TOGGLE_LINK_TEXT = {
+    HIDE: "hide intermediate steps",
+    SHOW: "show intermediate steps"
+};
+
 // lists (used for check ups and more)
 var CLUSTER_NAMES =
     ["a", "b", "c", "d", "e", "f", "g", "h",
-    "i", "j", "k", "l", "m", "n", "o", "p",
-    "q", "r", "s", "t", "u", "v", "w", "x",
-    "y", "z"];
+        "i", "j", "k", "l", "m", "n", "o", "p",
+        "q", "r", "s", "t", "u", "v", "w", "x",
+        "y", "z"];
 
-var GLOBAL_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.WATERMAN_SMITH_BEYER];
+var EMPTY_ALIGNMENT = [SYMBOLS.EMPTY, SYMBOLS.EMPTY, SYMBOLS.EMPTY];
+
+var GLOBAL_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.HIRSCHBERG, ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.WATERMAN_SMITH_BEYER];
 var LOCAL_ALGORITHMS = [ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.SMITH_WATERMAN];
+var MULTI_SEQUENCE_ALGORITHMS = [ALGORITHMS.FENG_DOOLITTLE, ALGORITHMS.NOTREDAME_HIGGINS_HERINGA];
 
 /**
  * Algorithms which use exactly three tables for their computations.
@@ -445,4 +562,4 @@ var MULTI_TABLE_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL];
  * when the browser window is resized
  * or if a table slider is used.
  */
-var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.WATERMAN_SMITH_BEYER];
+var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.WATERMAN_SMITH_BEYER, ALGORITHMS.HIRSCHBERG];

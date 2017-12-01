@@ -16,14 +16,15 @@ with the cross-platform IDE "PhpStorm 2017.2.4".
 
 /*----------------------------------------------EXTENDING VISUALIZATION-----------------------------------------------*/
 All functions which are used for visualization like highlighting, drawing arrows
-and functions which are used to access information are stored in "js/post_processing/visualizer.js".
+and functions which are used to create downloadable files are stored in "js/post_processing/visualizer.js".
 This class is working closely together with the "js/post_processing/input_processor.js" class
 which is handling the input.
 
 Hint:
 Algorithm names have to be eventually added
-into the list of local or global algorithms in the "default.js"
-to make an algorithm visualization work correctly.
+into the lists of algorithms (SVG_ARROW_ALGORITHMS, MULTI_TABLE_ALGORITHMS, ...) in the "default.js"
+to activate automatically an algorithm visualization
+(look at HTML-elements class-names for example in NW to get a visualization).
 
 /*------------------------------------IMPLEMENTING NEW ALGORITHM FOR VISUALIZATION------------------------------------*/
 -   create a new page "ExampleAlgorithm.html" in "/"
@@ -75,6 +76,26 @@ Interfaces under "js/interfaces/" are used to work with the input and output (th
 Such interfaces are bind to specific algorithms.
 The "InputProcessor" is executing interfaces to get an algorithm output.
 
+/*--------------------------------------------------------HINTS-------------------------------------------------------*/
+# HINT 1
+Some tables maybe consist out of three separate tables
+(instead of one table with header and footer),
+because of a Firefox-Bug (bottom right edge disappears).
+
+see: https://github.com/PerfectionMaschine/RNA-Playground/issues/1
+<<  Das war wohl ein Firefox-Bug.
+    In der Developer-Version (also, vermutlich auch in der nächsten Firefox-Version)
+    tritt er nicht auf und auch in keinem anderen Browser.
+    Habe jetzt die Tabellen umgeschrieben und den Footer
+    von der eigentlichen Tabelle separiert. Jetzt tritt das Problem nimmer auf. >>
+
+translated:
+<<  That was probably a Firefox bug.
+    In the Developer version (so, probably in the next Firefox version),
+    it does not appear and also in no other browser.
+    I have now rewritten the tables and separated the footer
+    from the actual table. Now the problem never occurs. >>
+
 /*------------------------------------------------------LOADING-------------------------------------------------------*/
 The loading of an algorithm-page into a webpage is done in the "loader.js"-file.
 In this file is a function "updateDocumentView(algorithm, view)" which loads the page into a "div".
@@ -84,7 +105,7 @@ and add the Javascript algorithm name into the structure ALGORITHMS in the file 
 Hint: Do also a look into EXTENDING VISUALIZATION!
 
 /*-------------------------------------------------------PATHS--------------------------------------------------------*/
-All Javascript-paths are stored under "js/defaults.js". 
+Many Javascript-paths are stored under "js/defaults.js".
 
 Hint:	If you want change file-paths, then you have also to change paths in the "alignment.html" or your webpage.
 

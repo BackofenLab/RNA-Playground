@@ -23,9 +23,7 @@ $(document).ready(function () {
 
     // instances
     var alignmentInstance;
-    var gotohInstance;
     var gotohLocalInstance;
-    var smithWatermanInstance;
 
     // shared variables
     var inputData = {};  // stores the input of the algorithm
@@ -42,10 +40,9 @@ $(document).ready(function () {
     /*---- ALGORITHM ----*/
     /**
      * Computes the optimal, local affine alignment.
+     * Combination of the Smith-Waterman and Gotoh-Algorithm.
      * @constructor
      * @augments Alignment
-     * @see: The superclass "alignmentInstance" have to be created as last instance
-     * or the childInstance in the superclass will be probably wrong!
      */
     function GotohLocal() {
         gotohLocalInstance = this;
@@ -54,10 +51,7 @@ $(document).ready(function () {
         this.type = ALGORITHMS.GOTOH_LOCAL;
         this.numberOfTracebacks = 0;
 
-        // inheritance
-        gotohInstance = new gotoh.Gotoh();
-        smithWatermanInstance = new smithWaterman.SmithWaterman();
-
+        // instances
         alignmentInstance = new bases.alignment.Alignment(this);
 
         // public class methods
@@ -147,17 +141,17 @@ $(document).ready(function () {
      * Computes the matrix by using the recursion function and the score.
      */
     function computeMatricesAndScore() {
-        gotohInstance.setIO(inputData, outputData);
+        alignmentInstance.setIO(inputData, outputData);
         var maxValue = 0;
 
         // going through every matrix cell
         for (var i = 1; i < inputData.matrixHeight; i++) {
-            var bChar = inputData.sequenceB[i - 1];
+            var aChar = inputData.sequenceA[i - 1];
 
             for (var j = 1; j < inputData.matrixWidth; j++) {
-                var aChar = inputData.sequenceA[j - 1];
+                var bChar = inputData.sequenceB[j - 1];
 
-                outputData.matrix[i][j] = gotohInstance.recursionFunction(aChar, bChar, i, j, Math.max, true);
+                outputData.matrix[i][j] = alignmentInstance.affineRecursionFunction(aChar, bChar, i, j, Math.max, true);
 
                 // storing maximum
                 if (maxValue < outputData.matrix[i][j])
@@ -177,7 +171,7 @@ $(document).ready(function () {
         gotohLocalInstance.numberOfTracebacks = 0;
 
         // computing all traceback start-positions
-        var backtraceStarts = smithWatermanInstance.getAllMaxPositions(inputData, outputData);
+        var backtraceStarts = alignmentInstance.getAllMaxPositions(inputData, outputData);
 
         outputData.tracebackPaths = [];
         outputData.moreTracebacks = false;
@@ -185,6 +179,8 @@ $(document).ready(function () {
         for (var i = 0; i < backtraceStarts.length; i++) {
             var tracebackPaths = alignmentInstance.getLocalTraces([backtraceStarts[i]], inputData, outputData, -1, getNeighboured);
             outputData.tracebackPaths = outputData.tracebackPaths.concat(tracebackPaths);
+
+            if (alignmentInstance.stopTraceback) break;
         }
     }
 
@@ -202,16 +198,16 @@ $(document).ready(function () {
         var neighboured = [];
 
         if (position.label === MATRICES.VERTICAL)
-            return gotohInstance.getVerticalNeighboured(position, inputData, outputData);
+            return alignmentInstance.getVerticalNeighboured(position, inputData, outputData);
         else if (position.label === MATRICES.HORIZONTAL)
-            return gotohInstance.getHorizontalNeighboured(position, inputData, outputData);
+            return alignmentInstance.getHorizontalNeighboured(position, inputData, outputData);
 
         var left = position.j - 1;
         var up = position.i - 1;
 
         // retrieve values
-        var aChar = left >= 0 ? inputData.sequenceA[left] : SYMBOLS.EMPTY;
-        var bChar = up >= 0 ? inputData.sequenceB[up] : SYMBOLS.EMPTY;
+        var aChar = left >= 0 ? inputData.sequenceB[left] : SYMBOLS.EMPTY;
+        var bChar = up >= 0 ? inputData.sequenceA[up] : SYMBOLS.EMPTY;
 
         var currentValue = outputData.matrix[position.i][position.j];
 

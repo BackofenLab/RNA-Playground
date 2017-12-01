@@ -25,6 +25,7 @@ $(document).ready(function () {
     // instances
     var alignmentInstance;
     var smithWatermanInstance;
+
     var arslanEgeciougluPevznerInstance;
 
     // shared variables
@@ -43,6 +44,11 @@ $(document).ready(function () {
     /**
      * Computes the optimal, normalized local alignment.
      * @constructor
+     * @see https://doi.org/10.1093/bioinformatics/17.4.327
+     *
+     * Arslan, Abdullah N., Ömer Eğecioğlu, and Pavel A. Pevzner.
+     * "A new approach to sequence comparison: normalized sequence alignment."
+     * Bioinformatics 17.4 (2001): 327-337.
      */
     function ArslanEgeciougluPevzner() {
         arslanEgeciougluPevznerInstance = this;
@@ -53,7 +59,7 @@ $(document).ready(function () {
         this.lambda = 0;
         this.lastLambda = Number.POSITIVE_INFINITY;
 
-        // inheritance
+        // instances (do not change order)
         alignmentInstance = new bases.alignment.Alignment(this);
         smithWatermanInstance = new smithWaterman.SmithWaterman();
 
@@ -116,11 +122,11 @@ $(document).ready(function () {
      * @param input {Object} - The input which has to be initialized.
      */
     function initializeInput(input) {
-        input.sequenceA = inputData.sequenceA;
-        input.sequenceB =  inputData.sequenceB;
+        input.sequenceB = inputData.sequenceB;
+        input.sequenceA =  inputData.sequenceA;
         input.calculationType = inputData.calculationType;
-        input.matrixHeight = inputData.sequenceB.length + 1;
-        input.matrixWidth = inputData.sequenceA.length + 1;
+        input.matrixHeight = inputData.sequenceA.length + 1;
+        input.matrixWidth = inputData.sequenceB.length + 1;
     }
 
     /**

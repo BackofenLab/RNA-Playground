@@ -11,14 +11,14 @@ Author: Alexander Mattheis
     // public methods
     namespace("postProcessing.visualizer", Visualizer,
         shareInformation, showFlow,
-        showTraceback, highlight, downloadTable, replaceInfinityStrings, redrawOverlay, removeAllContents);
+        showTraceback, highlight, downloadTable, replaceInfinityStrings,
+        redrawOverlay, drawTree, markMinima, removeAllContents);
 
     // instances
     var visualizerInstance;
 
     /**
-     * Contains functions for visualization
-     * and helper functions which easify the access on information.
+     * Contains functions for visualization and creation of downloadable files.
      * @constructor
      */
     function Visualizer() {
@@ -40,6 +40,8 @@ Author: Alexander Mattheis
 
         this.svg = createSVG();
 
+        this.phylogeneticTree = undefined;
+
         // bindings
         ko.bindingHandlers.drawChar = {
             update: function (element, valueAccessor) {
@@ -47,8 +49,12 @@ Author: Alexander Mattheis
                 var character = values[0];
                 var index = values[1];
 
-                if (character !== undefined)
-                    element.innerHTML = character.toUpperCase() + SUB.START_TAG + index + SUB.END_TAG;
+                if (character !== undefined) {
+                    element.innerHTML = character;
+
+                    if (index !== undefined)
+                        element.innerHTML += SUB.START_TAG + index + SUB.END_TAG;
+                }
             }
         };
 
@@ -60,6 +66,8 @@ Author: Alexander Mattheis
         this.downloadTable = downloadTable;
         this.replaceInfinityStrings = replaceInfinityStrings;
         this.redrawOverlay = redrawOverlay;
+        this.drawTree = drawTree;
+        this.markMinima = markMinima;
         this.removeAllContents = removeAllContents;
     }
 
@@ -272,37 +280,39 @@ Author: Alexander Mattheis
 
         var currentTable;
 
-        // go over the whole path
-        for (var j = 0; j < path.length; j++) {
-            currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
+        if (path !== undefined) {
+            // go over the whole path
+            for (var j = 0; j < path.length; j++) {
+                currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
 
-            var posI = path[j].i + 1;
-            var posJ = path[j].j + 1;
+                var posI = path[j].i + 1;
+                var posJ = path[j].j + 1;
 
-            switch (colorClass) {  // selecting by adding the right color class to the element
-                case 0:
-                    currentTable.rows[posI].cells[posJ].classList.add("selected_light_red");
-                    break;
-                case 1:
-                    currentTable.rows[posI].cells[posJ].classList.add("selected_very_light_red");
-                    break;
-                case 2:
-                    currentTable.rows[posI].cells[posJ].classList.add("selected_red");
-                    break;
-                default:
-                    currentTable.rows[posI].cells[posJ].classList.add("selected");
-            }
+                switch (colorClass) {  // selecting by adding the right color class to the element
+                    case 0:
+                        currentTable.rows[posI].cells[posJ].classList.add("selected_light_red");
+                        break;
+                    case 1:
+                        currentTable.rows[posI].cells[posJ].classList.add("selected_very_light_red");
+                        break;
+                    case 2:
+                        currentTable.rows[posI].cells[posJ].classList.add("selected_red");
+                        break;
+                    default:
+                        currentTable.rows[posI].cells[posJ].classList.add("selected");
+                }
 
-            if (j === path.length - 1 && colorClass !== -1) {  // start element should be green in a flow visualization
-                removeFlowColors(currentTable, posI, posJ);
-                currentTable.rows[posI].cells[posJ].classList.add("selected_green");
-            }
+                if (j === path.length - 1 && colorClass !== -1) {  // start element should be green in a flow visualization
+                    removeFlowColors(currentTable, posI, posJ);
+                    currentTable.rows[posI].cells[posJ].classList.add("selected_green");
+                }
 
-            if (arrows) {  // draw arrows: YES or NO
-                placeArrow(currentTable, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode);
-                lastPosI = posI;
-                lastPosJ = posJ;
-                lastTable = currentTable;
+                if (arrows) {  // draw arrows: YES or NO
+                    placeArrow(currentTable, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode);
+                    lastPosI = posI;
+                    lastPosJ = posJ;
+                    lastTable = currentTable;
+                }
             }
         }
     }
@@ -564,7 +574,7 @@ Author: Alexander Mattheis
         } else {  // else if a non-iterative algorithm
             var path = visualizerInstance.output.tracebackPaths[traceNumber];
 
-            // check if you want maybe disable "unhighlight" last drawn path
+            // check if you want maybe disable (unhighlight) last drawn path
             if (visualizerInstance.lastPath.length > 0) {
                 var posI = visualizerInstance.lastPath[0].i + 1;
                 var posJ = visualizerInstance.lastPath[0].j + 1;
@@ -625,8 +635,8 @@ Author: Alexander Mattheis
 
         var matrix = getMatrix(number);
         if (matrix !== undefined) {
-            var upperString = visualizerInstance.input.sequenceA;
-            var leftString = visualizerInstance.input.sequenceB;
+            var upperString = visualizerInstance.input.sequenceB;
+            var leftString = visualizerInstance.input.sequenceA;
 
             var tableCSV = tableToCSV(number, matrix, upperString, leftString);
             var tableFile = new File([tableCSV], {type: TABLE.TEXT_FILE_ENCODING});
@@ -709,34 +719,8 @@ Author: Alexander Mattheis
         string += SYMBOLS.COMMA + upperString.split(SYMBOLS.EMPTY).toString() + SYMBOLS.NEW_LINE;
 
         // compute CSV
-        for (var i = 0; i < matrix.length; i++) {
-            if (i === 0)
-                string += SYMBOLS.COMMA;
-            else
-                string += leftString.charAt(i-1) + SYMBOLS.COMMA;
-
-            string += round(matrix[i]) + SYMBOLS.NEW_LINE;  // Hint: it is allowed to have a line break in the last line
-        }
-
+        string += formats.csvParser.getCSVData(matrix, leftString);
         return string;
-    }
-
-    /**
-     * Rounds values to four decimal places if it is possible.
-     * @param row {number} - The row of which values are rounded.
-     * @return {Array} - Row with rounded values and original values.
-     */
-    function round(row) {
-        var matrixRow = [];
-
-        for (var i = 0; i < row.length; i++) {
-            if (typeof row[i] === "number")
-                matrixRow.push(Math.round(row[i]*10000)/10000);
-            else
-                matrixRow.push(row[i]);
-        }
-
-        return matrixRow;
     }
 
     /**
@@ -800,18 +784,127 @@ Author: Alexander Mattheis
 
         var currentTable;
 
-        // going over the whole path and set right-positioned arrows by a recalculation
-        for (var j = 0; j < path.length; j++) {
-            currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
+        if (path !== undefined) {
+            // going over the whole path and set right-positioned arrows by a recalculation
+            for (var j = 0; j < path.length; j++) {
+                currentTable = getRightTable(path, j, calculationVerticalTable, table, calculationHorizontalTable);
 
-            var posI = path[j].i + 1;
-            var posJ = path[j].j + 1;
+                var posI = path[j].i + 1;
+                var posJ = path[j].j + 1;
 
-            placeArrow(currentTable, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode);
-            lastPosI = posI;
-            lastPosJ = posJ;
-            lastTable = currentTable;
+                placeArrow(currentTable, posI, posJ, mainOutput, lastTable, lastPosI, lastPosJ, flowMode);
+                lastPosI = posI;
+                lastPosJ = posJ;
+                lastTable = currentTable;
+            }
         }
+    }
+
+    /**
+     * Draws a phylogenetic tree from jsPhyloSVG-library.
+     * @see: Bugfix-code for https://jsphylosvg.uservoice.com/forums/55902-general/suggestions/7252947-clear-and-reload-tree
+     * was taken from
+     * https://stackoverflow.com/questions/30667884/why-is-the-bottom-of-the-figure-cut-off
+     * https://pastebin.com/9w4PXtLQ
+     * and has been optimized, extended and commented.
+     */
+    function drawTree() {
+        $("#phylogenetic_tree").remove();  // remove from container
+        $(".tree_container").append(PHYLOGENETIC_TREE.SVG_CANVAS);  // add again
+
+        var newick = visualizerInstance.output.newickString;
+
+        debugger;
+        if (visualizerInstance.output.newickString.length !== 1
+            && newick.indexOf(SYMBOLS.MINUS) === -1) {  // if there is not only a ";" and if there are no negative values
+
+            var numberOfUsedseqeunces = visualizerInstance.input.sequences.length - visualizerInstance.input.arrayPositionsOfRemovedSequences.length;
+            var svgHeight = numberOfUsedseqeunces * PHYLOGENETIC_TREE.SVG_DIMENSION_FACTOR;  // make it dependant on the number of sequences
+
+            visualizerInstance.phylogeneticTree
+                = new Smits.PhyloCanvas(newick,
+                PHYLOGENETIC_TREE.SVG_CANVAS_NAME,
+                PHYLOGENETIC_TREE.SVG_WIDTH,
+                svgHeight);
+
+            var svgPaths = $("svg path");
+            var svgTexts = $("svg text");
+
+            var currentSvgY = parseInt($("svg")[0].attributes.getNamedItem("height").value);
+
+            // search for maximum y in the defined SVG
+            var definedMaxY = 0;
+
+            // go through each path (in SVG figures defined as paths)
+            for (var i = 0; i < svgPaths.length; i++){
+                var path = svgPaths[i].attributes.getNamedItem("d").value.split(",");
+
+                // go through each element of the path
+                for (var j = 1; j < path.length; j++){
+                    var currentY = parseInt(path[j].split("L")[0]);
+
+                    if(definedMaxY < currentY)
+                        definedMaxY = currentY;
+                }
+            }
+
+            if (definedMaxY > currentSvgY) {  // if (SVG has moved)
+                var heightAdjustment = definedMaxY - (currentSvgY - 20);  // compute difference between true value and desired value
+
+                // adjust figures-heights
+                // go through each path
+                for (var i = 0; i < svgPaths.length; i++) {
+                    var path = svgPaths[i].attributes.getNamedItem("d").value.split(SYMBOLS.COMMA);
+
+                    var correctedPath = SYMBOLS.EMPTY + path[0];
+
+                    // go through each element of the path and adjust the y-value
+                    for (var j = 1; j < path.length; j++) {
+                        var currentY = path[j].split("L");
+
+                        // adjustment
+                        if(currentY.length !== 1)
+                            correctedPath = correctedPath + SYMBOLS.COMMA + (parseInt(currentY[0]) - heightAdjustment).toString() + "L" + currentY[1];
+                        else
+                            correctedPath = correctedPath + SYMBOLS.COMMA + (parseInt(currentY[0]) - heightAdjustment).toString();
+                    }
+
+                    svgPaths[i].setAttribute("d", correctedPath);
+                }
+
+                // adjust text-heights
+                for( var i = 0; i < svgTexts.length; i++ ){
+                    svgTexts[i].setAttribute("y", (parseInt(svgTexts[i].attributes.getNamedItem("y").value) - heightAdjustment).toString());
+                }
+            }
+        }
+    }
+
+    /**
+     * Highlights minima in the matrix.
+     * @param tracecellTable {Element} - The table in which the minimas has to be marked.
+     */
+    function markMinima(tracecellTable) {
+        var tracecellLines = visualizerInstance.output.tracecellLines;
+        var tracecellLinesKeys = Object.keys(tracecellLines);
+
+        var height = visualizerInstance.input.matrixHeight;
+        var width = visualizerInstance.input.matrixWidth;
+        debugger;
+
+        for (var i = 0; i < tracecellLinesKeys.length; i++) {
+            var key = tracecellLinesKeys[i];
+            var tracecell = tracecellLines[key];
+
+            var posI = tracecell.i;  // hint: there can be empty lines
+            var posJ = tracecell.j;
+
+            // if in-between cell
+            tracecellTable.rows[posI + 1].cells[posJ + 1].classList.add("selected");  // "+1" because in the first column/row, there is the header
+        }
+
+        tracecellTable.rows[1].cells[1].classList.add("selected_red");  // mark top left cell
+        tracecellTable.rows[height].cells[width].classList.add("selected_green");  // mark bottom right cell
     }
 
     /**

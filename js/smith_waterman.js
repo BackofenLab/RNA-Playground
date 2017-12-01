@@ -20,7 +20,7 @@ $(document).ready(function () {
 (function () {  // namespace
     // public methods
     namespace("smithWaterman", startSmithWaterman, SmithWaterman,
-        initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getAllMaxPositions,
+        initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback,
         getSuperclass);
 
     // instances
@@ -40,6 +40,11 @@ $(document).ready(function () {
      * Computes the optimal, local alignment.
      * @constructor
      * @augments Alignment
+     * @see https://doi.org/10.1016/0022-2836(81)90087-5
+     *
+     * Smith, Temple F., and Michael S. Waterman.
+     * "Identification of common molecular subsequences."
+     * Journal of molecular biology 147.1 (1981): 195-197.
      */
     function SmithWaterman() {
         smithWatermanInstance = this;
@@ -63,7 +68,6 @@ $(document).ready(function () {
         this.recursionFunction = recursionFunction;
         this.computeTraceback = computeTraceback;
 
-        this.getAllMaxPositions = getAllMaxPositions;
         this.getSuperclass = getSuperclass;
     }
 
@@ -100,10 +104,10 @@ $(document).ready(function () {
 
         // going through every matrix cell
         for (var i = 1; i < inputData.matrixHeight; i++) {
-            var bChar = inputData.sequenceB[i - 1];
+            var aChar = inputData.sequenceA[i - 1];
 
             for (var j = 1; j < inputData.matrixWidth; j++) {
-                var aChar = inputData.sequenceA[j - 1];
+                var bChar = inputData.sequenceB[j - 1];
 
                 outputData.matrix[i][j] = alignmentInstance.recursionFunction(aChar, bChar, i, j);
 
@@ -141,7 +145,7 @@ $(document).ready(function () {
         var outputData = alignmentInstance.getOutput();
 
         // computing all traceback start-positions
-        var backtraceStarts = getAllMaxPositions(inputData, outputData);
+        var backtraceStarts = alignmentInstance.getAllMaxPositions(inputData, outputData);
 
         outputData.tracebackPaths = [];
         outputData.moreTracebacks = false;
@@ -150,28 +154,6 @@ $(document).ready(function () {
             var tracebackPaths = alignmentInstance.getLocalTraces([backtraceStarts[i]], inputData, outputData, -1, alignmentInstance.getNeighboured);
             outputData.tracebackPaths = outputData.tracebackPaths.concat(tracebackPaths);
         }
-    }
-
-    /**
-     * Returning all maximums of the computed matrix.
-     * @param inputData {Object} - Containing information about the output matrix.
-     * @param outputData {Object} - Containing the output matrix.
-     * @return {Array} - Array of vectors (max-positions).
-     */
-    function getAllMaxPositions(inputData, outputData) {
-        var maxPositions = [];
-
-        if (outputData.score > 0) {  // only positions bigger 0 can be start positions (because local alignments never lower 0)
-            for (var i = 0; i < inputData.matrixHeight; i++) {
-                for (var j = 0; j < inputData.matrixWidth; j++) {
-                    if (outputData.matrix[i][j] === outputData.score) {
-                        maxPositions.push(new bases.alignment.Vector(i, j));
-                    }
-                }
-            }
-        }
-
-        return maxPositions;
     }
 
     /**
