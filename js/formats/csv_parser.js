@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("formats.csvParser", CsvParser, checkInput, getCSVData, getMatrix);
+    namespace("formats.csvParser", CsvParser, checkInput, getCSVData, getMatrix, getNumOfTableColumns);
 
     /**
      * Creates a "comma-separated values" parser.
@@ -19,6 +19,7 @@ Author: Alexander Mattheis
         this.checkInput = checkInput;
         this.getCSVData = getCSVData;
         this.getMatrix = getMatrix;
+        this.getNumOfTableColumns = getNumOfTableColumns;
     }
 
     /**
@@ -94,11 +95,12 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Returns the distance matrix object created by a CSV-parser.
-     * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
-     * @return {Object} - The distance matrix.
+     * Returns a matrix object.
+     * @param csvData {string} - The csv string which has to be converted into a matrix.
+     * @param getNames {Function} - The function which retrieves the names for the columns/rows.
+     * @return {Object} - The matrix.
      */
-    function getMatrix(csvData) {
+    function getMatrix(csvData, getNames) {
         var distances = [];
         var lines = csvData.split(SYMBOLS.NEW_LINE);
         var lineNumber = 0;
@@ -118,7 +120,7 @@ Author: Alexander Mattheis
         }
 
         // create a distance matrix object
-        var clusterNames = getClusterNames(lineNumber);
+        var clusterNames = getNames(lineNumber);
         var distanceMatrix = {};
 
         var k = 0;  // current distance value index
@@ -136,36 +138,20 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Returns names for clusters associated with the distance data.
-     * Hint: After all characters are depleted,
-     * a number is concatenated to the character
-     * to make this function generic.
-     * Hint 2: There is a similar function for sequences in another class.
-     * @param number {number} - The number of names you want create.
-     * @example:
-     * CLUSTER NAMES:
-     * a, b, c, ..., z,         FIRST EPISODE
-     * a2, b2, c2, ..., z2,     SECOND EPISODE
-     * a3, b3, ...              THIRD ...
-     * @return {Array} - The cluster names.
+     * Returns the number of columns.
+     * @param csvData {string} - The csv string which has to be converted into a matrix.
+     * @return {Object} - The matrix.
      */
-    function getClusterNames(number) {
-        var clusterNames = [];
-        var currentEpisode = 1;
+    function getNumOfTableColumns(csvData) {
+        var lines = csvData.split(SYMBOLS.NEW_LINE);
 
-        // for every pairwise distance we need a symbol
-        for (var i = 0; i < number; i++) {
-            if (i < CLUSTER_NAMES.length)
-                clusterNames.push(CLUSTER_NAMES[i]);  // add a, b, c, ..., z
+        var columnNumber = 0;
 
-            if (i >= CLUSTER_NAMES.length && i % CLUSTER_NAMES.length === 0)  // out of characters
-                currentEpisode++;  // new episode
-
-            // out of characters -> a2, b2, c2, ..., z2, a3, b3, ...
-            if (i >= CLUSTER_NAMES.length)
-                clusterNames.push(CLUSTER_NAMES[i % CLUSTER_NAMES.length] + SYMBOLS.EMPTY + currentEpisode);
+        if (lines.length > 0) {
+            var line = lines[0];
+            columnNumber = (line.match(MULTI_SYMBOLS.SEPARATORS) || []).length + 1;
         }
 
-        return clusterNames;
+        return columnNumber;
     }
 }());

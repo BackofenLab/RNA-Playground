@@ -56,8 +56,13 @@ Author: Alexander Mattheis
      */
     function setInput(inputViewmodel) {
         inputData.clusteringSubalgorithm = inputViewmodel.selectedApproach();
+
         outputData.distanceMatrix = inputViewmodel.distanceMatrix();  // the distance matrix is input and output
-        //inputData.numOfStartClusters =
+
+        inputData.numOfStartClusters = inputViewmodel.numOfStartClusters();
+        inputData.initialNamingIndex = inputData.numOfStartClusters;
+
+        outputData.clusterNames = inputViewmodel.clusterNames();
     }
 
     /**
