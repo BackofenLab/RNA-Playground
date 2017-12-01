@@ -25,11 +25,11 @@ Author: Alexander Mattheis
         </ul>
 
         And there exists many approaches and all of them have advantages and disadvantages.
-        For example Unweighted PGMA (or Weighted PGMA) is very accurate in computing distance between clusters.
-        It computes the average distance between all elements in the cluster,
-        when the distance to a cluster is recomputed.
-        Where as Neighbour-Joining is less accurate,
-        but faster - it looks only at the minimum distance during recomputations.
+        For example Unweighted PGMA (or Weighted PGMA) is only then a good tree computation method,
+        if the distances from the root to the leafs are always the same (ultrametric distance matrix).
+        In other cases the approach is unreliable.
+        Where from Neighbour-Joining is said that it is generally the better procedure
+        (giving better results).
 
         <br />
         <br />
@@ -76,6 +76,12 @@ Author: Alexander Mattheis
 
 		<div class="colW400">
             <textarea class="csv_data" data-bind="text: input.csvTable"></textarea>
+
+            <div class="group_hint">
+                <b>Hints:</b> <br />
+                The ";"-symbol is used as a column separator and every not-empty line
+                has to have the same number of separators or there won't be an output.
+            </div>
         </div>
 	</div>
 </div>
