@@ -34,17 +34,10 @@ Author: Alexander Mattheis
      * Function managing objects.
      */
     function startLinearAlignmentAlgorithm(Algorithm, algorithmName) {
-        imports();
+        alignmentInterfaceInstance.imports();
 
         var inputViewmodel = new InputViewmodel(algorithmName);
         alignmentInterfaceInstance.sharedInterfaceOperations(Algorithm, inputViewmodel, processInput, changeOutput);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /*---- INPUT ----*/

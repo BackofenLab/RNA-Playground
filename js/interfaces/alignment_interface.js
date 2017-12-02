@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.alignmentInterface", AlignmentInterface, sharedInterfaceOperations,
+    namespace("interfaces.alignmentInterface", AlignmentInterface, imports, sharedInterfaceOperations,
         roundValues, getLaTeXTraceFunctions, getRowData, getColumnData, getMinimaData, getTwoRowsSubmatricesData,
         getLaTeXFormula, getDistanceTable, getDistanceTables, reorderGroupSequences, getLibrariesData,
         removeNeutralSymbols, sortWithClusterTuples);
@@ -33,6 +33,7 @@ Author: Alexander Mattheis
         this.startProcessing = interfaceInstance.startProcessing;
 
         // public class methods
+        this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
         this.roundValues = roundValues;
         this.getLaTeXTraceFunctions = getLaTeXTraceFunctions;
@@ -47,6 +48,13 @@ Author: Alexander Mattheis
         this.getLibrariesData = getLibrariesData;
         this.removeNeutralSymbols = removeNeutralSymbols;
         this.sortWithClusterTuples = sortWithClusterTuples;
+    }
+
+    /**
+     * Handling imports.
+     */
+    function imports() {
+        $.getScript(PATHS.ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /**
