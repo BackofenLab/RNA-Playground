@@ -24,10 +24,6 @@ body {
     margin: 0;
 }
 
-code {
-    white-space: pre;
-}
-
 footer {
     background-color: #8148B1;
     box-shadow: 0 0 5px rgba(50, 50, 50, 0.4);
@@ -103,10 +99,6 @@ header {
     box-shadow: 0 0 5px rgba(50, 50, 50, 0.4);
     height: 49px;
     padding: 5px 25px 0 50px;
-}
-
-table {
-    margin: 0;
 }
 
 /*---- CLASS STYLING ----*/
