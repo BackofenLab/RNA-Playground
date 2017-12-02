@@ -20,6 +20,8 @@ var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
      * @param view - The view in which you want load the page.
      */
     function updateDocumentView(algorithm, view) {
+        $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
+
         removeOverlay($("#overlay"));
 
         var htmlName = algorithm
