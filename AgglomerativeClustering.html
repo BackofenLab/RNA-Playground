@@ -135,4 +135,86 @@ Author: Alexander Mattheis
     <div class="group_hint">
         <b>Hint: </b> Visualization is only shown, if there are no negative distances.
     </div>
+
+    <h2>Distance Table</h2>
+
+    <div class="distance_table">
+        <table class="distances">
+            <thead>
+                <tr>
+                    <th></th>
+                    <!-- ko foreach: $root.output.remainingClusters()[0] -->
+                        <th data-bind="drawChar: [$data, undefined]"></th>
+                    <!-- /ko -->
+                </tr>
+            </thead>
+
+            <tbody>
+                <!-- ko foreach: $root.output.distanceMatrices()[0][0]--> <!-- to get i-indexes = $parentContext.$index() -->
+                    <tr>
+                        <th data-bind="drawChar: [$root.output.remainingClusters()[0][$index()], undefined]"></th>
+
+                        <!-- ko foreach: $root.output.distanceMatrices()[0][0] --> <!-- to get j-indexes = $index() -->
+                            <td class="non_selectable_entry"
+                                data-bind="text: $root.output.distanceMatrices()[0][$parentContext.$index()][$index()]"></td>
+                        <!-- /ko -->
+                    </tr>
+                <!-- /ko -->
+
+                <tr>
+                    <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+                        <small>
+                            <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[0]"></span>
+                        </small>
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a href="#" data-bind="click: $root.output.toggleVisibility, text: $root.output.toggleLinkText"></a>
+
+    <div class="matrices" data-bind="visible: $root.output.showMatrices">
+        <!-- ko foreach: $root.output.distanceMatrices() -->
+            <!-- ko if: $index() > 0 -->
+                <h3 class="header">Iteration <span data-bind="text: $index()"></span></h3>
+
+                <div class="distance_table">
+                    <table class="distances">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <!-- ko foreach: $root.output.remainingClusters()[$index()] -->
+                                    <th data-bind="drawChar: [$data, undefined]"></th>
+                                <!-- /ko -->
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <!-- ko foreach: $root.output.distanceMatrices()[$index()] --> <!-- to get i-indexes = $parentContext.$index() -->
+                                <tr>
+                                    <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
+                                    <!-- ko foreach: $root.output.distanceMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
+                                        <td class="non_selectable_entry"
+                                            data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                        </td>
+                                    <!-- /ko -->
+                                </tr>
+                            <!-- /ko -->
+
+                            <!-- ko if: $index() < $root.output.distanceMatrices().length-1 --> <!-- The last minimum is not computed -->
+                                <tr>
+                                    <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+                                        <small>
+                                            <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[$index()]"></span>
+                                        </small>
+                                    </th>
+                                </tr>
+                            <!-- /ko -->
+                        </tbody>
+                    </table>
+                </div>
+            <!-- /ko -->
+        <!-- /ko -->
+    </div>
 </div>

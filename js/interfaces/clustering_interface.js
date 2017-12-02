@@ -27,8 +27,6 @@ Author: Alexander Mattheis
         // inheritance
         interfaceInstance = new interfaces.interface.Interface();
 
-        this.startProcessing = interfaceInstance.startProcessing;
-
         // public methods
         this.startClusteringInterface = startClusteringInterface;
     }
@@ -134,6 +132,17 @@ Author: Alexander Mattheis
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      */
     function OutputViewmodel(algorithmName, outputData) {
+        // tree
         this.newickString = ko.observable(outputData.newickString);
+
+        // distance matrix
+        outputData.distanceMatrix
+            = getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined);
+
+        viewmodel.distanceMatrix =  ko.observableArray(outputData.distanceMatrix);
+
+        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
+            viewmodel.distanceMatrix[i] = ko.observableArray(outputData.distanceMatrix[i]);
+        }
     }
 }());
