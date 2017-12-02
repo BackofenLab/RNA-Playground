@@ -50,8 +50,6 @@ Author: Alexander Mattheis
      * Handling imports.
      */
     function imports() {
-        alignmentInterfaceInstance.imports();
-
         $.getScript(PATHS.ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 

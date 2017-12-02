@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.interface", Interface, imports, sharedInterfaceOperations, startProcessing);
+    namespace("interfaces.interface", Interface, sharedInterfaceOperations, startProcessing);
 
     // instances
     var interfaceInstance;
@@ -24,26 +24,9 @@ Author: Alexander Mattheis
         interfaceInstance = this;
 
         // public class methods
-        this.imports = imports;
+        //this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
         this.startProcessing = startProcessing;
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        // third party libs
-        // $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // to interpret static LaTeX code (Hirschberg algorithm)
-
-        // design/controls logic
-        /*
-        This two imports are very important!
-        Without an import the classes are not reinitialized correctly for the next algorithm!
-         */
-        $.getScript(PATHS.INPUT_PROCESSOR);
-        $.getScript(PATHS.VISUALIZER);
     }
 
     /**

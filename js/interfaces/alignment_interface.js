@@ -30,7 +30,6 @@ Author: Alexander Mattheis
         // inheritance
         interfaceInstance = new interfaces.interface.Interface();
 
-        this.imports = interfaceInstance.imports;
         this.startProcessing = interfaceInstance.startProcessing;
 
         // public class methods

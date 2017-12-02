@@ -39,8 +39,6 @@ Author: Alexander Mattheis
      * Function managing objects.
      */
     function startClustering(Algorithm, algorithmName) {
-        interfaceInstance.imports();
-
         var inputViewmodel = new InputViewmodel(algorithmName);
         sharedInterfaceOperations(Algorithm, inputViewmodel, processInput, changeOutput);
     }

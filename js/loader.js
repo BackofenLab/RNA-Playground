@@ -20,8 +20,7 @@ var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
      * @param view - The view in which you want load the page.
      */
     function updateDocumentView(algorithm, view) {
-        $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
-
+        imports();
         removeOverlay($("#overlay"));
 
         var htmlName = algorithm
@@ -42,6 +41,23 @@ var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
         view.load(PATHS.MAIN.PAGES + htmlName + FILE_EXTENSIONS.HYPERTEXT_MARKUP_LANGUAGE, function () {
             $.getScript(PATHS.MAIN.SCRIPTS + javascriptName + FILE_EXTENSIONS.JAVASCRIPT);
         });
+    }
+
+    /**
+     * Handling imports.
+     */
+    function imports() {
+        // third party libs
+        $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // to interpret static LaTeX code (Hirschberg algorithm)
+
+        // design/controls logic
+        /*
+        This two imports are very important!
+        Without an import the classes are not reinitialized correctly for the next algorithm!
+         */
+        $.getScript(PATHS.INPUT_PROCESSOR);
+        $.getScript(PATHS.VISUALIZER);
     }
 
     /**
