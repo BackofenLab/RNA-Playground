@@ -28,7 +28,6 @@ Author: Alexander Mattheis
         this.startProcessing = startProcessing;
         this.roundValues = roundValues;
         this.getDistanceTables = getDistanceTables;
-        this.getDistanceTable = getDistanceTable;
     }
 
     /**
@@ -130,7 +129,8 @@ Author: Alexander Mattheis
                 }
             }
 
-        } else if (algorithmName === ALGORITHMS.FENG_DOOLITTLE) {  // if Feng-Doolittle or UPGMA (algorithms in which distance tables displayed)
+        } else if (algorithmName === ALGORITHMS.FENG_DOOLITTLE
+            || algorithmName === ALGORITHMS.AGGLOMERATIVE_CLUSTERING) {  // if Feng-Doolittle or Agglomerative
             // iterate over each distance matrix
             for (var k = 0; k < outputData.distanceMatrices.length; k++) {
 
@@ -186,6 +186,7 @@ Author: Alexander Mattheis
      * @return {Object} - The outputData with converted distance matrices.
      */
     function getDistanceTables(outputData) {
+        debugger;
         var matrixLength = outputData.distanceMatrixLength;  // start length
 
         // in each round the matrix gets smaller by one, because two matrices are merged
@@ -203,6 +204,7 @@ Author: Alexander Mattheis
      * Hint: "Associative arrays" do not have a defined order (browser-dependant).
      */
     function getDistanceTable(distanceMatrix, distanceMatrixLength, remainingClusters, matrixKeys) {
+        debugger;
         var matrix = createMatrix(distanceMatrixLength);
         if (matrixKeys === undefined)
             matrixKeys = Object.keys(distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...

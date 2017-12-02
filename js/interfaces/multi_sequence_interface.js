@@ -340,25 +340,6 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
     function changeFengDoolittleOutput(outputData, viewmodels) {
-        // creates a visually representable distance matrix
-        outputData.distanceMatrix
-            = alignmentInterfaceInstance.getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength,
-            outputData.remainingClusters[0], undefined);
-
-        // distance matrix
-        viewmodels.output.distanceMatrix(outputData.distanceMatrix);
-
-        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
-            // new variables (rows) are not automatically functions
-            // and so we have to convert new variables manually into functions
-            // or we get the following error
-            // 'Uncaught TypeError: viewmodels.output.distanceMatrix[i] is not a function'
-            if (i > viewmodels.output.distanceMatrix.length)
-                viewmodels.output.distanceMatrix[i] = new Function();
-
-            viewmodels.output.distanceMatrix[i](outputData.distanceMatrix[i]);
-        }
-
         // distance matrices
         outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData);
 
@@ -383,7 +364,7 @@ Author: Alexander Mattheis
                 viewmodels.output.distanceMatrices[i][j](outputData.distanceMatrices[i][j]);
             }
         }
-
+        debugger;
         viewmodels.output.remainingClusters(outputData.remainingClusters);
         viewmodels.output.minimums(outputData.minimums);
 

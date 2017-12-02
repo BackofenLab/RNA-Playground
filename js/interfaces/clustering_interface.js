@@ -93,7 +93,7 @@ Author: Alexander Mattheis
         } else
             inputProcessor.activateInputUpdates();
 
-        clusteringInterfaceInstance.startProcessing(algorithm, inputViewmodel, visualViewmodel);
+        interfaceInstance.startProcessing(algorithm, inputViewmodel, visualViewmodel);
     }
 
     /**
@@ -104,8 +104,37 @@ Author: Alexander Mattheis
      * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
+        // tree
         viewmodels.output.newickString(outputData.newickString);
         viewmodels.visual.drawTree();
+
+        // distance matrices
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData);
+
+        interfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
+
+        viewmodels.output.distanceMatrices(outputData.distanceMatrices);
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.distanceMatrices.length)
+                viewmodels.output.distanceMatrices[i] = new Function();
+
+            viewmodels.output.distanceMatrices[i](outputData.distanceMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.distanceMatrices[i].length)
+                    viewmodels.output.distanceMatrices[i][j] = new Function();
+
+                viewmodels.output.distanceMatrices[i][j](outputData.distanceMatrices[i][j]);
+            }
+        }
+        debugger;
+        viewmodels.output.remainingClusters(outputData.remainingClusters);
+        viewmodels.output.minimums(outputData.minimums);
     }
 
     /**
@@ -132,17 +161,29 @@ Author: Alexander Mattheis
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      */
     function OutputViewmodel(algorithmName, outputData) {
+        var viewmodel = this;
+
         // tree
-        this.newickString = ko.observable(outputData.newickString);
+        viewmodel.newickString = ko.observable(outputData.newickString);
 
-        // distance matrix
-        outputData.distanceMatrix
-            = getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined);
+        // distance matrices
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData);
 
-        viewmodel.distanceMatrix =  ko.observableArray(outputData.distanceMatrix);
+        interfaceInstance.roundValues(algorithmName, outputData);
 
-        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
-            viewmodel.distanceMatrix[i] = ko.observableArray(outputData.distanceMatrix[i]);
+        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
+                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({ deferred: true });
+            }
         }
+
+        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
+        viewmodel.minimums = ko.observable(outputData.minimums).extend({ deferred: true });
     }
 }());

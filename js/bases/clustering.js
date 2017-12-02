@@ -65,6 +65,7 @@ Author: Alexander Mattheis
         inputData.numOfStartClusters = getNumOfStartClusters(noError, inputViewmodel.csvTable());
 
         inputData.initialNamingIndex = inputData.numOfStartClusters;
+        outputData.distanceMatrixLength = inputData.numOfStartClusters;
         outputData.clusterNames = getColumnNames(noError, outputData.distanceMatrix);
     }
 
@@ -138,7 +139,7 @@ Author: Alexander Mattheis
      * @return {Array} - The name of the columns.
      */
     function getColumnNames(isCorrectData, distanceMatrix) {
-        var names = [];
+        var names = [CLUSTER_NAMES[0]];
 
         if (isCorrectData) {
             var namePairs = Object.keys(distanceMatrix);
@@ -188,6 +189,7 @@ Author: Alexander Mattheis
      * Initializes structs used in the algorithm.
      */
     function initializeStructs() {
+        debugger;
         clusteringInstance.remainingClusterNames = outputData.clusterNames.slice();  // shallow copy (because they won't be changed)
         clusteringInstance.removedKeys = [];
         clusteringInstance.treeParts = [];

@@ -136,49 +136,14 @@ Author: Alexander Mattheis
         <b>Hint: </b> Visualization is only shown, if there are no negative distances.
     </div>
 
-    <h2>Distance Table</h2>
-
-    <div class="distance_table">
-        <table class="distances">
-            <thead>
-                <tr>
-                    <th></th>
-                    <!-- ko foreach: $root.output.remainingClusters()[0] -->
-                        <th data-bind="drawChar: [$data, undefined]"></th>
-                    <!-- /ko -->
-                </tr>
-            </thead>
-
-            <tbody>
-                <!-- ko foreach: $root.output.distanceMatrices()[0][0]--> <!-- to get i-indexes = $parentContext.$index() -->
-                    <tr>
-                        <th data-bind="drawChar: [$root.output.remainingClusters()[0][$index()], undefined]"></th>
-
-                        <!-- ko foreach: $root.output.distanceMatrices()[0][0] --> <!-- to get j-indexes = $index() -->
-                            <td class="non_selectable_entry"
-                                data-bind="text: $root.output.distanceMatrices()[0][$parentContext.$index()][$index()]"></td>
-                        <!-- /ko -->
-                    </tr>
-                <!-- /ko -->
-
-                <tr>
-                    <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
-                        <small>
-                            <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[0]"></span>
-                        </small>
-                    </th>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <a href="#" data-bind="click: $root.output.toggleVisibility, text: $root.output.toggleLinkText"></a>
-
-    <div class="matrices" data-bind="visible: $root.output.showMatrices">
+    <h2>Distance Tables</h2>
+    <div class="matrices">
         <!-- ko foreach: $root.output.distanceMatrices() -->
             <!-- ko if: $index() > 0 -->
                 <h3 class="header">Iteration <span data-bind="text: $index()"></span></h3>
+            <!-- /ko -->
 
+            <!-- ko if: $root.output.distanceMatrices()[$index()].length > 0 -->
                 <div class="distance_table">
                     <table class="distances">
                         <thead>

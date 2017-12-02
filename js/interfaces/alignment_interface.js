@@ -698,16 +698,6 @@ Author: Alexander Mattheis
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
     function createFengDoolittleOutputViewmodel(algorithmName, viewmodel, outputData) {
-        // distance matrix
-        outputData.distanceMatrix
-            = interfaceInstance.getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined);
-
-        viewmodel.distanceMatrix =  ko.observableArray(outputData.distanceMatrix);
-
-        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
-            viewmodel.distanceMatrix[i] = ko.observableArray(outputData.distanceMatrix[i]);
-        }
-
         // distance matrices
         outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData);
 
@@ -753,9 +743,9 @@ Author: Alexander Mattheis
         viewmodel.gapNumbers = ko.observable(outputData.gapNumbers);
         viewmodel.gapStarts = ko.observable(outputData.gapStarts);
 
+        // gimmicks/optimizations
         viewmodel.showMatrices = ko.observable(false);
 
-        // gimmicks/optimizations
         viewmodel.toggleVisibility = function() {
             viewmodel.showMatrices(!viewmodel.showMatrices());
         };
