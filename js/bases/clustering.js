@@ -126,7 +126,7 @@ Author: Alexander Mattheis
         var numOfStartClusters = 0;
 
         if (isCorrectData)
-            numOfStartClusters = parserInstance.getNumOfTableColumns(csvData);
+            numOfStartClusters = parserInstance.getNumOfTableLines(csvData);
 
         return numOfStartClusters;
     }

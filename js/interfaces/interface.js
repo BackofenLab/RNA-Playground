@@ -51,7 +51,6 @@ Author: Alexander Mattheis
             output: outputViewmodel
         };
 
-        debugger;
         inputProcessor.linkElements(algorithm, viewmodels, processInput, changeOutput);
         executeAlgorithmInterfaceCode(algorithm, viewmodels);
 

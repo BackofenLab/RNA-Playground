@@ -18,7 +18,7 @@ Author: Alexander Mattheis
     /**
      * Is used to work with the input and output (the interface) of a clustering algorithm.
      * It contains the basic methods and the viewmodel for the output and input.
-     * This class is used should be as a superclass for other clustering interfaces.
+     * This class should be used as a superclass for other clustering interfaces.
      * @constructor
      */
     function ClusteringInterface() {

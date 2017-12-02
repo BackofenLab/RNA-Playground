@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("formats.csvParser", CsvParser, checkInput, getCSVData, getMatrix, getNumOfTableColumns);
+    namespace("formats.csvParser", CsvParser, checkInput, getCSVData, getMatrix, getNumOfTableLines);
 
     /**
      * Creates a "comma-separated values" parser.
@@ -19,7 +19,7 @@ Author: Alexander Mattheis
         this.checkInput = checkInput;
         this.getCSVData = getCSVData;
         this.getMatrix = getMatrix;
-        this.getNumOfTableColumns = getNumOfTableColumns;
+        this.getNumOfTableLines = getNumOfTableLines;
     }
 
     /**
@@ -30,10 +30,9 @@ Author: Alexander Mattheis
      * @return {string} - The error output, if it exists.
      */
     function checkInput(csvData) {
-        var lines = csvData.split(SYMBOLS.NEW_LINE);
+        var lines = getNonEmptyLines(csvData.split(SYMBOLS.NEW_LINE));
 
         var lastNumberOfSeparators = -1;
-        var nonEmptyLines = 0;
 
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i];
@@ -45,14 +44,28 @@ Author: Alexander Mattheis
                     return ERRORS.WRONG_NUMBER_OF_COLUMNS_IN_ROW + (i + 1);  // "+1" because humans start counting with 1
 
                 lastNumberOfSeparators = numberOfSeparators;
-                nonEmptyLines++;
             }
         }
 
-        if (nonEmptyLines !== lastNumberOfSeparators + 1)  // #rows !== #columns
+        if (lines.length !== lastNumberOfSeparators + 1)  // #rows !== #columns
             return ERRORS.DIFFERENT_NUMBER_OF_COLUMNS_AND_ROWS;
 
         return SYMBOLS.EMPTY;
+    }
+
+    /**
+     * Removes empty lines.
+     * @param lines {Array} - The
+     */
+    function getNonEmptyLines(lines) {
+        var nonEmptyLines = [];
+
+        for (var i = 0; i < lines.length; i++) {
+            if (lines[i].replace(MULTI_SYMBOLS.SPACE, SYMBOLS.EMPTY) !== SYMBOLS.EMPTY)
+                nonEmptyLines.push(lines[i]);
+        }
+
+        return nonEmptyLines;
     }
 
     /**
@@ -102,8 +115,7 @@ Author: Alexander Mattheis
      */
     function getMatrix(csvData, getNames) {
         var distances = [];
-        var lines = csvData.split(SYMBOLS.NEW_LINE);
-        var lineNumber = 0;
+        var lines = getNonEmptyLines(csvData.split(SYMBOLS.NEW_LINE));
 
         // read in all distances
         for (var i = 0; i < lines.length; i++) {
@@ -115,12 +127,10 @@ Author: Alexander Mattheis
 
                 distances.push(Number(lineEntry));
             }
-
-            lineNumber++;
         }
 
         // create a distance matrix object
-        var clusterNames = getNames(lineNumber);
+        var clusterNames = getNames(lines.length);
         var distanceMatrix = {};
 
         var k = 0;  // current distance value index
@@ -142,16 +152,7 @@ Author: Alexander Mattheis
      * @param csvData {string} - The csv string which has to be converted into a matrix.
      * @return {Object} - The matrix.
      */
-    function getNumOfTableColumns(csvData) {
-        var lines = csvData.split(SYMBOLS.NEW_LINE);
-
-        var columnNumber = 0;
-
-        if (lines.length > 0) {
-            var line = lines[0];
-            columnNumber = (line.match(MULTI_SYMBOLS.SEPARATORS) || []).length + 1;
-        }
-
-        return columnNumber;
+    function getNumOfTableLines(csvData) {
+        return getNonEmptyLines(csvData.split(SYMBOLS.NEW_LINE)).length;
     }
 }());

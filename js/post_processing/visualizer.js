@@ -823,7 +823,7 @@ Author: Alexander Mattheis
 
             if (visualizerInstance.algorithm.type === ALGORITHMS.AGGLOMERATIVE_CLUSTERING)
                 numberOfClusters = visualizerInstance.input.initialNamingIndex;
-            else
+            else  // if clustering algorithm
                 numberOfClusters = visualizerInstance.input.sequences.length - visualizerInstance.input.arrayPositionsOfRemovedSequences.length;
 
             var svgHeight = numberOfClusters * PHYLOGENETIC_TREE.SVG_DIMENSION_FACTOR;  // make it dependant on the number of clusters
