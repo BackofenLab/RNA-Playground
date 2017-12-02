@@ -19,8 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("arslanEgeciougluPevzner", startArslanEgeciougluPevzner, ArslanEgeciougluPevzner,
-        getInput, setInput, compute, getOutput, setIO, getSuperclass);
+    namespace("arslanEgeciougluPevzner", startArslanEgeciougluPevzner, ArslanEgeciougluPevzner);
 
     // instances
     var alignmentInstance;

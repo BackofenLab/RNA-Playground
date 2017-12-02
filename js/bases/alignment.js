@@ -8,12 +8,8 @@ Author: Alexander Mattheis
 "use strict";
 
 (function () {  // namespace
-    // public methods
-    namespace("bases.alignment", Vector, create,
-        Alignment, getInput, setLinearAlignmentInput, setSubadditiveAlignmentInput, compute, recursionFunction,
-        affineRecursionFunction, getEnlargementAndBaseCosts, getGlobalTraces, getLocalTraces, getAllMaxPositions,
-        createAlignments, getOutput, setIO, getLastChild, setLastChild,
-        getNeighboured, getVerticalNeighboured, getHorizontalNeighboured, differenceLowerEpsilon);
+    // public methods (for "create" an execution without initialization is needed)
+    namespace("bases.alignment", Vector, create, Alignment);
 
     // instances
     var alignmentInstance;
@@ -61,7 +57,7 @@ Author: Alexander Mattheis
 
         this.stopTraceback = false;
 
-        // public methods
+        // public class methods
         this.getInput = getInput;
 
         this.setLinearAlignmentInput = setLinearAlignmentInput;

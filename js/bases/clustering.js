@@ -9,24 +9,28 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("bases.clustering", Clustering, setInput, compute, getMatrixKeys, getOutput, setIO);
+    namespace("bases.clustering", Clustering);
 
     // instances
     var childInstance;
     var clusteringInstance;
+    var newickEncoderInstance;
+    var parserInstance;
 
     // shared variables
     var inputData = {};  // stores the input of the algorithm
     var outputData = {};  // stores the output of the algorithm
 
     /**
-     * Contains functions to compute a clustering (at the moment only hierarchical agglomerative clustering).
+     * Contains functions to compute a hierarchical clustering (at the moment only hierarchical agglomerative clustering).
      * It is used by agglomerative clustering algorithms as superclass
      * to avoid code duplicates.
      * @constructor
      */
     function Clustering(child) {
         clusteringInstance = this;
+        newickEncoderInstance = new formats.newickEncoder.NewickEncoder();
+        parserInstance = new formats.csvParser.CsvParser();
 
         // variables
         this.nameIndex = 0;  // only really needed, if getNextClusterName() function is used
@@ -37,8 +41,9 @@ Author: Alexander Mattheis
         // inheritance
         childInstance = child;
 
-        // public methods
+        // public class methods
         this.setInput = setInput;
+        this.getInput = getInput;
         this.compute = compute;
         this.getMatrixKeys = getMatrixKeys;
         this.getOutput = getOutput;
@@ -52,7 +57,107 @@ Author: Alexander Mattheis
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
-        //inputData.clusteringSubalgorithm = inputViewmodel.clusteringSubalgorithm();
+        var noError = inputViewmodel.errorInput() === SYMBOLS.EMPTY;
+
+        inputData.clusteringSubalgorithm = inputViewmodel.selectedApproach()[0];  // because it's array from which we choose
+
+        outputData.distanceMatrix = getDistanceMatrix(noError, inputViewmodel.csvTable());
+        inputData.numOfStartClusters = getNumOfStartClusters(noError, inputViewmodel.csvTable());
+
+        inputData.initialNamingIndex = inputData.numOfStartClusters;
+        outputData.distanceMatrixLength = inputData.numOfStartClusters;
+        outputData.clusterNames = getColumnNames(noError, outputData.distanceMatrix);
+    }
+
+    /**
+     * Returns the distance matrix object created by a CSV-parser.
+     * @param isCorrectData {boolean} - If false, it returns an empty object and else the distance matrix object.
+     * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
+     * @return {Object} - The distance matrix.
+     */
+    function getDistanceMatrix(isCorrectData, csvData) {
+        var distanceMatrix = {};
+
+        if (isCorrectData)
+            distanceMatrix = parserInstance.getMatrix(csvData, getClusterNames);
+
+        return distanceMatrix;
+    }
+
+    /**
+     * Returns names for clusters associated with the data.
+     * Hint: After all characters are depleted,
+     * a number is concatenated to the character
+     * to make this function generic.
+     * @param number {number} - The number of names you want create.
+     * @example:
+     * CLUSTER NAMES:
+     * a, b, c, ..., z,         FIRST EPISODE
+     * a2, b2, c2, ..., z2,     SECOND EPISODE
+     * a3, b3, ...              THIRD ...
+     * @return {Array} - The cluster names.
+     */
+    function getClusterNames(number) {
+        var clusterNames = [];
+        var currentEpisode = 1;
+
+        // for every pairwise distance we need a symbol
+        for (var i = 0; i < number; i++) {
+            if (i < CLUSTER_NAMES.length)
+                clusterNames.push(CLUSTER_NAMES[i]);  // add a, b, c, ..., z
+
+            if (i >= CLUSTER_NAMES.length && i % CLUSTER_NAMES.length === 0)  // out of characters
+                currentEpisode++;  // new episode
+
+            // out of characters -> a2, b2, c2, ..., z2, a3, b3, ...
+            if (i >= CLUSTER_NAMES.length)
+                clusterNames.push(CLUSTER_NAMES[i % CLUSTER_NAMES.length] + SYMBOLS.EMPTY + currentEpisode);
+        }
+
+        return clusterNames;
+    }
+
+    /**
+     * Returns the number of start clusters given the CSV data.
+     * @param isCorrectData {boolean} - If false, it returns an empty object and else the distance matrix object.
+     * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
+     * @return {Object} - The distance matrix.
+     */
+    function getNumOfStartClusters(isCorrectData, csvData) {
+        var numOfStartClusters = 0;
+
+        if (isCorrectData)
+            numOfStartClusters = parserInstance.getNumOfTableLines(csvData);
+
+        return numOfStartClusters;
+    }
+
+    /**
+     * Returns the names from a distance matrix.
+     * @param isCorrectData {boolean} - If false, it returns an empty object and else the distance matrix object.
+     * @param distanceMatrix {Object} - The distance matrix object from which the column names are returned.
+     * @return {Array} - The name of the columns.
+     */
+    function getColumnNames(isCorrectData, distanceMatrix) {
+        var names = [CLUSTER_NAMES[0]];
+
+        if (isCorrectData) {
+            var namePairs = Object.keys(distanceMatrix);
+
+            for (var i = 0; i < namePairs.length; i++) {
+                var namesOfPair = namePairs[i].split(SYMBOLS.COMMA);
+                var name1 = namesOfPair[0];
+                var name2 = namesOfPair[1];
+
+                if (names.indexOf(name1) === -1)
+                    names.push(name1);
+
+                if (names.indexOf(name2) === -1)
+                    names.push(name2);
+            }
+        }
+
+        return names;
     }
 
     /**
@@ -65,7 +170,7 @@ Author: Alexander Mattheis
         var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in hierarchical clustering algorithms
 
         initializeStructs();
-        initializeCardinalities(numOfIterations);
+        initializeCardinalities();
 
         for (var i = 0; i < numOfIterations; i++) {
             var minimum = determineMatrixMinimum();
@@ -76,7 +181,7 @@ Author: Alexander Mattheis
 
         getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
-        outputData.newickString = formats.newickFormat.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
+        outputData.newickString = newickEncoderInstance.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
         return [inputData, outputData];
     }
 
@@ -84,7 +189,10 @@ Author: Alexander Mattheis
      * Initializes structs used in the algorithm.
      */
     function initializeStructs() {
+        debugger;
         clusteringInstance.remainingClusterNames = outputData.clusterNames.slice();  // shallow copy (because they won't be changed)
+        clusteringInstance.removedKeys = [];
+        clusteringInstance.treeParts = [];
 
         outputData.cardinalities = {};  // needed for distance computations (for example in UPGMA)
 
@@ -101,11 +209,10 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Initializes the size parameters of the clusters.
-     * @param numOfIterations - The number of iterations the algorithm will do.
+     * Initializes the size-parameters of the clusters.
      */
-    function initializeCardinalities(numOfIterations) {
-        clusteringInstance.nameIndex = inputData.sequences.length;  // do not change that!
+    function initializeCardinalities() {
+        clusteringInstance.nameIndex = inputData.initialNamingIndex;  // do not change that!
 
         for (var i = 0; i < clusteringInstance.nameIndex; i++)
             outputData.cardinalities[outputData.clusterNames[i]] = 1;
@@ -235,7 +342,7 @@ Author: Alexander Mattheis
             clusteringInstance.remainingClusterNames.splice(index, 1);
     }
 
-    /** ALTERNATIVE from lecture.
+    /** ALTERNATIVE from lecture WS 2016/2017.
      * Returns the next name of a cluster.
      * Hint: After all characters are depleted,
      * a number is concatenated to the character
@@ -330,6 +437,14 @@ Author: Alexander Mattheis
             subtree.value = 0;
 
         outputData.remainingClusters.push(jQuery.extend(true, [], clusteringInstance.remainingClusterNames));  // for visualization
+    }
+
+    /**
+     * Returns all algorithm output.
+     * @return {Object} - Contains all output of the algorithm.
+     */
+    function getInput() {
+        return inputData;
     }
 
     /**

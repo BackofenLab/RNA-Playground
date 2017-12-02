@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.multiSequenceInterface", MultiSequenceInterface, startMultiSequenceInterface, getMaxNumberOfAlignments);
+    namespace("interfaces.multiSequenceInterface", MultiSequenceInterface);
 
     // instances
     var alignmentInterfaceInstance;
@@ -32,6 +32,7 @@ Author: Alexander Mattheis
 
             // public class methods
         this.startMultiSequenceInterface = startMultiSequenceInterface;
+        this.getMaxNumberOfAlignments = getMaxNumberOfAlignments;
     }
 
     /**
@@ -40,19 +41,10 @@ Author: Alexander Mattheis
      * @param algorithmName - The name of the algorithm which is started.
      */
     function startMultiSequenceInterface(Algorithm, algorithmName) {
-        imports();
+        alignmentInterfaceInstance.imports();
 
         var inputViewmodel = new InputViewmodel(algorithmName);
         alignmentInterfaceInstance.sharedInterfaceOperations(Algorithm, inputViewmodel, processInput, changeOutput);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        alignmentInterfaceInstance.imports();
-
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /*---- INPUT ----*/
@@ -348,25 +340,6 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
     function changeFengDoolittleOutput(outputData, viewmodels) {
-        // creates a visually representable distance matrix
-        outputData.distanceMatrix
-            = alignmentInterfaceInstance.getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength,
-            outputData.remainingClusters[0], undefined);
-
-        // distance matrix
-        viewmodels.output.distanceMatrix(outputData.distanceMatrix);
-
-        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
-            // new variables (rows) are not automatically functions
-            // and so we have to convert new variables manually into functions
-            // or we get the following error
-            // 'Uncaught TypeError: viewmodels.output.distanceMatrix[i] is not a function'
-            if (i > viewmodels.output.distanceMatrix.length)
-                viewmodels.output.distanceMatrix[i] = new Function();
-
-            viewmodels.output.distanceMatrix[i](outputData.distanceMatrix[i]);
-        }
-
         // distance matrices
         outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData);
 
@@ -391,7 +364,7 @@ Author: Alexander Mattheis
                 viewmodels.output.distanceMatrices[i][j](outputData.distanceMatrices[i][j]);
             }
         }
-
+        debugger;
         viewmodels.output.remainingClusters(outputData.remainingClusters);
         viewmodels.output.minimums(outputData.minimums);
 

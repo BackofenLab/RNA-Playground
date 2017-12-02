@@ -16,6 +16,7 @@ TestCase("test_feng_doolittle", {
 
         var inputData = {};
         inputData.sequences = ["ACGT", "AT", "GCC"];
+        inputData.initialNamingIndex = 3;
 
         inputData.calculationType = "similarity";
         inputData.arrayPositionsOfRemovedSequences = [];
@@ -27,7 +28,6 @@ TestCase("test_feng_doolittle", {
 
         algorithm.setIO(inputData, {});
 
-        debugger;
         var ioData = algorithm.compute();
         var outputData = ioData[1];
 

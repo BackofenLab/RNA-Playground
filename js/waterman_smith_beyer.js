@@ -19,8 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("watermanSmithBeyer", startWatermanSmithBeyer, WatermanSmithBeyer,
-        getInput, setInput, compute, gapFunction, getNeighboured, getOutput, setIO, getSuperclass);
+    namespace("watermanSmithBeyer", startWatermanSmithBeyer, WatermanSmithBeyer);
 
     // instances
     var alignmentInstance;

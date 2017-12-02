@@ -9,10 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("postProcessing.visualizer", Visualizer,
-        shareInformation, showFlow,
-        showTraceback, highlight, downloadTable, replaceInfinityStrings,
-        redrawOverlay, drawTree, markMinima, removeAllContents);
+    namespace("postProcessing.visualizer", Visualizer);
 
     // instances
     var visualizerInstance;
@@ -719,7 +716,8 @@ Author: Alexander Mattheis
         string += SYMBOLS.COMMA + upperString.split(SYMBOLS.EMPTY).toString() + SYMBOLS.NEW_LINE;
 
         // compute CSV
-        string += formats.csvParser.getCSVData(matrix, leftString);
+        var csvParser = new formats.csvParser.CsvParser();
+        string += csvParser.getCSVData(matrix, leftString);
         return string;
     }
 
@@ -818,8 +816,14 @@ Author: Alexander Mattheis
         if (visualizerInstance.output.newickString.length !== 1
             && newick.indexOf(SYMBOLS.MINUS) === -1) {  // if there is not only a ";" and if there are no negative values
 
-            var numberOfUsedseqeunces = visualizerInstance.input.sequences.length - visualizerInstance.input.arrayPositionsOfRemovedSequences.length;
-            var svgHeight = numberOfUsedseqeunces * PHYLOGENETIC_TREE.SVG_DIMENSION_FACTOR;  // make it dependant on the number of sequences
+            var numberOfClusters;
+
+            if (visualizerInstance.algorithm.type === ALGORITHMS.AGGLOMERATIVE_CLUSTERING)
+                numberOfClusters = visualizerInstance.input.initialNamingIndex;
+            else  // if clustering algorithm
+                numberOfClusters = visualizerInstance.input.sequences.length - visualizerInstance.input.arrayPositionsOfRemovedSequences.length;
+
+            var svgHeight = numberOfClusters * PHYLOGENETIC_TREE.SVG_DIMENSION_FACTOR;  // make it dependant on the number of clusters
 
             visualizerInstance.phylogeneticTree
                 = new Smits.PhyloCanvas(newick,
@@ -890,7 +894,6 @@ Author: Alexander Mattheis
 
         var height = visualizerInstance.input.matrixHeight;
         var width = visualizerInstance.input.matrixWidth;
-        debugger;
 
         for (var i = 0; i < tracecellLinesKeys.length; i++) {
             var key = tracecellLinesKeys[i];

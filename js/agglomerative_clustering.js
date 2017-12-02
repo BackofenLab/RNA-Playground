@@ -19,7 +19,8 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("agglomerativeClustering", AgglomerativeClustering, startAgglomerativeClustering, computeDistances, getSuperclass);
+    namespace("agglomerativeClustering",
+        AgglomerativeClustering, startAgglomerativeClustering);
 
     // instances
     var agglomerativeClusteringInstance;
@@ -30,7 +31,7 @@ $(document).ready(function () {
      */
     function startAgglomerativeClustering() {
         var clusteringInterface = new interfaces.clusteringInterface.ClusteringInterface();
-        clusteringInterface.startClustering(AgglomerativeClustering, ALGORITHMS.AGGLOMERATIVE_CLUSTERING);
+        clusteringInterface.startClusteringInterface(AgglomerativeClustering, ALGORITHMS.AGGLOMERATIVE_CLUSTERING);
     }
 
     /*---- ALGORITHM ----*/
@@ -39,7 +40,7 @@ $(document).ready(function () {
      * @constructor
      * @augments Clustering
      *
-     * Neighbour Joining (single linkage) by
+     * Neighbour Joining by
      * Saitou, Naruya, and Masatoshi Nei.
      * "The neighbor-joining method: a new method for reconstructing phylogenetic trees."
      * Molecular biology and evolution 4.4 (1987): 406-425.
@@ -77,16 +78,29 @@ $(document).ready(function () {
 
     /**
      * Computes the distance of the new cluster to the other clusters.
+     * @param subtree {Object} - The subtree for the new cluster.
+     */
+    function computeDistances(subtree) {
+        var outputData = clusteringInstance.getOutput();
+        var inputData = clusteringInstance.getInput();
+
+        if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.UPGMA)
+            computeUpgmaDistance(subtree, outputData);
+        else if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.WPGMA)
+            computeWpgmaDistance(subtree, outputData);
+    }
+
+    /**
+     * Computes the distance of the new cluster to the other clusters.
      * Hint: It is really UPGMA and not WPGMA!
      * Calculated distances in UPGMA are unweighted
      * with respect to the cluster-sizes. From this the "unweighted"-term results.
      * @example:
      * dist(c, k = i union j) = [|i|* dist(c, i) + |j|* dist(c, j)] / [|i|+|j|]
      * @param subtree {Object} - The subtree for the new cluster.
+     * @param outputData {Object} - Contains all output data.
      */
-    function computeDistances(subtree) {
-        var outputData = clusteringInstance.getOutput();
-
+    function computeUpgmaDistance(subtree, outputData) {
         // retrieve values
         var cluster1Name = subtree.leftChild.name;
         var cluster2Name = subtree.rightChild.name;
@@ -118,7 +132,7 @@ $(document).ready(function () {
      * @param distanceMatrix {Array} - The array from which you want the values.
      * @param cluster1Name {string} - The name of the first cluster.
      * @param cluster2Name {string} - The name of the second cluster.
-     * @return {number} - The value
+     * @return {number} - The value from an entry.
      */
     function getMatrixValue(distanceMatrix, cluster1Name, cluster2Name) {
         var value1 = distanceMatrix[[cluster1Name, cluster2Name]];
@@ -129,6 +143,34 @@ $(document).ready(function () {
         return value1;
     }
 
+    /**
+     * Computes the distance of the new cluster to the other clusters.
+     * Hint: It is really WPGMA and not UPGMA!
+     * Calculated distances in UPGMA are unweighted
+     * with respect to the cluster-sizes. From this the "unweighted"-term results.
+     * @example:
+     * dist(c, k = i union j) = dist(c, i) + dist(c, j) / 2
+     * @param subtree {Object} - The subtree for the new cluster.
+     * @param outputData {Object} - Contains all output data.
+     */
+    function computeWpgmaDistance(subtree, outputData) {
+        // retrieve values
+        var cluster1Name = subtree.leftChild.name;
+        var cluster2Name = subtree.rightChild.name;
+        var newClusterName = subtree.name;
+
+        var clusterNames = clusteringInstance.remainingClusterNames;
+
+        for (var i = 0; i < clusterNames.length; i++) {
+            var summand1 = getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster1Name);
+            var summand2 = getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster2Name);
+
+            var dividendSum = summand1 + summand2;
+            var quotient = dividendSum / 2;
+
+            outputData.distanceMatrix[[clusterNames[i], newClusterName]] = quotient;  // hint: do not change order of arguments
+        }
+    }
 
     /**
      * Returns the superclass instance.

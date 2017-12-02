@@ -19,7 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("hirschberg", startHirschberg, Hirschberg, getInput, setInput, compute, getOutput, setIO, getSuperclass);
+    namespace("hirschberg", startHirschberg, Hirschberg);
 
     // instances
     var alignmentInstance;

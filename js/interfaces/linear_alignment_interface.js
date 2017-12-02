@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.linearAlignmentInterface", LinearAlignmentInterface, startLinearAlignmentAlgorithm);
+    namespace("interfaces.linearAlignmentInterface", LinearAlignmentInterface);
 
     // instances
     var alignmentInterfaceInstance;
@@ -34,19 +34,10 @@ Author: Alexander Mattheis
      * Function managing objects.
      */
     function startLinearAlignmentAlgorithm(Algorithm, algorithmName) {
-        imports();
+        alignmentInterfaceInstance.imports();
 
         var inputViewmodel = new InputViewmodel(algorithmName);
         alignmentInterfaceInstance.sharedInterfaceOperations(Algorithm, inputViewmodel, processInput, changeOutput);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        alignmentInterfaceInstance.imports();
-
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /*---- INPUT ----*/

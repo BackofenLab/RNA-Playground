@@ -8,6 +8,10 @@ Author: Alexander Mattheis
 /* HINT: alphabetically ordered (also within definitions) */
 
 /*---- TAG STYLING ----*/
+code {
+    white-space: pre;
+}
+
 form input {
     user-focus: ignore;
 }
@@ -32,6 +36,7 @@ small {
 table {
     border-collapse: collapse;
     display: inline-block;
+    margin: 0px;
     text-align: center;
 }
 

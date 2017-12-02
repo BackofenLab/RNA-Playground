@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.subadditiveAlignmentInterface", SubadditiveAlignmentInterface, startSubadditiveAlignmentAlgorithm);
+    namespace("interfaces.subadditiveAlignmentInterface", SubadditiveAlignmentInterface);
 
     // instances
     var alignmentInterfaceInstance;
@@ -36,19 +36,10 @@ Author: Alexander Mattheis
      * @param algorithmName - The name of the algorithm which is started.
      */
     function startSubadditiveAlignmentAlgorithm(Algorithm, algorithmName) {
-        imports();
+        alignmentInterfaceInstance.imports();
 
         var inputViewmodel = new InputViewmodel(algorithmName);
         alignmentInterfaceInstance.sharedInterfaceOperations(Algorithm, inputViewmodel, processInput, changeOutput);
-    }
-
-    /**
-     * Handling imports.
-     */
-    function imports() {
-        alignmentInterfaceInstance.imports();
-
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /*---- INPUT ----*/

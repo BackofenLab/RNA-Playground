@@ -9,17 +9,16 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.clusteringInterface", ClusteringInterface, startClustering);
+    namespace("interfaces.clusteringInterface", ClusteringInterface);
 
     // instances
     var clusteringInterfaceInstance;
     var interfaceInstance;
-    var parserInstance;
 
     /**
-     * Is used to work with the input and output (the interface) of an alignment algorithm.
-     * It contains the basic methods and the viewmodel for the output.
-     * This class is used by the various interface scripts as superclass.
+     * Is used to work with the input and output (the interface) of a clustering algorithm.
+     * It contains the basic methods and the viewmodel for the output and input.
+     * This class should be used as a superclass for other clustering interfaces.
      * @constructor
      */
     function ClusteringInterface() {
@@ -28,18 +27,14 @@ Author: Alexander Mattheis
         // inheritance
         interfaceInstance = new interfaces.interface.Interface();
 
-        this.startProcessing = interfaceInstance.startProcessing;
-
         // public methods
-        this.startClustering = startClustering;
+        this.startClusteringInterface = startClusteringInterface;
     }
 
     /**
      * Function managing objects.
      */
-    function startClustering(Algorithm, algorithmName) {
-        interfaceInstance.imports();
-
+    function startClusteringInterface(Algorithm, algorithmName) {
         var inputViewmodel = new InputViewmodel(algorithmName);
         sharedInterfaceOperations(Algorithm, inputViewmodel, processInput, changeOutput);
     }
@@ -56,48 +51,19 @@ Author: Alexander Mattheis
     function InputViewmodel(algorithmName) {
         var viewmodel = this;
 
-        this.availableApproaches = ko.observableArray(AGGLOMERATIVE_CLUSTERING_DEFAULTS.APPROACHES);
-        this.selectedApproach = ko.observableArray(AGGLOMERATIVE_CLUSTERING_DEFAULTS.STANDARD_APPROACH);
+        this.availableApproaches = ko.observableArray(HIERARCHICAL_CLUSTERING_DEFAULTS.APPROACHES);
+        this.selectedApproach = ko.observableArray(HIERARCHICAL_CLUSTERING_DEFAULTS.STANDARD_APPROACH);
 
-        this.csvTable = ko.observable(AGGLOMERATIVE_CLUSTERING_DEFAULTS.CSV_TABLE);
+        this.csvTable = ko.observable(HIERARCHICAL_CLUSTERING_DEFAULTS.CSV_TABLE);
 
         this.errorInput = ko.computed(function () {
-            return checkInput(viewmodel.csvTable());
-        });
-
-        this.distanceMatrix = ko.computed(function () {
-           return getDistanceMatrix(viewmodel.errorInput() === SYMBOLS.EMPTY, viewmodel.csvTable());
+            var parser = new formats.csvParser.CsvParser();
+            return parser.checkInput(viewmodel.csvTable());
         });
 
         setTimeout(function () {
             MathJax.Hub.Queue(["Typeset", MathJax.Hub])
         }, REUPDATE_TIMEOUT_MS);
-    }
-
-    /**
-     * Checks with the help of a CSV-parser, 
-     * if the input is correct or not and returns the error output.
-     * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
-     * @return {string} - The error output, if it exists.
-     */
-    function checkInput(csvData) {
-        return formats.csvParser.checkInput(csvData);
-    }
-
-    /**
-     * Returns the distance matrix object created by a CSV-parser.
-     * @param isCorrectData {boolean} - If false, it returns an empty object and else the distance matrix object.
-     * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
-     * @return {Object} - The distance matrix.
-     */
-    function getDistanceMatrix(isCorrectData, csvData) {
-        var distanceMatrix = {};
-
-        if (isCorrectData) {
-            // get data from parser
-        }
-
-        return distanceMatrix;
     }
 
     /**
@@ -117,6 +83,7 @@ Author: Alexander Mattheis
      * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
      */
     function processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel) {
+        debugger;
         visualViewmodel.removeAllContents();
 
         // when page was loaded the inputs have not to be updated or you get wrong inputs
@@ -126,7 +93,7 @@ Author: Alexander Mattheis
         } else
             inputProcessor.activateInputUpdates();
 
-        //clusteringInterfaceInstance.startProcessing(algorithm, inputViewmodel, visualViewmodel);
+        interfaceInstance.startProcessing(algorithm, inputViewmodel, visualViewmodel);
     }
 
     /**
@@ -137,6 +104,37 @@ Author: Alexander Mattheis
      * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
+        // tree
+        viewmodels.output.newickString(outputData.newickString);
+        viewmodels.visual.drawTree();
+
+        // distance matrices
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData);
+
+        interfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
+
+        viewmodels.output.distanceMatrices(outputData.distanceMatrices);
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.distanceMatrices.length)
+                viewmodels.output.distanceMatrices[i] = new Function();
+
+            viewmodels.output.distanceMatrices[i](outputData.distanceMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.distanceMatrices[i].length)
+                    viewmodels.output.distanceMatrices[i][j] = new Function();
+
+                viewmodels.output.distanceMatrices[i][j](outputData.distanceMatrices[i][j]);
+            }
+        }
+        debugger;
+        viewmodels.output.remainingClusters(outputData.remainingClusters);
+        viewmodels.output.minimums(outputData.minimums);
     }
 
     /**
@@ -163,5 +161,29 @@ Author: Alexander Mattheis
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      */
     function OutputViewmodel(algorithmName, outputData) {
+        var viewmodel = this;
+
+        // tree
+        viewmodel.newickString = ko.observable(outputData.newickString);
+
+        // distance matrices
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData);
+
+        interfaceInstance.roundValues(algorithmName, outputData);
+
+        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
+                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({ deferred: true });
+            }
+        }
+
+        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
+        viewmodel.minimums = ko.observable(outputData.minimums).extend({ deferred: true });
     }
 }());

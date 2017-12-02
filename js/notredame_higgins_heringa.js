@@ -19,8 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("notredameHigginsHeringa", startNotredameHigginsHeringa, NotredameHigginsHeringa,
-        getInput, setInput, compute, getOutput, setIO, getSuperclass);
+    namespace("notredameHigginsHeringa", startNotredameHigginsHeringa, NotredameHigginsHeringa);
 
     // instances
     var multiSequenceAlignmentInstance;
@@ -125,7 +124,7 @@ $(document).ready(function () {
         computeExtendedWeightPrimaryLibrary();
         startProgressiveAlignment();
 
-        outputData.score = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
+        outputData.score = multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
         return [inputData, outputData];
     }
 

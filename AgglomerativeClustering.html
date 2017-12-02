@@ -54,7 +54,7 @@ Author: Alexander Mattheis
             <li>changing distance matrices</li>
             <li>phylogenetic tree</li>
         </ul>
-        are computed and displayed.
+        are computed and displayed in reversed order.
     </div>
 
     <div class="picture">
@@ -82,9 +82,104 @@ Author: Alexander Mattheis
 
             <div class="group_hint">
                 <b>Hints:</b> <br />
-                The ";"-symbol is used as a column separator and every not-empty line
-                has to have the same number of separators or there won't be an output.
+                Empty columns interpreted as "0" and column-entries below the diagonal are ignored.
+                The ";"-symbol is used as a column separator and every non-empty line
+                has to have the same number of separators or there won't be an output. <br />
             </div>
         </div>
 	</div>
+</div>
+
+<div id="algorithm_output">
+     <h2>Phylogenetic Tree</h2>
+
+    <div class="newick_tree">
+        <table class="result_header">
+            <thead>
+                <tr>
+                    <th>
+                        Newick Tree
+                    </th>
+                </tr>
+            </thead>
+        </table>
+
+        <div class="result_with_scrollbar">
+            <table class="result">
+                <tbody>
+                    <tr>
+                        <td class="entry entry_start">
+                            <code data-bind="text: $root.output.newickString()"></code>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+        <div id="phylogenetic_tree"></div>
+    </div>
+
+    <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
+        <div class="group_hint">
+            <b>Visualization done with</b> <br />
+            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br />
+            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br />
+            <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+            </a>
+        </div>
+    <!-- /ko -->
+
+    <div class="group_hint">
+        <b>Hint: </b> Visualization is only shown, if there are no negative distances.
+    </div>
+
+    <h2>Distance Tables</h2>
+    <div class="matrices">
+        <!-- ko foreach: $root.output.distanceMatrices() -->
+            <!-- ko if: $index() > 0 -->
+                <h3 class="header">Iteration <span data-bind="text: $index()"></span></h3>
+            <!-- /ko -->
+
+            <!-- ko if: $root.output.distanceMatrices()[$index()].length > 0 -->
+                <div class="distance_table">
+                    <table class="distances">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <!-- ko foreach: $root.output.remainingClusters()[$index()] -->
+                                    <th data-bind="drawChar: [$data, undefined]"></th>
+                                <!-- /ko -->
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <!-- ko foreach: $root.output.distanceMatrices()[$index()] --> <!-- to get i-indexes = $parentContext.$index() -->
+                                <tr>
+                                    <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
+                                    <!-- ko foreach: $root.output.distanceMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
+                                        <td class="non_selectable_entry"
+                                            data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                        </td>
+                                    <!-- /ko -->
+                                </tr>
+                            <!-- /ko -->
+
+                            <!-- ko if: $index() < $root.output.distanceMatrices().length-1 --> <!-- The last minimum is not computed -->
+                                <tr>
+                                    <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+                                        <small>
+                                            <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[$index()]"></span>
+                                        </small>
+                                    </th>
+                                </tr>
+                            <!-- /ko -->
+                        </tbody>
+                    </table>
+                </div>
+            <!-- /ko -->
+        <!-- /ko -->
+    </div>
 </div>

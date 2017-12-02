@@ -8,9 +8,8 @@ Author: Alexander Mattheis
 "use strict";
 
 (function () {  // namespace
-    // public methods (declaration)
-    namespace("postProcessing.inputProcessor",
-        InputProcessor, activateInputUpdates, inputUpdatesActivated, linkElements, postEdit);
+    // public methods
+    namespace("postProcessing.inputProcessor", InputProcessor);
 
     // instances
     var inputProcessorInstance;
@@ -113,9 +112,29 @@ Author: Alexander Mattheis
         var functionArguments = {"functionParameters": functionParameters};
         algorithmInput.find(".optimization_type").on("change", functionArguments, negateOptimizationParameters);
 
-        functionParameters.on("change", removeCriticalNumbers);
+        algorithmInput.on("keyup", ".csv_data", removeNonAllowedCSVSymbols);
         algorithmInput.on("keyup", ".sequence", removeNonAllowedBases);
         algorithmInput.on("keyup", ".sequence_multi", removeNonAllowedBases);
+        functionParameters.on("change", removeCriticalNumbers);
+    }
+
+    /**
+     * Removes non-allowed symbols from a CSV-input.
+     * Hint: The input has to be of class "sequence".
+     */
+    function removeNonAllowedCSVSymbols() {
+        if (!CHARACTER.CSV_SYMBOLS.test(this.value)) {
+            this.value = this.value.replace(CHARACTER.NON_CSV_SYMBOLS, SYMBOLS.EMPTY);
+        }
+    }
+
+    /**
+     * Removes non-english characters and special characters from an input-field.
+     * Hint: The input has to be of class "sequence".
+     */
+    function removeNonAllowedBases() {
+        if (!CHARACTER.BASES.test(this.value))
+            this.value = this.value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
     }
 
     /**
@@ -154,15 +173,6 @@ Author: Alexander Mattheis
                 this.value = this.value <= INPUT.MAX ? this.value : INPUT.MAX;
             }
         }
-    }
-
-    /**
-     * Removes non-english characters from an input-field.
-     * Hint: The input has to be of class "sequence".
-     */
-    function removeNonAllowedBases() {
-        if (!CHARACTER.BASES.test(this.value))
-            this.value = this.value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
     }
 
     /**
@@ -233,8 +243,15 @@ Author: Alexander Mattheis
         var input = $("#algorithm_input");
 
         input.on({
-            change: function () {
-                update(algorithm, viewmodels, processInput, changeOutput);
+            change: function (event) {
+                /*
+                BUG-FIX for Knockout 3.4.2:
+                Knockout fires an event, if the <select>-Tag is filled with Knockout:
+                https://stackoverflow.com/questions/16521552/knockout-fires-change-event-when-select-list-initializing
+                */
+                if(event.cancelable !== undefined) {  // to filter out Knockout-events and let pass all other events
+                    update(algorithm, viewmodels, processInput, changeOutput);
+                }
             },
 
             keypress: function (e) {
@@ -253,7 +270,8 @@ Author: Alexander Mattheis
      */
     function update(algorithm, viewmodels, processInput, changeOutput) {
         // avoids using not updated values (especially in displayed formulas)
-        // for example removeCriticalNumbers(e) needs to have enough time to be executed first on a value change (uses same event: [..].on(change))
+        // for example removeCriticalNumbers(e) needs to have enough time to be executed first
+        // on a value change (uses same event: [..].on(change))
         setTimeout(function () {
             processInput(algorithm, inputProcessorInstance, viewmodels.input, viewmodels.visual);
             changeOutput(algorithm.getOutput(), inputProcessorInstance, viewmodels);

@@ -19,15 +19,14 @@ Author: Alexander Mattheis
 // constants
 var END_SO_ON = ".."
 var EPSILON = 0.000000001;  // some very low number to test against
-var ERROR_WRONG_NUMBER_OF_COLUMNS = "wrong number of columns in row: ";
 
 var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant
 
 var HIRSCHBERG_LOWER_NODE = 2;
 var HIRSCHBERG_UPPER_NODE = 1;
 
-var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 var MAX_NUMBER_ITERATIONS = 5;  // number of iterations in algorithm with convergence
+var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 var MAX_TRACE_FUNCTION_ARG_LEN = 10;  // tells the allowed length of an argument to avoid a string which goes over the page border
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
@@ -47,13 +46,10 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript
     GOTOH_LOCAL: "gotoh_local",
     HIRSCHBERG: "hirschberg",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
-    NEIGHBOUR_JOINING: "neighbour_joining",
     NONE: "none",
     NOTREDAME_HIGGINS_HERINGA: "notredame_higgins_heringa",
     SMITH_WATERMAN: "smith_waterman",
-    UPGMA: "upgma",
-    WATERMAN_SMITH_BEYER: "waterman_smith_beyer",
-    WPGMA: "wpgma"
+    WATERMAN_SMITH_BEYER: "waterman_smith_beyer"
 };
 
 /**
@@ -104,23 +100,20 @@ var CELL_PERCENT = {
 var CHARACTER = {
     BASE: /[a-zA-Z]/i,
     BASES: /^[a-zA-Z-]+$/,
+    CSV_SYMBOLS: /^[0-9;\n\s]+$/,
     NON_BASES: /[^a-zA-Z-]+/g,  // g to replace globally
+    NON_CSV_SYMBOLS: /[^0-9;\n\s]+/g,
     NUMBER: /[0-9]/,
     NUMBERS: /[-+]?[0-9]+\.[0-9]*/
 };
 
 /**
- * Stores the default parameters for clustering algorithms.
+ * Stores the displayed clustering algorithm names.
  */
-var AGGLOMERATIVE_CLUSTERING_DEFAULTS = {
-    APPROACHES: ["Neighbour Joining", "Unweighted PGMA", "Weighted PGMA"],
-    CSV_TABLE:  /* input from lecture */
-    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
-    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
-    "   ;    ;  0 ;  2 ;  6" + "\n" +
-    "   ;    ;    ;  0 ;  6" + "\n" +
-    "   ;    ;    ;    ;  0" ,
-    STANDARD_APPROACH: ["Unweighted PGMA"]
+var CLUSTERING_ALGORITHMS = {
+    NEIGHBOUR_JOINING: "Neighbour-Joining",
+    UPGMA: "Unweighted PGMA",
+    WPGMA: "Weighted PGMA"
 };
 
 /**
@@ -129,6 +122,28 @@ var AGGLOMERATIVE_CLUSTERING_DEFAULTS = {
 var FILE_EXTENSIONS = {
     HYPERTEXT_MARKUP_LANGUAGE: ".html",
     JAVASCRIPT: ".js"
+};
+
+/**
+ * Stores all errors which can be displayed to the user.
+ */
+var ERRORS = {
+    DIFFERENT_NUMBER_OF_COLUMNS_AND_ROWS: "The number of columns and rows should be equal!",
+    WRONG_NUMBER_OF_COLUMNS_IN_ROW: "wrong number of columns in row: "
+};
+
+/**
+ * Stores the default parameters for clustering algorithms.
+ */
+var HIERARCHICAL_CLUSTERING_DEFAULTS = {
+    APPROACHES: [CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING, CLUSTERING_ALGORITHMS.UPGMA, CLUSTERING_ALGORITHMS.WPGMA],
+    CSV_TABLE:  /* input from lecture Bioinformatics I */
+    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
+    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
+    "   ;    ;  0 ;  2 ;  6" + "\n" +
+    "   ;    ;    ;  0 ;  6" + "\n" +
+    "   ;    ;    ;    ;  0" ,
+    STANDARD_APPROACH: [CLUSTERING_ALGORITHMS.UPGMA]
 };
 
 /**
@@ -401,18 +416,12 @@ var NORMALIZED_ALIGNMENT_DEFAULTS = {
  * Else the objects of this classes are not correctly initialized.
  */
 var PATHS = {
-    ALIGNMENT: "js/bases/alignment.js",
     ALIGNMENT_INTERFACE: "js/interfaces/alignment_interface.js",
-    GOTOH: "js/gotoh.js",
     INPUT_PROCESSOR: "js/post_processing/input_processor.js",
-    LINEAR_ALIGNMENT_INTERFACE: "js/interfaces/linear_alignment_interface.js",
-    SMITH_WATERMAN: "js/smith_waterman.js",
-    SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js",
     VISUALIZER: "js/post_processing/visualizer.js",
 
     LIBS: {
-        KNOCKOUT: "js/libs/knockout-3.4.2.js",
-        MATH_JAX: "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"
+        KNOCKOUT: "js/libs/knockout-3.4.2.js"
     },
 
     MAIN: {
@@ -541,7 +550,7 @@ var CLUSTER_NAMES =
     ["a", "b", "c", "d", "e", "f", "g", "h",
         "i", "j", "k", "l", "m", "n", "o", "p",
         "q", "r", "s", "t", "u", "v", "w", "x",
-        "y", "z"];
+        "y", "z"];   // Hint: there have to be at least one element in the list
 
 var EMPTY_ALIGNMENT = [SYMBOLS.EMPTY, SYMBOLS.EMPTY, SYMBOLS.EMPTY];
 
@@ -563,3 +572,9 @@ var MULTI_TABLE_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL];
  * or if a table slider is used.
  */
 var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.WATERMAN_SMITH_BEYER, ALGORITHMS.HIRSCHBERG];
+
+/**
+ * Algorithms which displaying a phylogenetic tree.
+ * It is used to activate initial tree drawing (redrawing have to be done manually, to save resources).
+ */
+var TREE_ALGORITHMS = [ALGORITHMS.AGGLOMERATIVE_CLUSTERING, ALGORITHMS.FENG_DOOLITTLE, ALGORITHMS.NOTREDAME_HIGGINS_HERINGA];
