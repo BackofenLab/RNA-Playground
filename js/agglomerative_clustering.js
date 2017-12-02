@@ -31,7 +31,7 @@ $(document).ready(function () {
      */
     function startAgglomerativeClustering() {
         var clusteringInterface = new interfaces.clusteringInterface.ClusteringInterface();
-        clusteringInterface.startClustering(AgglomerativeClustering, ALGORITHMS.AGGLOMERATIVE_CLUSTERING);
+        clusteringInterface.startClusteringInterface(AgglomerativeClustering, ALGORITHMS.AGGLOMERATIVE_CLUSTERING);
     }
 
     /*---- ALGORITHM ----*/

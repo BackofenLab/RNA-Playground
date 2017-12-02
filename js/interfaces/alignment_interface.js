@@ -699,7 +699,6 @@ Author: Alexander Mattheis
         var upperPos = -1;
         var lowerPos = -1;
 
-        debugger;
         var rotatedBackwardMatrix = getRotatedMatrix(backwardMatrix);
 
         for (var i = rotatedBackwardMatrix.length - 1; i > posI; i--) {
@@ -1082,7 +1081,6 @@ Author: Alexander Mattheis
     function createTcoffeeOutputViewmodel(algorithmName, viewmodel, outputData) {
         outputData.librariesData = getLibrariesData(outputData);
 
-        debugger;
         removeNeutralSymbols(outputData);
         roundValues(algorithmName, outputData);
         alignmentInterfaceInstance.reorderGroupSequences(outputData);

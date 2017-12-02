@@ -15,6 +15,7 @@ Author: Alexander Mattheis
     var childInstance;
     var clusteringInstance;
     var newickEncoderInstance;
+    var parserInstance;
 
     // shared variables
     var inputData = {};  // stores the input of the algorithm
@@ -29,6 +30,7 @@ Author: Alexander Mattheis
     function Clustering(child) {
         clusteringInstance = this;
         newickEncoderInstance = new formats.newickEncoder.NewickEncoder();
+        parserInstance = new formats.csvParser.CsvParser();
 
         // variables
         this.nameIndex = 0;  // only really needed, if getNextClusterName() function is used
@@ -55,14 +57,106 @@ Author: Alexander Mattheis
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
     function setInput(inputViewmodel) {
-        inputData.clusteringSubalgorithm = inputViewmodel.selectedApproach();
+        var noError = inputViewmodel.errorInput() === SYMBOLS.EMPTY;
 
-        outputData.distanceMatrix = inputViewmodel.distanceMatrix();  // the distance matrix is input and output
+        inputData.clusteringSubalgorithm = inputViewmodel.selectedApproach()[0];  // because it's array from which we choose
 
-        inputData.numOfStartClusters = inputViewmodel.numOfStartClusters();
+        outputData.distanceMatrix = getDistanceMatrix(noError, inputViewmodel.csvTable());
+        inputData.numOfStartClusters = getNumOfStartClusters(noError, inputViewmodel.csvTable());
+
         inputData.initialNamingIndex = inputData.numOfStartClusters;
+        outputData.clusterNames = getColumnNames(noError, outputData.distanceMatrix);
+    }
 
-        outputData.clusterNames = inputViewmodel.clusterNames();
+    /**
+     * Returns the distance matrix object created by a CSV-parser.
+     * @param isCorrectData {boolean} - If false, it returns an empty object and else the distance matrix object.
+     * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
+     * @return {Object} - The distance matrix.
+     */
+    function getDistanceMatrix(isCorrectData, csvData) {
+        var distanceMatrix = {};
+
+        if (isCorrectData)
+            distanceMatrix = parserInstance.getMatrix(csvData, getClusterNames);
+
+        return distanceMatrix;
+    }
+
+    /**
+     * Returns names for clusters associated with the data.
+     * Hint: After all characters are depleted,
+     * a number is concatenated to the character
+     * to make this function generic.
+     * @param number {number} - The number of names you want create.
+     * @example:
+     * CLUSTER NAMES:
+     * a, b, c, ..., z,         FIRST EPISODE
+     * a2, b2, c2, ..., z2,     SECOND EPISODE
+     * a3, b3, ...              THIRD ...
+     * @return {Array} - The cluster names.
+     */
+    function getClusterNames(number) {
+        var clusterNames = [];
+        var currentEpisode = 1;
+
+        // for every pairwise distance we need a symbol
+        for (var i = 0; i < number; i++) {
+            if (i < CLUSTER_NAMES.length)
+                clusterNames.push(CLUSTER_NAMES[i]);  // add a, b, c, ..., z
+
+            if (i >= CLUSTER_NAMES.length && i % CLUSTER_NAMES.length === 0)  // out of characters
+                currentEpisode++;  // new episode
+
+            // out of characters -> a2, b2, c2, ..., z2, a3, b3, ...
+            if (i >= CLUSTER_NAMES.length)
+                clusterNames.push(CLUSTER_NAMES[i % CLUSTER_NAMES.length] + SYMBOLS.EMPTY + currentEpisode);
+        }
+
+        return clusterNames;
+    }
+
+    /**
+     * Returns the number of start clusters given the CSV data.
+     * @param isCorrectData {boolean} - If false, it returns an empty object and else the distance matrix object.
+     * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
+     * @return {Object} - The distance matrix.
+     */
+    function getNumOfStartClusters(isCorrectData, csvData) {
+        var numOfStartClusters = 0;
+
+        if (isCorrectData)
+            numOfStartClusters = parserInstance.getNumOfTableColumns(csvData);
+
+        return numOfStartClusters;
+    }
+
+    /**
+     * Returns the names from a distance matrix.
+     * @param isCorrectData {boolean} - If false, it returns an empty object and else the distance matrix object.
+     * @param distanceMatrix {Object} - The distance matrix object from which the column names are returned.
+     * @return {Array} - The name of the columns.
+     */
+    function getColumnNames(isCorrectData, distanceMatrix) {
+        var names = [];
+
+        if (isCorrectData) {
+            var namePairs = Object.keys(distanceMatrix);
+
+            for (var i = 0; i < namePairs.length; i++) {
+                var namesOfPair = namePairs[i].split(SYMBOLS.COMMA);
+                var name1 = namesOfPair[0];
+                var name2 = namesOfPair[1];
+
+                if (names.indexOf(name1) === -1)
+                    names.push(name1);
+
+                if (names.indexOf(name2) === -1)
+                    names.push(name2);
+            }
+        }
+
+        return names;
     }
 
     /**
@@ -95,6 +189,8 @@ Author: Alexander Mattheis
      */
     function initializeStructs() {
         clusteringInstance.remainingClusterNames = outputData.clusterNames.slice();  // shallow copy (because they won't be changed)
+        clusteringInstance.removedKeys = [];
+        clusteringInstance.treeParts = [];
 
         outputData.cardinalities = {};  // needed for distance computations (for example in UPGMA)
 

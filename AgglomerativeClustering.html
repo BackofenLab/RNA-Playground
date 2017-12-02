@@ -54,7 +54,7 @@ Author: Alexander Mattheis
             <li>changing distance matrices</li>
             <li>phylogenetic tree</li>
         </ul>
-        are computed and displayed.
+        are computed and displayed in reversed order.
     </div>
 
     <div class="picture">
@@ -88,4 +88,51 @@ Author: Alexander Mattheis
             </div>
         </div>
 	</div>
+</div>
+
+<div id="algorithm_output">
+     <h2>Phylogenetic Tree</h2>
+
+    <div class="newick_tree">
+        <table class="result_header">
+            <thead>
+                <tr>
+                    <th>
+                        Newick Tree
+                    </th>
+                </tr>
+            </thead>
+        </table>
+
+        <div class="result_with_scrollbar">
+            <table class="result">
+                <tbody>
+                    <tr>
+                        <td class="entry entry_start">
+                            <code data-bind="text: $root.output.newickString()"></code>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+        <div id="phylogenetic_tree"></div>
+    </div>
+
+    <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
+        <div class="group_hint">
+            <b>Visualization done with</b> <br />
+            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br />
+            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br />
+            <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+            </a>
+        </div>
+    <!-- /ko -->
+
+    <div class="group_hint">
+        <b>Hint: </b> Visualization is only shown, if there are no negative distances.
+    </div>
 </div>

@@ -24,7 +24,6 @@ Author: Alexander Mattheis
         interfaceInstance = this;
 
         // public class methods
-        //this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
         this.startProcessing = startProcessing;
     }
@@ -52,6 +51,7 @@ Author: Alexander Mattheis
             output: outputViewmodel
         };
 
+        debugger;
         inputProcessor.linkElements(algorithm, viewmodels, processInput, changeOutput);
         executeAlgorithmInterfaceCode(algorithm, viewmodels);
 
@@ -81,7 +81,8 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions.
      */
     function executeAlgorithmInterfaceCode(algorithm, viewmodels) {
-        if (algorithm.type === ALGORITHMS.FENG_DOOLITTLE || algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)
+        debugger;
+        if (TREE_ALGORITHMS.indexOf(algorithm.type) !== -1)
             viewmodels.visual.drawTree();
     }
 
@@ -92,6 +93,7 @@ Author: Alexander Mattheis
      * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
      */
     function startProcessing(algorithm, inputViewmodel, visualViewmodel) {
+        debugger;
         algorithm.setInput(inputViewmodel);
         var ioData = algorithm.compute();
 

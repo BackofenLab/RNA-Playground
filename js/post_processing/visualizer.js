@@ -819,8 +819,14 @@ Author: Alexander Mattheis
         if (visualizerInstance.output.newickString.length !== 1
             && newick.indexOf(SYMBOLS.MINUS) === -1) {  // if there is not only a ";" and if there are no negative values
 
-            var numberOfUsedseqeunces = visualizerInstance.input.sequences.length - visualizerInstance.input.arrayPositionsOfRemovedSequences.length;
-            var svgHeight = numberOfUsedseqeunces * PHYLOGENETIC_TREE.SVG_DIMENSION_FACTOR;  // make it dependant on the number of sequences
+            var numberOfClusters;
+
+            if (visualizerInstance.algorithm.type === ALGORITHMS.AGGLOMERATIVE_CLUSTERING)
+                numberOfClusters = visualizerInstance.input.initialNamingIndex;
+            else
+                numberOfClusters = visualizerInstance.input.sequences.length - visualizerInstance.input.arrayPositionsOfRemovedSequences.length;
+
+            var svgHeight = numberOfClusters * PHYLOGENETIC_TREE.SVG_DIMENSION_FACTOR;  // make it dependant on the number of clusters
 
             visualizerInstance.phylogeneticTree
                 = new Smits.PhyloCanvas(newick,
@@ -891,7 +897,6 @@ Author: Alexander Mattheis
 
         var height = visualizerInstance.input.matrixHeight;
         var width = visualizerInstance.input.matrixWidth;
-        debugger;
 
         for (var i = 0; i < tracecellLinesKeys.length; i++) {
             var key = tracecellLinesKeys[i];

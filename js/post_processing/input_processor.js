@@ -244,8 +244,15 @@ Author: Alexander Mattheis
         var input = $("#algorithm_input");
 
         input.on({
-            change: function () {
-                update(algorithm, viewmodels, processInput, changeOutput);
+            change: function (event) {
+                /*
+                BUG-FIX for Knockout 3.4.2:
+                Knockout fires an event, if the <select>-Tag is filled with Knockout:
+                https://stackoverflow.com/questions/16521552/knockout-fires-change-event-when-select-list-initializing
+                */
+                if(event.cancelable !== undefined) {  // to filter out Knockout-events and let pass all other events
+                    update(algorithm, viewmodels, processInput, changeOutput);
+                }
             },
 
             keypress: function (e) {
@@ -264,7 +271,8 @@ Author: Alexander Mattheis
      */
     function update(algorithm, viewmodels, processInput, changeOutput) {
         // avoids using not updated values (especially in displayed formulas)
-        // for example removeCriticalNumbers(e) needs to have enough time to be executed first on a value change (uses same event: [..].on(change))
+        // for example removeCriticalNumbers(e) needs to have enough time to be executed first
+        // on a value change (uses same event: [..].on(change))
         setTimeout(function () {
             processInput(algorithm, inputProcessorInstance, viewmodels.input, viewmodels.visual);
             changeOutput(algorithm.getOutput(), inputProcessorInstance, viewmodels);

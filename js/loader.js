@@ -49,7 +49,7 @@ var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
     function imports() {
         // third party libs
         $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // to interpret static LaTeX code (Hirschberg algorithm)
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // to interpret static LaTeX code
 
         // design/controls logic
         /*

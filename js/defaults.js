@@ -578,3 +578,9 @@ var MULTI_TABLE_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL];
  * or if a table slider is used.
  */
 var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.WATERMAN_SMITH_BEYER, ALGORITHMS.HIRSCHBERG];
+
+/**
+ * Algorithms which displaying a phylogenetic tree.
+ * It is used to activate initial tree drawing (redrawing have to be done manually, to save resources).
+ */
+var TREE_ALGORITHMS = [ALGORITHMS.AGGLOMERATIVE_CLUSTERING, ALGORITHMS.FENG_DOOLITTLE, ALGORITHMS.NOTREDAME_HIGGINS_HERINGA];
