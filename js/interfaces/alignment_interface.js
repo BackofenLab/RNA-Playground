@@ -9,10 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.alignmentInterface", AlignmentInterface, imports, sharedInterfaceOperations,
-        getLaTeXTraceFunctions, getRowData, getColumnData, getMinimaData, getTwoRowsSubmatricesData,
-        getLaTeXFormula, reorderGroupSequences, getLibrariesData,
-        removeNeutralSymbols, sortWithClusterTuples);
+    namespace("interfaces.alignmentInterface", AlignmentInterface);
 
     // instances
     var alignmentInterfaceInstance;

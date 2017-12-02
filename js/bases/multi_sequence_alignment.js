@@ -8,11 +8,8 @@ Author: Alexander Mattheis
 "use strict";
 
 (function () {  // namespace
-    // public methods
-    namespace("bases.multiSequenceAlignment", MultiSequenceAlignment, getInput, setInput,
-        computePairwiseData, initializeInput, computeWithAlgorithm, computeDistancesFromSimilarities,
-        createDistanceMatrix, getPhylogeneticTree, createProgressiveAlignment, getAffineSumOfPairsScore,
-        getOutput, setIO, getLastChild);
+    // public methods ("getAffineSumOfPairsScore" needed for Unit-Tests)
+    namespace("bases.multiSequenceAlignment", MultiSequenceAlignment, getAffineSumOfPairsScore);
 
     // instances
     var multiSequenceAlignmentInstance;
@@ -37,7 +34,7 @@ Author: Alexander Mattheis
         alignmentInstance = new bases.alignment.Alignment(this);
         gotohInstance = new gotoh.Gotoh();
 
-        // public methods
+        // public class methods
         this.getInput = getInput;
         this.setInput = setInput;
         this.computePairwiseData = computePairwiseData;

@@ -9,10 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("postProcessing.visualizer", Visualizer,
-        shareInformation, showFlow,
-        showTraceback, highlight, downloadTable, replaceInfinityStrings,
-        redrawOverlay, drawTree, markMinima, removeAllContents);
+    namespace("postProcessing.visualizer", Visualizer);
 
     // instances
     var visualizerInstance;

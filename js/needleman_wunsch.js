@@ -19,8 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("needlemanWunsch", startNeedlemanWunsch, NeedlemanWunsch,
-        initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getSuperclass);
+    namespace("needlemanWunsch", startNeedlemanWunsch, NeedlemanWunsch);
 
     // instances
     var alignmentInstance;

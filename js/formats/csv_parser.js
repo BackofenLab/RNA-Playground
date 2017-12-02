@@ -9,13 +9,14 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("formats.csvParser", CsvParser, checkInput, getCSVData, getMatrix, getNumOfTableLines);
+    namespace("formats.csvParser", CsvParser);
 
     /**
      * Creates a "comma-separated values" parser.
      * @constructor
      */
     function CsvParser() {
+        // public class methods
         this.checkInput = checkInput;
         this.getCSVData = getCSVData;
         this.getMatrix = getMatrix;

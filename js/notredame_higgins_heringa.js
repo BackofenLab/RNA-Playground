@@ -19,8 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("notredameHigginsHeringa", startNotredameHigginsHeringa, NotredameHigginsHeringa,
-        getInput, setInput, compute, getOutput, setIO, getSuperclass);
+    namespace("notredameHigginsHeringa", startNotredameHigginsHeringa, NotredameHigginsHeringa);
 
     // instances
     var multiSequenceAlignmentInstance;

@@ -8,9 +8,8 @@ Author: Alexander Mattheis
 "use strict";
 
 (function () {  // namespace
-    // public methods (declaration)
-    namespace("postProcessing.inputProcessor",
-        InputProcessor, activateInputUpdates, inputUpdatesActivated, linkElements, postEdit);
+    // public methods
+    namespace("postProcessing.inputProcessor", InputProcessor);
 
     // instances
     var inputProcessorInstance;

@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.clusteringInterface", ClusteringInterface, startClusteringInterface);
+    namespace("interfaces.clusteringInterface", ClusteringInterface);
 
     // instances
     var clusteringInterfaceInstance;

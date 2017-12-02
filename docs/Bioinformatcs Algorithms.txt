@@ -109,6 +109,24 @@ Many Javascript-paths are stored under "js/defaults.js".
 
 Hint:	If you want change file-paths, then you have also to change paths in the "alignment.html" or your webpage.
 
+/*--------------------------------------------------PUBLIC METHODS----------------------------------------------------*/
+Namespaces are storing methods, which are visible out of the namespace:
+    namespace("bases.multiSequenceAlignment", MultiSequenceAlignment, getAffineSumOfPairsScore);
+
+and constructors storing methods which are visible out of the namespace over an instance of the class:
+    function Interface() {
+        ...
+
+        // public class methods
+        this.sharedInterfaceOperations = sharedInterfaceOperations;
+        this.startProcessing = startProcessing;
+        this.roundValues = roundValues;
+        this.getDistanceTables = getDistanceTables;
+        this.getDistanceTable = getDistanceTable;
+    }
+
+Hint: You have not to store the public class methods as a namespace argument.
+
 /*-------------------------------------------------------TESTS--------------------------------------------------------*/
 Unit-Tests are stored under "js/tests/". The file "UnitTests.jstd" is specifying Unit-Test file paths.
 The tool/plugin which was used to create the Unit-Tests is "JsTestDriver".

@@ -11,6 +11,7 @@ load:
   - js/bases/clustering.js
   - js/bases/multi_sequence_alignment.js
 
+  - js/formats/csv_parser.js
   - js/formats/newick_encoder.js
 
   - js/agglomerative_clustering.js

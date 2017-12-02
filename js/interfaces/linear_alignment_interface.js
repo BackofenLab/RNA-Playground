@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.linearAlignmentInterface", LinearAlignmentInterface, startLinearAlignmentAlgorithm);
+    namespace("interfaces.linearAlignmentInterface", LinearAlignmentInterface);
 
     // instances
     var alignmentInterfaceInstance;

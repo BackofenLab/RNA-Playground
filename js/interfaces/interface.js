@@ -9,8 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.interface",
-        Interface, sharedInterfaceOperations, startProcessing, roundValues, getDistanceTables, getDistanceTable);
+    namespace("interfaces.interface", Interface);
 
     // instances
     var interfaceInstance;

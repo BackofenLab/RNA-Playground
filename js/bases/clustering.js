@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("bases.clustering", Clustering, setInput, compute, getMatrixKeys, getInput, getOutput, setIO);
+    namespace("bases.clustering", Clustering);
 
     // instances
     var childInstance;
@@ -41,7 +41,7 @@ Author: Alexander Mattheis
         // inheritance
         childInstance = child;
 
-        // public methods
+        // public class methods
         this.setInput = setInput;
         this.getInput = getInput;
         this.compute = compute;

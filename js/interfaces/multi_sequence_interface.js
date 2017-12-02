@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.multiSequenceInterface", MultiSequenceInterface, startMultiSequenceInterface, getMaxNumberOfAlignments);
+    namespace("interfaces.multiSequenceInterface", MultiSequenceInterface);
 
     // instances
     var alignmentInterfaceInstance;
@@ -32,6 +32,7 @@ Author: Alexander Mattheis
 
             // public class methods
         this.startMultiSequenceInterface = startMultiSequenceInterface;
+        this.getMaxNumberOfAlignments = getMaxNumberOfAlignments;
     }
 
     /**

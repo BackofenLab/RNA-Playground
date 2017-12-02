@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.subadditiveAlignmentInterface", SubadditiveAlignmentInterface, startSubadditiveAlignmentAlgorithm);
+    namespace("interfaces.subadditiveAlignmentInterface", SubadditiveAlignmentInterface);
 
     // instances
     var alignmentInterfaceInstance;

@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("formats.newickEncoder", NewickEncoder, getEncoding);
+    namespace("formats.newickEncoder", NewickEncoder);
 
     var newickEncoderInstance;
 
@@ -24,7 +24,7 @@ Author: Alexander Mattheis
         // variables
         this.newickString = SYMBOLS.EMPTY;
 
-        // public methods
+        // public class methods
         this.getEncoding = getEncoding;
     }
 

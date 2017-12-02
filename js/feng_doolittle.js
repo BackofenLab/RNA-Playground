@@ -19,8 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("fengDoolittle", startFengDoolittle, FengDoolittle, getInput, setInput, compute,
-        getOutput, setIO, getSuperclass);
+    namespace("fengDoolittle", startFengDoolittle, FengDoolittle);
 
     // instances
     var multiSequenceAlignmentInstance;

@@ -20,7 +20,7 @@ $(document).ready(function () {
 (function () {  // namespace
     // public methods
     namespace("agglomerativeClustering",
-        AgglomerativeClustering, startAgglomerativeClustering, computeDistances, getSuperclass);
+        AgglomerativeClustering, startAgglomerativeClustering);
 
     // instances
     var agglomerativeClusteringInstance;

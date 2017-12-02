@@ -19,8 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("gotoh", startGotoh, Gotoh, getInput, setInput, compute,
-        getNeighboured, getOutput, setIO, getSuperclass);
+    namespace("gotoh", startGotoh, Gotoh);
 
     // instances
     var alignmentInstance;
