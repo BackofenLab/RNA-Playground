@@ -357,7 +357,7 @@ Author: Alexander Mattheis
 
                 visualViewmodel.showTraceback(0, undefined, traceTable[0], undefined,
                     undefined, mainOutput[0]);
-            }, REACTION_TIME_HIGHLIGHT);
+            }, REACTION_TIME_HIGHLIGHT_HIRSCHBERG);
 
             setTimeout(function () {
                 var mainOutput = $(".main_output");  // output containing the calculation tables
@@ -365,7 +365,6 @@ Author: Alexander Mattheis
 
                 visualViewmodel.markMinima(tracecellsTable[0]);
             }, REACTION_TIME_HIGHLIGHT);
-
         }
     }
 

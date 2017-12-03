@@ -30,7 +30,8 @@ var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which 
 var MAX_TRACE_FUNCTION_ARG_LEN = 10;  // tells the allowed length of an argument to avoid a string which goes over the page border
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
-var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have been updated
+var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have definitely been updated
+var REACTION_TIME_HIGHLIGHT_HIRSCHBERG = 500;  // to highlight initial tracebacks only after outputs have been updated
 
 var SMITH_WATERMAN_STOP = "0";
 
@@ -599,7 +600,7 @@ var MULTI_TABLE_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL];
  * when the browser window is resized
  * or if a table slider is used.
  */
-var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.WATERMAN_SMITH_BEYER, ALGORITHMS.HIRSCHBERG];
+var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL,  ALGORITHMS.HIRSCHBERG, ALGORITHMS.WATERMAN_SMITH_BEYER];
 
 /**
  * Algorithms which displaying a phylogenetic tree.
