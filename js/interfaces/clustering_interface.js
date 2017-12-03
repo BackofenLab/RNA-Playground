@@ -61,6 +61,18 @@ Author: Alexander Mattheis
             return parser.checkInput(viewmodel.csvTable());
         });
 
+        this.selectedFormula = ko.computed(function () {
+            var approach = viewmodel.selectedApproach()[0];
+            var position = viewmodel.availableApproaches.indexOf(approach);
+            return HIERARCHICAL_CLUSTERING_DEFAULTS.FORMULAS[position];
+        });
+
+        this.selectedSubformula = ko.computed(function () {
+            var approach = viewmodel.selectedApproach()[0];
+            var position = viewmodel.availableApproaches.indexOf(approach);
+            return HIERARCHICAL_CLUSTERING_DEFAULTS.SUB_FORMULAS[position];
+        });
+
         setTimeout(function () {
             MathJax.Hub.Queue(["Typeset", MathJax.Hub])
         }, REUPDATE_TIMEOUT_MS);

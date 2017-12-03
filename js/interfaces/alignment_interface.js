@@ -376,7 +376,7 @@ Author: Alexander Mattheis
             var firstSequence = outputData.firstSequences[k];
             var firstSequencePositions = outputData.firstSequencePositions[k];
 
-            string += "\\;";
+            string += LATEX.SPACE_SMALL;
             
             for (var i = 0; i < firstSequence.length; i++) {
                 if (i >= MAX_TRACE_FUNCTION_ARG_LEN) {  // cut after a certain number of arguments
@@ -384,15 +384,15 @@ Author: Alexander Mattheis
                     break;
                 }
 
-                string += "\\texttt{";
+                string += LATEX.TEXT_START;
                 string += firstSequence[i];
-                string += "}";
+                string += LATEX.CLOSE;
                 if (i==0 || i+1 == firstSequence.length) {
                 	string += LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + firstSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
                 }
             }
 
-            string += "\\;"+SYMBOLS.VERTICAL_BAR+"\\;";
+            string += LATEX.SPACE_SMALL + SYMBOLS.VERTICAL_BAR + LATEX.SPACE_SMALL;
 
             var secondSequence = outputData.secondSequences[k];
             var secondSequencePositions = outputData.secondSequencePositions[k];
@@ -403,15 +403,15 @@ Author: Alexander Mattheis
                     break;
                 }
 
-                string += "\\texttt{";
+                string += LATEX.TEXT_START;
                 string += secondSequence[i];
-                string += "}";
-                if (i==0 || i+1 == secondSequence.length) {
+                string += LATEX.CLOSE;
+                if (i == 0 || i + 1 == secondSequence.length) {
                 	string += LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + secondSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
                 }
             }
 
-            string += "\\;";
+            string += LATEX.SPACE_SMALL;
             string += SYMBOLS.BRACKET_RIGHT;  // stopping function
             string += LATEX.MATH_REGION;  // stopping LaTeX math region
 

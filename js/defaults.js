@@ -53,22 +53,6 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript
 };
 
 /**
- * Stores the default parameters for alignment algorithms.
- */
-var ALIGNMENT_DEFAULTS = {
-    CALCULATION: "similarity",
-    CALCULATION_HIRSCHBERG: "distance",
-    SEQUENCE_1: "AATCG",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "AACG",  // hint: UPPERCASE letters!
-
-    FUNCTION: {
-        GAP: -2,
-        MATCH: 1,
-        MISMATCH: -1
-    }
-};
-
-/**
  * Stores the types of calculation.
  */
 var ALIGNMENT_TYPES = {  // contains a list of alignment types
@@ -133,20 +117,6 @@ var ERRORS = {
 };
 
 /**
- * Stores the default parameters for clustering algorithms.
- */
-var HIERARCHICAL_CLUSTERING_DEFAULTS = {
-    APPROACHES: [CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING, CLUSTERING_ALGORITHMS.UPGMA, CLUSTERING_ALGORITHMS.WPGMA],
-    CSV_TABLE:  /* input from lecture Bioinformatics I */
-    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
-    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
-    "   ;    ;  0 ;  2 ;  6" + "\n" +
-    "   ;    ;    ;  0 ;  6" + "\n" +
-    "   ;    ;    ;    ;  0" ,
-    STANDARD_APPROACH: [CLUSTERING_ALGORITHMS.UPGMA]
-};
-
-/**
  * Allowed max values for inputs.
  */
 var INPUT = {
@@ -173,6 +143,7 @@ var LATEX = {
     ALPHA: "\\alpha",
     BEGIN_CASES: "\\begin{cases}",
     BETA: "\\beta",
+    CLOSE: "}",
     CURLY_BRACKET_LEFT: "{",
     CURLY_BRACKET_RIGHT: "}",
     DOT: "\\cdot",
@@ -187,10 +158,12 @@ var LATEX = {
     POSITIVE_INFINITY: "$\\infty$",
     POW2: "^2",
     SPACE: "\\phantom{-}",
+    SPACE_SMALL: "\\;",
     SUBORDINATE: "_",
     SUM: "\\sum",
+    TEXT_START: "\\texttt{",
 
-    FORMULA: {
+    FORMULA: {  /* contains subparts of a formula */
         CURRENT: "D_{i,j}",
         CURRENT_BACKWARD: "D'_{i,j}",
         CURRENT_P: "P_{i,j}",
@@ -218,10 +191,27 @@ var LATEX = {
         MINIMIZE_HORIZONTAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i,j-k} & + & g(k) \\}",
         MINIMIZE_VERTICAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i-k,j} & + & g(k) \\}",
         MISMATCH: "a_i \\neq b_j",
+        SEQ_A_I: /a_i/g,
+        SEQ_A_I_PLUS_1: "a_{i+1}",
+        SEQ_B_J: /b_j/g,
+        SEQ_B_J_PLUS_1: "b_{j+1}",
         S_BIG: "S",
         TOP: "D_{i-1,j}",
         TOP_P: "P_{i-1,j}",
         ZERO: "0"
+    },
+
+    FORMULAS: {  /* contains complete formulas */
+        NEIGHBOUR_JOINING_DELTA_1: "",
+        NEIGHBOUR_JOINING_DELTA_2: "",
+        UPGMA_DELTA_1:
+            "$$\\delta_1(l, ij)= \\frac{|i| \\cdot d_{l,i} + |j| \\cdot d_{l,j}}{|i| + |j|}$$",
+        UPGMA_DELTA_2:
+            "$$\\delta_2(l, ij)= \\frac{d_{min}}{2}$$",
+        WPGMA_DELTA_1:
+            "$$\\delta_1(l, ij)= \\frac{d_{l,i} + d_{l,j}}{2}$$",
+        WPGMA_DELTA_2:
+            "$$\\delta_2(l, ij)= \\frac{d_{min}}{2}$$"
     },
 
     RECURSION: {
@@ -263,8 +253,11 @@ var LATEX = {
         "\\begin{cases}"                            +
         "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
         "D_{i-1,j}      & + & \\gamma       \\\\"   +
-        "D_{i,j-1} 		& + & \\gamma"             +
+        "D_{i,j-1} 		& + & \\gamma"              +
         "\\end{cases}",
+
+        HIRSCHBERG_INITIALIZATION:
+        "D'_{n,m} = 0, \\quad D'_{n,j}= (m-j)\\gamma, \\quad D'_{i,m}= (n-i)\\gamma",
 
         NEEDLEMAN_WUNSCH:
         "\\begin{cases}"                            +
@@ -344,41 +337,6 @@ var MOVE = {
     X_TO_Q: "xToQ"
 };
 
-var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
-    CALCULATION: "similarity",
-    GLOBAL_ALIGNMENTS_PER_SEQUENCE: 1,
-    LOCAL_ALIGNMENTS_PER_SEQUENCE: 2,
-
-    SEQUENCES: [ /* input from T-Coffee paper */
-        "GARFIELD-THE-LAST-FAT-CAT",
-        "GARFIELD-THE-FAST-CAT",
-        "GARFIELD-THE-VERY-FAST-CAT",
-        "THE-FAT-CAT"],
-    SEQUENCES_COPY: [
-        "GARFIELD-THE-LAST-FAT-CAT",
-        "GARFIELD-THE-FAST-CAT",
-        "GARFIELD-THE-VERY-FAST-CAT",
-        "THE-FAT-CAT"],  /* some bugfix for Knockout problem */
-
-    USE_LOCAL_LIBRARY: false,
-
-    FUNCTION: {
-        BASE_COSTS: -3,
-        BASE_COSTS_LOCAL: -3,
-
-        ENLARGEMENT: -2,
-        ENLARGEMENT_LOCAL: -3,
-
-        MATCH: 1,
-        MATCH_LOCAL: 2,
-
-        MISMATCH: -1,
-        MISMATCH_LOCAL: -2
-    }
-};
-
-
-
 /**
  * Symbols which are used to be for example globally replaced.
  */
@@ -395,19 +353,6 @@ var MULTI_SYMBOLS = {
     SEPARATORS: /;/g,
     SPACE: / /g,
     STRINGS: /[^0-9]/g
-};
-
-var NORMALIZED_ALIGNMENT_DEFAULTS = {
-    CALCULATION: "similarity",
-    LENGTH: 10,
-    SEQUENCE_1: "CTTGACCATU",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "GCATTUGCCUU",  // hint: UPPERCASE letters!
-
-    FUNCTION: {
-        GAP: -2,
-        MATCH: 3,
-        MISMATCH: -1
-    }
 };
 
 /**
@@ -445,23 +390,6 @@ var SUB = {
     END_TAGS: /<\/sub>/g,
     START_TAG: "<sub>",
     START_TAGS: /<sub>/g
-};
-
-/**
- * Stores the default parameters for subadditive alignment algorithms.
- */
-var SUBADDITIVE_ALIGNMENT_DEFAULTS = {
-    CALCULATION: "similarity",
-    GAP_FUNCTION: "affine",
-    SEQUENCE_1: "CG",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "CCGA",  // hint: UPPERCASE letters!
-
-    FUNCTION: {
-        BASE_COSTS: -3,
-        ENLARGEMENT: -1,
-        MATCH: 1,
-        MISMATCH: -1
-    }
 };
 
 /**
@@ -543,6 +471,106 @@ var TABLE = {
 var TOGGLE_LINK_TEXT = {
     HIDE: "hide intermediate steps",
     SHOW: "show intermediate steps"
+};
+
+// defaults (are based on constants and have to be below)
+/**
+ * Stores the default parameters for alignment algorithms.
+ */
+var ALIGNMENT_DEFAULTS = {
+    CALCULATION: "similarity",
+    CALCULATION_HIRSCHBERG: "distance",
+    SEQUENCE_1: "AATCG",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "AACG",  // hint: UPPERCASE letters!
+
+    FUNCTION: {
+        GAP: -2,
+        MATCH: 1,
+        MISMATCH: -1
+    }
+};
+
+/**
+ * Stores the default parameters for clustering algorithms.
+ */
+var HIERARCHICAL_CLUSTERING_DEFAULTS = {
+    APPROACHES: [CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING, CLUSTERING_ALGORITHMS.UPGMA, CLUSTERING_ALGORITHMS.WPGMA],
+    CSV_TABLE:  /* input from lecture Bioinformatics I */
+    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
+    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
+    "   ;    ;  0 ;  2 ;  6" + "\n" +
+    "   ;    ;    ;  0 ;  6" + "\n" +
+    "   ;    ;    ;    ;  0" ,
+    FORMULAS: [LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_1, LATEX.FORMULAS.UPGMA_DELTA_1, LATEX.FORMULAS.WPGMA_DELTA_1],
+    SUB_FORMULAS: [LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_2, LATEX.FORMULAS.UPGMA_DELTA_2, LATEX.FORMULAS.WPGMA_DELTA_2],
+
+    STANDARD_APPROACH: [CLUSTERING_ALGORITHMS.UPGMA]
+};
+
+var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
+    CALCULATION: "similarity",
+    GLOBAL_ALIGNMENTS_PER_SEQUENCE: 1,
+    LOCAL_ALIGNMENTS_PER_SEQUENCE: 2,
+
+    SEQUENCES: [ /* input from T-Coffee paper */
+        "GARFIELD-THE-LAST-FAT-CAT",
+        "GARFIELD-THE-FAST-CAT",
+        "GARFIELD-THE-VERY-FAST-CAT",
+        "THE-FAT-CAT"],
+    SEQUENCES_COPY: [
+        "GARFIELD-THE-LAST-FAT-CAT",
+        "GARFIELD-THE-FAST-CAT",
+        "GARFIELD-THE-VERY-FAST-CAT",
+        "THE-FAT-CAT"],  /* some bugfix for Knockout problem */
+
+    USE_LOCAL_LIBRARY: false,
+
+    FUNCTION: {
+        BASE_COSTS: -3,
+        BASE_COSTS_LOCAL: -3,
+
+        ENLARGEMENT: -2,
+        ENLARGEMENT_LOCAL: -3,
+
+        MATCH: 1,
+        MATCH_LOCAL: 2,
+
+        MISMATCH: -1,
+        MISMATCH_LOCAL: -2
+    }
+};
+
+/**
+ * Stores the default parameters for normalized alignment algorithms.
+ */
+var NORMALIZED_ALIGNMENT_DEFAULTS = {
+    CALCULATION: "similarity",
+    LENGTH: 10,
+    SEQUENCE_1: "CTTGACCATU",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "GCATTUGCCUU",  // hint: UPPERCASE letters!
+
+    FUNCTION: {
+        GAP: -2,
+        MATCH: 3,
+        MISMATCH: -1
+    }
+};
+
+/**
+ * Stores the default parameters for subadditive alignment algorithms.
+ */
+var SUBADDITIVE_ALIGNMENT_DEFAULTS = {
+    CALCULATION: "similarity",
+    GAP_FUNCTION: "affine",
+    SEQUENCE_1: "CG",  // hint: UPPERCASE letters!
+    SEQUENCE_2: "CCGA",  // hint: UPPERCASE letters!
+
+    FUNCTION: {
+        BASE_COSTS: -3,
+        ENLARGEMENT: -1,
+        MATCH: 1,
+        MISMATCH: -1
+    }
 };
 
 // lists (used for check ups and more)
