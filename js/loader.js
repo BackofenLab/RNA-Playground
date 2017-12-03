@@ -20,7 +20,7 @@ var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
      * @param view - The view in which you want load the page.
      */
     function updateDocumentView(algorithm, view) {
-        imports();
+        reinitialize();
         removeOverlay($("#overlay"));
 
         var htmlName = algorithm
@@ -44,16 +44,15 @@ var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
     }
 
     /**
-     * Handling imports.
+     * Handling reimports to initialize libraries.
      */
-    function imports() {
+    function reinitialize() {
         // third party libs
         $.getScript(PATHS.LIBS.KNOCKOUT);  // to make knockout working whenever page is reloaded
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // to interpret static LaTeX code
 
         // design/controls logic
         /*
-        This two imports are very important!
+        This two reinitialize are very important!
         Without an import the classes are not reinitialized correctly for the next algorithm!
          */
         $.getScript(PATHS.INPUT_PROCESSOR);
