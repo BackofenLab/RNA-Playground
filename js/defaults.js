@@ -143,6 +143,7 @@ var LATEX = {
     ALPHA: "\\alpha",
     BEGIN_CASES: "\\begin{cases}",
     BETA: "\\beta",
+    CLOSE: "}",
     CURLY_BRACKET_LEFT: "{",
     CURLY_BRACKET_RIGHT: "}",
     DOT: "\\cdot",
@@ -157,8 +158,10 @@ var LATEX = {
     POSITIVE_INFINITY: "$\\infty$",
     POW2: "^2",
     SPACE: "\\phantom{-}",
+    SPACE_SMALL: "\\;",
     SUBORDINATE: "_",
     SUM: "\\sum",
+    TEXT_START: "\\texttt{",
 
     FORMULA: {  /* contains subparts of a formula */
         CURRENT: "D_{i,j}",
@@ -188,6 +191,10 @@ var LATEX = {
         MINIMIZE_HORIZONTAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i,j-k} & + & g(k) \\}",
         MINIMIZE_VERTICAL: "\\displaystyle \\min_{1 \\leq k \\leq j} \\{D_{i-k,j} & + & g(k) \\}",
         MISMATCH: "a_i \\neq b_j",
+        SEQ_A_I: /a_i/g,
+        SEQ_A_I_PLUS_1: "a_{i+1}",
+        SEQ_B_J: /b_j/g,
+        SEQ_B_J_PLUS_1: "b_{j+1}",
         S_BIG: "S",
         TOP: "D_{i-1,j}",
         TOP_P: "P_{i-1,j}",
@@ -246,8 +253,11 @@ var LATEX = {
         "\\begin{cases}"                            +
         "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
         "D_{i-1,j}      & + & \\gamma       \\\\"   +
-        "D_{i,j-1} 		& + & \\gamma"             +
+        "D_{i,j-1} 		& + & \\gamma"              +
         "\\end{cases}",
+
+        HIRSCHBERG_INITIALIZATION:
+        "D'_{n,m} = 0, \\quad D'_{n,j}= (m-j)\\gamma, \\quad D'_{i,m}= (n-i)\\gamma",
 
         NEEDLEMAN_WUNSCH:
         "\\begin{cases}"                            +

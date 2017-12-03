@@ -179,17 +179,21 @@ Author: Alexander Mattheis
             string = string.replace(LATEX.FORMULA.D_BIG, LATEX.FORMULA.S_BIG);
 
         if (algorithmName === ALGORITHMS.HIRSCHBERG && secondRecursion) {
+            // replace D with D'
             string = string.replace(LATEX.FORMULA.D_BIG_UNDERSCORE, LATEX.FORMULA.D_PRIME_UNDERSCORE);
-            string = string.replace(LATEX.FORMULA.I_MINUS_ONE, LATEX.FORMULA.I_PLUS_ONE);
-            string = string.replace(LATEX.FORMULA.J_MINUS_ONE, LATEX.FORMULA.J_PLUS_ONE);
-			// apply index shift by +1 for both sequences
-			string = string.replace(/a_i/g, "a_{i+1}").replace(/b_j/g, "b_{j+1}");
+
+            // replace i-1 with i+1
+            string = string
+                .replace(LATEX.FORMULA.I_MINUS_ONE, LATEX.FORMULA.I_PLUS_ONE)
+                .replace(LATEX.FORMULA.J_MINUS_ONE, LATEX.FORMULA.J_PLUS_ONE);
+
+            // replace a_i with a_{i+1} and b_j ...
+			string = string
+                .replace(LATEX.FORMULA.SEQ_A_I, LATEX.FORMULA.SEQ_A_I_PLUS_1)
+                .replace(LATEX.FORMULA.SEQ_B_J, LATEX.FORMULA.SEQ_B_J_PLUS_1);
+
 			// add initialization information
-			string = string.replace(LATEX.MATH_REGION, LATEX.MATH_REGION +"\\begin{array}{l}");
-			string += "\\\\" + LATEX.FORMULA.D_PRIME_UNDERSCORE+"{n,m} = 0";
-			string += ", \\quad "+LATEX.FORMULA.D_PRIME_UNDERSCORE+"{n,j} = (m-j)\\gamma";
-			string += ", \\quad "+LATEX.FORMULA.D_PRIME_UNDERSCORE+"{i,m} = (n-i)\\gamma";
-			string += "\\end{array}";
+			string += LATEX.NEW_LINE + LATEX.RECURSION.HIRSCHBERG_INITIALIZATION;
         }
 
         string += LATEX.MATH_REGION;  // stopping LaTeX math region
