@@ -27,7 +27,7 @@ var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
             .replace(MULTI_SYMBOLS.BRACKET_LEFT, SYMBOLS.EMPTY)
             .replace(MULTI_SYMBOLS.BRACKET_RIGHT, SYMBOLS.EMPTY)
             .replace(MULTI_SYMBOLS.G_LITTLE_SPECIAL, SYMBOLS.G_LITTLE)
-            .replace(MULTI_SYMBOLS.SPACE, SYMBOLS.EMPTY);
+            .replace(MULTI_SYMBOLS.SPACE, SYMBOLS.HYPHEN);
 
         var javascriptName = algorithm.toLowerCase()
             .replace(MULTI_SYMBOLS.BRACKET_LEFT, SYMBOLS.EMPTY)

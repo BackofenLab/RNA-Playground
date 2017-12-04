@@ -417,6 +417,7 @@ var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
     EQUAL: "=",
     GAP: "_",  // Hint: Do not change without a good reason! Can break the interface code!
     G_LITTLE: "g",
+    HYPHEN: "-",  // Hint: Do not change without a good reason! Can break the loader!
     INFINITY: "∞",
     MINUS: "-",  // Hint: Do not change without a good reason! Can break the interface code! Regular expressions have to be changed.
     NEGATIVE_INFINITY: "-∞",
