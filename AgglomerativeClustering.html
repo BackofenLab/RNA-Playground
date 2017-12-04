@@ -19,8 +19,10 @@ Author: Alexander Mattheis
                 <a href="http://journals.sagepub.com/doi/abs/10.1177/001316446602600201">Louis L. McQuitty (1967)</a>
             </li>
             <li>
-                Neighbour-Joining by
+                Neighbour-Joining of
                 <a href="https://doi.org/10.1093/oxfordjournals.molbev.a040454">Naruya Saitou and Masatoshi Nei (1987)</a>
+                modified by
+                <a href="https://doi.org/10.1093/oxfordjournals.molbev.a040527">James A. Studier and Karl J. Keppler (1988)</a>
             </li>
         </ul>
 
@@ -37,7 +39,8 @@ Author: Alexander Mattheis
         The principle of all agglomerative (bottom-up) approaches is always the same,
         in the beginning you have given a matrix of pairwise evolutionary distances
         between singleton clusters (containing only one element)
-        and in this matrix you search for the entry with the lowest value $d_{min} = d_{i,j}$
+        and in this matrix $D$ or in a matrix $D^*$ derived from that
+        you search for the entry with the lowest value $D_{min} = D_{i,j}$
         (where $i \neq j$). You merge the clusters $i$ and $j$ to a new cluster $ij = i \cup j$
         and recompute the distances to the remaining clusters with some distance formula $\delta_1$
         given with the respective approach.
@@ -141,10 +144,6 @@ Author: Alexander Mattheis
             </a>
         </div>
     <!-- /ko -->
-
-    <div class="group_hint">
-        <b>Hint: </b> Visualization is only shown, if there are no negative distances.
-    </div>
 
     <h2>Distance Tables</h2>
     <div class="matrices">
