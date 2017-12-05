@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods ("getMatrixAsTable" is set static because creation of a full instance to get just the table would be too inefficient)
-    namespace("bases.clustering", Clustering, getMatrixAsTable);
+    namespace("bases.clustering", Clustering, getMatrixValue, getMatrixAsTable);
 
     // instances
     var childInstance;
@@ -51,6 +51,7 @@ Author: Alexander Mattheis
         this.mergeClusters = mergeClusters;
         this.appendToTree = appendToTree;
         this.getMatrixKeys = getMatrixKeys;
+        this.getMatrixValue = getMatrixValue;
         this.getMatrixAsTable = getMatrixAsTable;  // yes, it should be possible to execute this function from class
         this.getPositionByName = getPositionByName;
         this.getOutput = getOutput;
@@ -182,7 +183,7 @@ Author: Alexander Mattheis
         for (var i = 0; i < numOfIterations; i++) {
             var minimum = determineMatrixMinimum(outputData.distanceMatrix);
             var newClusterName = mergeClusters(minimum.cluster1Name, minimum.cluster2Name);
-            var subtree = appendToTree(minimum.cluster1Name, minimum.cluster2Name, newClusterName, minimum.distance / 2);
+            var subtree = appendToTree(minimum.cluster1Name, minimum.cluster2Name, newClusterName, minimum.distance / 2, minimum.distance / 2);
             computeDistances(subtree, i, numOfIterations);
         }
 
@@ -384,16 +385,17 @@ Author: Alexander Mattheis
      * @param cluster1Name {string} - The name of the first cluster.
      * @param cluster2Name {string} - The name of the second cluster.
      * @param newClusterName {string} - The name of the new cluster.
-     * @param distance {number} - The distance between cluster 1 and cluster 2.
+     * @param distance1 {number} - The distance value for edge above cluster 1.
+     * @param distance2 {number} - The distance value for edge above cluster 2.
      * @return {Object} - The new tree part.
      */
-    function appendToTree(cluster1Name, cluster2Name, newClusterName, distance) {
+    function appendToTree(cluster1Name, cluster2Name, newClusterName, distance1, distance2) {
         // create node
         var node = {};
-        node.leftChild = getNode(cluster1Name, distance);
-        node.rightChild = getNode(cluster2Name, distance);
+        node.leftChild = getNode(cluster1Name, distance1);
+        node.rightChild = getNode(cluster2Name, distance2);
         node.name = newClusterName;
-        node.value = distance;  // non-final evolutionary distance for edge above this node (in neighbour-joining already final value)
+        node.value = distance1;  // non-final evolutionary distance for edge above this node
 
         outputData.treeBranches.push(node);
         clusteringInstance.treeParts.push(node);
@@ -407,11 +409,14 @@ Author: Alexander Mattheis
      * @return {Object} - The node with the given parameters.
      */
     function getNode(name, value) {
+        // search for an existing node
         for (var i = 0; i < clusteringInstance.treeParts.length; i++) {
             if (clusteringInstance.treeParts[i].name === name) {
                 var node = clusteringInstance.treeParts.splice(i, 1)[0];  // removes and returns the removed element
 
-                if (inputData.clusteringSubalgorithm !== CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING)  // do not subtract in neighbour-joining
+                if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING)
+                    node.value = value;  // do not subtract in neighbour-joining, because already final value
+                else
                     node.value = value - node.value;  // computing final evolutionary distance for edge above the node
                 return node;
             }
@@ -446,6 +451,25 @@ Author: Alexander Mattheis
             subtree.value = 0;
 
         outputData.remainingClusters.push(jQuery.extend(true, [], clusteringInstance.remainingClusterNames));  // for visualization
+    }
+
+    /**
+     * Returns the distance matrix value from the given entry.
+     * Hint: Only one half of the matrix is filled.
+     * But the other half is just a mirrored version.
+     * This is why this function is needed.
+     * @param distanceMatrix {Array} - The array from which you want the values.
+     * @param cluster1Name {string} - The name of the first cluster.
+     * @param cluster2Name {string} - The name of the second cluster.
+     * @return {number} - The value from an entry.
+     */
+    function getMatrixValue(distanceMatrix, cluster1Name, cluster2Name) {
+        var value1 = distanceMatrix[[cluster1Name, cluster2Name]];
+        var value2 = distanceMatrix[[cluster2Name, cluster1Name]];
+
+        if(isNaN(value1))
+            return value2;
+        return value1;
     }
 
     /**

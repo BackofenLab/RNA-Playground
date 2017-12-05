@@ -84,9 +84,8 @@ Author: Alexander Mattheis
 
         for (var i = 0; i < numOfIterations; i++) {
             // Step 1 from Unit-Test.
-            var neighbourJoiningMatrix =
-                getNeighbourJoiningMatrix(outputData.distanceMatrix,
-                    getTotalDistances(outputData.distanceMatrix, inputData.numOfStartClusters-i));
+            var totalDistances = getTotalDistances(outputData.distanceMatrix, inputData.numOfStartClusters - i);
+            var neighbourJoiningMatrix = getNeighbourJoiningMatrix(outputData.distanceMatrix, totalDistances);
 
             // Step 2 from Unit-Test
             var minimum = clusteringInstance.determineMatrixMinimum(neighbourJoiningMatrix);
@@ -94,11 +93,11 @@ Author: Alexander Mattheis
 
             // Step 3 from Unit-Test
             var subtree  // Step 3.1
-                = computeBranchLengths(minimum.cluster1Name, minimum.cluster2Name, newClusterName);
-            computeDistances(subtree, i, numOfIterations);  // Step 3.2
+                = computeBranchLengths(minimum.cluster1Name, minimum.cluster2Name, newClusterName, totalDistances);
+            computeDistances(subtree);  // Step 3.2
         }
 
-        // add last cluster to tree
+        // todo: add last cluster to tree
         // ...
 
         clusteringInstance.getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
@@ -115,6 +114,7 @@ Author: Alexander Mattheis
     function initializeStructs() {
         clusteringInstance.initializeStructs();
         outputData.matrixTables = []; // to avoid a recomputation
+        outputData.totalDistancesPerRound = [];
     }
 
     /**
@@ -142,6 +142,8 @@ Author: Alexander Mattheis
 
             totalDistances.push(lineSum);
         }
+
+        outputData.totalDistancesPerRound.push(totalDistances);
 
         return totalDistances;
     }
@@ -180,23 +182,52 @@ Author: Alexander Mattheis
      * @param cluster1Name {string} - The name of the first cluster.
      * @param cluster2Name {string} - The name of the second cluster.
      * @param newClusterName {string} - The name of the new cluster.
+     * @param totalDistances {Array} - The total distance for each line.
      * @return {Object} - The new tree part.
      */
-    function computeBranchLengths(cluster1Name, cluster2Name, newClusterName) {
+    function computeBranchLengths(cluster1Name, cluster2Name, newClusterName, totalDistances) {
         // compute the two distances
-        
+        var remainingClusters = clusteringInstance.remainingClusterNames;
+
+        var verticalPos = clusteringInstance.getPositionByName(cluster1Name, remainingClusters);
+        var horizontalPos = clusteringInstance.getPositionByName(cluster2Name, remainingClusters);
+
+        var totalDistanceDiff = totalDistances[verticalPos] - totalDistances[horizontalPos];  // D_{i,J} - D_{I,j}
+        var ratioTotalDiffRemainingIterations = totalDistanceDiff / (remainingClusters.length - 2);  // (D_{i,J} - D_{I,j}) / (N-2)
+
+        var valueAtJoiningPos = outputData.distanceMatrix[[cluster1Name, cluster2Name]];
+        var leftMemberValue = 0.5 * (valueAtJoiningPos - ratioTotalDiffRemainingIterations);  // 1/2 * (D_{i,j} - \Delta_{i,j})
+        var rightMemberValue = valueAtJoiningPos - leftMemberValue;  // 0.5 * (valueAtJoiningPos + ratioTotalDiffRemainingIterations);
+
         // execute appendToTree
-        return clusteringInstance.appendToTree(cluster1Name, cluster2Name, newClusterName, 0);
+        return clusteringInstance.appendToTree(cluster1Name, cluster2Name, newClusterName, leftMemberValue, rightMemberValue);
     }
 
     /**
      * Computes the distances of the new cluster to the other clusters.
      * Hint: Step 3.2 from Unit-Test.
+     * @example:
+     * dist(c, k = i union j) = [dist(c, i) + dist(c, j) - dist(i, j)] / 2
      * @param subtree {Object} - The subtree for the new cluster.
-     * @param inputData {Object} - Contains all input data.
-     * @param outputData {Object} - Contains all output data.
      */
-    function computeDistances(subtree, inputData, outputData) {
+    function computeDistances(subtree) {
+        // retrieve values
+        var cluster1Name = subtree.leftChild.name;
+        var cluster2Name = subtree.rightChild.name;
+        var newClusterName = subtree.name;
+
+        var clusterNames = clusteringInstance.remainingClusterNames;
+
+        for (var i = 0; i < clusterNames.length; i++) {
+            var summand1 = clusteringInstance.getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster1Name);
+            var summand2 = clusteringInstance.getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster2Name);
+            var minuend = clusteringInstance.getMatrixValue(outputData.distanceMatrix, cluster1Name, cluster2Name);
+
+            var dividendSum = summand1 + summand2 - minuend;  // the minuend is the "correction" for the WPGMA formula
+            var quotient = dividendSum / 2;
+
+            outputData.distanceMatrix[[clusterNames[i], newClusterName]] = quotient;  // hint: do not change order of arguments
+        }
     }
 
     /**

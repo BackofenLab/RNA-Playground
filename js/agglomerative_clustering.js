@@ -107,8 +107,8 @@ $(document).ready(function () {
         var clusterNames = clusteringInstance.remainingClusterNames;
 
         for (var i = 0; i < clusterNames.length; i++) {
-            var product1 = cluster1Cardinality * getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster1Name);
-            var product2 = cluster2Cardinality * getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster2Name);
+            var product1 = cluster1Cardinality * clusteringInstance.getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster1Name);
+            var product2 = cluster2Cardinality * clusteringInstance.getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster2Name);
 
             var dividendSum = product1 + product2;
             var divisorSum = cluster1Cardinality + cluster2Cardinality;
@@ -120,31 +120,12 @@ $(document).ready(function () {
     }
 
     /**
-     * Returns the distance matrix value from the given entry.
-     * Hint: Only one half of the matrix is filled.
-     * But the other half is just a mirrored version.
-     * This is why this function is needed.
-     * @param distanceMatrix {Array} - The array from which you want the values.
-     * @param cluster1Name {string} - The name of the first cluster.
-     * @param cluster2Name {string} - The name of the second cluster.
-     * @return {number} - The value from an entry.
-     */
-    function getMatrixValue(distanceMatrix, cluster1Name, cluster2Name) {
-        var value1 = distanceMatrix[[cluster1Name, cluster2Name]];
-        var value2 = distanceMatrix[[cluster2Name, cluster1Name]];
-
-        if(isNaN(value1))
-            return value2;
-        return value1;
-    }
-
-    /**
      * Computes the distance of the new cluster to the other clusters.
      * Hint: It is really WPGMA and not UPGMA!
      * Calculated distances in UPGMA are unweighted
      * with respect to the cluster-sizes. From this the "unweighted"-term results.
      * @example:
-     * dist(c, k = i union j) = dist(c, i) + dist(c, j) / 2
+     * dist(c, k = i union j) = [dist(c, i) + dist(c, j)] / 2
      * @param subtree {Object} - The subtree for the new cluster.
      * @param outputData {Object} - Contains all output data.
      */
@@ -157,8 +138,8 @@ $(document).ready(function () {
         var clusterNames = clusteringInstance.remainingClusterNames;
 
         for (var i = 0; i < clusterNames.length; i++) {
-            var summand1 = getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster1Name);
-            var summand2 = getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster2Name);
+            var summand1 = clusteringInstance.getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster1Name);
+            var summand2 = clusteringInstance.getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster2Name);
 
             var dividendSum = summand1 + summand2;
             var quotient = dividendSum / 2;
