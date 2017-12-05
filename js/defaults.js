@@ -39,7 +39,7 @@ var SMITH_WATERMAN_STOP = "0";
 /**
  * Stores the implemented algorithm names.
  */
-var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript names without extension)
+var ALGORITHMS = {  // contains a list of algorithms with an own javascript-file (javascript names without extension)
     AGGLOMERATIVE_CLUSTERING: "agglomerative_clustering",
 	ARSLAN_EGECIOGLU_PEVZNER: "arslan_egecioglu_pevzner",
     FENG_DOOLITTLE: "feng_doolittle",
@@ -47,6 +47,7 @@ var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript
     GOTOH_LOCAL: "gotoh_local",
     HIRSCHBERG: "hirschberg",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
+    NEIGHBOUR_JOINING: "neighbour_joining",
     NONE: "none",
     NOTREDAME_HIGGINS_HERINGA: "notredame_higgins_heringa",
     SMITH_WATERMAN: "smith_waterman",
@@ -206,13 +207,13 @@ var LATEX = {
         NEIGHBOUR_JOINING_DELTA_1: "",
         NEIGHBOUR_JOINING_DELTA_2: "",
         UPGMA_DELTA_1:
-            "$$\\delta_1(l, ij)= \\frac{|i| \\cdot d_{l,i} + |j| \\cdot d_{l,j}}{|i| + |j|}$$",
+            "$$\\delta_1(l, ij)= \\frac{|i| \\cdot D_{l,i} + |j| \\cdot D_{l,j}}{|i| + |j|}$$",
         UPGMA_DELTA_2:
-            "$$\\delta_2(l, ij)= \\frac{d_{min}}{2}$$",
+            "$$\\delta_2(l, ij)= \\frac{D_{min}}{2}$$",
         WPGMA_DELTA_1:
-            "$$\\delta_1(l, ij)= \\frac{d_{l,i} + d_{l,j}}{2}$$",
+            "$$\\delta_1(l, ij)= \\frac{D_{l,i} + D_{l,j}}{2}$$",
         WPGMA_DELTA_2:
-            "$$\\delta_2(l, ij)= \\frac{d_{min}}{2}$$"
+            "$$\\delta_2(l, ij)= \\frac{D_{min}}{2}$$"
     },
 
     RECURSION: {

@@ -167,7 +167,7 @@ Author: Alexander Mattheis
      */
     function compute() {
         var distanceMatrixCopy = jQuery.extend(true, {}, outputData.distanceMatrix);  // deep copy
-        var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in hierarchical clustering algorithms
+        var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in fundamental hierarchical clustering algorithms
 
         initializeStructs();
         initializeCardinalities();
@@ -189,7 +189,6 @@ Author: Alexander Mattheis
      * Initializes structs used in the algorithm.
      */
     function initializeStructs() {
-        debugger;
         clusteringInstance.remainingClusterNames = outputData.clusterNames.slice();  // shallow copy (because they won't be changed)
         clusteringInstance.removedKeys = [];
         clusteringInstance.treeParts = [];
@@ -378,7 +377,7 @@ Author: Alexander Mattheis
      * @param cluster2Name {string} - The name of the second cluster.
      * @param newClusterName {string} - The name of the new cluster.
      * @param distance {number} - The distance between cluster 1 and cluster 2.
-     * @return
+     * @return {Object} - The new tree part.
      */
     function appendToTree(cluster1Name, cluster2Name, newClusterName, distance) {
         // create node
@@ -386,7 +385,7 @@ Author: Alexander Mattheis
         node.leftChild = getNode(cluster1Name, distance);
         node.rightChild = getNode(cluster2Name, distance);
         node.name = newClusterName;
-        node.value = distance;  // non-final evolutionary distance for edge above this node
+        node.value = distance;  // non-final evolutionary distance for edge above this node (in neighbour-joining final)
 
         outputData.treeBranches.push(node);
         clusteringInstance.treeParts.push(node);
@@ -403,6 +402,8 @@ Author: Alexander Mattheis
         for (var i = 0; i < clusteringInstance.treeParts.length; i++) {
             if (clusteringInstance.treeParts[i].name === name) {
                 var node = clusteringInstance.treeParts.splice(i, 1)[0];  // removes and returns the removed element
+
+                // do not subtract in neighbour-joining
                 node.value = value - node.value;  // computing final evolutionary distance for edge above the node
                 return node;
             }

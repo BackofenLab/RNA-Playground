@@ -40,11 +40,6 @@ $(document).ready(function () {
      * @constructor
      * @augments Clustering
      *
-     * Neighbour Joining by
-     * Saitou, Naruya, and Masatoshi Nei.
-     * "The neighbor-joining method: a new method for reconstructing phylogenetic trees."
-     * Molecular biology and evolution 4.4 (1987): 406-425.
-     *
      * UPGMA (average linkage) by
      * Sokal, Robert R.
      * "A statistical method for evaluating systematic relationship."
@@ -71,18 +66,18 @@ $(document).ready(function () {
         this.setIO = clusteringInstance.setIO;
 
         // public class methods
-        this.getSuperclass = getSuperclass;
-
         this.computeDistances = computeDistances;
+
+        this.getSuperclass = getSuperclass;
     }
 
     /**
-     * Computes the distance of the new cluster to the other clusters.
+     * Computes the distances of the new cluster to the other clusters.
      * @param subtree {Object} - The subtree for the new cluster.
      */
     function computeDistances(subtree) {
-        var outputData = clusteringInstance.getOutput();
         var inputData = clusteringInstance.getInput();
+        var outputData = clusteringInstance.getOutput();
 
         if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.UPGMA)
             computeUpgmaDistance(subtree, outputData);
