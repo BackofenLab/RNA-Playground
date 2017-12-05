@@ -48,7 +48,7 @@ var ALGORITHMS = {  // contains a list of algorithms with an own javascript-file
     HIRSCHBERG: "hirschberg",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
     NEIGHBOUR_JOINING: "neighbour_joining",
-    NONE: "none",
+    NONE: "none",  // this is not an algorithm :)
     NOTREDAME_HIGGINS_HERINGA: "notredame_higgins_heringa",
     SMITH_WATERMAN: "smith_waterman",
     WATERMAN_SMITH_BEYER: "waterman_smith_beyer"

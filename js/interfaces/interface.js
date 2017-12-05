@@ -186,79 +186,14 @@ Author: Alexander Mattheis
      * @return {Object} - The outputData with converted distance matrices.
      */
     function getDistanceTables(outputData) {
-        debugger;
         var matrixLength = outputData.distanceMatrixLength;  // start length
 
         // in each round the matrix gets smaller by one, because two matrices are merged
         for (var i = 0; i < outputData.distanceMatrices.length; i++) {
-            outputData.distanceMatrices[i]
-                = getDistanceTable(outputData.distanceMatrices[i], matrixLength-i, outputData.remainingClusters[i], outputData.keys[i]);
+            outputData.distanceMatrices[i] = bases.clustering.getMatrixAsTable(outputData.distanceMatrices[i],
+                matrixLength-i, outputData.remainingClusters[i], outputData.keys[i], false);
         }
 
         return outputData.distanceMatrices;
-    }
-
-    /**
-     * The distance matrix is an "associative array" and this has to be converted
-     * into a 2D-array which is displayable.
-     * Hint: "Associative arrays" do not have a defined order (browser-dependant).
-     */
-    function getDistanceTable(distanceMatrix, distanceMatrixLength, remainingClusters, matrixKeys) {
-        debugger;
-        var matrix = createMatrix(distanceMatrixLength);
-        if (matrixKeys === undefined)
-            matrixKeys = Object.keys(distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...
-
-        // fill diagonals with zero
-        for (var i = 0; i < matrix.length; i++) {
-            for (var j = 0; j < matrix.length; j++) {
-                if (i === j)
-                    matrix[i][j] = 0;
-            }
-        }
-
-        // fill right upper half
-        for (var j = 0; j < matrixKeys.length; j++) {
-            var key = matrixKeys[j].split(SYMBOLS.COMMA);
-            var cluster1Position = getPositionByName(key[0], remainingClusters);
-            var cluster2Position = getPositionByName(key[1], remainingClusters);
-            var value = distanceMatrix[key];
-
-            matrix[cluster1Position][cluster2Position] = value;
-        }
-
-        return matrix;
-    }
-
-    /**
-     * Creates a matrix with the given size.
-     * @param size - The width and height of the matrix.
-     */
-    function createMatrix (size) {
-        var matrix = new Array(size);
-
-        for (var i = 0; i < size; i++) {
-            matrix[i] = [];
-        }
-
-        return matrix;
-    }
-
-    /**
-     * Returns for a cluster-name, its position in the distance matrix.
-     * @param clusterName {string} - The name of the cluster.
-     * @param remainingClusterNames {Array} - The remaining cluster names after execution of UPGMA.
-     */
-    function getPositionByName(clusterName, remainingClusterNames) {
-        var position = -1;
-
-        for (var i = 0; i < remainingClusterNames.length; i++) {
-            if (clusterName === remainingClusterNames[i]) {
-                position = i;
-                break;
-            }
-        }
-
-        return position;
     }
 }());

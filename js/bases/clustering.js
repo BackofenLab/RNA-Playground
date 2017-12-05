@@ -8,8 +8,8 @@ Author: Alexander Mattheis
 "use strict";
 
 (function () {  // namespace
-    // public methods
-    namespace("bases.clustering", Clustering);
+    // public methods ("getMatrixAsTable" is set static because creation of a full instance to get just the table would be too inefficient)
+    namespace("bases.clustering", Clustering, getMatrixAsTable);
 
     // instances
     var childInstance;
@@ -45,7 +45,14 @@ Author: Alexander Mattheis
         this.setInput = setInput;
         this.getInput = getInput;
         this.compute = compute;
+        this.initializeStructs = initializeStructs;
+        this.initializeCardinalities = initializeCardinalities;
+        this.determineMatrixMinimum = determineMatrixMinimum;
+        this.mergeClusters = mergeClusters;
+        this.appendToTree = appendToTree;
         this.getMatrixKeys = getMatrixKeys;
+        this.getMatrixAsTable = getMatrixAsTable;  // yes, it should be possible to execute this function from class
+        this.getPositionByName = getPositionByName;
         this.getOutput = getOutput;
 
         this.setIO = setIO;
@@ -173,7 +180,7 @@ Author: Alexander Mattheis
         initializeCardinalities();
 
         for (var i = 0; i < numOfIterations; i++) {
-            var minimum = determineMatrixMinimum();
+            var minimum = determineMatrixMinimum(outputData.distanceMatrix);
             var newClusterName = mergeClusters(minimum.cluster1Name, minimum.cluster2Name);
             var subtree = appendToTree(minimum.cluster1Name, minimum.cluster2Name, newClusterName, minimum.distance / 2);
             computeDistances(subtree, i, numOfIterations);
@@ -220,19 +227,20 @@ Author: Alexander Mattheis
     /**
      * Determines the entry with the lowest distance
      * in the remaining entries.
+     * @param distanceMatrix {Object} - The distance matrix in which it is searched for the minimum.
      * @return {Object} - The matrix-entry which contains the minimum value.
      * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
-    function determineMatrixMinimum() {
+    function determineMatrixMinimum(distanceMatrix) {
         var minKey = SYMBOLS.EMPTY;
         var minValue = Number.POSITIVE_INFINITY;
 
-        var keys = getMatrixKeys(outputData.distanceMatrix);
+        var keys = getMatrixKeys(distanceMatrix);
 
         // searching for minimum by going over all keys
         for (var i = 0; i < keys.length; i++) {
             var key = keys[i].split(SYMBOLS.COMMA);  // string to array: Javascript stores keys as strings
-            var value = outputData.distanceMatrix[key];
+            var value = distanceMatrix[key];
 
             if (value < minValue) {  // hint: diagonals were not computed because they are zero
                 minKey = key;  // name: [a,b] with a,b cluster names
@@ -385,7 +393,7 @@ Author: Alexander Mattheis
         node.leftChild = getNode(cluster1Name, distance);
         node.rightChild = getNode(cluster2Name, distance);
         node.name = newClusterName;
-        node.value = distance;  // non-final evolutionary distance for edge above this node (in neighbour-joining final)
+        node.value = distance;  // non-final evolutionary distance for edge above this node (in neighbour-joining already final value)
 
         outputData.treeBranches.push(node);
         clusteringInstance.treeParts.push(node);
@@ -403,8 +411,8 @@ Author: Alexander Mattheis
             if (clusteringInstance.treeParts[i].name === name) {
                 var node = clusteringInstance.treeParts.splice(i, 1)[0];  // removes and returns the removed element
 
-                // do not subtract in neighbour-joining
-                node.value = value - node.value;  // computing final evolutionary distance for edge above the node
+                if (inputData.clusteringSubalgorithm !== CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING)  // do not subtract in neighbour-joining
+                    node.value = value - node.value;  // computing final evolutionary distance for edge above the node
                 return node;
             }
         }
@@ -438,6 +446,77 @@ Author: Alexander Mattheis
             subtree.value = 0;
 
         outputData.remainingClusters.push(jQuery.extend(true, [], clusteringInstance.remainingClusterNames));  // for visualization
+    }
+
+    /**
+     * Convertes the given distance matrix (associative array) into an two-dimensional array.
+     * Hint: "Associative arrays" do not have a defined order (browser-dependant).
+     * @param distanceMatrix {Object} - The distance-value which are converted into a two-dimensional array.
+     * @param distanceMatrixLength {number} - The number of clusters in the distance matrix.
+     * @param remainingClusterNames {Array} - The existent cluster names in the matrix.
+     * @param matrixKeys {Array} - The keys (tuples) from the distance matrix (associative array).
+     * @param fillBoth {boolean} - Tells if both halves of the matrix should be filled or not. If false only upper half is filled.
+     * @return {Array} - The matrix as an array.
+     */
+    function getMatrixAsTable(distanceMatrix, distanceMatrixLength, remainingClusterNames, matrixKeys, fillBoth) {
+        var matrix = createMatrix(distanceMatrixLength);
+
+        if (matrixKeys === undefined)
+            matrixKeys = Object.keys(distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...
+
+        // fill diagonals with zero
+        for (var i = 0; i < matrix.length; i++) {
+            for (var j = 0; j < matrix.length; j++) {
+                if (i === j)
+                    matrix[i][j] = 0;
+            }
+        }
+
+        // fill right upper half and left lower half
+        for (var j = 0; j < matrixKeys.length; j++) {
+            var key = matrixKeys[j].split(SYMBOLS.COMMA);
+            var cluster1Position = getPositionByName(key[0], remainingClusterNames);
+            var cluster2Position = getPositionByName(key[1], remainingClusterNames);
+            var value = distanceMatrix[key];
+
+            matrix[cluster1Position][cluster2Position] = value;  // upper right half
+            if (fillBoth)
+                matrix[cluster2Position][cluster1Position] = value;  // lower left half
+        }
+
+        return matrix;
+    }
+
+    /**
+     * Returns for a cluster-name, its position in the distance matrix.
+     * @param clusterName {string} - The name of the cluster.
+     * @param remainingClusterNames {Array} - The remaining cluster names after execution of UPGMA.
+     */
+    function getPositionByName(clusterName, remainingClusterNames) {
+        var position = -1;
+
+        for (var i = 0; i < remainingClusterNames.length; i++) {
+            if (clusterName === remainingClusterNames[i]) {
+                position = i;
+                break;
+            }
+        }
+
+        return position;
+    }
+
+    /**
+     * Creates a matrix with the given size.
+     * @param size - The width and height of the matrix.
+     */
+    function createMatrix (size) {
+        var matrix = new Array(size);
+
+        for (var i = 0; i < size; i++) {
+            matrix[i] = [];
+        }
+
+        return matrix;
     }
 
     /**

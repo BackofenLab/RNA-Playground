@@ -72,18 +72,21 @@ Author: Alexander Mattheis
      * Starts the computation.
      * Hint: Because the distance matrix is changing during the following procedure
      * and it has to be visualized later on, a copy is made which is written back.
+     * Hint 2: The outputData and inputData have been already shared with the clustering class
+     * in the setInput()-method.
      */
     function compute() {
         var distanceMatrixCopy = jQuery.extend(true, {}, outputData.distanceMatrix);  // deep copy
         var numOfIterations = inputData.numOfStartClusters - 2;  // because of the formula with N-2 (special case)
 
-        clusteringInstance.initializeStructs();
+
         clusteringInstance.initializeCardinalities();
 
         for (var i = 0; i < numOfIterations; i++) {
             // Step 1 from Unit-Test.
-            var neighbourJoiningMatrix
-                = getNeighbourJoiningMatrix(outputData.distanceMatrix, getTotalDistances(outputData.distanceMatrix));
+            var neighbourJoiningMatrix =
+                getNeighbourJoiningMatrix(outputData.distanceMatrix,
+                    getTotalDistances(outputData.distanceMatrix, inputData.numOfStartClusters-i));
 
             // Step 2 from Unit-Test
             var minimum = clusteringInstance.determineMatrixMinimum(neighbourJoiningMatrix);
@@ -91,11 +94,12 @@ Author: Alexander Mattheis
 
             // Step 3 from Unit-Test
             var subtree  // Step 3.1
-                = clusteringInstance.computeBranchLengths(minimum.cluster1Name, minimum.cluster2Name, newClusterName);
+                = computeBranchLengths(minimum.cluster1Name, minimum.cluster2Name, newClusterName);
             computeDistances(subtree, i, numOfIterations);  // Step 3.2
         }
 
-        // step to create correct newick string
+        // add last cluster to tree
+        // ...
 
         clusteringInstance.getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
@@ -105,36 +109,69 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Computes the total distances (sum of values in every line)
-     * in the distance matrix and returns them.
-     * Hint: Step 1.1 from Unit-Test.
-     * @param distanceMatrix {Object} - The distance matrix which is used to compute total distances.
-     * @return {Array} - The total distance for each line.
+     * Initializes structs used in the algorithm.
+     * @augments Clustering.initializeStructs()
      */
-    function getTotalDistances(distanceMatrix) {
-        // execute getMatrixAsTable
-
-        // after returned, search minima with determineMatrixMinimum
-        return undefined;
+    function initializeStructs() {
+        clusteringInstance.initializeStructs();
+        outputData.matrixTables = []; // to avoid a recomputation
     }
 
     /**
-     * Returns the given distance matrix into an two-dimensional array.
-     * @param distanceMatrix {Object} - The distance-value which are converted into a two-dimensional array.
-     * @return {Array} - The matrix as an array.
+     * Computes the total distances (sum of values in every line)
+     * in the distance matrix and returns them.
+     * Hint: Step 1.1 from Unit-Test.
+     * @param distanceMatrix {Object} - The distance matrix which is used to create the neighbour-joining matrix.
+     * @param numOfClusters {number} - The number of clusters in the distance matrix.
+     * @return {Array} - The total distance for each line.
      */
-    function getMatrixAsTable(distanceMatrix) {
-        return undefined;
+    function getTotalDistances(distanceMatrix, numOfClusters) {
+        var matrix =
+            clusteringInstance.getMatrixAsTable(distanceMatrix, numOfClusters, clusteringInstance.remainingClusterNames, undefined, true);
+
+        outputData.matrixTables.push(matrix);  // stored for later visualization
+
+        var totalDistances = [];
+
+        // iterate over each row
+        for (var i = 0; i < matrix.length; i++) {
+            var lineSum = 0;
+
+            for (var j = 0; j < matrix[i].length; j++)
+                lineSum += matrix[i][j];
+
+            totalDistances.push(lineSum);
+        }
+
+        return totalDistances;
     }
 
     /**
      * Computes a neighbour-joining matrix out of a distance matrix and the total distances.
      * Hint: Step 1.2 from Unit-Test.
-     * The
+     * @param distanceMatrix {Object} - The distance matrix which is used to create the neighbour-joining matrix.
+     * @param totalDistances {Array} - The total distance for each line.
+     * @return {Object} - The neighbour joining matrix.
      */
     function getNeighbourJoiningMatrix(distanceMatrix, totalDistances) {
-        // after returned, search minima with determineMatrixMinimum
-        return undefined;
+        var neighbourJoiningMatrix = {};
+
+        var matrixKeys = Object.keys(distanceMatrix);
+        var remainingClusters = clusteringInstance.remainingClusterNames;
+
+        // fill right upper half and left lower half
+        for (var j = 0; j < matrixKeys.length; j++) {
+            var key = matrixKeys[j].split(SYMBOLS.COMMA);
+            var verticalPos = clusteringInstance.getPositionByName(key[0], remainingClusters);
+            var horizontalPos = clusteringInstance.getPositionByName(key[1], remainingClusters);
+            var value = distanceMatrix[key];
+
+            // formula to compute neighbour-joining matrix: (N-2) * D_{i,j} - D_{i,J} - D_{I,j}
+            neighbourJoiningMatrix[key]
+                = (remainingClusters.length - 2) * value - totalDistances[verticalPos] - totalDistances[horizontalPos];
+        }
+
+        return neighbourJoiningMatrix;
     }
 
     /**
@@ -143,11 +180,13 @@ Author: Alexander Mattheis
      * @param cluster1Name {string} - The name of the first cluster.
      * @param cluster2Name {string} - The name of the second cluster.
      * @param newClusterName {string} - The name of the new cluster.
+     * @return {Object} - The new tree part.
      */
     function computeBranchLengths(cluster1Name, cluster2Name, newClusterName) {
         // compute the two distances
         
         // execute appendToTree
+        return clusteringInstance.appendToTree(cluster1Name, cluster2Name, newClusterName, 0);
     }
 
     /**

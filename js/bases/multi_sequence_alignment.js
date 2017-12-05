@@ -8,8 +8,7 @@ Author: Alexander Mattheis
 "use strict";
 
 (function () {  // namespace
-    // public methods ("getAffineSumOfPairsScore" needed for Unit-Tests)
-    namespace("bases.multiSequenceAlignment", MultiSequenceAlignment, getAffineSumOfPairsScore);
+    namespace("bases.multiSequenceAlignment", MultiSequenceAlignment);
 
     // instances
     var multiSequenceAlignmentInstance;
