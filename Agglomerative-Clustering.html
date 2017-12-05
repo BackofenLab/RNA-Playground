@@ -26,15 +26,14 @@ Author: Alexander Mattheis
             </li>
         </ul>
 
-        The approaches have different advantages and disadvantages i.e.
-        Unweighted PGMA (or Weighted PGMA) is only a good tree computation method,
-        if the distances from the root to the leafs are always the same
-        (i.e. if we have an ultrametric distance matrix).
-        But, in other cases the approach is unreliable. Where as Neighbour-Joining is
+        Neighbour-Joining is considered to be
         the more realistic approach (giving biologically more relevant results),
-        because it does not assume the same evolution rate for merged taxa
-        (branch length of different taxa can be different).
-        Neighbour-Joining estimates an additive tree from a distance matrix $D$ and it finds it, if one exists.
+        because unlike UPGMA (WPGMA) it does not assume the same evolution rate for merged taxa
+        (branch lengths of different taxa can be different).
+        This comes from the fact,that UPGMA assumes an ultrametric tree
+        (a tree in which distances from the root to the leafs are always the same)
+        and Neighbour-Joining only an additive tree (a tree in which branch lengths can be different).
+        That makes the approach more reliable.
 
         <br />
         <br />
@@ -42,9 +41,10 @@ Author: Alexander Mattheis
         The principle of all agglomerative (bottom-up) approaches is always the same,
         in the beginning you have given a matrix of pairwise evolutionary distances
         between singleton clusters (containing only one element)
-        and in this matrix $D$ or in a $D^*$ (e.g. a neighbour-joining matrix) derived from that
-        you search for the entry with the lowest value $D_{min} = D_{i,j}$ ($D^*_{min} = D^*_{i,j}$)
-        (where $i \neq j$). You merge the clusters $i$ and $j$ to a new cluster $ij = i \cup j$
+        and in this matrix $D$ or in a matrix $D^*$ (e.g. a neighbour-joining matrix) derived from that
+        you search for the entry with the lowest value $D_{min} = D_{i,j}$ (where $i \neq j$)
+        resp.  $D^*_{min} = D^*_{i,j}$.
+        You merge the clusters $i$ and $j$ to a new cluster $ij = i \cup j$
         and recompute the distances to the remaining clusters with some distance formula $\delta_m$
         given with the respective approach.
         Afterwards the distance between $i,j$ and the merged cluster $ij$
@@ -58,14 +58,17 @@ Author: Alexander Mattheis
         In the Neighbour-Joining approach,
         the entries of the $N \times N$ neighbour-joining matrix $D^*$
         are computed by $D^*_{i,j} = (N-2) \cdot D_{i,j} - D_{i,J} - D_{I,j}$,
-        where $D_{i,J} = \sum^N_{k=1} D_{i,k}$ (D_{I,j} defined analogous)
+        where $D_{i,J} = \sum^N_{k=1} D_{i,k}$ ($D_{I,j}$ defined analogous)
         is the total distance between cluster $i$ and all other clusters.
         This matrix together with the distance computation formulas allows us
         to find an additive tree.
 
+        <br />
+        <br />
+
         For the given input, the
         <ul>
-            <li>changing distance matrices</li>
+            <li>changing distance matrices (with intermediate matrices $D^*$)</li>
             <li>phylogenetic tree</li>
         </ul>
         are computed and displayed in reversed order.
