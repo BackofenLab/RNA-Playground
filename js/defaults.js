@@ -204,16 +204,18 @@ var LATEX = {
     },
 
     FORMULAS: {  /* contains complete formulas */
-        NEIGHBOUR_JOINING_DELTA_1: "",
-        NEIGHBOUR_JOINING_DELTA_2: "",
+        NEIGHBOUR_JOINING_DELTA_1:
+            "$$\\delta_m(k, ij) = \\frac{D_{k,i} + D_{k,j} - D_{i,j}}{2}$$",
+        NEIGHBOUR_JOINING_DELTA_2:
+            "$$\\delta_t(i, ij) = \\frac{D_{i,j} - \\Delta_{i,j}}{2}, \\quad \\delta_t(j, ij) = \\frac{D_{i,j} + \\Delta_{i,j}}{2} = D_{i,j} - \\delta_t(i, ij)$$",
         UPGMA_DELTA_1:
-            "$$\\delta_1(l, ij)= \\frac{|i| \\cdot D_{l,i} + |j| \\cdot D_{l,j}}{|i| + |j|}$$",
+            "$$\\delta_m(k, ij) = \\frac{D_{k,i} \\cdot |i| + D_{k,j} \\cdot |j|}{|i| + |j|}$$",
         UPGMA_DELTA_2:
-            "$$\\delta_2(l, ij)= \\frac{D_{min}}{2}$$",
+            "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$",
         WPGMA_DELTA_1:
-            "$$\\delta_1(l, ij)= \\frac{D_{l,i} + D_{l,j}}{2}$$",
+            "$$\\delta_m(k, ij) = \\frac{D_{k,i} + D_{k,j}}{2}$$",
         WPGMA_DELTA_2:
-            "$$\\delta_2(l, ij)= \\frac{D_{min}}{2}$$"
+            "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$"
     },
 
     RECURSION: {
@@ -499,10 +501,10 @@ var ALIGNMENT_DEFAULTS = {
 var HIERARCHICAL_CLUSTERING_DEFAULTS = {
     APPROACHES: [CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING, CLUSTERING_ALGORITHMS.UPGMA, CLUSTERING_ALGORITHMS.WPGMA],
     CSV_TABLE:  /* input from lecture Bioinformatics I */
-    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
-    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
-    "   ;    ;  0 ;  2 ;  6" + "\n" +
-    "   ;    ;    ;  0 ;  6" + "\n" +
+    " 0 ;  5 ;  9 ;  9 ;  8" + "\n" +
+    "   ;  0 ; 10 ; 10 ;  9" + "\n" +
+    "   ;    ;  0 ;  8 ;  7" + "\n" +
+    "   ;    ;    ;  0 ;  3" + "\n" +
     "   ;    ;    ;    ;  0" ,
     FORMULAS: [LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_1, LATEX.FORMULAS.UPGMA_DELTA_1, LATEX.FORMULAS.WPGMA_DELTA_1],
     SUB_FORMULAS: [LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_2, LATEX.FORMULAS.UPGMA_DELTA_2, LATEX.FORMULAS.WPGMA_DELTA_2],
