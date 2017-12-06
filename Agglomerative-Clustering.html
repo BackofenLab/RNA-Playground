@@ -96,6 +96,9 @@ Author: Alexander Mattheis
 		<div class="colW600">
 			<span data-bind="text: $root.input.selectedFormula()"></span>
             <span data-bind="text: $root.input.selectedSubformula()"></span>
+            <!-- ko if: $root.input.selectedApproach() == "Neighbour-Joining" -->
+                where $\Delta_{i,j} = \frac{D_{i,J} - D_{I,j}}{N-2}$
+            <!-- /ko -->
 		</div>
 	</div>
 

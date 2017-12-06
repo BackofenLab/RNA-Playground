@@ -79,7 +79,6 @@ Author: Alexander Mattheis
         var distanceMatrixCopy = jQuery.extend(true, {}, outputData.distanceMatrix);  // deep copy
         var numOfIterations = inputData.numOfStartClusters - 2;  // because of the formula with N-2 (special case)
 
-
         clusteringInstance.initializeCardinalities();
 
         for (var i = 0; i < numOfIterations; i++) {
