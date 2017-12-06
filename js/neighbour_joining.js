@@ -76,10 +76,13 @@ Author: Alexander Mattheis
      * in the setInput()-method.
      */
     function compute() {
+        clusteringInstance.setIO(inputData, outputData);  // needed for Unit-Tests
+
         var distanceMatrixCopy = jQuery.extend(true, {}, outputData.distanceMatrix);  // deep copy
         var numOfIterations = inputData.numOfStartClusters - 2;  // because of the formula with N-2 (special case)
 
-        clusteringInstance.initializeCardinalities();
+        debugger;
+        initializeStructs();
 
         for (var i = 0; i < numOfIterations; i++) {
             // Step 1 from Unit-Test.
@@ -96,13 +99,17 @@ Author: Alexander Mattheis
             computeDistances(subtree);  // Step 3.2
         }
 
-        // todo: add last cluster to tree
-        // ...
+        // add last cluster to tree
+        var subtree = clusteringInstance.appendToTree(
+            outputData.lastComputedClusterNames[0],
+            outputData.lastComputedClusterNames[1],
+            outputData.lastComputedClusterNames[0] + outputData.lastComputedClusterNames[1],
+            outputData.lastComputedDistance / 2,
+            outputData.lastComputedDistance / 2);
 
         clusteringInstance.getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
-
-        // outputData.newickString = newickEncoderInstance.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
+        //outputData.newickString = newickEncoderInstance.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
         return [inputData, outputData];
     }
 
@@ -114,6 +121,8 @@ Author: Alexander Mattheis
         clusteringInstance.initializeStructs();
         outputData.matrixTables = []; // to avoid a recomputation
         outputData.totalDistancesPerRound = [];
+        outputData.lastComputedDistance = 0;  // stores the last computed distance (needed to get last distance)
+        outputData.lastComputedClusterNames = [];  // stores the name of the last cluster
     }
 
     /**
@@ -125,8 +134,9 @@ Author: Alexander Mattheis
      * @return {Array} - The total distance for each line.
      */
     function getTotalDistances(distanceMatrix, numOfClusters) {
+        var matrixKeys = clusteringInstance.getMatrixKeys(distanceMatrix);
         var matrix =
-            clusteringInstance.getMatrixAsTable(distanceMatrix, numOfClusters, clusteringInstance.remainingClusterNames, undefined, true);
+            clusteringInstance.getMatrixAsTable(distanceMatrix, numOfClusters, clusteringInstance.currentClusterNames, matrixKeys, true);
 
         outputData.matrixTables.push(matrix);  // stored for later visualization
 
@@ -157,8 +167,8 @@ Author: Alexander Mattheis
     function getNeighbourJoiningMatrix(distanceMatrix, totalDistances) {
         var neighbourJoiningMatrix = {};
 
-        var matrixKeys = Object.keys(distanceMatrix);
-        var remainingClusters = clusteringInstance.remainingClusterNames;
+        var matrixKeys = clusteringInstance.getMatrixKeys(distanceMatrix);
+        var remainingClusters = clusteringInstance.currentClusterNames;
 
         // fill right upper half and left lower half
         for (var j = 0; j < matrixKeys.length; j++) {
@@ -186,12 +196,12 @@ Author: Alexander Mattheis
      */
     function computeBranchLengths(cluster1Name, cluster2Name, newClusterName, totalDistances) {
         // compute the two distances
-        var remainingClusters = clusteringInstance.remainingClusterNames;
+        var remainingClusters = clusteringInstance.lastCurrentClusterNames;
 
         var verticalPos = clusteringInstance.getPositionByName(cluster1Name, remainingClusters);
         var horizontalPos = clusteringInstance.getPositionByName(cluster2Name, remainingClusters);
 
-        var totalDistanceDiff = totalDistances[verticalPos] - totalDistances[horizontalPos];  // D_{i,J} - D_{I,j}
+        var totalDistanceDiff = totalDistances[horizontalPos] - totalDistances[verticalPos];  // D_{i,J} - D_{I,j}
         var ratioTotalDiffRemainingIterations = totalDistanceDiff / (remainingClusters.length - 2);  // (D_{i,J} - D_{I,j}) / (N-2)
 
         var valueAtJoiningPos = outputData.distanceMatrix[[cluster1Name, cluster2Name]];
@@ -215,17 +225,24 @@ Author: Alexander Mattheis
         var cluster2Name = subtree.rightChild.name;
         var newClusterName = subtree.name;
 
-        var clusterNames = clusteringInstance.remainingClusterNames;
+        var clusterNames = clusteringInstance.currentClusterNames;
 
         for (var i = 0; i < clusterNames.length; i++) {
-            var summand1 = clusteringInstance.getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster1Name);
-            var summand2 = clusteringInstance.getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster2Name);
-            var minuend = clusteringInstance.getMatrixValue(outputData.distanceMatrix, cluster1Name, cluster2Name);
+            if (clusterNames[i] !== newClusterName) {
+                var summand1 = clusteringInstance.getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster1Name);
+                var summand2 = clusteringInstance.getMatrixValue(outputData.distanceMatrix, clusterNames[i], cluster2Name);
+                var minuend = clusteringInstance.getMatrixValue(outputData.distanceMatrix, cluster1Name, cluster2Name);
 
-            var dividendSum = summand1 + summand2 - minuend;  // the minuend is the "correction" for the WPGMA formula
-            var quotient = dividendSum / 2;
+                var dividendSum = summand1 + summand2 - minuend;  // the minuend is the "correction" for the WPGMA formula
+                var quotient = dividendSum / 2;
 
-            outputData.distanceMatrix[[clusterNames[i], newClusterName]] = quotient;  // hint: do not change order of arguments
+                outputData.distanceMatrix[[clusterNames[i], newClusterName]] = quotient;  // hint: do not change order of arguments
+
+                if (clusterNames.length === 2) {  // last round
+                    outputData.lastComputedDistance = quotient;
+                    outputData.lastComputedClusterNames = [clusterNames[0], clusterNames[1]];
+                }
+            }
         }
     }
 

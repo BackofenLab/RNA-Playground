@@ -35,6 +35,8 @@ Author: Alexander Mattheis
         // variables
         this.nameIndex = 0;  // only really needed, if getNextClusterName() function is used
         this.remainingClusterNames = [];
+        this.currentClusterNames = [];
+        this.lastCurrentClusterNames = [];
         this.removedKeys = [];
         this.treeParts = [];  // storing the current incurred tree parts
 
@@ -46,7 +48,6 @@ Author: Alexander Mattheis
         this.getInput = getInput;
         this.compute = compute;
         this.initializeStructs = initializeStructs;
-        this.initializeCardinalities = initializeCardinalities;
         this.determineMatrixMinimum = determineMatrixMinimum;
         this.mergeClusters = mergeClusters;
         this.appendToTree = appendToTree;
@@ -178,7 +179,8 @@ Author: Alexander Mattheis
         var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in fundamental hierarchical clustering algorithms
 
         initializeStructs();
-        initializeCardinalities();
+        if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.UPGMA)
+            initializeCardinalities();
 
         for (var i = 0; i < numOfIterations; i++) {
             var minimum = determineMatrixMinimum(outputData.distanceMatrix);
@@ -198,6 +200,8 @@ Author: Alexander Mattheis
      */
     function initializeStructs() {
         clusteringInstance.remainingClusterNames = outputData.clusterNames.slice();  // shallow copy (because they won't be changed)
+        clusteringInstance.currentClusterNames = outputData.clusterNames.slice();  // stores the current clusters of the distance matrix
+        clusteringInstance.lastCurrentClusterNames = outputData.clusterNames.slice();
         clusteringInstance.removedKeys = [];
         clusteringInstance.treeParts = [];
 
@@ -288,7 +292,9 @@ Author: Alexander Mattheis
      */
     function mergeClusters(cluster1Name, cluster2Name) {
         var newClusterName = createNewCluster(cluster1Name, cluster2Name)
+        clusteringInstance.lastCurrentClusterNames = clusteringInstance.currentClusterNames.slice();  // shallow copy
         removeEntriesWith(cluster1Name, cluster2Name);
+        clusteringInstance.currentClusterNames.push(newClusterName);
         outputData.allClusterNames.push(newClusterName);
         return newClusterName;
     }
@@ -303,9 +309,11 @@ Author: Alexander Mattheis
     function createNewCluster(cluster1Name, cluster2Name) {
         var newClusterName = cluster1Name + cluster2Name;  // getNextClusterName();  // alternative name generation
 
-        var firstClusterCardinality = outputData.cardinalities[cluster1Name];
-        var SecondClusterCardinality = outputData.cardinalities[cluster2Name];
-        outputData.cardinalities[newClusterName] = firstClusterCardinality + SecondClusterCardinality;
+        if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.UPGMA) {
+            var firstClusterCardinality = outputData.cardinalities[cluster1Name];
+            var SecondClusterCardinality = outputData.cardinalities[cluster2Name];
+            outputData.cardinalities[newClusterName] = firstClusterCardinality + SecondClusterCardinality;
+        }
 
         return newClusterName;
     }
@@ -348,6 +356,11 @@ Author: Alexander Mattheis
 
         if (index >= 0)
             clusteringInstance.remainingClusterNames.splice(index, 1);
+
+        index = clusteringInstance.currentClusterNames.indexOf(clusterName);
+
+        if (index >= 0)
+            clusteringInstance.currentClusterNames.splice(index, 1);
     }
 
     /** ALTERNATIVE from lecture WS 2016/2017.
@@ -515,6 +528,7 @@ Author: Alexander Mattheis
      * Returns for a cluster-name, its position in the distance matrix.
      * @param clusterName {string} - The name of the cluster.
      * @param remainingClusterNames {Array} - The remaining cluster names after execution of UPGMA.
+     * @return {number} - The position of a name in the remaining clusters.
      */
     function getPositionByName(clusterName, remainingClusterNames) {
         var position = -1;
