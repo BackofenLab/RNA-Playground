@@ -200,7 +200,7 @@ Author: Alexander Mattheis
         }
 
         // else compute Neighbour-Joining matrices
-        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+        for (var i = 0; i < outputData.neighbourJoiningMatrices.length; i++) {
             outputData.neighbourJoiningMatrices[i] = bases.clustering.getMatrixAsTable(outputData.neighbourJoiningMatrices[i],
                 matrixLength-i, outputData.remainingClusters[i], outputData.keys[i], false);
         }

@@ -102,12 +102,12 @@ Author: Alexander Mattheis
         }
 
         // add last cluster to tree
-        var subtree = clusteringInstance.appendToTree(
-            outputData.lastComputedClusterNames[0],
-            outputData.lastComputedClusterNames[1],
-            outputData.lastComputedClusterNames[0] + outputData.lastComputedClusterNames[1],
-            outputData.lastComputedDistance,
-            0);
+        if (inputData.numOfStartClusters > 2)
+            clusteringInstance.appendToTree(
+                outputData.lastComputedClusterNames[0],
+                outputData.lastComputedClusterNames[1],
+                outputData.lastComputedClusterNames[0] + outputData.lastComputedClusterNames[1],
+                outputData.lastComputedDistance, 0);
 
         clusteringInstance.getMatrixKeys(outputData.distanceMatrix, true);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back

@@ -70,6 +70,9 @@ Author: Alexander Mattheis
 
         inputData.clusteringSubalgorithm = inputViewmodel.selectedApproach()[0];  // because it's array from which we choose
 
+        if (inputData.clusteringSubalgorithm !== CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING)  // to work with correct child instance
+            childInstance = new agglomerativeClustering.AgglomerativeClustering();
+
         outputData.distanceMatrix = getDistanceMatrix(noError, inputViewmodel.csvTable());
         inputData.numOfStartClusters = getNumOfStartClusters(noError, inputViewmodel.csvTable());
 
@@ -296,8 +299,8 @@ Author: Alexander Mattheis
         if (storeMatrix) {
             outputData.distanceMatrices.push(jQuery.extend(true, {}, outputData.distanceMatrix));  // only for visualization the matrix of each round is stored
             outputData.keys.push(remainingKeys);
-
-            if (inputData.clusteringSubalgorithm === ALGORITHMS.NEIGHBOUR_JOINING)
+            debugger;
+            if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING)
                 outputData.neighbourJoiningMatrices.push(jQuery.extend(true, {}, distanceMatrix));
         }
 

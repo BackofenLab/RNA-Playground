@@ -147,19 +147,38 @@ Author: Alexander Mattheis
         </div>
     </div>
 
-    <div class="tree_container"> <!-- allows to delete and reinsert the div -->
-        <div id="phylogenetic_tree"></div>
-    </div>
-
-    <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
-        <div class="group_hint">
-            <b>Visualization done with</b> <br />
-            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br />
-            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br />
-            <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
-                PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
-            </a>
+    <!-- ko if: $root.input.selectedApproach() != "Neighbour-Joining" -->
+        <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+            <div id="phylogenetic_tree"></div>
         </div>
+
+        <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
+            <div class="group_hint">
+                <b>Visualization done with</b> <br />
+                Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br />
+                A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br />
+                <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                    PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+                </a>
+            </div>
+        <!-- /ko -->
+    <!-- /ko -->
+
+    <!-- ko if: $root.input.selectedApproach() == "Neighbour-Joining" -->
+        <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+            <div id="phylogenetic_tree"></div>
+        </div>
+
+        <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
+            <div class="group_hint">
+                <b>Visualization done with</b> <br />
+                Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br />
+                A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br />
+                <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                    PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+                </a>
+            </div>
+        <!-- /ko -->
     <!-- /ko -->
 
     <h2>Distance Tables</h2>
@@ -235,41 +254,43 @@ Author: Alexander Mattheis
                         </table>
                     </div>
 
-                    <div class="distance_table extra_small">
-                        <table class="distances">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <!-- ko foreach: $root.output.remainingClusters()[$index()] -->
-                                        <th data-bind="drawChar: [$data, undefined]"></th>
-                                    <!-- /ko -->
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <!-- ko foreach: $root.output.distanceMatrices()[$index()] --> <!-- to get i-indexes = $parentContext.$index() -->
+                    <!-- ko if: $index() < $root.output.distanceMatrices()[$index()].length -->
+                        <div class="distance_table extra_small">
+                            <table class="distances">
+                                <thead>
                                     <tr>
-                                        <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
-                                        <!-- ko foreach: $root.output.distanceMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
-                                            <td class="non_selectable_entry"
-                                                data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
-                                            </td>
+                                        <th></th>
+                                        <!-- ko foreach: $root.output.remainingClusters()[$index()] -->
+                                            <th data-bind="drawChar: [$data, undefined]"></th>
                                         <!-- /ko -->
                                     </tr>
-                                <!-- /ko -->
+                                </thead>
 
-                                <!-- ko if: $index() < $root.output.distanceMatrices().length-1 --> <!-- The last minimum is not computed -->
-                                    <tr>
-                                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
-                                            <small>
-                                                <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[$index()]"></span>
-                                            </small>
-                                        </th>
-                                    </tr>
-                                <!-- /ko -->
-                            </tbody>
-                        </table>
-                    </div>
+                                <tbody>
+                                    <!-- ko foreach: $root.output.neighbourJoiningMatrices()[$index()] --> <!-- to get i-indexes = $parentContext.$index() -->
+                                        <tr>
+                                            <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
+                                            <!-- ko foreach: $root.output.neighbourJoiningMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
+                                                <td class="non_selectable_entry"
+                                                    data-bind="text: $root.output.neighbourJoiningMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                                </td>
+                                            <!-- /ko -->
+                                        </tr>
+                                    <!-- /ko -->
+
+                                    <!-- ko if: $index() < $root.output.distanceMatrices().length-1 --> <!-- The last minimum is not computed -->
+                                        <tr>
+                                            <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+                                                <small>
+                                                    <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[$index()]"></span>
+                                                </small>
+                                            </th>
+                                        </tr>
+                                    <!-- /ko -->
+                                </tbody>
+                            </table>
+                        </div>
+                    <!-- /ko -->
                 <!-- /ko -->
             <!-- /ko -->
         <!-- /ko -->

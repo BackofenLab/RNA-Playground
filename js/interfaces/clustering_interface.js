@@ -62,20 +62,24 @@ Author: Alexander Mattheis
         });
 
         this.selectedFormula = ko.computed(function () {
+            setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+            }, REUPDATE_TIMEOUT_MS);
+
             var approach = viewmodel.selectedApproach()[0];
             var position = viewmodel.availableApproaches.indexOf(approach);
             return HIERARCHICAL_CLUSTERING_DEFAULTS.FORMULAS[position];
         });
 
         this.selectedSubformula = ko.computed(function () {
+            setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+            }, REUPDATE_TIMEOUT_MS);
+
             var approach = viewmodel.selectedApproach()[0];
             var position = viewmodel.availableApproaches.indexOf(approach);
             return HIERARCHICAL_CLUSTERING_DEFAULTS.SUB_FORMULAS[position];
         });
-
-        setTimeout(function () {
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub])
-        }, REUPDATE_TIMEOUT_MS);
     }
 
     /**
@@ -145,7 +149,30 @@ Author: Alexander Mattheis
                 viewmodels.output.distanceMatrices[i][j](outputData.distanceMatrices[i][j]);
             }
         }
-        debugger;
+
+        // neighbour joining matrices
+        outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true);
+
+        viewmodels.output.neighbourJoiningMatrices(outputData.neighbourJoiningMatrices);
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.neighbourJoiningMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.neighbourJoiningMatrices.length)
+                viewmodels.output.neighbourJoiningMatrices[i] = new Function();
+
+            viewmodels.output.neighbourJoiningMatrices[i](outputData.neighbourJoiningMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.neighbourJoiningMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.neighbourJoiningMatrices[i].length)
+                    viewmodels.output.neighbourJoiningMatrices[i][j] = new Function();
+
+                viewmodels.output.neighbourJoiningMatrices[i][j](outputData.neighbourJoiningMatrices[i][j]);
+            }
+        }
+
         viewmodels.output.remainingClusters(outputData.remainingClusters);
         viewmodels.output.minimums(outputData.minimums);
     }
@@ -196,7 +223,20 @@ Author: Alexander Mattheis
             }
         }
 
-        //outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true);
+        // neighbour joining matrices
+        outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true);
+
+        viewmodel.neighbourJoiningMatrices = ko.observableArray(outputData.neighbourJoiningMatrices).extend({ deferred: true });
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.neighbourJoiningMatrices.length; i++) {
+            viewmodel.neighbourJoiningMatrices[i] = ko.observableArray(outputData.neighbourJoiningMatrices[i]).extend({ deferred: true });
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.neighbourJoiningMatrices[i].length; j++) {
+                viewmodel.neighbourJoiningMatrices[i][j] = ko.observableArray(outputData.neighbourJoiningMatrices[i][j]).extend({ deferred: true });
+            }
+        }
 
         viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
         viewmodel.minimums = ko.observable(outputData.minimums).extend({ deferred: true });
