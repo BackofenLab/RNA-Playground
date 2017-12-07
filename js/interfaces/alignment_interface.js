@@ -699,7 +699,7 @@ Author: Alexander Mattheis
      */
     function createFengDoolittleOutputViewmodel(algorithmName, viewmodel, outputData) {
         // distance matrices
-        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData);
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false);
 
         interfaceInstance.roundValues(algorithmName, outputData);
 

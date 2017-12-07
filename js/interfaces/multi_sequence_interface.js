@@ -341,7 +341,8 @@ Author: Alexander Mattheis
      */
     function changeFengDoolittleOutput(outputData, viewmodels) {
         // distance matrices
-        outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData);
+        debugger;
+        outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData, false);
 
         alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
 

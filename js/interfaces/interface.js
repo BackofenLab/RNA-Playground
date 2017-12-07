@@ -182,18 +182,29 @@ Author: Alexander Mattheis
 
     /**
      * Converts the distances stored in associative array into a real distance matrix.
-     * @param outputData - The output on which conversion is applied.
+     * @param outputData {Object} - The output on which conversion is applied.
+     * @param computeJoiningMatrices {boolean} - Tells if instead of distance matrices neighbour-joining matrices should be computed.
      * @return {Object} - The outputData with converted distance matrices.
      */
-    function getDistanceTables(outputData) {
+    function getDistanceTables(outputData, computeJoiningMatrices) {
         var matrixLength = outputData.distanceMatrixLength;  // start length
 
-        // in each round the matrix gets smaller by one, because two matrices are merged
+        if (!computeJoiningMatrices) {
+            // in each round the matrix gets smaller by one, because two matrices are merged
+            for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+                outputData.distanceMatrices[i] = bases.clustering.getMatrixAsTable(outputData.distanceMatrices[i],
+                    matrixLength-i, outputData.remainingClusters[i], outputData.keys[i], false);
+            }
+
+            return outputData.distanceMatrices;
+        }
+
+        // else compute Neighbour-Joining matrices
         for (var i = 0; i < outputData.distanceMatrices.length; i++) {
-            outputData.distanceMatrices[i] = bases.clustering.getMatrixAsTable(outputData.distanceMatrices[i],
+            outputData.neighbourJoiningMatrices[i] = bases.clustering.getMatrixAsTable(outputData.neighbourJoiningMatrices[i],
                 matrixLength-i, outputData.remainingClusters[i], outputData.keys[i], false);
         }
 
-        return outputData.distanceMatrices;
+        return outputData.neighbourJoiningMatrices;
     }
 }());

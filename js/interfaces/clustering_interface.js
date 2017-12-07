@@ -122,7 +122,7 @@ Author: Alexander Mattheis
         viewmodels.visual.drawTree();
 
         // distance matrices
-        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData);
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false);
 
         interfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
 
@@ -174,14 +174,13 @@ Author: Alexander Mattheis
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      */
     function OutputViewmodel(algorithmName, outputData) {
-        debugger;
         var viewmodel = this;
 
         // tree
         viewmodel.newickString = ko.observable(outputData.newickString);
 
         // distance matrices
-        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData);
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false);
 
         interfaceInstance.roundValues(algorithmName, outputData);
 
@@ -196,6 +195,8 @@ Author: Alexander Mattheis
                 viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({ deferred: true });
             }
         }
+
+        //outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true);
 
         viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
         viewmodel.minimums = ko.observable(outputData.minimums).extend({ deferred: true });

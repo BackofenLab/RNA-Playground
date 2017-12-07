@@ -192,7 +192,7 @@ Author: Alexander Mattheis
             computeDistances(subtree, i, numOfIterations);
         }
 
-        getMatrixKeys(outputData.distanceMatrix, false);  // only for visualization called again, to store also the last matrix
+        getMatrixKeys(outputData.distanceMatrix, true);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
         outputData.newickString = newickEncoderInstance.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
         return [inputData, outputData];
@@ -230,6 +230,7 @@ Author: Alexander Mattheis
         outputData.distanceMatrices = [];
         outputData.keys = [];
         outputData.minimums = [];
+        outputData.neighbourJoiningMatrices = [];
     }
 
     /**
@@ -295,6 +296,9 @@ Author: Alexander Mattheis
         if (storeMatrix) {
             outputData.distanceMatrices.push(jQuery.extend(true, {}, outputData.distanceMatrix));  // only for visualization the matrix of each round is stored
             outputData.keys.push(remainingKeys);
+
+            if (inputData.clusteringSubalgorithm === ALGORITHMS.NEIGHBOUR_JOINING)
+                outputData.neighbourJoiningMatrices.push(jQuery.extend(true, {}, distanceMatrix));
         }
 
         return remainingKeys;

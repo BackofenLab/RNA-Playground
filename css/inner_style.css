@@ -188,6 +188,12 @@ th {
     max-width: 800px !important;
 }
 
+.extra_small {
+    float: left;
+    padding-right: 30px;
+    max-width: 370px !important;
+}
+
 .final {
     margin-bottom: 10px;
 }
