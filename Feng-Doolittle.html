@@ -352,8 +352,17 @@ Author: Alexander Mattheis
                             <th data-bind="drawChar: [$root.output.remainingClusters()[0][$index()], undefined]"></th>
 
                             <!-- ko foreach: $root.output.distanceMatrices()[0][0] --> <!-- to get j-indexes = $index() -->
-                                <td class="non_selectable_entry"
-                                    data-bind="text: $root.output.distanceMatrices()[0][$parentContext.$index()][$index()]"></td>
+                                <!-- ko if: $index() >= $parentContext.$index() -->
+                                    <td class="non_selectable_entry"
+                                        data-bind="text: $root.output.distanceMatrices()[0][$parentContext.$index()][$index()]">
+                                    </td>
+                                <!-- /ko -->
+
+                                <!-- ko if: $index() < $parentContext.$index() -->
+                                    <td class="non_selectable_entry gray"
+                                        data-bind="text: $root.output.distanceMatrices()[0][$parentContext.$index()][$index()]">
+                                    </td>
+                                <!-- /ko -->
                             <!-- /ko -->
                         </tr>
                     <!-- /ko -->
@@ -393,9 +402,17 @@ Author: Alexander Mattheis
                                 <tr>
                                     <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
                                     <!-- ko foreach: $root.output.distanceMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
-                                        <td class="non_selectable_entry"
-                                            data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
-                                        </td>
+                                        <!-- ko if: $index() >= $parentContext.$index() -->
+                                            <td class="non_selectable_entry"
+                                                data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                            </td>
+                                        <!-- /ko -->
+
+                                        <!-- ko if: $index() < $parentContext.$index() -->
+                                            <td class="non_selectable_entry gray"
+                                                data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                            </td>
+                                        <!-- /ko -->
                                     <!-- /ko -->
                                 </tr>
                             <!-- /ko -->

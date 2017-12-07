@@ -190,6 +190,7 @@ th {
 
 .extra_small {
     float: left;
+    padding-bottom: 15px;
     padding-right: 30px;
     max-width: 370px !important;
 }
@@ -256,6 +257,7 @@ th {
 
 .hint {
     border-width: 1px;
+    height: 25px !important;
     padding-left: 8px;
     text-align: left;
 }

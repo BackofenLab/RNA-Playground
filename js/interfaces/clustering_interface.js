@@ -128,8 +128,6 @@ Author: Alexander Mattheis
         // distance matrices
         outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, true);
 
-        interfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
-
         viewmodels.output.distanceMatrices(outputData.distanceMatrices);
 
         // iteration over each matrix
@@ -175,6 +173,8 @@ Author: Alexander Mattheis
             }
         }
 
+        interfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
+
         viewmodels.output.remainingClusters(outputData.remainingClusters);
         viewmodels.output.minimums(outputData.minimums);
     }
@@ -211,8 +211,6 @@ Author: Alexander Mattheis
         // distance matrices
         outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, true);
 
-        interfaceInstance.roundValues(algorithmName, outputData);
-
         viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
 
         // iteration over each matrix
@@ -242,6 +240,8 @@ Author: Alexander Mattheis
                 viewmodel.neighbourJoiningMatrices[i][j] = ko.observableArray(outputData.neighbourJoiningMatrices[i][j]).extend({ deferred: true });
             }
         }
+
+        interfaceInstance.roundValues(algorithmName, outputData);
 
         viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
         viewmodel.minimums = ko.observable(outputData.minimums).extend({ deferred: true });

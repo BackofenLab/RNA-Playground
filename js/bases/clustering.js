@@ -437,7 +437,7 @@ Author: Alexander Mattheis
         node.leftChild = getNode(cluster1Name, distance1);
         node.rightChild = getNode(cluster2Name, distance2);
         node.name = newClusterName;
-        node.value = distance1;  // non-final evolutionary distance for edge above this node
+        node.value = distance2;  // non-final evolutionary distance for edge above this node
 
         outputData.treeBranches.push(node);
         clusteringInstance.treeParts.push(node);

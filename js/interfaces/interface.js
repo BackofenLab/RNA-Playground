@@ -140,9 +140,25 @@ Author: Alexander Mattheis
 
                     // iterate over each entry
                     for (var j = 0; j < outputData.distanceMatrices[k][i].length; j++) {
-                        if (j > i)  // only the values upper the diagonal
+                        // if (j > i)  // only the values upper the diagonal
                             outputData.distanceMatrices[k][i][j]
                                 = round(outputData.distanceMatrices[k][i][j], 1);
+                    }
+                }
+            }
+
+            if (algorithmName === ALGORITHMS.AGGLOMERATIVE_CLUSTERING) {
+                for (var k = 0; k < outputData.neighbourJoiningMatrices.length; k++) {
+
+                    // iterate over each row
+                    for (var i = 0; i < outputData.neighbourJoiningMatrices[k].length; i++) {
+
+                        // iterate over each entry
+                        for (var j = 0; j < outputData.neighbourJoiningMatrices[k][i].length; j++) {
+                            if (j > i)  // only the values upper the diagonal
+                                outputData.neighbourJoiningMatrices[k][i][j]
+                                    = round(outputData.neighbourJoiningMatrices[k][i][j], 1);
+                        }
                     }
                 }
             }
