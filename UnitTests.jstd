@@ -26,4 +26,16 @@ load:
   - js/smith_waterman.js
   - js/waterman_smith_beyer.js
 test:
+  - js/tests/test_arslan_egecioglu_pevzner.js
+  - js/tests/test_feng_doolittle.js
+  - js/tests/test_gotoh.js
+  - js/tests/test_gotoh_local.js
+  - js/tests/test_hirschberg.js
+  - js/tests/test_needleman_wunsch.js
   - js/tests/test_neighbour_joining.js
+  - js/tests/test_notredame_higgins_heringa.js
+  - js/tests/test_smith_waterman.js
+  - js/tests/test_sum_of_pairs.js
+  - js/tests/test_upgma.js
+  - js/tests/test_waterman_smith_beyer.js
+  - js/tests/test_wpgma.js

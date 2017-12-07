@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods ("getMatrixAsTable" is set static because creation of a full instance to get just the table would be too inefficient)
-    namespace("bases.clustering", Clustering, getMatrixValue, getMatrixAsTable);
+    namespace("bases.clustering", Clustering, getMatrixAsTable);
 
     // instances
     var childInstance;
