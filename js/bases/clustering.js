@@ -56,8 +56,8 @@ Author: Alexander Mattheis
         this.getMatrixAsTable = getMatrixAsTable;  // yes, it should be possible to execute this function from class
         this.getPositionByName = getPositionByName;
         this.getOutput = getOutput;
-
         this.setIO = setIO;
+        this.getNewickEncoder = getNewickEncoder;
     }
 
     /**
@@ -581,5 +581,13 @@ Author: Alexander Mattheis
     function setIO(input, output) {
         inputData = input;
         outputData = output;
+    }
+
+    /**
+     * Returns a Newick format encoder.
+     * @return {Object} - The Newick encoder.
+     */
+    function getNewickEncoder() {
+        return newickEncoderInstance;
     }
 }());

@@ -104,12 +104,12 @@ Author: Alexander Mattheis
             outputData.lastComputedClusterNames[0],
             outputData.lastComputedClusterNames[1],
             outputData.lastComputedClusterNames[0] + outputData.lastComputedClusterNames[1],
-            outputData.lastComputedDistance / 2,
-            outputData.lastComputedDistance / 2);
+            outputData.lastComputedDistance,
+            0);
 
         clusteringInstance.getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
-        //outputData.newickString = newickEncoderInstance.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
+        outputData.newickString = clusteringInstance.getNewickEncoder().getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
         return [inputData, outputData];
     }
 
