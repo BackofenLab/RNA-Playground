@@ -116,6 +116,7 @@ Author: Alexander Mattheis
      * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
+        debugger;
         // tree
         viewmodels.output.newickString(outputData.newickString);
         viewmodels.visual.drawTree();
@@ -173,6 +174,7 @@ Author: Alexander Mattheis
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      */
     function OutputViewmodel(algorithmName, outputData) {
+        debugger;
         var viewmodel = this;
 
         // tree

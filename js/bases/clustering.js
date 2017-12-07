@@ -175,6 +175,9 @@ Author: Alexander Mattheis
      * and it has to be visualized later on, a copy is made which is written back.
      */
     function compute() {
+        if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING)
+           return computeNeighbourJoining();
+
         var distanceMatrixCopy = jQuery.extend(true, {}, outputData.distanceMatrix);  // deep copy
         var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in fundamental hierarchical clustering algorithms
 
@@ -189,10 +192,20 @@ Author: Alexander Mattheis
             computeDistances(subtree, i, numOfIterations);
         }
 
-        getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
+        getMatrixKeys(outputData.distanceMatrix, false);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
         outputData.newickString = newickEncoderInstance.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
         return [inputData, outputData];
+    }
+
+    /**
+     * Computes Neighbour-Joining output.
+     * @return {[input,output]} - The input data and output data.
+     */
+    function computeNeighbourJoining() {
+        var algorithm = new neighbourJoining.NeighbourJoining();
+        algorithm.setIO(inputData, outputData);
+        return algorithm.compute();
     }
 
     /**
@@ -240,7 +253,7 @@ Author: Alexander Mattheis
         var minKey = SYMBOLS.EMPTY;
         var minValue = Number.POSITIVE_INFINITY;
 
-        var keys = getMatrixKeys(distanceMatrix);
+        var keys = getMatrixKeys(distanceMatrix, true);
 
         // searching for minimum by going over all keys
         for (var i = 0; i < keys.length; i++) {
@@ -265,11 +278,12 @@ Author: Alexander Mattheis
 
     /**
      * Returns the remaining acceptable keys from the matrix.
-     * @param distanceMatrix - The associative array
+     * @param distanceMatrix {Object} - The associative array
+     * @param storeMatrix {boolean} - Tells if the matrix should be stored for visualization purposes.
      * from which the cluster names should be determined.
      * @return {Array} - Array of cluster names.
      */
-    function getMatrixKeys(distanceMatrix) {
+    function getMatrixKeys(distanceMatrix, storeMatrix) {
         var keys = Object.keys(distanceMatrix);
         var remainingKeys = [];
 
@@ -278,8 +292,10 @@ Author: Alexander Mattheis
                 remainingKeys.push(keys[i]);
         }
 
-        outputData.distanceMatrices.push(jQuery.extend(true, {}, outputData.distanceMatrix));  // only for visualization the matrix of each round is stored
-        outputData.keys.push(remainingKeys);
+        if (storeMatrix) {
+            outputData.distanceMatrices.push(jQuery.extend(true, {}, outputData.distanceMatrix));  // only for visualization the matrix of each round is stored
+            outputData.keys.push(remainingKeys);
+        }
 
         return remainingKeys;
     }
@@ -589,5 +605,13 @@ Author: Alexander Mattheis
      */
     function getNewickEncoder() {
         return newickEncoderInstance;
+    }
+
+    /**
+     * Sets the current child algorithm.
+     * @param algorithm {Object} - The algorithm which should be used by this class.
+     */
+    function setLastChild(algorithm) {
+        childInstance = algorithm;
     }
 }());

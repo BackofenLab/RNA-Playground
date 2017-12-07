@@ -500,7 +500,7 @@ var ALIGNMENT_DEFAULTS = {
  */
 var HIERARCHICAL_CLUSTERING_DEFAULTS = {
     APPROACHES: [CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING, CLUSTERING_ALGORITHMS.UPGMA, CLUSTERING_ALGORITHMS.WPGMA],
-    CSV_TABLE:  /* input from lecture Bioinformatics I */
+    CSV_TABLE:  /* input from https://en.wikipedia.org/wiki/Neighbor_joining */
     " 0 ;  5 ;  9 ;  9 ;  8" + "\n" +
     "   ;  0 ; 10 ; 10 ;  9" + "\n" +
     "   ;    ;  0 ;  8 ;  7" + "\n" +

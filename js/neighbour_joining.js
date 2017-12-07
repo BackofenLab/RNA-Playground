@@ -46,7 +46,7 @@ Author: Alexander Mattheis
         // inheritance
         clusteringInstance = new bases.clustering.Clustering(this);
 
-        this.setInput = setInput;
+        // this.setInput = setInput;
         this.compute = compute;
         this.getOutput = getOutput;
 
@@ -63,10 +63,12 @@ Author: Alexander Mattheis
      * which is using the inputViewmodel properties in its computations.
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
+    /* Only needed if an own interface is created for this class, but now it uses just the interface of agglomerative clustering.
     function setInput(inputViewmodel) {
         clusteringInstance.setIO(inputData, outputData);
         clusteringInstance.setInput(inputViewmodel);
     }
+    */
 
     /**
      * Starts the computation.
@@ -76,7 +78,7 @@ Author: Alexander Mattheis
      * in the setInput()-method.
      */
     function compute() {
-        clusteringInstance.setIO(inputData, outputData);  // needed for Unit-Tests
+        clusteringInstance.setIO(inputData, outputData);  // needed especially for Unit-Tests
 
         var distanceMatrixCopy = jQuery.extend(true, {}, outputData.distanceMatrix);  // deep copy
         var numOfIterations = inputData.numOfStartClusters - 2;  // because of the formula with N-2 (special case)
@@ -107,7 +109,7 @@ Author: Alexander Mattheis
             outputData.lastComputedDistance,
             0);
 
-        clusteringInstance.getMatrixKeys(outputData.distanceMatrix);  // only for visualization called again, to store also the last matrix
+        clusteringInstance.getMatrixKeys(outputData.distanceMatrix, true);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
         outputData.newickString = clusteringInstance.getNewickEncoder().getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
         return [inputData, outputData];
@@ -134,7 +136,7 @@ Author: Alexander Mattheis
      * @return {Array} - The total distance for each line.
      */
     function getTotalDistances(distanceMatrix, numOfClusters) {
-        var matrixKeys = clusteringInstance.getMatrixKeys(distanceMatrix);
+        var matrixKeys = clusteringInstance.getMatrixKeys(distanceMatrix, false);
         var matrix =
             clusteringInstance.getMatrixAsTable(distanceMatrix, numOfClusters, clusteringInstance.currentClusterNames, matrixKeys, true);
 
@@ -167,7 +169,7 @@ Author: Alexander Mattheis
     function getNeighbourJoiningMatrix(distanceMatrix, totalDistances) {
         var neighbourJoiningMatrix = {};
 
-        var matrixKeys = clusteringInstance.getMatrixKeys(distanceMatrix);
+        var matrixKeys = clusteringInstance.getMatrixKeys(distanceMatrix, false);
         var remainingClusters = clusteringInstance.currentClusterNames;
 
         // fill right upper half and left lower half
@@ -244,6 +246,7 @@ Author: Alexander Mattheis
                 }
             }
         }
+        outputData.remainingClusters.push(jQuery.extend(true, [], clusterNames));  // for visualization
     }
 
     /**

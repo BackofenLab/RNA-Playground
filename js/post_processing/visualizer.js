@@ -812,7 +812,6 @@ Author: Alexander Mattheis
 
         var newick = visualizerInstance.output.newickString;
 
-        debugger;
         if (visualizerInstance.output.newickString.length !== 1
             && newick.indexOf(SYMBOLS.MINUS) === -1) {  // if there is not only a ";" and if there are no negative values
 
