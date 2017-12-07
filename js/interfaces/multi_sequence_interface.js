@@ -342,7 +342,7 @@ Author: Alexander Mattheis
     function changeFengDoolittleOutput(outputData, viewmodels) {
         // distance matrices
         debugger;
-        outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData, false);
+        outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData, false, false);
 
         alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
 

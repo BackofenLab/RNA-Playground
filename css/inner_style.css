@@ -239,6 +239,10 @@ th {
     width: 244px;
 }
 
+.gray {
+    color: lightgray;
+}
+
 .group_hint {
     color: gray;
     font-size: smaller;

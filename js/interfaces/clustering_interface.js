@@ -126,7 +126,7 @@ Author: Alexander Mattheis
         viewmodels.visual.drawTree();
 
         // distance matrices
-        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false);
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, true);
 
         interfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
 
@@ -150,8 +150,10 @@ Author: Alexander Mattheis
             }
         }
 
+        viewmodels.output.totalDistancesPerRound(outputData.totalDistancesPerRound);
+
         // neighbour joining matrices
-        outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true);
+        outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true, false);
 
         viewmodels.output.neighbourJoiningMatrices(outputData.neighbourJoiningMatrices);
 
@@ -207,7 +209,7 @@ Author: Alexander Mattheis
         viewmodel.newickString = ko.observable(outputData.newickString);
 
         // distance matrices
-        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false);
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, true);
 
         interfaceInstance.roundValues(algorithmName, outputData);
 
@@ -223,8 +225,11 @@ Author: Alexander Mattheis
             }
         }
 
+        viewmodel.sumLatex = ko.observable(interfaceInstance.getLaTeXFormula(LATEX.SUM));
+        viewmodel.totalDistancesPerRound = ko.observableArray(outputData.totalDistancesPerRound);
+
         // neighbour joining matrices
-        outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true);
+        outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true, false);
 
         viewmodel.neighbourJoiningMatrices = ko.observableArray(outputData.neighbourJoiningMatrices).extend({ deferred: true });
 

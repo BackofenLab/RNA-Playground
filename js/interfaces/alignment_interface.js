@@ -31,6 +31,7 @@ Author: Alexander Mattheis
         this.roundValues = interfaceInstance.roundValues;
         this.getDistanceTable = interfaceInstance.getDistanceTable;
         this.getDistanceTables = interfaceInstance.getDistanceTables;
+        this.getLaTeXFormula = interfaceInstance.getLaTeXFormula;
 
         // public class methods
         this.imports = imports;
@@ -40,7 +41,6 @@ Author: Alexander Mattheis
         this.getColumnData = getColumnData;
         this.getMinimaData = getMinimaData;
         this.getTwoRowsSubmatricesData = getTwoRowsSubmatricesData;
-        this.getLaTeXFormula = getLaTeXFormula;
         this.reorderGroupSequences = reorderGroupSequences;
         this.getLibrariesData = getLibrariesData;
         this.removeNeutralSymbols = removeNeutralSymbols;
@@ -301,9 +301,9 @@ Author: Alexander Mattheis
         viewmodel.currentGlobalRow = ko.observable(rowData);
 
         // table header (to avoid a problem between Knockout and MathJax the LaTeX code is generated in viewmodel and not in the view)
-        viewmodel.matrixDLatex = ko.observable(getLaTeXFormula(LATEX.FORMULA.D));
-        viewmodel.matrixDPrimeLatex = ko.observable(getLaTeXFormula(LATEX.FORMULA.D_PRIME));
-        viewmodel.sumLatex = ko.observable(getLaTeXFormula(LATEX.SUM));
+        viewmodel.matrixDLatex = ko.observable(interfaceInstance.getLaTeXFormula(LATEX.FORMULA.D));
+        viewmodel.matrixDPrimeLatex = ko.observable(interfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_PRIME));
+        viewmodel.sumLatex = ko.observable(interfaceInstance.getLaTeXFormula(LATEX.SUM));
 
         viewmodel.secondSequences = ko.observable(outputData.secondSequences);
         viewmodel.secondSequencePositions = ko.observable(outputData.secondSequencePositions).extend({ deferred: true });
@@ -654,15 +654,6 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Returns a LaTeX enclosed formula.
-     * @param formula {string} - The string which has to be enclosed in LaTeX math mode.
-     * @return {string} - The LaTeX math mode enclosed formula.
-     */
-    function getLaTeXFormula(formula) {
-        return LATEX.MATH_REGION + formula + LATEX.MATH_REGION;
-    }
-
-    /**
      * Creates the OutputViewmodel for some local and global alignment algorithms.
      * @param algorithmName {string} - The name of the algorithm which is executed.
      * @param viewmodel {Object} - The output viewmodel container which should be filled.
@@ -699,7 +690,7 @@ Author: Alexander Mattheis
      */
     function createFengDoolittleOutputViewmodel(algorithmName, viewmodel, outputData) {
         // distance matrices
-        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false);
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, false);
 
         interfaceInstance.roundValues(algorithmName, outputData);
 

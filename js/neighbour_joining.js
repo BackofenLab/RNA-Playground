@@ -83,8 +83,7 @@ Author: Alexander Mattheis
         var distanceMatrixCopy = jQuery.extend(true, {}, outputData.distanceMatrix);  // deep copy
         var numOfIterations = inputData.numOfStartClusters - 2;  // because of the formula with N-2 (special case)
 
-        debugger;
-        initializeStructs();
+        clusteringInstance.initializeStructs();
 
         for (var i = 0; i < numOfIterations; i++) {
             // Step 1 from Unit-Test.
@@ -113,18 +112,6 @@ Author: Alexander Mattheis
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
         outputData.newickString = clusteringInstance.getNewickEncoder().getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
         return [inputData, outputData];
-    }
-
-    /**
-     * Initializes structs used in the algorithm.
-     * @augments Clustering.initializeStructs()
-     */
-    function initializeStructs() {
-        clusteringInstance.initializeStructs();
-        outputData.matrixTables = []; // to avoid a recomputation
-        outputData.totalDistancesPerRound = [];
-        outputData.lastComputedDistance = 0;  // stores the last computed distance (needed to get last distance)
-        outputData.lastComputedClusterNames = [];  // stores the name of the last cluster
     }
 
     /**

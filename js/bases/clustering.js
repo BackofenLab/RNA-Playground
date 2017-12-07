@@ -233,7 +233,13 @@ Author: Alexander Mattheis
         outputData.distanceMatrices = [];
         outputData.keys = [];
         outputData.minimums = [];
+
+        // neighbour-joining algorithm
         outputData.neighbourJoiningMatrices = [];
+        outputData.matrixTables = []; // to avoid a recomputation
+        outputData.totalDistancesPerRound = [];
+        outputData.lastComputedDistance = 0;  // stores the last computed distance (needed to get last distance)
+        outputData.lastComputedClusterNames = [];  // stores the name of the last cluster
     }
 
     /**

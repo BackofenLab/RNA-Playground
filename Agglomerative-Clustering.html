@@ -206,9 +206,17 @@ Author: Alexander Mattheis
                                     <tr>
                                         <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
                                         <!-- ko foreach: $root.output.distanceMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
-                                            <td class="non_selectable_entry"
-                                                data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
-                                            </td>
+                                            <!-- ko if: $index() >= $parentContext.$index() -->
+                                                    <td class="non_selectable_entry"
+                                                        data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                                    </td>
+                                            <!-- /ko -->
+
+                                            <!-- ko if: $index() < $parentContext.$index() -->
+                                                    <td class="non_selectable_entry gray"
+                                                        data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                                    </td>
+                                            <!-- /ko -->
                                         <!-- /ko -->
                                     </tr>
                                 <!-- /ko -->
@@ -244,9 +252,26 @@ Author: Alexander Mattheis
                                     <tr>
                                         <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
                                         <!-- ko foreach: $root.output.distanceMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
-                                            <td class="non_selectable_entry"
-                                                data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
-                                            </td>
+                                            <!-- ko if: $index() >= $parentContext.$index() -->
+                                                <td class="non_selectable_entry"
+                                                    data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                                </td>
+                                            <!-- /ko -->
+
+                                            <!-- ko if: $index() < $parentContext.$index() -->
+                                                <td class="non_selectable_entry gray"
+                                                    data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                                </td>
+                                            <!-- /ko -->
+                                        <!-- /ko -->
+                                    </tr>
+                                <!-- /ko -->
+
+                                <!-- ko if: $index() < $root.output.distanceMatrices().length - 1 -->
+                                    <tr class="thick_line">
+                                        <th><span data-bind="text: $root.output.sumLatex"></span></th>
+                                        <!-- ko foreach: $root.output.totalDistancesPerRound()[$index()] -->
+                                            <td class="entry" data-bind="text: $data"></td>
                                         <!-- /ko -->
                                     </tr>
                                 <!-- /ko -->
@@ -254,7 +279,7 @@ Author: Alexander Mattheis
                         </table>
                     </div>
 
-                    <!-- ko if: $index() < $root.output.distanceMatrices()[$index()].length -->
+                    <!-- ko if: $index() < $root.output.distanceMatrices().length - 1 -->
                         <div class="distance_table extra_small">
                             <table class="distances">
                                 <thead>
@@ -278,15 +303,13 @@ Author: Alexander Mattheis
                                         </tr>
                                     <!-- /ko -->
 
-                                    <!-- ko if: $index() < $root.output.distanceMatrices().length-1 --> <!-- The last minimum is not computed -->
-                                        <tr>
-                                            <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
-                                                <small>
-                                                    <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[$index()]"></span>
-                                                </small>
-                                            </th>
-                                        </tr>
-                                    <!-- /ko -->
+                                    <tr>
+                                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+                                            <small>
+                                                <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[$index()]"></span>
+                                            </small>
+                                        </th>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

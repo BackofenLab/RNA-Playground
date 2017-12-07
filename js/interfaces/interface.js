@@ -28,6 +28,7 @@ Author: Alexander Mattheis
         this.startProcessing = startProcessing;
         this.roundValues = roundValues;
         this.getDistanceTables = getDistanceTables;
+        this.getLaTeXFormula = getLaTeXFormula;
     }
 
     /**
@@ -184,16 +185,17 @@ Author: Alexander Mattheis
      * Converts the distances stored in associative array into a real distance matrix.
      * @param outputData {Object} - The output on which conversion is applied.
      * @param computeJoiningMatrices {boolean} - Tells if instead of distance matrices neighbour-joining matrices should be computed.
+     * @param fillBothHalves {boolean} - Tells if both halves of the matrix should be filled with values or not.
      * @return {Object} - The outputData with converted distance matrices.
      */
-    function getDistanceTables(outputData, computeJoiningMatrices) {
+    function getDistanceTables(outputData, computeJoiningMatrices, fillBothHalves) {
         var matrixLength = outputData.distanceMatrixLength;  // start length
 
         if (!computeJoiningMatrices) {
             // in each round the matrix gets smaller by one, because two matrices are merged
             for (var i = 0; i < outputData.distanceMatrices.length; i++) {
                 outputData.distanceMatrices[i] = bases.clustering.getMatrixAsTable(outputData.distanceMatrices[i],
-                    matrixLength-i, outputData.remainingClusters[i], outputData.keys[i], false);
+                    matrixLength-i, outputData.remainingClusters[i], outputData.keys[i], fillBothHalves);
             }
 
             return outputData.distanceMatrices;
@@ -202,9 +204,18 @@ Author: Alexander Mattheis
         // else compute Neighbour-Joining matrices
         for (var i = 0; i < outputData.neighbourJoiningMatrices.length; i++) {
             outputData.neighbourJoiningMatrices[i] = bases.clustering.getMatrixAsTable(outputData.neighbourJoiningMatrices[i],
-                matrixLength-i, outputData.remainingClusters[i], outputData.keys[i], false);
+                matrixLength-i, outputData.remainingClusters[i], outputData.keys[i], fillBothHalves);
         }
 
         return outputData.neighbourJoiningMatrices;
+    }
+
+    /**
+     * Returns a LaTeX enclosed formula.
+     * @param formula {string} - The string which has to be enclosed in LaTeX math mode.
+     * @return {string} - The LaTeX math mode enclosed formula.
+     */
+    function getLaTeXFormula(formula) {
+        return LATEX.MATH_REGION + formula + LATEX.MATH_REGION;
     }
 }());
