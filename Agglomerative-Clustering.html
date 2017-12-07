@@ -41,9 +41,9 @@ Author: Alexander Mattheis
         The principle of all agglomerative (bottom-up) approaches is always the same,
         in the beginning you have given a matrix of pairwise evolutionary distances
         between singleton clusters (containing only one element)
-        and in this matrix $D$ or in a matrix $D^*$ (e.g. a neighbour-joining matrix) derived from that
+        and in this matrix $D$ or in a matrix $M$ (e.g. a neighbour-joining matrix) derived from that
         you search for the entry with the lowest value $D_{min} = D_{i,j}$ (where $i \neq j$)
-        resp.  $D^*_{min} = D^*_{i,j}$.
+        resp.  $M_{min} = M_{i,j}$.
         You merge the clusters $i$ and $j$ to a new cluster $ij = i \cup j$
         and recompute the distances to the remaining clusters with some distance formula $\delta_m$
         given with the respective approach.
@@ -56,8 +56,8 @@ Author: Alexander Mattheis
         <br />
 
         In the Neighbour-Joining approach,
-        the entries of the $N \times N$ neighbour-joining matrix $D^*$
-        are computed by $D^*_{i,j} = (N-2) \cdot D_{i,j} - D_{i,J} - D_{I,j}$,
+        the entries of the $N \times N$ neighbour-joining matrix $M$
+        are computed by $M_{i,j} = (N-2) \cdot D_{i,j} - D_{i,J} - D_{I,j}$,
         where $D_{i,J} = \sum^N_{k=1} D_{i,k}$ ($D_{I,j}$ defined analogous)
         is the total distance between cluster $i$ and all other clusters.
         This matrix together with the distance computation formulas allows us
@@ -68,7 +68,7 @@ Author: Alexander Mattheis
 
         For the given input, the
         <ul>
-            <li>changing distance matrices (with intermediate matrices $D^*$)</li>
+            <li>changing distance matrices (with intermediate matrices $M$)</li>
             <li>phylogenetic tree</li>
         </ul>
         are computed and displayed in reversed order.
@@ -181,7 +181,13 @@ Author: Alexander Mattheis
         <!-- /ko -->
     <!-- /ko -->
 
-    <h2>Distance Tables</h2>
+    <!-- ko if: $root.input.selectedApproach() != "Neighbour-Joining" -->
+        <h2>Distance Tables</h2>
+    <!-- /ko -->
+
+    <!-- ko if: $root.input.selectedApproach() == "Neighbour-Joining" -->
+        <h2>Distance & Neighbour Joining Tables</h2>
+    <!-- /ko -->
     <div class="matrices">
         <!-- ko foreach: $root.output.distanceMatrices() -->
             <!-- ko if: $index() > 0 -->
@@ -194,7 +200,7 @@ Author: Alexander Mattheis
                         <table class="distances">
                             <thead>
                                 <tr>
-                                    <th></th>
+                                    <th><span data-bind="text: $root.output.matrixDLatex()[$index()]"></span></th>
                                     <!-- ko foreach: $root.output.remainingClusters()[$index()] -->
                                         <th data-bind="drawChar: [$data, undefined]"></th>
                                     <!-- /ko -->
@@ -240,7 +246,7 @@ Author: Alexander Mattheis
                         <table class="distances">
                             <thead>
                                 <tr>
-                                    <th></th>
+                                    <th><span data-bind="text: $root.output.matrixDLatex()[$index()]"></span></th>
                                     <!-- ko foreach: $root.output.remainingClusters()[$index()] -->
                                         <th data-bind="drawChar: [$data, undefined]"></th>
                                     <!-- /ko -->
@@ -284,7 +290,7 @@ Author: Alexander Mattheis
                             <table class="distances">
                                 <thead>
                                     <tr>
-                                        <th></th>
+                                        <th><span data-bind="text: $root.output.matrixDStarLatex()[$index()]"></span></th>
                                         <!-- ko foreach: $root.output.remainingClusters()[$index()] -->
                                             <th data-bind="drawChar: [$data, undefined]"></th>
                                         <!-- /ko -->

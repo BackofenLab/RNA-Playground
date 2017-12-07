@@ -163,6 +163,7 @@ var LATEX = {
     SPACE_SMALL: "\\;",
     SUBORDINATE: "_",
     SUM: "\\sum",
+    SUPERSCRIPT: "^",
     TEXT_START: "\\texttt{",
 
     FORMULA: {  /* contains subparts of a formula */
@@ -174,6 +175,8 @@ var LATEX = {
         D_BIG: /D/g,
         D_BIG_UNDERSCORE: /D_/g,
         D_PRIME: "D'",
+        D_PURE: "D",
+        D_STAR: "M",
         D_PRIME_UNDERSCORE: "D'_",
         DELETION: "b_j = -",
         DIAGONAL: "D_{i-1,j-1}",

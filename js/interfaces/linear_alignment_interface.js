@@ -546,9 +546,9 @@ Author: Alexander Mattheis
         viewmodels.output.currentGlobalRow(rowData);
 
         // table header (to avoid a problem between Knockout and MathJax the LaTeX code is generated in viewmodel and not in the view)
-        viewmodels.output.matrixDLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D));
-        viewmodels.output.matrixDPrimeLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_PRIME));
-        viewmodels.output.sumLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.SUM));
+        //viewmodels.output.matrixDLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D));
+        //viewmodels.output.matrixDPrimeLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_PRIME));
+        //viewmodels.output.sumLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.SUM));
 
         viewmodels.output.secondSequences(outputData.secondSequences);
         viewmodels.output.secondSequencePositions(outputData.secondSequencePositions);

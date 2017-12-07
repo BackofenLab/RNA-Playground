@@ -130,6 +130,10 @@ Author: Alexander Mattheis
 
         viewmodels.output.distanceMatrices(outputData.distanceMatrices);
 
+        var tableNames = createLaTeXDistanceTableNames(outputData);
+        viewmodels.output.matrixDLatex(tableNames[0]);
+        viewmodels.output.matrixDStarLatex(tableNames[1]);
+
         // iteration over each matrix
         for (var i = 0; i < outputData.distanceMatrices.length; i++) {
             // new variables (rows) are not automatically functions...
@@ -180,6 +184,38 @@ Author: Alexander Mattheis
     }
 
     /**
+     * Creates Names for distance tables.
+     * @param outputData {Object} - Contains all output data.
+     * @return {[distanceMatrixNames,neighbourJoiningMatrixNames]}
+     */
+    function createLaTeXDistanceTableNames(outputData) {
+        var numMatrices = outputData.distanceMatrices.length;
+        var distanceMatrixNames = [];
+        var neighbourJoiningMatrixNames = [];
+
+        for (var i = 0; i < numMatrices; i++) {
+            var distanceMatrixName = SYMBOLS.EMPTY;
+            var neighbourJoiningMatrixName = SYMBOLS.EMPTY;
+
+            if (i !== 0) {
+                distanceMatrixName = interfaceInstance
+                    .getLaTeXFormula(LATEX.FORMULA.D_PURE + LATEX.SUPERSCRIPT + LATEX.CURLY_BRACKET_LEFT + i + LATEX.CURLY_BRACKET_RIGHT);
+
+                neighbourJoiningMatrixName = interfaceInstance
+                    .getLaTeXFormula(LATEX.FORMULA.D_STAR + LATEX.SUPERSCRIPT + LATEX.CURLY_BRACKET_LEFT + i + LATEX.CURLY_BRACKET_RIGHT);
+            } else {
+                distanceMatrixName = interfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_PURE);
+                neighbourJoiningMatrixName = interfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_STAR);
+            }
+
+            distanceMatrixNames.push(distanceMatrixName);
+            neighbourJoiningMatrixNames.push(neighbourJoiningMatrixName);
+        }
+
+        return [distanceMatrixNames, neighbourJoiningMatrixNames];
+    }
+
+    /**
      * Interface Operations that are shared between algorithms to initialize and start an algorithm.
      * @param Algorithm {Object} - The alignment algorithm which has to be initialized and started.
      * @param inputViewmodel {Object} - The InputViewmodel used to access inputs.
@@ -209,6 +245,10 @@ Author: Alexander Mattheis
         viewmodel.newickString = ko.observable(outputData.newickString);
 
         // distance matrices
+        var tableNames = createLaTeXDistanceTableNames(outputData);
+        viewmodel.matrixDLatex = ko.observable(tableNames[0]).extend({ deferred: true });
+        viewmodel.matrixDStarLatex = ko.observable(tableNames[1]).extend({ deferred: true });
+
         outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, true);
 
         viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
