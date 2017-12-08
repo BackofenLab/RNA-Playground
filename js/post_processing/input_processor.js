@@ -369,14 +369,9 @@ Author: Alexander Mattheis
                 visualViewmodel.markMinima(tracecellsTable[0]);
             }, REACTION_TIME_HIGHLIGHT);
 
-            var i = 0;
-
-            while (i < REDRAW_ATTEMPTS) {
-                setTimeout(function () {
-                    visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
-                }, REACTION_TIME_REDRAW_LONG_ARROWS);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
-                i++;
-            }
+            setTimeout(function () {
+                visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+            }, REACTION_TIME_REDRAW_LONG_ARROWS);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
         }
     }
 
@@ -398,14 +393,9 @@ Author: Alexander Mattheis
             }, REACTION_TIME_HIGHLIGHT);
 
             if (SVG_ARROW_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
-                var i = 0;
-
-                while (i < REDRAW_ATTEMPTS) {
-                    setTimeout(function () {
-                        visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
-                    }, REACTION_TIME_REDRAW_LONG_ARROWS);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
-                    i++;
-                }
+                setTimeout(function () {
+                    visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+                }, REACTION_TIME_REDRAW_LONG_ARROWS);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
             }
         }
     }
@@ -425,14 +415,13 @@ Author: Alexander Mattheis
         if (TABLE_INITIAL_HIGHLIGHT_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0 &&
             SVG_ARROW_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
 
-            var i = 0;
+            setTimeout(function () {
+                visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+            }, REACTION_TIME_FIRST_REDRAW);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
 
-            while (i < REDRAW_ATTEMPTS) {
-                setTimeout(function () {
-                    visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
-                }, REACTION_TIME_FIRST_REDRAW);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
-                i++;
-            }
+            setTimeout(function () {
+                visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+            }, REACTION_TIME_SECOND_REDRAW);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
         }
     }
 
