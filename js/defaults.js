@@ -31,9 +31,10 @@ var MAX_TRACE_FUNCTION_ARG_LEN = 10;  // tells the allowed length of an argument
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
 var REACTION_TIME_FIRST_REDRAW = 1000;  // it can happen that MathJax disturbs the rendering of the overlay during page loading
-var REACTION_TIME_SECOND_REDRAW = 2000;  // same as above, but for slow computers and tablets
+var REACTION_TIME_SECOND_REDRAW = 4000;  // same as above, but for slow computers and tablets
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have definitely been updated
 var REACTION_TIME_REDRAW_LONG_ARROWS = 500;  // it can happen that MathJax disturbs the rendering of the overlay and in this case the arrows have to be redrawn
+var REACTION_TIME_SECOND_REDRAW_LONG_ARROWS = 4000;  // same as above, but for slow computers and tablets
 
 var SMITH_WATERMAN_STOP = "0";
 
@@ -372,6 +373,10 @@ var MULTI_SYMBOLS = {
 var PATHS = {
     ALIGNMENT_INTERFACE: "js/interfaces/alignment_interface.js",
     INPUT_PROCESSOR: "js/post_processing/input_processor.js",
+    INTERFACE: "js/interfaces/interface.js",
+    LINEAR_ALIGNMENT_INTERFACE: "js/interfaces/linear_alignment_interface.js",
+    MULTI_SEQUENCE_INTERFACE: "js/interfaces/multi_sequence_interface.js",
+    SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js",
     VISUALIZER: "js/post_processing/visualizer.js",
 
     LIBS: {
@@ -619,8 +624,8 @@ var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS
  * because they work with multiple tables without any "between-table" dependencies.
  */
 var TABLE_INITIAL_HIGHLIGHT_ALGORITHMS =
-    [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.NEEDLEMAN_WUNSCH,
-        ALGORITHMS.SMITH_WATERMAN, ALGORITHMS.WATERMAN_SMITH_BEYER];
+    [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL,
+        ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.SMITH_WATERMAN, ALGORITHMS.WATERMAN_SMITH_BEYER];
 
 /**
  * Algorithms which displaying a phylogenetic tree.

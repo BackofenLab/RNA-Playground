@@ -24,11 +24,19 @@ Author: Alexander Mattheis
         interfaceInstance = this;
 
         // public class methods
+        this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
         this.startProcessing = startProcessing;
         this.roundValues = roundValues;
         this.getDistanceTables = getDistanceTables;
         this.getLaTeXFormula = getLaTeXFormula;
+    }
+
+    /**
+     * Handling imports.
+     */
+    function imports() {
+        $.getScript(PATHS.INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /**
