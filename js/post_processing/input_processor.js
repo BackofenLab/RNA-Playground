@@ -80,7 +80,12 @@ Author: Alexander Mattheis
         linkSelectables(viewmodels.visual, calculationVerticalTable, calculationTable, calculationHorizontalTable,
             mainOutput, selectableEntryClass);
 
-        doSingleInitialHighlighting(viewmodels.visual);
+        // highlighting
+        doMinimaAndTracebackHighlighting(viewmodels.visual);
+        doTracebackHighlighting(viewmodels.visual);
+
+        // initial redrawing
+        redrawInitialOverlay(viewmodels.visual, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
     }
 
     /**
@@ -287,7 +292,8 @@ Author: Alexander Mattheis
      */
     function postProcess(viewmodels) {
         linkIterationTables(viewmodels.visual);  // iterative tables are not existing from the beginning and so they have to be relinked
-        doSingleInitialHighlighting(viewmodels.visual);
+        doMinimaAndTracebackHighlighting(viewmodels.visual);
+        doTracebackHighlighting(viewmodels.visual);
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
     }
 
@@ -309,7 +315,7 @@ Author: Alexander Mattheis
             var iterationTablesArray = [calculationTable1, calculationTable2, calculationTable3, calculationTable4, calculationTable5];
             var selectableEntryClass = ".selectable_entry";
 
-            doInitialHighlighting(visualViewmodel, mainOutput, iterationTablesArray);
+            doMultiTableHighlighting(visualViewmodel, mainOutput, iterationTablesArray);
             linkIterationDownloadLinks(visualViewmodel);
 
             for (var i = 0; i < iterationTablesArray.length; i++) {
@@ -334,7 +340,7 @@ Author: Alexander Mattheis
      * @param iterationTablesArray {Array} - An array of tables.
      * @param mainOutput {Element} - The div containing only the calculation tables.
      */
-    function doInitialHighlighting(visualViewmodel, mainOutput, iterationTablesArray) {
+    function doMultiTableHighlighting(visualViewmodel, mainOutput, iterationTablesArray) {
         // the tables exist after just after the display has updated,
         // but the event is triggered before and so a delay is needed
         setTimeout(function () {
@@ -343,10 +349,10 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Some algorithms with a single table has some initial highlighting.
+     * Does minima and traceback highlighting on two tables.
      * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
      */
-    function doSingleInitialHighlighting(visualViewmodel) {
+    function doMinimaAndTracebackHighlighting(visualViewmodel) {
         if (visualViewmodel.algorithm.type === ALGORITHMS.HIRSCHBERG) {
             var mainOutput = $(".main_output");  // output containing the calculation tables
             var traceTable = mainOutput.find(".trace_table");
@@ -366,6 +372,52 @@ Author: Alexander Mattheis
             setTimeout(function () {
                 visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
             }, REACTION_TIME_REDRAW_LONG_ARROWS);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+        }
+    }
+
+    /**
+     * Does only traceback highlighting on two tables.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     */
+    function doTracebackHighlighting(visualViewmodel) {
+        if (TABLE_INITIAL_HIGHLIGHT_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
+            var mainOutput = $(".main_output");  // output containing the calculation tables
+            var calculationTable = mainOutput.find(".calculation");
+            var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
+            var calculationVerticalTable = mainOutput.find(".calculation_vertical");
+            var results = $(".results");
+
+            setTimeout(function () {
+                visualViewmodel.showTraceback(0, calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], undefined, mainOutput[0]);
+                visualViewmodel.highlight(0, results[0]);
+            }, REACTION_TIME_HIGHLIGHT);
+
+            if (SVG_ARROW_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
+                setTimeout(function () {
+                    visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+                }, REACTION_TIME_REDRAW_LONG_ARROWS);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+            }
+        }
+    }
+
+    /**
+     * Redraws the Overlay during loading once.
+     * The problem is that MathJax disturbs the positioning of the overlay during the page loading.
+     * Hint: window.onload or document.ready cannot be used,
+     * because the table is generated after these events have fired with Knockout.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param calculationTable {Element} - The default or main table.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
+     */
+    function redrawInitialOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput) {
+        if (TABLE_INITIAL_HIGHLIGHT_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0 &&
+            SVG_ARROW_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
+
+            setTimeout(function () {
+                visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+            }, REACTION_TIME_FIRST_REDRAW);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
         }
     }
 

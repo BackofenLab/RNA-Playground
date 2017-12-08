@@ -30,6 +30,7 @@ var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which 
 var MAX_TRACE_FUNCTION_ARG_LEN = 10;  // tells the allowed length of an argument to avoid a string which goes over the page border
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
+var REACTION_TIME_FIRST_REDRAW = 1000;  // it can happen that MathJax disturbs the rendering of the overlay during page loading
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have definitely been updated
 var REACTION_TIME_REDRAW_LONG_ARROWS = 500;  // it can happen that MathJax disturbs the rendering of the overlay and in this case the arrows have to be redrawn
 
@@ -607,7 +608,18 @@ var MULTI_TABLE_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL];
  * when the browser window is resized
  * or if a table slider is used.
  */
-var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL,  ALGORITHMS.HIRSCHBERG, ALGORITHMS.WATERMAN_SMITH_BEYER];
+var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.HIRSCHBERG, ALGORITHMS.WATERMAN_SMITH_BEYER];
+
+/**
+ * Algorithms for which an initial table highlighting should be activated.
+ * It is used to automatically activate initial highlighting
+ * of for example traceback paths.
+ * Hint: HIRSCHBERG and AEP are not in the list,
+ * because they work with multiple tables without any "between-table" dependencies.
+ */
+var TABLE_INITIAL_HIGHLIGHT_ALGORITHMS =
+    [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.NEEDLEMAN_WUNSCH,
+        ALGORITHMS.SMITH_WATERMAN, ALGORITHMS.WATERMAN_SMITH_BEYER];
 
 /**
  * Algorithms which displaying a phylogenetic tree.

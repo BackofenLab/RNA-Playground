@@ -603,23 +603,25 @@ Author: Alexander Mattheis
     function highlight(rowNumber, table) {
         var start = 0;  // the row number in which highlighting starts
 
-        // determining cells
-        var cell = table.rows[rowNumber + start].cells[0];
-        var lastCell = visualizerInstance.lastRowNumber >= 0
-            ? table.rows[visualizerInstance.lastRowNumber + start].cells[0] : undefined;
+        if (table.rows.length > 0) {
+            // determining cells
+            var cell = table.rows[rowNumber + start].cells[0];
+            var lastCell = visualizerInstance.lastRowNumber >= 0
+                ? table.rows[visualizerInstance.lastRowNumber + start].cells[0] : undefined;
 
-        // check if the row has to be selected or deselected
-        if (rowNumber === visualizerInstance.lastRowNumber
-            && lastCell.classList.contains("selected")) {  // case: same cell (clicked second time) -> deselect
-            lastCell.classList.remove("selected");
-        } else if (lastCell !== undefined) {  // case: different cell -> deselect last cell and select current cell
-            lastCell.classList.remove("selected");
-            cell.classList.add("selected");
-        } else {  // case: first time clicked in table -> select current cell
-            cell.classList.add("selected");
+            // check if the row has to be selected or deselected
+            if (rowNumber === visualizerInstance.lastRowNumber
+                && lastCell.classList.contains("selected")) {  // case: same cell (clicked second time) -> deselect
+                lastCell.classList.remove("selected");
+            } else if (lastCell !== undefined) {  // case: different cell -> deselect last cell and select current cell
+                lastCell.classList.remove("selected");
+                cell.classList.add("selected");
+            } else {  // case: first time clicked in table -> select current cell
+                cell.classList.add("selected");
+            }
+
+            visualizerInstance.lastRowNumber = rowNumber;
         }
-
-        visualizerInstance.lastRowNumber = rowNumber;
     }
 
     /**
