@@ -29,10 +29,11 @@ var MAX_NUMBER_ITERATIONS = 5;  // number of iterations in algorithm with conver
 var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 var MAX_TRACE_FUNCTION_ARG_LEN = 10;  // tells the allowed length of an argument to avoid a string which goes over the page border
 
+var REDRAW_ATTEMPTS = 4;  // The arrows of initial highlighting can mislead, because of MathJax
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
-var REACTION_TIME_FIRST_REDRAW = 1000;  // it can happen that MathJax disturbs the rendering of the overlay during page loading
+var REACTION_TIME_FIRST_REDRAW = 750;  // it can happen that MathJax disturbs the rendering of the overlay during page loading
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have definitely been updated
-var REACTION_TIME_REDRAW_LONG_ARROWS = 500;  // it can happen that MathJax disturbs the rendering of the overlay and in this case the arrows have to be redrawn
+var REACTION_TIME_REDRAW_LONG_ARROWS = 400;  // it can happen that MathJax disturbs the rendering of the overlay and in this case the arrows have to be redrawn
 
 var SMITH_WATERMAN_STOP = "0";
 
