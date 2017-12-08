@@ -572,7 +572,7 @@ Author: Alexander Mattheis
             var path = visualizerInstance.output.tracebackPaths[traceNumber];
 
             // check if you want maybe disable (unhighlight) last drawn path
-            if (visualizerInstance.lastPath !== undefined && visualizerInstance.lastPath.length > 0) {
+            if (visualizerInstance.lastPath.length > 0) {
                 var posI = visualizerInstance.lastPath[0].i + 1;
                 var posJ = visualizerInstance.lastPath[0].j + 1;
                 var tableCell = calculationTable.rows[posI].cells[posJ];

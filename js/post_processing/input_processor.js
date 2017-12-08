@@ -348,23 +348,24 @@ Author: Alexander Mattheis
      */
     function doSingleInitialHighlighting(visualViewmodel) {
         if (visualViewmodel.algorithm.type === ALGORITHMS.HIRSCHBERG) {
+            var mainOutput = $(".main_output");  // output containing the calculation tables
+            var traceTable = $("#trace_table");
+            var tracecellsTable = $("#tracecells_table");
+
+            var calculationTable = mainOutput.find(".calculation");
+            var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
+            var calculationVerticalTable = mainOutput.find(".calculation_vertical");
 
             // the table exist after just after the display has updated,
             // but the event is triggered before and so a delay is needed
             setTimeout(function () {
-                var mainOutput = $(".main_output");  // output containing the calculation tables
-                var traceTable = mainOutput.find(".trace_table");
-
-                visualViewmodel.showTraceback(0, undefined, traceTable[0], undefined,
-                    undefined, mainOutput[0]);
-            }, REACTION_TIME_HIGHLIGHT_HIRSCHBERG);
-
-            setTimeout(function () {
-                var mainOutput = $(".main_output");  // output containing the calculation tables
-                var tracecellsTable = mainOutput.find(".tracecells_table");
-
+                visualViewmodel.showTraceback(0, undefined, traceTable[0], undefined, undefined, mainOutput[0]);
                 visualViewmodel.markMinima(tracecellsTable[0]);
             }, REACTION_TIME_HIGHLIGHT);
+
+            setTimeout(function () {
+                visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+            }, REACTION_TIME_REDRAW_LONG_ARROWS);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
         }
     }
 
@@ -414,6 +415,7 @@ Author: Alexander Mattheis
                 "visualViewmodel": visualViewmodel
             };
 
+            browserWindow.one(functionArguments, reinitialize);
             browserWindow.on("resize", functionArguments, reinitialize);
             mainOutput.on("scroll", functionArguments, reinitialize);
         }

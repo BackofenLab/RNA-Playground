@@ -31,7 +31,7 @@ var MAX_TRACE_FUNCTION_ARG_LEN = 10;  // tells the allowed length of an argument
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have definitely been updated
-var REACTION_TIME_HIGHLIGHT_HIRSCHBERG = 500;  // to highlight initial tracebacks only after outputs have been updated
+var REACTION_TIME_REDRAW_LONG_ARROWS = 500;  // it can happen that MathJax disturbs the rendering of the overlay and in this case the arrows have to be redrawn
 
 var SMITH_WATERMAN_STOP = "0";
 

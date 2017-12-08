@@ -52,7 +52,7 @@ var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
 
         // design/controls logic
         /*
-        This two reinitialize are very important!
+        This two imports are very important!
         Without an import the classes are not reinitialized correctly for the next algorithm!
          */
         $.getScript(PATHS.INPUT_PROCESSOR);
