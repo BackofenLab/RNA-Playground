@@ -47,7 +47,7 @@ Author: Alexander Mattheis
      */
     function imports() {
         alignmentInterfaceInstance.imports();
-        $.getScript(PATHS.SUBADDITIVE_ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
+        //$.getScript(PATHS.SUBADDITIVE_ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /*---- INPUT ----*/

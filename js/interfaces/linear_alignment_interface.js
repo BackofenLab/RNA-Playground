@@ -45,7 +45,7 @@ Author: Alexander Mattheis
      */
     function imports() {
         alignmentInterfaceInstance.imports();
-        $.getScript(PATHS.LINEAR_ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
+        //$.getScript(PATHS.LINEAR_ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /*---- INPUT ----*/
