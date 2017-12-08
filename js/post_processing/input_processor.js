@@ -349,8 +349,8 @@ Author: Alexander Mattheis
     function doSingleInitialHighlighting(visualViewmodel) {
         if (visualViewmodel.algorithm.type === ALGORITHMS.HIRSCHBERG) {
             var mainOutput = $(".main_output");  // output containing the calculation tables
-            var traceTable = $("#trace_table");
-            var tracecellsTable = $("#tracecells_table");
+            var traceTable = mainOutput.find(".trace_table");
+            var tracecellsTable = mainOutput.find(".tracecells_table");
 
             var calculationTable = mainOutput.find(".calculation");
             var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
@@ -415,7 +415,6 @@ Author: Alexander Mattheis
                 "visualViewmodel": visualViewmodel
             };
 
-            browserWindow.one(functionArguments, reinitialize);
             browserWindow.on("resize", functionArguments, reinitialize);
             mainOutput.on("scroll", functionArguments, reinitialize);
         }
