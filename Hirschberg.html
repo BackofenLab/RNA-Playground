@@ -43,12 +43,13 @@ Author: Alexander Mattheis
 
             In the following, only the leftmost optimal traceback-cell per row is identified. Note,
             the introduced algorithm does not identify <em>all</em> traceback-cells.
-            Missing horizontal traceback-steps (within a row) have to be identified
+            Missing horizontal traceback-steps (within a row)
+            and vertical traceback-steps have to be identified
             in an additional postprocessing.
             In the following, we provide the series of the computed rows from the
             $D$ and $D'$ matrix (optionally along with the computation details) and
             the respective traceback subproblems, i.e. the according subsequences.
-            For each row $i$, the identified traceback-cell $j$ is highlighted.
+            For rows $i$, the identified traceback-cell $j$ is highlighted.
             Furthermore, we visualize all identified cells within a full matrix
             representation along with a final complete traceback path and alignment.
             <br />
@@ -200,7 +201,7 @@ Author: Alexander Mattheis
             <table class="calculation tracecells_table">
                 <thead>
                     <tr>
-                        <th><small><b>Traced<br />cells</b></small></th>
+                        <th><small><b>Trace<br />cells</b></small></th>
                         <th></th>
                         <!-- ko foreach: input.sequence2 -->
                             <th data-bind="drawChar: [$data, undefined]"></th>

@@ -240,6 +240,18 @@ th {
     width: 244px;
 }
 
+.gotoh_local_static_size {
+    height: 645px;
+    max-height: 645px;
+    min-height: 645px;
+}
+
+.gotoh_static_size {
+    height: 840px;
+    max-height: 840px;
+    min-height: 840px;
+}
+
 .gray {
     color: lightgray;
 }
@@ -260,6 +272,12 @@ th {
     height: 25px !important;
     padding-left: 8px;
     text-align: left;
+}
+
+.hirschberg_static_size {  /* a way to avoid problems with MathJax */
+    height: 925px;
+    max-height: 925px;
+    min-height: 925px;
 }
 
 .inner_column {
@@ -522,6 +540,12 @@ th {
     border-top: 1px solid #a0a0a0;
 }
 
+.waterman_smith_bayer_static_size {
+    height: 750px;
+    max-height: 750px;
+    min-height: 750px;
+}
+
 /*---- ID STYLING ----*/
 #algorithm_description .description {
     display: inline-block;
@@ -583,3 +607,16 @@ _:-moz-tree-row(hover), input[type="number"]:focus {
 _:-moz-tree-row(hover), input[type="text"]:focus {
     outline: black solid 1px;
 }
+
+_:-moz-tree-row(hover), .gotoh_static_size {
+    margin-bottom: 10px;
+}
+
+_:-moz-tree-row(hover), .gotoh_local_static_size {
+    margin-bottom: 10px;
+}
+
+_:-moz-tree-row(hover), .waterman_smith_bayer_static_size {
+    margin-bottom: 10px;
+}
+

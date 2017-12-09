@@ -125,24 +125,6 @@ header {
     width: 45px;
 }
 
-.gotoh_local_static_size {
-    height: 645px;
-    max-height: 645px;
-    min-height: 645px;
-}
-
-.gotoh_static_size {
-    height: 840px;
-    max-height: 840px;
-    min-height: 840px;
-}
-
-.hirschberg_static_size {  /* a way to avoid problems with MathJax */
-    height: 925px;
-    max-height: 925px;
-    min-height: 925px;
-}
-
 .logo {
     background-position: -50px -50px;
     height: 60px;
@@ -156,12 +138,6 @@ header {
 
 .logo a:hover {
     text-decoration: none;
-}
-
-.waterman_smith_bayer_static_size {
-    height: 750px;
-    max-height: 750px;
-    min-height: 750px;
 }
 
 /*---- ID STYLING ----*/
