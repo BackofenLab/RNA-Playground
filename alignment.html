@@ -14,6 +14,8 @@ Hint:   Some algorithms, structures and formats:
         have been also already been programmed before with Python
         in the project Algorithms for Bioninformatics by Daniel Maticzka and Omer Alkhnbashi.
 
+Hint 2: Look into the import-Hints below, if you upload it on a server.
+
         Alexander Mattheis 2017-10-02
 -->
 
@@ -76,6 +78,11 @@ Hint:   Some algorithms, structures and formats:
 
         <script src="js/bases/clustering.js"></script> <!-- stores basic clustering functions -->
 
+        <!-- HINT: The following algorithms are also loaded by the loader!
+        This can lead to problems i.e. if you load "Needleman-Wunsch",
+        then remove the import "js/needleman_wunsch.js" before you load the algorithm with the loader or Knockout may fail!
+        Probably deactivate the reinitialize()-function in the loader.
+        So, never load the same resource twice. Have also a look in the interface-imports! -->
         <script src="js/agglomerative_clustering.js"></script> <!-- stores agglomerative clustering algorithms -->
         <script src="js/gotoh.js"></script> <!-- stores Gotoh algorithm -->
         <script src="js/gotoh_local.js"></script> <!-- stores Gotoh (Local) algorithm -->
