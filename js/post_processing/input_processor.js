@@ -372,11 +372,11 @@ Author: Alexander Mattheis
 
             setTimeout(function () {
                 visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
-            }, REACTION_TIME_REDRAW_LONG_ARROWS);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+            }, REACTION_TIME_REDRAWING.LONG_ARROWS.FIRST);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
 
             setTimeout(function () {
                 visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
-            }, REACTION_TIME_SECOND_REDRAW_LONG_ARROWS);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+            }, REACTION_TIME_REDRAWING.LONG_ARROWS.SECOND);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
         }
     }
 
@@ -401,11 +401,11 @@ Author: Alexander Mattheis
             if (SVG_ARROW_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
                 setTimeout(function () {
                     visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
-                }, REACTION_TIME_REDRAW_LONG_ARROWS);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+                }, REACTION_TIME_REDRAWING.LONG_ARROWS.FIRST);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
 
                 setTimeout(function () {
                     visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
-                }, REACTION_TIME_SECOND_REDRAW_LONG_ARROWS);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+                }, REACTION_TIME_REDRAWING.LONG_ARROWS.SECOND);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
             }
         }
     }
@@ -427,11 +427,11 @@ Author: Alexander Mattheis
 
             setTimeout(function () {
                 visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
-            }, REACTION_TIME_FIRST_REDRAW);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+            }, REACTION_TIME_REDRAWING.FIRST);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
 
             setTimeout(function () {
                 visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
-            }, REACTION_TIME_SECOND_REDRAW);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+            }, REACTION_TIME_REDRAWING.SECOND);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
         }
     }
 

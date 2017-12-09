@@ -22,19 +22,15 @@ var EPSILON = 0.000000001;  // some very low number to test against
 
 var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant
 
-var HIRSCHBERG_LOWER_NODE = 2;
-var HIRSCHBERG_UPPER_NODE = 1;
+var HIRSCHBERG_LOWER_NODE = 2;  // name for a node of the computation tree
+var HIRSCHBERG_UPPER_NODE = 1;  // name for a node of the computation tree
 
 var MAX_NUMBER_ITERATIONS = 5;  // number of iterations in algorithm with convergence
 var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 var MAX_TRACE_FUNCTION_ARG_LEN = 10;  // tells the allowed length of an argument to avoid a string which goes over the page border
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
-var REACTION_TIME_FIRST_REDRAW = 1000;  // it can happen that MathJax disturbs the rendering of the overlay during page loading
-var REACTION_TIME_SECOND_REDRAW = 4000;  // same as above, but for slow computers and tablets
 var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have definitely been updated
-var REACTION_TIME_REDRAW_LONG_ARROWS = 500;  // it can happen that MathJax disturbs the rendering of the overlay and in this case the arrows have to be redrawn
-var REACTION_TIME_SECOND_REDRAW_LONG_ARROWS = 4000;  // same as above, but for slow computers and tablets
 
 var SMITH_WATERMAN_STOP = "0";
 
@@ -568,6 +564,18 @@ var NORMALIZED_ALIGNMENT_DEFAULTS = {
         GAP: -2,
         MATCH: 3,
         MISMATCH: -1
+    }
+};
+
+/**
+ * MathJax and other plugins can disrupt the rendering of the overlay and in these cases the overlay has to be redrawn.
+ */
+var REACTION_TIME_REDRAWING = {
+    FIRST: 1000,
+    SECOND: 4000,  // same as above, but for slow computers and tablets
+    LONG_ARROWS: {
+        FIRST: 500,
+        SECOND: 4000  // same as above, but for slow computers and tablets
     }
 };
 
