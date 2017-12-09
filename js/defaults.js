@@ -45,6 +45,7 @@ var ALGORITHMS = {  // contains a list of algorithms with an own javascript-file
     GOTOH: "gotoh",
     GOTOH_LOCAL: "gotoh_local",
     HIRSCHBERG: "hirschberg",
+    ITERATIVE_REFINMENT: "iterative_refinement",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
     NEIGHBOUR_JOINING: "neighbour_joining",
     NONE: "none",  // this is not an algorithm :)
