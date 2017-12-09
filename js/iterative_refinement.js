@@ -88,7 +88,7 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
-        outputData.score = multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
+        //outputData.score = multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
         return [inputData, outputData];
     }
 

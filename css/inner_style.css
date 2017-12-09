@@ -241,15 +241,15 @@ th {
 }
 
 .gotoh_local_static_size {
-    height: 645px;
-    max-height: 645px;
-    min-height: 645px;
+    height: 665px;
+    max-height: 665px;
+    min-height: 665px;
 }
 
 .gotoh_static_size {
-    height: 840px;
-    max-height: 840px;
-    min-height: 840px;
+    height: 860px;
+    max-height: 860px;
+    min-height: 860px;
 }
 
 .gray {
@@ -541,9 +541,9 @@ th {
 }
 
 .waterman_smith_bayer_static_size {
-    height: 750px;
-    max-height: 750px;
-    min-height: 750px;
+    height: 770px;
+    max-height: 770px;
+    min-height: 770px;
 }
 
 /*---- ID STYLING ----*/
@@ -609,14 +609,14 @@ _:-moz-tree-row(hover), input[type="text"]:focus {
 }
 
 _:-moz-tree-row(hover), .gotoh_static_size {
-    margin-bottom: 10px;
+    margin-bottom: 40px;
 }
 
 _:-moz-tree-row(hover), .gotoh_local_static_size {
-    margin-bottom: 10px;
+    margin-bottom: 40px;
 }
 
 _:-moz-tree-row(hover), .waterman_smith_bayer_static_size {
-    margin-bottom: 10px;
+    margin-bottom: 40px;
 }
 
