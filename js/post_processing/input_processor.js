@@ -358,16 +358,17 @@ Author: Alexander Mattheis
             var traceTable = mainOutput.find(".trace_table");
             var tracecellsTable = mainOutput.find(".tracecells_table");
 
-            var calculationTable = mainOutput.find(".calculation");
-            var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
-            var calculationVerticalTable = mainOutput.find(".calculation_vertical");
-
             // the table exist after just after the display has updated,
             // but the event is triggered before and so a delay is needed
             setTimeout(function () {
                 visualViewmodel.showTraceback(0, undefined, traceTable[0], undefined, undefined, mainOutput[0]);
                 visualViewmodel.markMinima(tracecellsTable[0]);
             }, REACTION_TIME_HIGHLIGHT);
+
+            // fallback if something goes wrong and MathJax disrupts your SVG overlay
+            var calculationTable = mainOutput.find(".calculation");
+            var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
+            var calculationVerticalTable = mainOutput.find(".calculation_vertical");
 
             setTimeout(function () {
                 visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
@@ -396,6 +397,7 @@ Author: Alexander Mattheis
                 visualViewmodel.highlight(0, results[0]);
             }, REACTION_TIME_HIGHLIGHT);
 
+            // fallback if something goes wrong and MathJax disrupts your SVG overlay
             if (SVG_ARROW_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
                 setTimeout(function () {
                     visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
