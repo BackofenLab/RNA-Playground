@@ -130,6 +130,11 @@ var INPUT = {
     MIN: -10
 };
 
+var ITERATIVE_REFINEMENT_STRATEGIES = {
+    MIN_DISTANCE_PAIR: "Minimum Distance-Pair",
+    ONE_VS_ALL: "One-vs-All"
+};
+
 /**
  * Stores key codes from keyboard.
  */
@@ -371,9 +376,9 @@ var PATHS = {
     ALIGNMENT_INTERFACE: "js/interfaces/alignment_interface.js",
     INPUT_PROCESSOR: "js/post_processing/input_processor.js",
     INTERFACE: "js/interfaces/interface.js",
-    LINEAR_ALIGNMENT_INTERFACE: "js/interfaces/linear_alignment_interface.js",
-    MULTI_SEQUENCE_INTERFACE: "js/interfaces/multi_sequence_interface.js",
-    SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js",
+    LINEAR_ALIGNMENT_INTERFACE: "js/interfaces/linear_alignment_interface.js",  /* only if needed, else can be commented out */
+    MULTI_SEQUENCE_INTERFACE: "js/interfaces/multi_sequence_interface.js",  /* only if needed, else can be commented out */
+    SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js",  /* only if needed, else can be commented out */
     VISUALIZER: "js/post_processing/visualizer.js",
 
     LIBS: {
@@ -520,6 +525,7 @@ var HIERARCHICAL_CLUSTERING_DEFAULTS = {
 };
 
 var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
+    APPROACHES: [ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR, ITERATIVE_REFINEMENT_STRATEGIES.ONE_VS_ALL],
     CALCULATION: "similarity",
     GLOBAL_ALIGNMENTS_PER_SEQUENCE: 1,
     LOCAL_ALIGNMENTS_PER_SEQUENCE: 2,
@@ -535,7 +541,9 @@ var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
         "GARFIELD-THE-VERY-FAST-CAT",
         "THE-FAT-CAT"],  /* some bugfix for Knockout problem */
 
+    STANDARD_APPROACH: [ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR],
     USE_LOCAL_LIBRARY: false,
+
 
     FUNCTION: {
         BASE_COSTS: -3,

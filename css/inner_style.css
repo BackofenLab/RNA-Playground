@@ -532,6 +532,10 @@ th {
     width: 220px;
 }
 
+.smaller {
+    width: 224px !important;
+}
+
 .thick_line {
     border-top: 2px solid #a0a0a0;
 }

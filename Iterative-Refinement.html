@@ -31,8 +31,7 @@ Author: Alexander Mattheis
       </ol>
 
       In the following, we provide the series of accepted (score improving)
-      iteratively computed intermediate realignments
-      with all calculated pairwise-alignments and their scores.
+      iteratively computed intermediate realignments together with the guide tree used for realignment.
       The iterative refinement starts from an alignment computed with the
       <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
       algorithm.
@@ -45,6 +44,15 @@ Author: Alexander Mattheis
 
 <h1>Input:</h1>
 <div id="algorithm_input">
+    <div class="row">
+        <div class="colW100"><label>Approach:</label></div>
+
+        <div class="colW400">
+            <select class="selector smaller" data-bind="options: input.availableApproaches, selectedOptions: input.selectedApproach"
+                    id="approach_selector"></select>
+        </div>
+    </div>
+    <br />
     <!-- ko foreach: $root.input.sequences() -->
         <div class="row">
             <div class="colW100">
@@ -111,4 +119,120 @@ Author: Alexander Mattheis
 			</div>
 		</div>
     </div>
+</div>
+
+<h1>Output:</h1>
+<div id="algorithm_output">
+    <div class="final">
+        <table class="final_result_header">
+            <thead>
+                <tr>
+                    <th>
+                        Final result
+                    </th>
+                </tr>
+            </thead>
+        </table>
+
+        <div class="final_result_with_scrollbar">
+            <table class="final_result">
+                <tbody>
+                    <tr>
+                        <td class="entry entry_start">
+                            <!-- ko foreach: $root.output.progressiveAlignment() -->
+                                <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br />
+                            <!-- /ko -->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <table class="final_result_footer">
+            <tr>
+                <th>
+                    <small>
+                        Affine SoP score: <span data-bind="text: $root.output.score()"></span>
+                    </small>
+                </th>
+            </tr>
+        </table>
+    </div>
+
+    <h2>Realignment steps</h2>
+    <div class="merge_steps">
+        <div class="result_with_scrollbar">
+            <table class="result_categories top_border">
+                <thead>
+                    <tr>
+                        <th>
+                            <small><b>Removed Sequence</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Remaining Alignment</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Guide Alignment</b></small>
+                        </th>
+
+                        <th>
+                             <small><b>Accepted Realignment</b></small>
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- ko foreach: $root.output.guideAlignments() -->
+                        <tr>
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br />
+                                <!-- ko foreach: $root.output.firstGroups()[$index()] -->
+                                    <code data-bind="text: $data"></code> <br />
+                                <!-- /ko -->
+                            </td>
+
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br />
+                                <!-- ko foreach: $root.output.secondGroups()[$index()] -->
+                                    <code data-bind="text: $data"></code> <br />
+                                <!-- /ko -->
+                            </td>
+
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.guideAlignmentsNames()[$index()]"></code>: <br />
+                                <code data-bind="text: $root.output.guideAlignments()[$index()][0]"></code> <br />
+                                <code data-bind="text: $root.output.guideAlignments()[$index()][1]"></code> <br />
+                                <code data-bind="text: $root.output.guideAlignments()[$index()][2]"></code>
+                            </td>
+
+                            <td class="entry entry_start">
+                                <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br />
+                                <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
+                                    <code data-bind="text: $data"></code> <br />
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <h2>Phylogenetic Tree</h2>
+    <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+        <div id="phylogenetic_tree"></div>
+    </div>
+
+    <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
+        <div class="group_hint">
+            <b>Visualization done with</b> <br />
+            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br />
+            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br />
+            <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+            </a>
+        </div>
+    <!-- /ko -->
 </div>

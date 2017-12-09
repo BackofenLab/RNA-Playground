@@ -67,6 +67,7 @@ Author: Alexander Mattheis
     function InputViewmodel(algorithmName) {
         var viewmodel = this;
         var isTcoffee = algorithmName === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA;
+        var isIterativeRefinement = algorithmName === ALGORITHMS.ITERATIVE_REFINMENT;
 
         this.sequences = ko.observableArray(MULTI_SEQUENCE_DEFAULTS.SEQUENCES);
 
@@ -108,6 +109,9 @@ Author: Alexander Mattheis
                     return getSubformula(viewmodel, true);
                 }
             );
+        } else if (isIterativeRefinement) {
+            this.availableApproaches = ko.observableArray(MULTI_SEQUENCE_DEFAULTS.APPROACHES);
+            this.selectedApproach = ko.observableArray(MULTI_SEQUENCE_DEFAULTS.STANDARD_APPROACH);
         }
 
         this.clusterNames = ko.computed(

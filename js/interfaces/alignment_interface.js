@@ -503,10 +503,6 @@ Author: Alexander Mattheis
      * @return {Object} - The submatrices data.
      */
     function getTwoRowsSubmatricesData(outputData) {
-        var submatricesOfEachRound = [];
-        var substringsOfEachRound = [];
-        var subpositionsOfEachRound = [];
-
         var forwardSubmatricesOfEachRound = [];
         var forwardSubstringsOfEachRound = [];
         var forwardSubpositionsOfEachRound = [];
