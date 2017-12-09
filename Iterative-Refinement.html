@@ -7,52 +7,35 @@ Author: Alexander Mattheis
 
 <div id="algorithm_description">
   <div class="description">
-      <a href="https://dl.acm.org/citation.cfm?doid=360825.360861">Daniel S. Hirschberg</a>
-      introduced 1975 (submitted 1974) an approach to compute the longest common subsequence of two strings.
-      This approach can be adapted to compute the global alignment of two sequences
-      in quadratic time $O(nm)$ and only linear space, instead of quadratic space like in the original
-      <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch">Needleman-Wunsch (1970)</a> algorithm.
-      While it offers the optimal alignment <em>score</em> without changing the runtime,
-      additional efforts are needed to traceback an according alignment, since
-      the needed data was not stored.
-      The idea is that the tracebacks you get from a prefix- and a suffix-alignment are congruent
-      i.e. the traceback-cells are the same.
-      Because of this, rows $i$ of the prefix dynamic programming matrix  $D$
-      and the suffix matrix $D'$ (when using same coordinate system, see recursions)
-      can be added to identify the row's cell that is passed by an optimal traceback.
+      Different iterative refinement strategies were proposed to improve the Sum-of-Pairs score
+      of a progressive alignment
+      (e.g. an alignment created with
+      <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>)
+      like Round-robin, in which the sequences are realigned in the order,
+      they have been added to the multiple sequence alignment (using the guide-tree).
+      If the score improves through the realignment,
+      then the multi-sequence alignment is kept.
+      And this approach can also be divided into different strategies:
 
-      <br />
-      <br />
+      <ol>
+          <li>
+              <em>Minimum Distance-Pair:</em> From each aligned sequence remove gaps and realign immediately against
+              the nearest sequence in the distance table you get from
+              <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a> algorithm.
+          </li>
+          <li>
+              <em>One-vs-All:</em> From each aligned sequence remove gaps and realign immediately against all
+              using the progressive alignment procedure of
+              <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle</a>.
+          </li>
+      </ol>
 
-      In detail, to enable traceback calculation in quadratic time a divide-and-conquer
-      strategy is applied. Here, we want to identify where the traceback "passes
-      through" the center row of the matrix.
-      To this end, first the middle row $i = \lfloor n/2 \rfloor$, where $n = |a|$
-      has to be computed for both matrices $D$ and $D'$. Given that $D_{i,j}$
-      holds the best prefix score up to and including $a_i,b_j$ and $D'_{i,j}$
-      provides the same for the suffixes starting in $a_{i+1},b_{j+1}$, the
-      optimal overall alignment score can be found as the summation of some column $j$,
-      i.e. $\exists_{j} : D_{n,m} = D_{i,j}+D'_{i,j} = D'_{0,0}$.
-      This position $j$ provides a decomposition of the traceback problem into
-      the respective prefix and suffix strings for which the procedure is iterated
-      until (a) one of the substrings is empty or (b) only $a_n$ or $b_j$ is left, respectively.
-
-      <br />
-      <br />
-
-      In the following, only the leftmost optimal traceback-cell per row is identified. Note,
-      the introduced algorithm does not identify <em>all</em> traceback-cells.
-      Missing horizontal traceback-steps (within a row)
-      and vertical traceback-steps have to be identified
-      in an additional postprocessing.
-      In the following, we provide the series of the computed rows from the
-      $D$ and $D'$ matrix (optionally along with the computation details) and
-      the respective traceback subproblems, i.e. the according subsequences.
-      For rows $i$, the identified traceback-cell $j$ is highlighted.
-      Furthermore, we visualize all identified cells within a full matrix
-      representation along with a final complete traceback path and alignment.
-      <br />
-      <br />
+      In the following, we provide the series of accepted (score improving)
+      iteratively computed intermediate realignments
+      with all calculated pairwise-alignments and their scores.
+      The iterative refinement starts from an alignment computed with the
+      <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
+      algorithm.
   </div>
 
   <div class="picture">
