@@ -123,40 +123,78 @@ Author: Alexander Mattheis
 
 <h1>Output:</h1>
 <div id="algorithm_output">
-    <div class="final">
-        <table class="final_result_header">
-            <thead>
+    <div class="comparision">
+        <div class="alignment">
+            <table class="final_result_header">
+                <thead>
+                    <tr>
+                        <th>
+                            Feng-Doolittle Alignment
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="final_result_with_scrollbar">
+                <table class="final_result">
+                    <tbody>
+                        <tr>
+                            <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.progressiveAlignment() -->
+                                    <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br />
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="final_result_footer">
                 <tr>
                     <th>
-                        Final result
+                        <small>
+                            Affine SoP score: <span data-bind="text: $root.output.score()"></span>
+                        </small>
                     </th>
                 </tr>
-            </thead>
-        </table>
-
-        <div class="final_result_with_scrollbar">
-            <table class="final_result">
-                <tbody>
-                    <tr>
-                        <td class="entry entry_start">
-                            <!-- ko foreach: $root.output.progressiveAlignment() -->
-                                <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br />
-                            <!-- /ko -->
-                        </td>
-                    </tr>
-                </tbody>
             </table>
         </div>
 
-        <table class="final_result_footer">
-            <tr>
-                <th>
-                    <small>
-                        Affine SoP score: <span data-bind="text: $root.output.score()"></span>
-                    </small>
-                </th>
-            </tr>
-        </table>
+        <div class="refined_alignment">
+            <table class="final_result_header">
+                <thead>
+                    <tr>
+                        <th>
+                            Refined Alignment
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="final_result_with_scrollbar">
+                <table class="final_result">
+                    <tbody>
+                        <tr>
+                            <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.progressiveAlignment() -->
+                                    <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br />
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="final_result_footer">
+                <tr>
+                    <th>
+                        <small>
+                            Affine SoP score: <span data-bind="text: $root.output.score()"></span>
+                        </small>
+                    </th>
+                </tr>
+            </table>
+        </div>
     </div>
 
     <h2>Realignment steps</h2>
@@ -178,7 +216,7 @@ Author: Alexander Mattheis
                         </th>
 
                         <th>
-                             <small><b>Accepted Realignment</b></small>
+                            <small><b>Accepted Realignment</b></small>
                         </th>
                     </tr>
                 </thead>
@@ -211,6 +249,7 @@ Author: Alexander Mattheis
                                 <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br />
                                 <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
                                     <code data-bind="text: $data"></code> <br />
+                                    <code>Score: </code>
                                 <!-- /ko -->
                             </td>
                         </tr>

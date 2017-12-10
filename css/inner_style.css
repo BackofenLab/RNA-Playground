@@ -70,6 +70,11 @@ th {
     width: 22px;
 }
 
+.alignment {
+    float: left;
+    margin-bottom: 10px;
+}
+
 .ancillary_output {
     clear: left;
     float: left;
@@ -361,6 +366,12 @@ th {
     padding-left: 10px;
     text-align: left;
     width: 254px;
+}
+
+.refined_alignment {
+    float: left;
+    margin-bottom: 10px;
+    margin-left: 30px;
 }
 
 .result {
