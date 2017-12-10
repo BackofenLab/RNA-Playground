@@ -95,7 +95,9 @@ Author: Alexander Mattheis
         } else if (MULTI_SEQUENCE_ALGORITHMS.indexOf(algorithmName) >= 0) {  // if multi-sequence alignment algorithm
             if (algorithmName === ALGORITHMS.FENG_DOOLITTLE)
                 createFengDoolittleOutputViewmodel(algorithmName, viewmodel, outputData);
-            else
+            else if (algorithmName === ALGORITHMS.ITERATIVE_REFINMENT)
+                createIterativeRefinementOutputViewmodel(algorithmName, viewmodel, outputData);
+            else if (algorithmName === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)
                 createTcoffeeOutputViewmodel(algorithmName, viewmodel, outputData);
         }
     }
@@ -388,7 +390,7 @@ Author: Alexander Mattheis
                 string += LATEX.TEXT_START;
                 string += firstSequence[i];
                 string += LATEX.CLOSE;
-                if (i==0 || i+1 == firstSequence.length) {
+                if (i == 0 || i + 1 == firstSequence.length) {
                 	string += LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + firstSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
                 }
             }
@@ -1124,5 +1126,21 @@ Author: Alexander Mattheis
             for (var j = 0; j < outputData.joinedGroups[i].length; j++)
                 outputData.joinedGroups[i][j] = outputData.joinedGroups[i][j].replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
         }
+    }
+
+    /**
+     * Creates the OutputViewmodel for Feng-Doolittle.
+     * @param algorithmName {string} - The name of the algorithm which is executed.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     */
+    function createIterativeRefinementOutputViewmodel(algorithmName, viewmodel, outputData) {
+        // realignment steps
+        // reorderGroupSequences(outputData);
+
+        // tree and final output
+        viewmodel.newickString = ko.observable(outputData.newickString);
+        viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
+        viewmodel.score = ko.observable(outputData.score);
     }
 }());
