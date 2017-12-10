@@ -275,7 +275,9 @@ Author: Alexander Mattheis
             inputViewmodel.match(Number($("#match").val()));
             inputViewmodel.mismatch(Number($("#mismatch").val()));
 
-            if (algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {
+            if (algorithm.type === ALGORITHMS.ITERATIVE_REFINMENT) {
+                inputViewmodel.selectedApproach([$("#approach_selector option:selected").val()]);
+            } else if (algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {
                 inputViewmodel.baseCostsLocal(Number($("#base_costs_local").val()));
                 inputViewmodel.enlargementLocal(Number($("#enlargement_local").val()));
                 inputViewmodel.matchLocal(Number($("#match_local").val()));

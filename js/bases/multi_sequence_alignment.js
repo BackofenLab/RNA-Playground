@@ -7,8 +7,8 @@ Author: Alexander Mattheis
 
 "use strict";
 
-(function () {  // namespace
-    namespace("bases.multiSequenceAlignment", MultiSequenceAlignment);
+(function () {  // namespace ("getIndividualSequenceNames" is set static because creation of a full instance to get just the sequence names is too inefficient)
+    namespace("bases.multiSequenceAlignment", MultiSequenceAlignment, getIndividualSequenceNames);
 
     // instances
     var multiSequenceAlignmentInstance;
@@ -44,6 +44,7 @@ Author: Alexander Mattheis
         this.getPhylogeneticTree = getPhylogeneticTree;
         this.createProgressiveAlignment = createProgressiveAlignment;
         this.getAffineSumOfPairsScore = getAffineSumOfPairsScore;
+        this.getIndividualSequenceNames = getIndividualSequenceNames;
         this.getOutput = getOutput;
 
         this.setIO = setIO;
@@ -947,6 +948,29 @@ Author: Alexander Mattheis
         }
 
         return gapSize;
+    }
+
+    /**
+     * Returns the names of the individual group members.
+     * @param groupName {string} - The group name which encoding the group members.
+     * @return {Array} - The array with the group members.
+     */
+    function getIndividualSequenceNames(groupName) {
+        var names = [];
+
+        for (var i = 0; i < groupName.length; i++) {
+            var character = groupName[i];
+            var number = SYMBOLS.EMPTY;
+
+            while (i + 1 < groupName.length && groupName[i + 1].match(CHARACTER.NUMBER)) {
+                number += groupName[i + 1];
+                i++;
+            }
+
+            names.push(number.length > 0 ? character + SYMBOLS.COMMA + number : character);
+        }
+
+        return names;
     }
 
     /**

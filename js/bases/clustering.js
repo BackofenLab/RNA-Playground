@@ -305,7 +305,7 @@ Author: Alexander Mattheis
         if (storeMatrix) {
             outputData.distanceMatrices.push(jQuery.extend(true, {}, outputData.distanceMatrix));  // only for visualization the matrix of each round is stored
             outputData.keys.push(remainingKeys);
-            debugger;
+
             if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING)
                 outputData.neighbourJoiningMatrices.push(jQuery.extend(true, {}, distanceMatrix));
         }

@@ -92,19 +92,20 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
+        debugger;
         initializeStructs();
 
         var ioData = computeFengDoolittle();
-        var startMsa = ioData.progressiveAlignment.slice();
-        var names = getNamesInOrderAddedToMSA(ioData.treeBranches[ioData.treeBranches.length - 1]);
+        var startMsa = ioData[1].progressiveAlignment.slice();
+        var names = getNamesInOrderAddedToMSA(ioData[1].treeBranches[ioData[1].treeBranches.length - 1]);
 
         for (var i = 0; i < names.length; i++) {
             // [0] create copy of the alignment before a realignment
-            var msa = startMsa;
+            var msa = startMsa.slice();  // shallow copy, because the elements itself are not modified
 
             // [1] remove sequence from MSA
             var mrData  // MSA and removed sequence
-                = getMsaAndRemovedSequence(names, i, msa, ioData.joinedGroupNames[ioData.joinedGroupNames.length - 1]);
+                = getMsaAndRemovedSequence(names, i, msa, ioData[1].joinedGroupNames[ioData[1].joinedGroupNames.length - 1]);
 
             // [2] realign the removed sequence
             var msaRefined = getRealignment(mrData[0], mrData[1]);  // ([MSA], [removed sequence])
@@ -184,8 +185,9 @@ $(document).ready(function () {
     function getMsaAndRemovedSequence(names, namePos, progressiveAlignment, lastGroupName) {
         var removedSequenceName = names[namePos];
 
-        var removedSequence = getRemovedSequence(progressiveAlignment, lastGroupName, removedSequenceName);
-        var remainingAlignment = removeSequenceFromMSA(progressiveAlignment, lastGroupName, removedSequenceName);
+        var sequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(lastGroupName);
+        var removedSequence = getRemovedSequence(progressiveAlignment, sequenceNames, removedSequenceName);
+        var remainingAlignment = removeSequenceFromMSA(progressiveAlignment, sequenceNames, removedSequenceName);
 
         outputData.removedSequences.push(removedSequence);
         outputData.removedSequencesNames.push(removedSequenceName);
@@ -198,26 +200,32 @@ $(document).ready(function () {
 
     /**
      * Returns the sequence removed from given multi-sequence-alignment.
-     * @param multiSequenceAlignment - The multi-sequence-alignment from which a sequence should be removed.
-     * @param msaSequenceNames - The names of sequences in the multiSequenceAlignment.
-     * @param sequenceName - The name of sequence which should be removed from the multi-sequence-alignment.
+     * @param multiSequenceAlignment {Array} - The multi-sequence-alignment from which a sequence should be removed.
+     * @param msaSequenceNames {Array} - The names of sequences in the multiSequenceAlignment.
+     * @param sequenceName {string} - The name of the sequence which should be removed from the multi-sequence-alignment.
      * @return {string} - Returns the removed sequence.
      */
     function getRemovedSequence(multiSequenceAlignment, msaSequenceNames, sequenceName) {
-        return undefined;
+        var indexInSequenceNames = msaSequenceNames.indexOf(sequenceName);
+        return multiSequenceAlignment[indexInSequenceNames];
     }
 
     /**
      * Removes a sequence from the MSA by sequence-name.
-     * @param multiSequenceAlignment - The multi-sequence-alignment from which a sequence should be removed.
-     * @param msaSequenceNames - The names of sequences in the multiSequenceAlignment.
-     * @param sequenceName - The name of sequence which should be removed from the multi-sequence-alignment.
+     * @param multiSequenceAlignment {Array} - The multi-sequence-alignment from which a sequence should be removed.
+     * @param msaSequenceNames {Array} - The names of sequences in the multiSequenceAlignment.
+     * @param sequenceName {string} - The name of the sequence which should be removed from the multi-sequence-alignment.
      * @return [multiSequenceAlignment, msaSequencesNames] - The multi-sequence-alignment in which the sequence with the given name is removed.
      */
     function removeSequenceFromMSA(multiSequenceAlignment, msaSequenceNames, sequenceName) {
-        // retrieve separate names from msaSequenceNames
+        var indexInSequenceNames = msaSequenceNames.indexOf(sequenceName);
+        var removedSequence = multiSequenceAlignment[indexInSequenceNames];
+
         // remove sequenceName from msaSequenceNames and the associated sequence from the multiSequenceAlignment
-        return undefined;
+        msaSequenceNames.splice(indexInSequenceNames, 1);
+        multiSequenceAlignment.splice(indexInSequenceNames, 1);
+
+        return [multiSequenceAlignment, msaSequenceNames];
     }
 
     /**

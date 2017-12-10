@@ -756,7 +756,7 @@ Author: Alexander Mattheis
             var finalGroupName = outputData.joinedGroupNames[outputData.joinedGroupNames.length-1];
             var finalGroup = outputData.joinedGroups[outputData.joinedGroups.length-1];
 
-            var groupMemberNames = getIndividualElementNames(finalGroupName);
+            var groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName);
             var groupMemberRankings = getRankings(groupMemberNames, finalGroup);
 
             var reorderedGroups = [];
@@ -774,9 +774,9 @@ Author: Alexander Mattheis
                 var group1 = outputData.firstGroups[i];
                 var group2 = outputData.secondGroups[i];
 
-                var memberNames = getIndividualElementNames(outputData.joinedGroupNames[i]);
-                var member1Names = getIndividualElementNames(outputData.firstGroupsNames[i]);
-                var member2Names = getIndividualElementNames(outputData.secondGroupsNames[i]);
+                var memberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.joinedGroupNames[i]);
+                var member1Names = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.firstGroupsNames[i]);
+                var member2Names = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.secondGroupsNames[i]);
 
                 var sortedGroupAndNames = getSortedGroup(group, memberNames, groupMemberRankings);
                 var sorted1GroupAndNames = getSortedGroup(group1, member1Names, groupMemberRankings);
@@ -803,29 +803,6 @@ Author: Alexander Mattheis
 
             outputData.progressiveAlignment = reorderedGroups[reorderedGroups.length - 1];
         }
-    }
-
-    /**
-     * Returns the individual names of the group members,
-     * where a name character separated by a comma from the name number.
-     * @param groupName - The group name from which the names extracted.
-     * @return {Array} - The array with the individual names.
-     */
-    function getIndividualElementNames(groupName) {
-        var names = [];
-
-        for (var i = 0; i < groupName.length; i++) {
-            var character = groupName[i];
-            var number = SYMBOLS.EMPTY;
-
-            while (i + 1 < groupName.length && groupName[i + 1].match(CHARACTER.NUMBER)) {
-                number += groupName[i + 1];
-                i++;
-            }
-            names.push(number.length > 0 ? character + SYMBOLS.COMMA + number : character);
-        }
-
-        return names;
     }
 
     /**
