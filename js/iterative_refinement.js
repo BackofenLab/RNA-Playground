@@ -56,8 +56,8 @@ $(document).ready(function () {
 
         // instances (do not change order)
         multiSequenceAlignmentInstance = new bases.multiSequenceAlignment.MultiSequenceAlignment(this);
-        fengDoolittleInstance = new fengDoolittle.FengDoolittle();
         gotohInstance = new gotoh.Gotoh();
+        fengDoolittleInstance = new fengDoolittle.FengDoolittle();
 
         // public class methods
         this.getInput = getInput;
@@ -94,6 +94,7 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
+        debugger;
         initializeStructs();
 
         var ioData = computeFengDoolittle();
@@ -294,14 +295,14 @@ $(document).ready(function () {
 
         for (var i = 0; i < names.length; i++) {
             if (names[i] !== name) {  // no diagonals
-                var distance = distanceMatrix[name, names[i]];
+                var distance = distanceMatrix[[name, names[i]]];
 
                 if (distance === undefined)
-                    distance = distanceMatrix[names[i], name];
+                    distance = distanceMatrix[[names[i], name]];
 
                 if (distance < minDistance) {
                     minDistance = distance;
-                    minElement = elements[i];
+                    minElement = names[i];
                 }
             }
         }
@@ -319,7 +320,7 @@ $(document).ready(function () {
         var names = [];
 
         for (var i = 0; i < keys.length; i++) {
-            var key = keys[i];
+            var key = keys[i].split(SYMBOLS.COMMA);
 
             if (names.indexOf(key[0]) === -1)
                 names.push(key[0]);
