@@ -21,7 +21,6 @@ Author: Alexander Mattheis
 
     /**
      * Computes an agglomerative clustering with a hierarchical approach.
-     * It is executed by the class for agglomerative clustering.
      * Hint: This algorithm earns an own class, because it is very different
      * to the common agglomerative clustering algorithms like Single Linkage (Nearest Neighbour),
      * UPGMA (Average Linkage), WPGMA (Simple Average), Complete Linkage (Furthest Neighbour)

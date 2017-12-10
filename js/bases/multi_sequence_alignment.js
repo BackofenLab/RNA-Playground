@@ -43,6 +43,8 @@ Author: Alexander Mattheis
         this.createDistanceMatrix = createDistanceMatrix;
         this.getPhylogeneticTree = getPhylogeneticTree;
         this.createProgressiveAlignment = createProgressiveAlignment;
+        this.getBestAlignment = getBestAlignment;
+        this.createGroup = createGroup;
         this.getAffineSumOfPairsScore = getAffineSumOfPairsScore;
         this.getIndividualSequenceNames = getIndividualSequenceNames;
         this.getOutput = getOutput;

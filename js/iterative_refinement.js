@@ -26,6 +26,7 @@ $(document).ready(function () {
 
     var iterativeRefinementInstance;
     var fengDoolittleInstance;
+    var gotohInstance;
 
     // shared variables
     var inputData = {};  // stores the input of the algorithm
@@ -56,6 +57,7 @@ $(document).ready(function () {
         // instances (do not change order)
         multiSequenceAlignmentInstance = new bases.multiSequenceAlignment.MultiSequenceAlignment(this);
         fengDoolittleInstance = new fengDoolittle.FengDoolittle();
+        gotohInstance = new gotoh.Gotoh();
 
         // public class methods
         this.getInput = getInput;
@@ -97,18 +99,24 @@ $(document).ready(function () {
 
         var ioData = computeFengDoolittle();
         var startMsa = ioData[1].progressiveAlignment.slice();
+        var startMsaSequenceNames
+            = multiSequenceAlignmentInstance.getIndividualSequenceNames(ioData[1].joinedGroupNames[ioData[1].joinedGroupNames.length - 1]);
+
         var names = getNamesInOrderAddedToMSA(ioData[1].treeBranches[ioData[1].treeBranches.length - 1]);
 
         for (var i = 0; i < names.length; i++) {
+            var removedSequenceName = names[i];
+
             // [0] create copy of the alignment before a realignment
             var msa = startMsa.slice();  // shallow copy, because the elements itself are not modified
+            var msaSequenceNames = startMsaSequenceNames.slice();
 
             // [1] remove sequence from MSA
-            var mrData  // MSA and removed sequence
-                = getMsaAndRemovedSequence(names, i, msa, ioData[1].joinedGroupNames[ioData[1].joinedGroupNames.length - 1]);
+            var mrData  // ([MSA], [removed sequence])
+                = getMsaAndRemovedSequence(removedSequenceName, msa, msaSequenceNames);
 
             // [2] realign the removed sequence
-            var msaRefined = getRealignment(mrData[0], mrData[1]);  // ([MSA], [removed sequence])
+            var msaRefined = getRealignment(mrData[0], msaSequenceNames, mrData[1], removedSequenceName, ioData[1].distanceMatrix);
 
             // [3] compute score of the MSA and refined MSA (replace startMsa with refinedMsa if [refinedMsa score] > [msa score])
             startMsa = getBetterMultiSequenceAlignment(msa, msaRefined);
@@ -176,18 +184,14 @@ $(document).ready(function () {
 
     /**
      * Removes a sequence by its name from the MSA and then
-     * @param names {Array} - The names of the sequences.
-     * @param namePos {number} - The position which within the names array which is used to get a sequence to remove.
+     * @param removedSequenceName {string} - The name of the sequence which should be removed.
      * @param progressiveAlignment {Array} - The progressive alignment from which is removed.
-     * @param lastGroupName {string} - The name of the progressive alignment.
+     * @param msaSequenceNames {Array} - The names of sequences in the multi-sequence-alignment.
      * @return {[removedSequence, remainingAlignment]}
      */
-    function getMsaAndRemovedSequence(names, namePos, progressiveAlignment, lastGroupName) {
-        var removedSequenceName = names[namePos];
-
-        var sequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(lastGroupName);
-        var removedSequence = getRemovedSequence(progressiveAlignment, sequenceNames, removedSequenceName);
-        var remainingAlignment = removeSequenceFromMSA(progressiveAlignment, sequenceNames, removedSequenceName);
+    function getMsaAndRemovedSequence(removedSequenceName, progressiveAlignment, msaSequenceNames) {
+        var removedSequence = getSequenceByName(progressiveAlignment, msaSequenceNames, removedSequenceName);
+        var remainingAlignment = removeSequenceFromMSA(progressiveAlignment, msaSequenceNames, removedSequenceName);
 
         outputData.removedSequences.push(removedSequence);
         outputData.removedSequencesNames.push(removedSequenceName);
@@ -199,13 +203,13 @@ $(document).ready(function () {
     }
 
     /**
-     * Returns the sequence removed from given multi-sequence-alignment.
-     * @param multiSequenceAlignment {Array} - The multi-sequence-alignment from which a sequence should be removed.
-     * @param msaSequenceNames {Array} - The names of sequences in the multiSequenceAlignment.
-     * @param sequenceName {string} - The name of the sequence which should be removed from the multi-sequence-alignment.
-     * @return {string} - Returns the removed sequence.
+     * Returns the sequence from given multi-sequence-alignment.
+     * @param multiSequenceAlignment {Array} - The multi-sequence-alignment from which a sequence should be returned.
+     * @param msaSequenceNames {Array} - The names of sequences in the multi-sequence-alignment.
+     * @param sequenceName {string} - The name of the sequence which should be returned from the multi-sequence-alignment.
+     * @return {string} - Returns the sequence.
      */
-    function getRemovedSequence(multiSequenceAlignment, msaSequenceNames, sequenceName) {
+    function getSequenceByName(multiSequenceAlignment, msaSequenceNames, sequenceName) {
         var indexInSequenceNames = msaSequenceNames.indexOf(sequenceName);
         return multiSequenceAlignment[indexInSequenceNames];
     }
@@ -219,7 +223,6 @@ $(document).ready(function () {
      */
     function removeSequenceFromMSA(multiSequenceAlignment, msaSequenceNames, sequenceName) {
         var indexInSequenceNames = msaSequenceNames.indexOf(sequenceName);
-        var removedSequence = multiSequenceAlignment[indexInSequenceNames];
 
         // remove sequenceName from msaSequenceNames and the associated sequence from the multiSequenceAlignment
         msaSequenceNames.splice(indexInSequenceNames, 1);
@@ -231,14 +234,17 @@ $(document).ready(function () {
     /**
      * Returns the realignment of the removed sequence with the input MSA.
      * @param msa {Array} - The multi-sequence alignment to which the removed sequence should be realigned.
-     * @param removedSequence - The removed sequence which should be realigned.
+     * @param msaSequenceNames {Array} - The names of sequences in the multi-sequence-alignment.
+     * @param removedSequence {string} - The removed sequence which should be realigned.
+     * @param removedSequenceName {string} - The name of the sequence which is removed.
+     * @param distanceMatrix {Object} - The distances which are to get the element with lowest distance to the removed sequence.
      * @return {Array} - The MSA in which the removed sequence is realigned.
      */
-    function getRealignment(msa, removedSequence) {
+    function getRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, distanceMatrix) {
         var realignment = [];
 
         if (inputData.iterativeRefinementSubalgorithm === ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR)
-            realignment = getMinDistanceRealignment(msa, removedSequence);
+            realignment = getMinDistanceRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, distanceMatrix);
         else if (inputData.iterativeRefinementSubalgorithm === ITERATIVE_REFINEMENT_STRATEGIES.ONE_VS_ALL)
             realignment = getOneVsAllRealignment(msa, removedSequence);
 
@@ -249,10 +255,89 @@ $(document).ready(function () {
      * Returns the realignment of the removed sequence
      * with the input MSA using the minimum distance approach (described in the algorithm HTML-file).
      * @param msa {Array} - The multi-sequence alignment to which the removed sequence should be realigned.
-     * @param removedSequence - The removed sequence which should be realigned.
+     * @param msaSequenceNames {Array} - The names of sequences in the multi-sequence-alignment.
+     * @param removedSequence {string} - The removed sequence which should be realigned.
+     * @param removedSequenceName {string} - The name of the sequence which is removed.
+     * @param distanceMatrix {Object} - The distances which are to get the element with lowest distance to the removed sequence.
      * @return {Array} - The MSA in which the removed sequence is realigned.
      */
-    function getMinDistanceRealignment(msa, removedSequence) {
+    function getMinDistanceRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, distanceMatrix) {
+        // get nearest sequence
+        var nearestElementName = getNearestElement(removedSequenceName, distanceMatrix);
+        var nearestSequence = getSequenceByName(msa, msaSequenceNames, nearestElementName);
+
+        // realign removed sequence with nearest sequence
+        var cleanSequence = removedSequence.replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY);
+        var realignment = getAffineRealignment(cleanSequence, nearestSequence);
+
+        // add realignment to MSA and possibly fill out with new gaps
+        return multiSequenceAlignmentInstance.createGroup(msa, [cleanSequence], realignment);
+    }
+
+    /**
+     * Given a name of an element, it is searched for nearest partner of this element.
+     * @param name {string} - The name for which the nearest element should be found.
+     * @param distanceMatrix {Object} - The distances which are to get the element with lowest distance to the removed sequence.
+     * @return {string} - The nearest element from distance matrix.
+     */
+    function getNearestElement(name, distanceMatrix) {
+        var keys = Object.keys(distanceMatrix);
+        var names = getNamesFromKeys(keys);
+
+        var minDistance = Number.POSITIVE_INFINITY;
+        var minElement = SYMBOLS.EMPTY;
+
+        for (var i = 0; i < names.length; i++) {
+            if (names[i] !== name) {  // no diagonals
+                var distance = distanceMatrix[name, names[i]];
+
+                if (distance === undefined)
+                    distance = distanceMatrix[names[i], name];
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    minElement = elements[i];
+                }
+            }
+        }
+
+        return minElement;
+    }
+
+    /**
+     * Returns the individual arguments of all given keys.
+     * @example: A key has this form: "[a,b]" and the arguments are "a" and "b" are stored and later on returned with all other arguments.
+     * @param keys {Object} - The keys from which the individual arguments are returned.
+     * @return {Array} - The individual arguments of the keys.
+     */
+    function getNamesFromKeys(keys) {
+        var names = [];
+
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+
+            if (names.indexOf(key[0]) === -1)
+                names.push(key[0]);
+
+            if (names.indexOf(key[1]) === -1)
+                names.push(key[1]);
+        }
+
+        return names;
+    }
+
+    /**
+     * Returns an affine realignment.
+     * @param sequence1 {string} - The first string which should be aligned.
+     * @param sequence2 {string} - The second string which should be aligned.
+     * @return {[alignedSequenceB, matchOrMismatchString, alignedSequenceA]} - The alignment.
+     */
+    function getAffineRealignment(sequence1, sequence2) {
+        inputData.sequenceA = sequence1;
+        inputData.sequenceB = sequence2;
+
+        gotohInstance.setIO(inputData, {});
+        return gotohInstance.compute()[1].alignments[0];
     }
 
     /**
@@ -263,6 +348,10 @@ $(document).ready(function () {
      * @return {Array} - The MSA in which the removed sequence is realigned.
      */
     function getOneVsAllRealignment(msa, removedSequence) {
+        // realign removed sequence with best sequence
+        var cleanSequence = removedSequence.replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY);
+        var bestAlignment = multiSequenceAlignmentInstance.getBestAlignment([cleanSequence], msa);
+        return multiSequenceAlignmentInstance.createGroup(msa, cleanSequence, bestAlignment);
     }
 
     /**
@@ -273,9 +362,14 @@ $(document).ready(function () {
      */
     function getBetterMultiSequenceAlignment(msa, refinedMsa) {
         // compute affine scores of both MSA
+        var msaScore = multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, msa);
+        var refinedMsaScore =  multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, refinedMsa);
 
         // check which is higher and return the better MSA
-        return undefined;
+        if (msaScore > refinedMsaScore)
+            return msa;
+        // else
+        return refinedMsa;
     }
 
     /**
