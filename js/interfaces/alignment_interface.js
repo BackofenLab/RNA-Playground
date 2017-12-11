@@ -1115,7 +1115,7 @@ Author: Alexander Mattheis
     function createIterativeRefinementOutputViewmodel(algorithmName, viewmodel, outputData) {
         // final output
         debugger;
-        reorderFinalAlignments(outputData);
+        reorderFinalAlignments(outputData);  // do not move down this function
         viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
         viewmodel.score = ko.observable(outputData.score);
         viewmodel.refinedProgressiveAlignment = ko.observable(outputData.refinedProgressiveAlignment);

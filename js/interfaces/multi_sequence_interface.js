@@ -458,7 +458,7 @@ Author: Alexander Mattheis
      */
     function changeIterativeRefinementOutput(outputData, viewmodels) {
         // final output
-        alignmentInterfaceInstance.reorderFinalAlignments(outputData);
+        alignmentInterfaceInstance.reorderFinalAlignments(outputData);  // do not move down this function
         viewmodels.output.progressiveAlignment(outputData.progressiveAlignment);
         viewmodels.output.score(outputData.score);
         viewmodels.output.refinedProgressiveAlignment(outputData.refinedProgressiveAlignment);
