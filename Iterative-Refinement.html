@@ -7,7 +7,7 @@ Author: Alexander Mattheis
 
 <div id="algorithm_description">
   <div class="description">
-      Different iterative refinement strategies were proposed to improve the Sum-of-Pairs score
+      Different iterative refinement approaches were proposed to improve the sum-of-pairs (SoP) score
       of a progressive alignment
       (e.g. an alignment created with
       <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>)
@@ -30,12 +30,15 @@ Author: Alexander Mattheis
           </li>
       </ol>
 
-      In the following, we provide final realignment and the series of
-      iteratively computed intermediate realignments together with the guide tree used for realignment.
-      Score improving realignments are marked blue.
-      The iterative refinement starts from an alignment computed with the
+      In the following, we provide first at all a comparison between the Feng-Doolittle alignment and the final realignment.
+      Below this the iteratively computed intermediate realignments together
+      with the guide tree used for the realignment are shown.
+      The score improving realignments are marked blue.
+      Our iterative refinement starts from an alignment computed with the
       <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
-      algorithm.
+      algorithm. And the sum-of-pairs (SoP) score of the final MSA is simply the score sum of all pairwise
+      alignments within the MSA, i.e. of pairwise row combinations where overlying gap columns are removed
+      since we are using an affine gap cost model.
   </div>
 
   <div class="picture">
