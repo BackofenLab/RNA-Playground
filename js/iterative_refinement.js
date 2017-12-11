@@ -94,6 +94,7 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
+        debugger;
         initializeStructs();
 
         var ioData = computeFengDoolittle();
@@ -372,7 +373,8 @@ $(document).ready(function () {
 
         // realign removed sequence with best sequence
         var cleanSequence = removedSequence.replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
-        var bestAlignment = multiSequenceAlignmentInstance.getBestAlignment([cleanSequence], msa);
+        var bestAlignment
+            = multiSequenceAlignmentInstance.getBestAlignment([cleanSequence], multiSequenceAlignmentInstance.replaceGapsWithPlaceHolder(msa));
 
         var bestElementName
             = sequenceIdentificator[bestAlignment[2].replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];

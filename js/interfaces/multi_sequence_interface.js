@@ -457,6 +457,7 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
     function changeIterativeRefinementOutput(outputData, viewmodels) {
+        debugger;
         // final output
         alignmentInterfaceInstance.reorderFinalAlignments(outputData);  // do not move down this function
         viewmodels.output.progressiveAlignment(outputData.progressiveAlignment);

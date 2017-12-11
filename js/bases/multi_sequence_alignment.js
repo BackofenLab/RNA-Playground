@@ -728,12 +728,15 @@ Author: Alexander Mattheis
             }
         }
 
-        var firstSequence
-            = outputData.nameOfSequence[maxSequence1.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
-        var secondSequence
-            = outputData.nameOfSequence[maxSequence2.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
+        if (outputData.nameOfSequence !== undefined) {  // not all multi-sequence-alignment algorithms need this
+            var firstSequence
+                = outputData.nameOfSequence[maxSequence1.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
+            var secondSequence
+                = outputData.nameOfSequence[maxSequence2.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
 
-        outputData.guideAlignmentsNames.push(firstSequence + SYMBOLS.ALIGN + secondSequence);
+            outputData.guideAlignmentsNames.push(firstSequence + SYMBOLS.ALIGN + secondSequence);
+        }
+
         return maxAlignment;
     }
 
@@ -744,10 +747,12 @@ Author: Alexander Mattheis
      * @return {[string, number]} - The alignment and score.
      */
     function getAlignmentAndScore(sequence1, sequence2) {
-        var alignmentAndScore = outputData.alignmentsAndScores[[sequence1, sequence2]];  // constant time!
+        if (outputData.alignmentsAndScores !== undefined) {  // optimization for Feng-Doolittle
+            var alignmentAndScore = outputData.alignmentsAndScores[[sequence1, sequence2]];  // constant time!
 
-        if (alignmentAndScore !== undefined && childInstance.type !== ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)  // T-Coffee extension
-            return alignmentAndScore;
+            if (alignmentAndScore !== undefined && childInstance.type !== ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)  // T-Coffee extension
+                return alignmentAndScore;
+        }
 
         var input = {};
         var output = {};
@@ -758,14 +763,16 @@ Author: Alexander Mattheis
 
         var ioData = computeWithAlgorithm(gotohInstance, input, output, sequence1, sequence2);
 
-        // extension for T-Coffee: needed for a Unit-Test
-        // if we have a recalculation (look at #optimization), then the matrix is not computed and undefined, we use the last one
-        outputData.currentMatrix = ioData[1].matrix === undefined ? outputData.currentMatrix : ioData[1].matrix;
+        if (childInstance.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {  // optimization for T-Coffee
+            // extension for T-Coffee: needed for a Unit-Test
+            // if we have a recalculation (look at #optimization), then the matrix is not computed and undefined, we use the last one
+            outputData.currentMatrix = ioData[1].matrix === undefined ? outputData.currentMatrix : ioData[1].matrix;
 
-        // #optimization:
-        // traceback paths are computed once for a group and then reused, because they do not change anymore
-        // look into Unit-Test: Notredame-Higgins-Heringa.pdf -> matrix ab~c on page 6
-        outputData.groupTracebackPaths[outputData.currentGroupName] = ioData[1].tracebackPaths;
+            // #optimization:
+            // traceback paths are computed once for a group and then reused, because they do not change anymore
+            // look into Unit-Test: Notredame-Higgins-Heringa.pdf -> matrix ab~c on page 6
+            outputData.groupTracebackPaths[outputData.currentGroupName] = ioData[1].tracebackPaths;
+        }
 
         return [ioData[1].alignments[0], ioData[1].score];
     }
