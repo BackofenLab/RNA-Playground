@@ -117,12 +117,13 @@ $(document).ready(function () {
 
             // [2] realign the removed sequence
             var msaRefined
-                = getRealignment(mrData[0], msaSequenceNames, mrData[1], removedSequenceName, ioData[1].distanceMatrix, ioData[1].nameOfSequence);
+                = getRealignment(mrData[1][0], mrData[1][1], mrData[0], removedSequenceName, ioData[1].distanceMatrix, ioData[1].nameOfSequence);
 
             // [3] compute score of the MSA and refined MSA (replace startMsa with refinedMsa if [refinedMsa score] > [startMsa score])
             startMsa = getBetterMultiSequenceAlignment(startMsa, msaRefined);
         }
 
+        debugger;
         storeAlignmentData(ioData[1].progressiveAlignment, startMsa, ioData[1].score,
             multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData , outputData.refinedProgressiveAlignment));
         return [inputData, outputData];
@@ -269,15 +270,16 @@ $(document).ready(function () {
         var nearestSequence = getSequenceByName(msa, msaSequenceNames, nearestElementName);
 
         // realign removed sequence with nearest sequence
-        var cleanSequence = removedSequence.replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY);
-        var realignment = getAffineRealignment(cleanSequence, nearestSequence);
+        var cleanSequence = removedSequence.replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);
+        var realignment = getAffineRealignment(cleanSequence, multiSequenceAlignmentInstance.replaceGapsWithPlaceHolder([nearestSequence])[0]);
 
         // only for visualization
         outputData.guideAlignments.push(realignment);
         outputData.guideAlignmentsNames.push(removedSequenceName + SYMBOLS.ALIGN + nearestElementName);
 
+        debugger;
         // add realignment to MSA and possibly fill out with new gaps
-        return multiSequenceAlignmentInstance.createGroup(msa, [cleanSequence], realignment);
+        return multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, realignment);
     }
 
     /**
@@ -342,6 +344,12 @@ $(document).ready(function () {
         inputData.sequenceA = sequence1;
         inputData.sequenceB = sequence2;
 
+        inputData.computeOneAlignment = true;  // extension to speed up computation
+        inputData.recomputeTraceback = true;  // an alignment is not stored, we have to recompute
+
+        inputData.matrixHeight = inputData.sequenceA.length + 1;
+        inputData.matrixWidth = inputData.sequenceB.length + 1;
+
         gotohInstance.setIO(inputData, {});
         return gotohInstance.compute()[1].alignments[0];
     }
@@ -359,7 +367,7 @@ $(document).ready(function () {
         multiSequenceAlignmentInstance.setIO(inputData, outputData);
 
         // realign removed sequence with best sequence
-        var cleanSequence = removedSequence.replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY);
+        var cleanSequence = removedSequence.replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
         var bestAlignment = multiSequenceAlignmentInstance.getBestAlignment([cleanSequence], msa);
 
         var bestElementName
@@ -369,7 +377,8 @@ $(document).ready(function () {
         outputData.guideAlignments.push(bestAlignment);
         outputData.guideAlignmentsNames.push(removedSequenceName + SYMBOLS.ALIGN + bestElementName);
 
-        return multiSequenceAlignmentInstance.createGroup(msa, cleanSequence, bestAlignment);
+        debugger;
+        return multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, bestAlignment);
     }
 
     /**
@@ -380,8 +389,10 @@ $(document).ready(function () {
      */
     function getBetterMultiSequenceAlignment(msa, refinedMsa) {
         // compute affine scores of both MSA
-        var msaScore = multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, msa);
-        var refinedMsaScore =  multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, refinedMsa);
+        var msaScore =
+            multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, multiSequenceAlignmentInstance.replacePlaceholdersWithGaps(msa));
+        var refinedMsaScore =
+            multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, multiSequenceAlignmentInstance.replacePlaceholdersWithGaps(refinedMsa));
 
         // check which is higher and return the better MSA
         if (msaScore >= refinedMsaScore)

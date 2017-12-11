@@ -45,6 +45,8 @@ Author: Alexander Mattheis
         this.createProgressiveAlignment = createProgressiveAlignment;
         this.getBestAlignment = getBestAlignment;
         this.createGroup = createGroup;
+        this.replaceGapsWithPlaceHolder = replaceGapsWithPlaceHolder;
+        this.replacePlaceholdersWithGaps = replacePlaceholdersWithGaps;
         this.getAffineSumOfPairsScore = getAffineSumOfPairsScore;
         this.getIndividualSequenceNames = getIndividualSequenceNames;
         this.getOutput = getOutput;

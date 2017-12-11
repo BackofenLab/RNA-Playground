@@ -103,7 +103,6 @@ Author: Alexander Mattheis
      * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
      */
     function startProcessing(algorithm, inputViewmodel, visualViewmodel) {
-        debugger;
         algorithm.setInput(inputViewmodel);
         var ioData = algorithm.compute();
 

@@ -265,7 +265,6 @@ Author: Alexander Mattheis
     function processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel) {
         visualViewmodel.removeAllContents();
 
-        debugger;
         // when page was loaded the inputs have not to be updated or you get wrong inputs
         if (inputProcessor.inputUpdatesActivated()) {
             inputViewmodel.sequences(getSequencesArray(inputViewmodel));

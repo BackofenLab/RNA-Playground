@@ -79,7 +79,6 @@ $(document).ready(function () {
      */
     function loadAlgorithm(e) {
         var algorithm = $(this).text();
-        console.log(algorithm);
         var display = e.data.displayToUpdate;
         var dropDown = e.data.dropDown;
         var dropDownName = e.data.dropDownName;
