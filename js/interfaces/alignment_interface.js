@@ -45,6 +45,7 @@ Author: Alexander Mattheis
         this.getLibrariesData = getLibrariesData;
         this.removeNeutralSymbols = removeNeutralSymbols;
         this.sortWithClusterTuples = sortWithClusterTuples;
+        this.reorderFinalAlignments = reorderFinalAlignments;
     }
 
     /**
@@ -749,7 +750,7 @@ Author: Alexander Mattheis
 
     /**
      * Reordering groups in alphabetical order for increasing readability.
-     * @param outputData - The output on which conversion is applied.
+     * @param outputData - The output on which reordering is applied.
      */
     function reorderGroupSequences(outputData) {
         if (outputData.joinedGroupNames.length > 0) {
@@ -880,7 +881,7 @@ Author: Alexander Mattheis
 
         removeNeutralSymbols(outputData);
         interfaceInstance.roundValues(algorithmName, outputData);
-        alignmentInterfaceInstance.reorderGroupSequences(outputData);
+        reorderGroupSequences(outputData);
 
         // final output
         viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
@@ -1113,29 +1114,56 @@ Author: Alexander Mattheis
      */
     function createIterativeRefinementOutputViewmodel(algorithmName, viewmodel, outputData) {
         // final output
+        debugger;
+        reorderFinalAlignments(outputData);
         viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
         viewmodel.score = ko.observable(outputData.score);
-        viewmodel.refinedProgressiveAlignment = ko.observable(outputData.progressiveAlignment);
-        viewmodel.refinedScore = ko.observable(outputData.score);
+        viewmodel.refinedProgressiveAlignment = ko.observable(outputData.refinedProgressiveAlignment);
+        viewmodel.refinedScore = ko.observable(outputData.refinedScore);
 
         // realignment steps
+        reorderGroupSequences(outputData);  // do not move up this function
         viewmodel.guideAlignments = ko.observable(outputData.guideAlignments);
         viewmodel.guideAlignmentsNames = ko.observable(outputData.guideAlignmentsNames);
 
-        viewmodel.removedSequences = ko.observable(outputData.removedSequences);
-        viewmodel.removedSequencesNames = ko.observable(outputData.removedSequencesNames);
+        viewmodel.firstGroups = ko.observable(outputData.firstGroups);
+        viewmodel.firstGroupsNames = ko.observable(outputData.firstGroupsNames);
 
-        viewmodel.remainingAlignments = ko.observable(outputData.remainingAlignments);
-        viewmodel.remainingAlignmentsNames = ko.observable(outputData.remainingAlignmentsNames);
+        viewmodel.secondGroups = ko.observable(outputData.secondGroups);
+        viewmodel.secondGroupsNames = ko.observable(outputData.secondGroupsNames);
 
-        viewmodel.realignmentsNames = ko.observable(outputData.realignmentsNames);
-
-        viewmodel.realignments = ko.observable(outputData.realignments);
+        viewmodel.joinedGroups = ko.observable(outputData.joinedGroups);
         viewmodel.realignmentsScores = ko.observable(outputData.realignmentsScores);
+        viewmodel.joinedGroupNames = ko.observable(outputData.joinedGroupNames);
 
         viewmodel.accepted = ko.observable(outputData.accepted);
 
         // tree
         viewmodel.newickString = ko.observable(outputData.newickString);
+    }
+
+    /**
+     * Reorders the sequences of final alignment in order they have been given as input.
+     * @param outputData - The output on which reordering is applied.
+     */
+    function reorderFinalAlignments(outputData) {
+        if (outputData.joinedGroupNames.length > 0) {
+            // sort refined progressive alignment
+            var finalGroupName = outputData.joinedGroupNames[outputData.joinedGroupNames.length-1];
+            var finalGroup = outputData.refinedProgressiveAlignment;
+
+            var groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName);
+            var groupMemberRankings = getRankings(groupMemberNames, finalGroup);
+
+            outputData.refinedProgressiveAlignment = getSortedGroup(finalGroup, groupMemberNames, groupMemberRankings)[0];
+
+            // sort progressive alignment
+            finalGroupName = outputData.progressiveAlignmentName;
+            finalGroup = outputData.progressiveAlignment;
+            groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName);
+            groupMemberRankings = getRankings(groupMemberNames, finalGroup);
+
+            outputData.progressiveAlignment = getSortedGroup(finalGroup, groupMemberNames, groupMemberRankings)[0];
+        }
     }
 }());

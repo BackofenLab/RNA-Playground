@@ -30,8 +30,9 @@ Author: Alexander Mattheis
           </li>
       </ol>
 
-      In the following, we provide the series of accepted (score improving)
+      In the following, we provide final realignment and the series of
       iteratively computed intermediate realignments together with the guide tree used for realignment.
+      Score improving realignments are marked blue.
       The iterative refinement starts from an alignment computed with the
       <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
       algorithm.
@@ -216,7 +217,7 @@ Author: Alexander Mattheis
                         </th>
 
                         <th>
-                            <small><b>Accepted Realignment</b></small>
+                            <small><b>Realignment</b></small>
                         </th>
                     </tr>
                 </thead>
@@ -226,15 +227,15 @@ Author: Alexander Mattheis
                         <!-- ko if: $root.output.accepted()[$index()] -->
                             <tr>
                                 <td class="entry entry_start selected">
-                                    <code data-bind="text: $root.output.removedSequencesNames()[$index()]"></code>: <br />
-                                    <!-- ko foreach: $root.output.removedSequences()[$index()] -->
+                                    <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.firstGroups()[$index()] -->
                                         <code data-bind="text: $data"></code> <br />
                                     <!-- /ko -->
                                 </td>
 
                                 <td class="entry entry_start selected">
-                                    <code data-bind="text: $root.output.remainingAlignmentsNames()[$index()]"></code>: <br />
-                                    <!-- ko foreach: $root.output.remainingAlignments()[$index()] -->
+                                    <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.secondGroups()[$index()] -->
                                         <code data-bind="text: $data"></code> <br />
                                     <!-- /ko -->
                                 </td>
@@ -247,8 +248,8 @@ Author: Alexander Mattheis
                                 </td>
 
                                 <td class="entry entry_start selected">
-                                    <code data-bind="text: $root.output.realignmentsNames()[$index()]"></code>: <br />
-                                    <!-- ko foreach: $root.output.realignments()[$index()] -->
+                                    <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
                                         <code data-bind="text: $data"></code> <br />
                                     <!-- /ko -->
                                     <code>Score: <span data-bind="text: $root.output.realignmentsScores()[$index()]"></span></code>
@@ -259,15 +260,15 @@ Author: Alexander Mattheis
                         <!-- ko ifnot: $root.output.accepted()[$index()] -->
                             <tr>
                                 <td class="entry entry_start">
-                                    <code data-bind="text: $root.output.removedSequencesNames()[$index()]"></code>: <br />
-                                    <!-- ko foreach: $root.output.removedSequences()[$index()] -->
+                                    <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.firstGroups()[$index()] -->
                                         <code data-bind="text: $data"></code> <br />
                                     <!-- /ko -->
                                 </td>
 
                                 <td class="entry entry_start">
-                                    <code data-bind="text: $root.output.remainingAlignmentsNames()[$index()]"></code>: <br />
-                                    <!-- ko foreach: $root.output.remainingAlignments()[$index()] -->
+                                    <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.secondGroups()[$index()] -->
                                         <code data-bind="text: $data"></code> <br /><!-- /ko -->
                                 </td>
 
@@ -279,8 +280,8 @@ Author: Alexander Mattheis
                                 </td>
 
                                 <td class="entry entry_start">
-                                    <code data-bind="text: $root.output.realignmentsNames()[$index()]"></code>: <br />
-                                    <!-- ko foreach: $root.output.realignments()[$index()] -->
+                                    <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
                                         <code data-bind="text: $data"></code> <br />
                                     <!-- /ko -->
                                     <code>Score: <span data-bind="text: $root.output.realignmentsScores()[$index()]"></span></code>

@@ -94,38 +94,37 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
-        debugger;
         initializeStructs();
 
         var ioData = computeFengDoolittle();
         var startMsa = ioData[1].progressiveAlignment.slice();
-        var startMsaSequenceNames
-            = multiSequenceAlignmentInstance.getIndividualSequenceNames(ioData[1].joinedGroupNames[ioData[1].joinedGroupNames.length - 1]);
+        var startMsaName = ioData[1].joinedGroupNames[ioData[1].joinedGroupNames.length - 1];
+        var startMsaSequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(startMsaName);
 
         var names = getNamesInOrderAddedToMSA(ioData[1].treeBranches[ioData[1].treeBranches.length - 1]);
 
         for (var i = 0; i < names.length; i++) {
             var removedSequenceName = names[i];
 
-            // [0] create copy of the alignment before a realignment
+            // create copy of the alignment before a realignment
             var msa = startMsa.slice();  // shallow copy, because the elements itself are not modified
             var msaSequenceNames = startMsaSequenceNames.slice();
 
             // [1] remove sequence from MSA
-            var mrData  // ([MSA], [removed sequence])
-                = getMsaAndRemovedSequence(removedSequenceName, msa, msaSequenceNames);
+            var mrData = getMsaAndRemovedSequence(removedSequenceName, msa, msaSequenceNames); // ([MSA], [removed sequence])
 
             // [2] realign the removed sequence
-            var msaRefined
-                = getRealignment(mrData[1][0], mrData[1][1], mrData[0], removedSequenceName, ioData[1].distanceMatrix, ioData[1].nameOfSequence);
+            var msaRefinedWithName = getRealignment(mrData[1][0], mrData[1][1], mrData[0], removedSequenceName, ioData[1].distanceMatrix, ioData[1].nameOfSequence);
 
             // [3] compute score of the MSA and refined MSA (replace startMsa with refinedMsa if [refinedMsa score] > [startMsa score])
-            startMsa = getBetterMultiSequenceAlignment(startMsa, msaRefined);
+            var msaWithName = getBetterMultiSequenceAlignment([startMsa, startMsaSequenceNames], msaRefinedWithName);
+            startMsa = msaWithName[0];
+            startMsaSequenceNames = msaWithName[1];
         }
 
-        debugger;
+        // storing data from Feng-Doolittle
         storeAlignmentData(ioData[1].progressiveAlignment, startMsa, ioData[1].score,
-            multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData , startMsa), ioData[1].newickString);
+            multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData , startMsa), ioData[1].newickString, startMsaName);
         return [inputData, outputData];
     }
 
@@ -134,18 +133,19 @@ $(document).ready(function () {
      * Structs store information only if realignment is accepted (score increased).
      */
     function initializeStructs() {
-        outputData.removedSequences = [];
-        outputData.removedSequencesNames = [];
+        outputData.firstGroups = [];  // removed sequences
+        outputData.firstGroupsNames = [];
 
-        outputData.remainingAlignments = [];
-        outputData.remainingAlignmentsNames = [];
+        outputData.secondGroups = [];  // remaining alignments
+        outputData.secondGroupsNames = [];
 
-        outputData.guideAlignments = [];
+        outputData.guideAlignments = [];   // guide alignments
         outputData.guideAlignmentsNames = [];
-        outputData.realignmentsNames = [];
 
-        outputData.realignments = [];
+        outputData.joinedGroups = [];  // realignments
+        outputData.joinedGroupNames = [];
         outputData.realignmentsScores = [];
+
         outputData.accepted = [];
     }
 
@@ -196,11 +196,11 @@ $(document).ready(function () {
         var removedSequence = getSequenceByName(progressiveAlignment, msaSequenceNames, removedSequenceName);
         var remainingAlignment = removeSequenceFromMSA(progressiveAlignment, msaSequenceNames, removedSequenceName);
 
-        outputData.removedSequences.push([removedSequence]);
-        outputData.removedSequencesNames.push(removedSequenceName);
+        outputData.firstGroups.push([removedSequence]);
+        outputData.firstGroupsNames.push(removedSequenceName);
 
-        outputData.remainingAlignments.push(remainingAlignment[0]);
-        outputData.remainingAlignmentsNames.push((remainingAlignment[1].toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY));  // push the name
+        outputData.secondGroups.push(remainingAlignment[0]);
+        outputData.secondGroupsNames.push((remainingAlignment[1].toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY));  // push the name
 
         return [removedSequence, remainingAlignment];
     }
@@ -242,7 +242,7 @@ $(document).ready(function () {
      * @param removedSequenceName {string} - The name of the sequence which is removed.
      * @param distanceMatrix {Object} - The distances which are to get the element with lowest distance to the removed sequence.
      * @param sequenceIdentificator {Object} - An object which identifies a sequence and returns its name.
-     * @return {Array} - The MSA in which the removed sequence is realigned.
+     * @return {[msa, msaName]} - The MSA in which the removed sequence is realigned.
      */
     function getRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, distanceMatrix, sequenceIdentificator) {
         var realignment = [];
@@ -263,7 +263,7 @@ $(document).ready(function () {
      * @param removedSequence {string} - The removed sequence which should be realigned.
      * @param removedSequenceName {string} - The name of the sequence which is removed.
      * @param distanceMatrix {Object} - The distances which are to get the element with lowest distance to the removed sequence.
-     * @return {Array} - The MSA in which the removed sequence is realigned.
+     * @return {[msa, msaName]} - The MSA in which the removed sequence is realigned.
      */
     function getMinDistanceRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, distanceMatrix) {
         // get nearest sequence
@@ -274,14 +274,15 @@ $(document).ready(function () {
         var cleanSequence = removedSequence.replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY);
         var realignment = getAffineRealignment(cleanSequence, multiSequenceAlignmentInstance.replaceGapsWithPlaceHolder([nearestSequence])[0]);
 
+        var msaName = removedSequenceName + (msaSequenceNames.toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY);
+
         // only for visualization
         outputData.guideAlignments.push(realignment);
         outputData.guideAlignmentsNames.push(removedSequenceName + SYMBOLS.ALIGN + nearestElementName);
-        outputData.realignmentsNames.push(removedSequenceName + (msaSequenceNames.toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY));
+        outputData.joinedGroupNames.push(msaName);
 
-        debugger;
         // add realignment to MSA and possibly fill out with new gaps
-        return multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, realignment);
+        return [multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, realignment), msaName];
     }
 
     /**
@@ -380,7 +381,7 @@ $(document).ready(function () {
         // only for visualization
         outputData.guideAlignments.push(bestAlignment);
         outputData.guideAlignmentsNames.push(removedSequenceName + SYMBOLS.ALIGN + bestElementName);
-        outputData.realignmentsNames.push(removedSequenceName + bestElementName + (msaSequenceNames.toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY));
+        outputData.joinedGroupNames.push(removedSequenceName + bestElementName + (msaSequenceNames.toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY));
 
         debugger;
         return multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, bestAlignment);
@@ -398,13 +399,13 @@ $(document).ready(function () {
 
     /**
      * Computes the Sum-Of-Pairs score of both input MSA and returns the one with the higher score.
-     * @param msa {Array} - The original multi-sequence alignment.
-     * @param refinedMsa {Array} - The refined multi-sequence alignment.
+     * @param msaWithName {[msa, msaName]} - The original multi-sequence alignment with its name.
+     * @param refinedMsaWithName {[msa, msaName]} - The refined multi-sequence alignment with its name.
      * @return {Array} - The better MSA.
      */
-    function getBetterMultiSequenceAlignment(msa, refinedMsa) {
-        msa = multiSequenceAlignmentInstance.replacePlaceholdersWithGaps(msa);
-        refinedMsa = multiSequenceAlignmentInstance.replacePlaceholdersWithGaps(refinedMsa);
+    function getBetterMultiSequenceAlignment(msaWithName, refinedMsaWithName) {
+        var msa = multiSequenceAlignmentInstance.replacePlaceholdersWithGaps(msaWithName[0]);
+        var refinedMsa = multiSequenceAlignmentInstance.replacePlaceholdersWithGaps(refinedMsaWithName[0]);
 
         // compute affine scores of both MSA
         var msaScore =
@@ -412,18 +413,20 @@ $(document).ready(function () {
         var refinedMsaScore =
             multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, refinedMsa);
 
-        outputData.realignments.push(refinedMsa);
+        // only for visualization
+        outputData.joinedGroups.push(refinedMsa);
         outputData.realignmentsScores.push(refinedMsaScore);
 
         // check which is higher and return the better MSA
         if (msaScore >= refinedMsaScore) {
             outputData.accepted.push(false);
-            return msa;
+            return msaWithName;
         }
 
+        // only for visualization
         outputData.accepted.push(true);
 
-        return refinedMsa;
+        return refinedMsaWithName;
     }
 
     /**
@@ -433,14 +436,16 @@ $(document).ready(function () {
      * @param score {number} - The original multi-sequence alignment score.
      * @param refinedScore {number} - The refined multi-sequence alignment score.
      * @param newickTreeString {string} - The string, which encodes the phylogenetic tree.
+     * @param progressiveAlignmentName {string} - The name of the progressive alignment.
      */
-    function storeAlignmentData(msa, refinedMsa, score, refinedScore, newickTreeString) {
+    function storeAlignmentData(msa, refinedMsa, score, refinedScore, newickTreeString, progressiveAlignmentName) {
         outputData.progressiveAlignment = msa;
         outputData.refinedProgressiveAlignment = refinedMsa;
 
         outputData.score = score;
         outputData.refinedScore = refinedScore;
         outputData.newickString = newickTreeString;
+        outputData.progressiveAlignmentName = progressiveAlignmentName;
     }
 
     /**

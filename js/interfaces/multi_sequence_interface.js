@@ -457,27 +457,27 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
     function changeIterativeRefinementOutput(outputData, viewmodels) {
-        debugger;
         // final output
+        alignmentInterfaceInstance.reorderFinalAlignments(outputData);
         viewmodels.output.progressiveAlignment(outputData.progressiveAlignment);
         viewmodels.output.score(outputData.score);
         viewmodels.output.refinedProgressiveAlignment(outputData.refinedProgressiveAlignment);
         viewmodels.output.refinedScore(outputData.refinedScore);
 
         // realignment steps
+        alignmentInterfaceInstance.reorderGroupSequences(outputData);   // do not move up this function
         viewmodels.output.guideAlignments(outputData.guideAlignments);
         viewmodels.output.guideAlignmentsNames(outputData.guideAlignmentsNames);
 
-        viewmodels.output.removedSequences(outputData.removedSequences);
-        viewmodels.output.removedSequencesNames(outputData.removedSequencesNames);
+        viewmodels.output.firstGroups(outputData.firstGroups);
+        viewmodels.output.firstGroupsNames(outputData.firstGroupsNames);
 
-        viewmodels.output.remainingAlignments(outputData.remainingAlignments);
-        viewmodels.output.remainingAlignmentsNames(outputData.remainingAlignmentsNames);
+        viewmodels.output.secondGroups(outputData.secondGroups);
+        viewmodels.output.secondGroupsNames(outputData.secondGroupsNames);
 
-        viewmodels.output.realignmentsNames(outputData.realignmentsNames);
-
-        viewmodels.output.realignments(outputData.realignments);
+        viewmodels.output.joinedGroups(outputData.joinedGroups);
         viewmodels.output.realignmentsScores(outputData.realignmentsScores);
+        viewmodels.output.joinedGroupNames(outputData.joinedGroupNames);
 
         viewmodels.output.accepted(outputData.accepted);
 
