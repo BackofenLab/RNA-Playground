@@ -355,6 +355,7 @@ var MOVE = {
 var MULTI_SYMBOLS = {
     BRACKET_LEFT: /\(/g,
     BRACKET_RIGHT: /\)/g,
+    COMMA: /,/g,
     DELIMITER: /-/g,
     GAP: /_/g,
     G_LITTLE_SPECIAL: /ğ/g,

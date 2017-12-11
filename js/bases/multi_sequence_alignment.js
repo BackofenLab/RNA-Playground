@@ -962,16 +962,18 @@ Author: Alexander Mattheis
     function getIndividualSequenceNames(groupName) {
         var names = [];
 
-        for (var i = 0; i < groupName.length; i++) {
-            var character = groupName[i];
-            var number = SYMBOLS.EMPTY;
+        if (groupName !== undefined) {
+            for (var i = 0; i < groupName.length; i++) {
+                var character = groupName[i];
+                var number = SYMBOLS.EMPTY;
 
-            while (i + 1 < groupName.length && groupName[i + 1].match(CHARACTER.NUMBER)) {
-                number += groupName[i + 1];
-                i++;
+                while (i + 1 < groupName.length && groupName[i + 1].match(CHARACTER.NUMBER)) {
+                    number += groupName[i + 1];
+                    i++;
+                }
+
+                names.push(number.length > 0 ? character + SYMBOLS.COMMA + number : character);
             }
-
-            names.push(number.length > 0 ? character + SYMBOLS.COMMA + number : character);
         }
 
         return names;

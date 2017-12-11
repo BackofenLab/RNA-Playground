@@ -1112,12 +1112,30 @@ Author: Alexander Mattheis
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
     function createIterativeRefinementOutputViewmodel(algorithmName, viewmodel, outputData) {
-        // realignment steps
-        // reorderGroupSequences(outputData);
-
-        // tree and final output
-        viewmodel.newickString = ko.observable(outputData.newickString);
+        // final output
         viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
         viewmodel.score = ko.observable(outputData.score);
+        viewmodel.refinedProgressiveAlignment = ko.observable(outputData.progressiveAlignment);
+        viewmodel.refinedScore = ko.observable(outputData.score);
+
+        // realignment steps
+        viewmodel.guideAlignments = ko.observable(outputData.guideAlignments);
+        viewmodel.guideAlignmentsNames = ko.observable(outputData.guideAlignmentsNames);
+
+        viewmodel.removedSequences = ko.observable(outputData.removedSequences);
+        viewmodel.removedSequencesNames = ko.observable(outputData.removedSequencesNames);
+
+        viewmodel.remainingAlignments = ko.observable(outputData.remainingAlignments);
+        viewmodel.remainingAlignmentsNames = ko.observable(outputData.remainingAlignmentsNames);
+
+        viewmodel.realignmentsNames = ko.observable(outputData.realignmentsNames);
+
+        viewmodel.realignments = ko.observable(outputData.realignments);
+        viewmodel.realignmentsScores = ko.observable(outputData.realignmentsScores);
+
+        viewmodel.accepted = ko.observable(outputData.accepted);
+
+        // tree
+        viewmodel.newickString = ko.observable(outputData.newickString);
     }
 }());

@@ -177,7 +177,7 @@ Author: Alexander Mattheis
                         <tr>
                             <td class="entry entry_start">
                                 <!-- ko foreach: $root.output.progressiveAlignment() -->
-                                    <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br />
+                                    <code data-bind="text: $root.output.refinedProgressiveAlignment()[$index()]"></code> <br />
                                 <!-- /ko -->
                             </td>
                         </tr>
@@ -189,7 +189,7 @@ Author: Alexander Mattheis
                 <tr>
                     <th>
                         <small>
-                            Affine SoP score: <span data-bind="text: $root.output.score()"></span>
+                            Affine SoP score: <span data-bind="text: $root.output.refinedScore()"></span>
                         </small>
                     </th>
                 </tr>
@@ -223,36 +223,70 @@ Author: Alexander Mattheis
 
                 <tbody>
                     <!-- ko foreach: $root.output.guideAlignments() -->
-                        <tr>
-                            <td class="entry entry_start">
-                                <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br />
-                                <!-- ko foreach: $root.output.firstGroups()[$index()] -->
-                                    <code data-bind="text: $data"></code> <br />
-                                <!-- /ko -->
-                            </td>
+                        <!-- ko if: $root.output.accepted()[$index()] -->
+                            <tr>
+                                <td class="entry entry_start selected">
+                                    <code data-bind="text: $root.output.removedSequencesNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.removedSequences()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br />
+                                    <!-- /ko -->
+                                </td>
 
-                            <td class="entry entry_start">
-                                <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br />
-                                <!-- ko foreach: $root.output.secondGroups()[$index()] -->
-                                    <code data-bind="text: $data"></code> <br />
-                                <!-- /ko -->
-                            </td>
+                                <td class="entry entry_start selected">
+                                    <code data-bind="text: $root.output.remainingAlignmentsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.remainingAlignments()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br />
+                                    <!-- /ko -->
+                                </td>
 
-                            <td class="entry entry_start">
-                                <code data-bind="text: $root.output.guideAlignmentsNames()[$index()]"></code>: <br />
-                                <code data-bind="text: $root.output.guideAlignments()[$index()][0]"></code> <br />
-                                <code data-bind="text: $root.output.guideAlignments()[$index()][1]"></code> <br />
-                                <code data-bind="text: $root.output.guideAlignments()[$index()][2]"></code>
-                            </td>
+                                <td class="entry entry_start selected">
+                                    <code data-bind="text: $root.output.guideAlignmentsNames()[$index()]"></code>: <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][0]"></code> <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][1]"></code> <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][2]"></code>
+                                </td>
 
-                            <td class="entry entry_start">
-                                <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br />
-                                <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
-                                    <code data-bind="text: $data"></code> <br />
-                                    <code>Score: </code>
-                                <!-- /ko -->
-                            </td>
-                        </tr>
+                                <td class="entry entry_start selected">
+                                    <code data-bind="text: $root.output.realignmentsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.realignments()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br />
+                                    <!-- /ko -->
+                                    <code>Score: <span data-bind="text: $root.output.realignmentsScores()[$index()]"></span></code>
+                                </td>
+                            </tr>
+                        <!-- /ko -->
+
+                        <!-- ko ifnot: $root.output.accepted()[$index()] -->
+                            <tr>
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.removedSequencesNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.removedSequences()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br />
+                                    <!-- /ko -->
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.remainingAlignmentsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.remainingAlignments()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br /><!-- /ko -->
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.guideAlignmentsNames()[$index()]"></code>: <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][0]"></code> <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][1]"></code> <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][2]"></code>
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.realignmentsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.realignments()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br />
+                                    <!-- /ko -->
+                                    <code>Score: <span data-bind="text: $root.output.realignmentsScores()[$index()]"></span></code>
+                                </td>
+                            </tr>
+                        <!-- /ko -->
                     <!-- /ko -->
                 </tbody>
             </table>

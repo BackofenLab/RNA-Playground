@@ -343,12 +343,14 @@ Author: Alexander Mattheis
     function changeOutput(outputData, inputProcessor, viewmodels) {
         if (viewmodels.visual.algorithm.type === ALGORITHMS.FENG_DOOLITTLE)
             changeFengDoolittleOutput(outputData, viewmodels);
+        else if (viewmodels.visual.algorithm.type === ALGORITHMS.ITERATIVE_REFINMENT)
+            changeIterativeRefinementOutput(outputData, viewmodels);
         else if (viewmodels.visual.algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)
             changeTcoffeeOutput(outputData, viewmodels);
     }
 
     /**
-     * Changes the output of Feng-Doolittle algorithm after processing the input.
+     * Changes the output of Feng-Doolittle algorithm.
      * @param outputData {Object} - Contains all output data.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
@@ -411,7 +413,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Changes the output of Notredame-Higgins-Heringa algorithm after processing the input.
+     * Changes the output of Notredame-Higgins-Heringa algorithm.
      * @param outputData {Object} - Contains all output data.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
@@ -447,5 +449,40 @@ Author: Alexander Mattheis
         viewmodels.output.libPositionPairs(outputData.librariesData[1]);
         viewmodels.output.primLibValues(outputData.librariesData[2]);
         viewmodels.output.extendedLibValues(outputData.librariesData[3]);
+    }
+
+    /**
+     * Changes the output of an iterative refinement algorithm.
+     * @param outputData {Object} - Contains all output data.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
+     */
+    function changeIterativeRefinementOutput(outputData, viewmodels) {
+        debugger;
+        // final output
+        viewmodels.output.progressiveAlignment(outputData.progressiveAlignment);
+        viewmodels.output.score(outputData.score);
+        viewmodels.output.refinedProgressiveAlignment(outputData.refinedProgressiveAlignment);
+        viewmodels.output.refinedScore(outputData.refinedScore);
+
+        // realignment steps
+        viewmodels.output.guideAlignments(outputData.guideAlignments);
+        viewmodels.output.guideAlignmentsNames(outputData.guideAlignmentsNames);
+
+        viewmodels.output.removedSequences(outputData.removedSequences);
+        viewmodels.output.removedSequencesNames(outputData.removedSequencesNames);
+
+        viewmodels.output.remainingAlignments(outputData.remainingAlignments);
+        viewmodels.output.remainingAlignmentsNames(outputData.remainingAlignmentsNames);
+
+        viewmodels.output.realignmentsNames(outputData.realignmentsNames);
+
+        viewmodels.output.realignments(outputData.realignments);
+        viewmodels.output.realignmentsScores(outputData.realignmentsScores);
+
+        viewmodels.output.accepted(outputData.accepted);
+
+        // tree
+        viewmodels.output.newickString(outputData.newickString);
+        viewmodels.visual.drawTree();
     }
 }());
