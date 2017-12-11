@@ -165,7 +165,7 @@ $(document).ready(function () {
     function getNamesInOrderAddedToMSA(tree) {
         var names = [];
         postOrder(tree, names);
-        return names.reverse();  // needed because else you get reverse order
+        return names;  // needed because else you get reverse order
     }
 
     /**
@@ -177,8 +177,8 @@ $(document).ready(function () {
         if (node === undefined)
             return;
 
-        postOrder(node.leftChild, names);
         postOrder(node.rightChild, names);
+        postOrder(node.leftChild, names);
 
         var isLeaf = node.leftChild === undefined && node.rightChild === undefined;
 
