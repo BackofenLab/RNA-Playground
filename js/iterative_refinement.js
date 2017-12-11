@@ -376,15 +376,18 @@ $(document).ready(function () {
 
         var bestElementName
             = sequenceIdentificator[bestAlignment[2].replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
+
         removeName(bestElementName, msaSequenceNames);
+
+        var msaName = removedSequenceName + bestElementName + (msaSequenceNames.toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY);
 
         // only for visualization
         outputData.guideAlignments.push(bestAlignment);
         outputData.guideAlignmentsNames.push(removedSequenceName + SYMBOLS.ALIGN + bestElementName);
-        outputData.joinedGroupNames.push(removedSequenceName + bestElementName + (msaSequenceNames.toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY));
+        outputData.joinedGroupNames.push(msaName);
 
         debugger;
-        return multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, bestAlignment);
+        return [multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, bestAlignment), msaName];
     }
 
     /**
