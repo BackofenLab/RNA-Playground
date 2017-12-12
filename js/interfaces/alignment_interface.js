@@ -1149,7 +1149,7 @@ Author: Alexander Mattheis
     function reorderFinalAlignments(outputData) {
         if (outputData.joinedGroupNames.length > 0) {
             // sort refined progressive alignment
-            var finalGroupName = outputData.joinedGroupNames[outputData.joinedGroupNames.length-1];
+            var finalGroupName = outputData.refinedProgressiveAlignmentName;
             var finalGroup = outputData.refinedProgressiveAlignment;
 
             var groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName);

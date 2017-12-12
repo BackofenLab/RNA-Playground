@@ -120,12 +120,15 @@ $(document).ready(function () {
             // [3] compute score of the MSA and refined MSA (replace startMsa with refinedMsa if [refinedMsa score] > [startMsa score])
             var msaWithName = getBetterMultiSequenceAlignment([startMsa, startMsaSequenceNames], msaRefinedWithName);
             startMsa = msaWithName[0];
-            startMsaSequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(msaWithName[1]);
+            startMsaName = msaWithName[1];
+            startMsaSequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(startMsaName);
         }
 
-        // storing data from Feng-Doolittle
-        storeAlignmentData(ioData[1].progressiveAlignment, startMsa, ioData[1].score,
-            multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData , startMsa), ioData[1].newickString, startMsaName);
+        // storing data from Feng-Doolittle and refined alignment
+        storeAlignmentData(ioData[1].progressiveAlignment, ioData[1].score, ioData[1].newickString,
+            ioData[1].joinedGroupNames[ioData[1].joinedGroupNames.length - 1], startMsa,
+            multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, startMsa), startMsaName);
+
         return [inputData, outputData];
     }
 
@@ -280,7 +283,6 @@ $(document).ready(function () {
         // only for visualization
         outputData.guideAlignments.push(realignment);
         outputData.guideAlignmentsNames.push(removedSequenceName + SYMBOLS.ALIGN + nearestElementName);
-        outputData.joinedGroupNames.push(msaName);
 
         // add realignment to MSA and possibly fill out with new gaps
         return [multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, realignment), msaName];
@@ -384,7 +386,6 @@ $(document).ready(function () {
         // only for visualization
         outputData.guideAlignments.push(bestAlignment);
         outputData.guideAlignmentsNames.push(removedSequenceName + SYMBOLS.ALIGN + bestElementName);
-        outputData.joinedGroupNames.push(msaName);
 
         debugger;
         return [multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, bestAlignment), msaName];
@@ -418,6 +419,7 @@ $(document).ready(function () {
 
         // only for visualization
         outputData.joinedGroups.push(refinedMsa);
+        outputData.joinedGroupNames.push(refinedMsaWithName[1]);
         outputData.realignmentsScores.push(refinedMsaScore);
 
         // check which is higher and return the better MSA
@@ -435,20 +437,20 @@ $(document).ready(function () {
     /**
      * Stores the alignment data from input.
      * @param msa {Array} - The original multi-sequence alignment.
-     * @param refinedMsa {Array} - The refined multi-sequence alignment.
      * @param score {number} - The original multi-sequence alignment score.
-     * @param refinedScore {number} - The refined multi-sequence alignment score.
      * @param newickTreeString {string} - The string, which encodes the phylogenetic tree.
-     * @param progressiveAlignmentName {string} - The name of the progressive alignment.
+     * @param msaName {string} - The name of the progressive alignment.
      */
-    function storeAlignmentData(msa, refinedMsa, score, refinedScore, newickTreeString, progressiveAlignmentName) {
+    function storeAlignmentData(msa, score, newickTreeString, msaName, refinedMsa, refinedScore, refinedMsaName) {
         outputData.progressiveAlignment = msa;
-        outputData.refinedProgressiveAlignment = refinedMsa;
-
         outputData.score = score;
-        outputData.refinedScore = refinedScore;
+
         outputData.newickString = newickTreeString;
-        outputData.progressiveAlignmentName = progressiveAlignmentName;
+        outputData.progressiveAlignmentName = msaName;
+
+        outputData.refinedProgressiveAlignment = refinedMsa;
+        outputData.refinedScore = refinedScore;
+        outputData.refinedProgressiveAlignmentName = refinedMsaName;
     }
 
     /**

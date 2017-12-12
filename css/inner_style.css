@@ -321,6 +321,14 @@ th {
     margin-bottom: 10px;
 }
 
+.merge_steps_footer th {
+    border-top: none;
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 787px;
+}
+
 .more_left {
     padding-left: 5px !important;
 }
