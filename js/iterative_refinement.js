@@ -120,7 +120,7 @@ $(document).ready(function () {
             // [3] compute score of the MSA and refined MSA (replace startMsa with refinedMsa if [refinedMsa score] > [startMsa score])
             var msaWithName = getBetterMultiSequenceAlignment([startMsa, startMsaSequenceNames], msaRefinedWithName);
             startMsa = msaWithName[0];
-            startMsaSequenceNames = msaWithName[1];
+            startMsaSequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(msaWithName[1]);
         }
 
         // storing data from Feng-Doolittle
@@ -379,9 +379,7 @@ $(document).ready(function () {
         var bestElementName
             = sequenceIdentificator[bestAlignment[2].replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
 
-        removeName(bestElementName, msaSequenceNames);
-
-        var msaName = removedSequenceName + bestElementName + (msaSequenceNames.toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY);
+        var msaName = removedSequenceName + (msaSequenceNames.toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY);
 
         // only for visualization
         outputData.guideAlignments.push(bestAlignment);
