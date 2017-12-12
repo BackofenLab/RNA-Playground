@@ -69,15 +69,22 @@ Author: Alexander Mattheis
         var isTcoffee = algorithmName === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA;
         var isIterativeRefinement = algorithmName === ALGORITHMS.ITERATIVE_REFINMENT;
 
-        this.sequences = ko.observableArray(MULTI_SEQUENCE_DEFAULTS.SEQUENCES);
+        this.sequences = ko.observableArray(isIterativeRefinement ? ITERATIVE_SEQUENCE_DEFAULTS.SEQUENCES : MULTI_SEQUENCE_DEFAULTS.SEQUENCES);
 
-        this.calculation = ko.observable(MULTI_SEQUENCE_DEFAULTS.CALCULATION);
+        this.calculation = ko.observable(MULTI_SEQUENCE_DEFAULTS.CALCULATION);  // equal for all used MSA approaches
 
         // function
-        this.baseCosts = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS);
-        this.enlargement = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT);
-        this.match = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH);
-        this.mismatch = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH);
+        this.baseCosts = ko.observable(isIterativeRefinement
+            ? ITERATIVE_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS : MULTI_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS);
+
+        this.enlargement = ko.observable(isIterativeRefinement
+            ? ITERATIVE_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT : MULTI_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT);
+
+        this.match = ko.observable(isIterativeRefinement
+            ? ITERATIVE_SEQUENCE_DEFAULTS.FUNCTION.MATCH : MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH);
+
+        this.mismatch = ko.observable(isIterativeRefinement
+            ? ITERATIVE_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH : MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH);
 
         if (isTcoffee) {
             multiSequenceInterfaceInstance.lastNumberOfSequences = viewmodel.sequences().length;
@@ -110,8 +117,8 @@ Author: Alexander Mattheis
                 }
             );
         } else if (isIterativeRefinement) {
-            this.availableApproaches = ko.observableArray(MULTI_SEQUENCE_DEFAULTS.APPROACHES);
-            this.selectedApproach = ko.observableArray(MULTI_SEQUENCE_DEFAULTS.STANDARD_APPROACH);
+            this.availableApproaches = ko.observableArray(ITERATIVE_SEQUENCE_DEFAULTS.APPROACHES);
+            this.selectedApproach = ko.observableArray(ITERATIVE_SEQUENCE_DEFAULTS.STANDARD_APPROACH);
         }
 
         this.clusterNames = ko.computed(
@@ -328,6 +335,7 @@ Author: Alexander Mattheis
 
         /* bug-fix for a Knockout-problem -> dynamically generated inputs get wrong values after typing in something */
         MULTI_SEQUENCE_DEFAULTS.SEQUENCES = MULTI_SEQUENCE_DEFAULTS.SEQUENCES_COPY.slice();
+        ITERATIVE_SEQUENCE_DEFAULTS.SEQUENCES = ITERATIVE_SEQUENCE_DEFAULTS.SEQUENCES_COPY.slice();
         inputViewmodel.sequences.removeAll();  // avoids changing on the as constant defined value
 
         return sequenceArray;

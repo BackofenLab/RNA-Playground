@@ -525,8 +525,31 @@ var HIERARCHICAL_CLUSTERING_DEFAULTS = {
     STANDARD_APPROACH: [CLUSTERING_ALGORITHMS.UPGMA]
 };
 
-var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
+var ITERATIVE_SEQUENCE_DEFAULTS = {  /* sequences from lecture */
     APPROACHES: [ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR, ITERATIVE_REFINEMENT_STRATEGIES.ONE_VS_ALL],
+
+    SEQUENCES: [ /* input from T-Coffee paper does not work */
+        "ACGT",
+        "AT",
+        "GCT",
+        "GC"],
+    SEQUENCES_COPY: [
+        "ACGT",
+        "AT",
+        "GCT",
+        "GC"],  /* some bugfix for Knockout problem */
+
+    STANDARD_APPROACH: [ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR],
+
+    FUNCTION: {
+        BASE_COSTS: -1,
+        ENLARGEMENT: -3,
+        MATCH: 1,
+        MISMATCH: 0
+    }
+};
+
+var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
     CALCULATION: "similarity",
     GLOBAL_ALIGNMENTS_PER_SEQUENCE: 1,
     LOCAL_ALIGNMENTS_PER_SEQUENCE: 2,
@@ -542,9 +565,7 @@ var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
         "GARFIELD-THE-VERY-FAST-CAT",
         "THE-FAT-CAT"],  /* some bugfix for Knockout problem */
 
-    STANDARD_APPROACH: [ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR],
     USE_LOCAL_LIBRARY: false,
-
 
     FUNCTION: {
         BASE_COSTS: -3,

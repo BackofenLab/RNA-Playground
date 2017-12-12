@@ -205,7 +205,7 @@ $(document).ready(function () {
         var removedSequence = getSequenceByName(progressiveAlignment, msaSequenceNames, removedSequenceName);
         var remainingAlignment = removeSequenceFromMSA(progressiveAlignment, msaSequenceNames, removedSequenceName);
 
-        outputData.firstGroups.push([removedSequence]);
+        outputData.firstGroups.push([removedSequence.replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY)]);
         outputData.firstGroupsNames.push(removedSequenceName);
 
         outputData.secondGroups.push(remainingAlignment[0]);
