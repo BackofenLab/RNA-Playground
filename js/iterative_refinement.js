@@ -46,7 +46,12 @@ $(document).ready(function () {
      * and afterwards post-processes the multi-sequence-alignment with an iterative refinement.
      * @constructor
      * @augments MultiSequenceAlignment
-     * @see http://www.bioinf.uni-freiburg.de/Lehre/Courses/2017_SS/V_BioinfoII/ (just used to get some ideas)
+     * @see http://www.bioinf.uni-freiburg.de/Lehre/Courses/2017_SS/V_BioinfoII/ (source for algorithm)
+     * and https://doi.org/10.1016/0022-2836(87)90316-0 (not implemented, but original idea)
+     *
+     * Barton, Geoffrey J., and Michael J.E. Sternberg.
+     * "A strategy for the rapid multiple alignment of protein sequences: confidence levels from tertiary structure comparisons."
+     * Journal of molecular biology 198.2 (1987): 327-337.
      */
     function IterativeRefinement() {
         iterativeRefinementInstance = this;
@@ -234,8 +239,49 @@ $(document).ready(function () {
         // remove sequenceName from msaSequenceNames and the associated sequence from the multiSequenceAlignment
         msaSequenceNames.splice(indexInSequenceNames, 1);
         multiSequenceAlignment.splice(indexInSequenceNames, 1);
+        multiSequenceAlignment = removeGapOnlyColumns(multiSequenceAlignment);
 
         return [multiSequenceAlignment, msaSequenceNames];
+    }
+
+    /**
+     * Removes gap-only columns.
+     * Hint: Is a part of the original algorithm by Geoffrey J.Barton and Michael J.E.Sternberg.
+     * @param msa {Array} - The msa from which gap only columns should be removed.
+     * @return {Array} - The msa without gap-only columns.
+     */
+    function removeGapOnlyColumns(msa) {
+        var storeColumn = [];
+
+        // find out which gap columns have to be stored
+        for (var j = 0; j < msa[0].length; j++) {  // iteration over each column
+            var isGapOnly = true;
+
+            for (var i = 0; i < msa.length; i++) { // iteration over each sequence
+                if (msa[i][j] !== SYMBOLS.GAP && msa[i][j] !== SYMBOLS.NONE) {  // if not only gaps in column
+                    isGapOnly = false;
+                    break;
+                }
+            }
+
+            storeColumn.push(!isGapOnly);
+        }
+
+        // create new msa without gap-only columns
+        var decentMsa = [];  // without gap-only columns
+        for (var i = 0; i < msa.length; i++)
+            decentMsa[i] = SYMBOLS.EMPTY;
+
+        for (var j = 0; j < storeColumn.length; j++) {
+
+            if (storeColumn[j]) {
+                for (var i = 0; i < msa.length; i++) { // iteration over each sequence
+                    decentMsa[i] += msa[i][j];
+                }
+            }
+        }
+
+        return decentMsa;
     }
 
     /**

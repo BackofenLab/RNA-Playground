@@ -7,10 +7,12 @@ Author: Alexander Mattheis
 
 <div id="algorithm_description">
   <div class="description">
-      Different iterative refinement approaches were proposed to improve the sum-of-pairs (SoP) score
+      Originally proposed by <a href="https://doi.org/10.1016/0022-2836(87)90316-0">Geoffrey J. Barton and Michael J.E. Sternberg</a>
+      many different iterative refinement approaches were introduced to improve the score (e.g. the sum-of-pairs (SoP))
       of a progressive alignment
-      (e.g. an alignment created with
-      <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>)
+      (i.e. an alignment created with
+      <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
+      or another similar approach)
       like Round-robin, in which the sequences are realigned in the order,
       they have been added to the multiple sequence alignment (using the guide-tree).
       If the score improves through the realignment,
@@ -25,7 +27,7 @@ Author: Alexander Mattheis
           </li>
           <li>
               <em>One-vs-All:</em> From each aligned sequence remove gaps and realign immediately against all
-              using the progressive alignment procedure of
+              sequences in the multiple-sequence-alignment using progressive alignment procedure of
               <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle</a>.
           </li>
       </ol>
@@ -300,7 +302,8 @@ Author: Alexander Mattheis
             <tr>
                 <th>
                     <small>
-                        <b>Hint:</b> Last blue marked result (if it exists) shows the final realignment, else the initial alignment will be the final realignment.
+                        <b>Hints:</b> Last blue marked result, if existent shows the final realignment and else the initial alignment will be the final realignment.
+                        Remaining alignments fulfill the MSA definition (i.e. gap-only columns are removed).
                     </small>
                 </th>
             </tr>
