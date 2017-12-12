@@ -20,6 +20,7 @@ load:
   - js/gotoh.js
   - js/gotoh_local.js
   - js/hirschberg.js
+  - js/iterative_refinement.js
   - js/needleman_wunsch.js
   - js/neighbour_joining.js
   - js/notredame_higgins_heringa.js
@@ -31,6 +32,7 @@ test:
   - js/tests/test_gotoh.js
   - js/tests/test_gotoh_local.js
   - js/tests/test_hirschberg.js
+  - js/tests/test_iterative_refinement.js
   - js/tests/test_needleman_wunsch.js
   - js/tests/test_neighbour_joining.js
   - js/tests/test_notredame_higgins_heringa.js
