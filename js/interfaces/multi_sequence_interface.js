@@ -493,5 +493,24 @@ Author: Alexander Mattheis
         // tree
         viewmodels.output.newickString(outputData.newickString);
         viewmodels.visual.drawTree();
+
+        // distance matrix
+        viewmodels.output.remainingClusters(outputData.remainingClusters);
+
+        outputData.distanceMatrix
+            = bases.clustering.getMatrixAsTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined, true);
+
+        alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
+
+        viewmodels.output.distanceMatrix(outputData.distanceMatrix);
+
+        // iteration over each row of the matrix
+        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.distanceMatrix.length)
+                viewmodels.output.distanceMatrix[i] = new Function();
+
+            viewmodels.output.distanceMatrix[i](outputData.distanceMatrix[i]);
+        }
     }
 }());

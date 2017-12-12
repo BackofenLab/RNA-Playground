@@ -29,7 +29,6 @@ Author: Alexander Mattheis
 
         this.startProcessing = interfaceInstance.startProcessing;
         this.roundValues = interfaceInstance.roundValues;
-        this.getDistanceTable = interfaceInstance.getDistanceTable;
         this.getDistanceTables = interfaceInstance.getDistanceTables;
         this.getLaTeXFormula = interfaceInstance.getLaTeXFormula;
 
@@ -757,7 +756,7 @@ Author: Alexander Mattheis
             var finalGroupName = outputData.joinedGroupNames[outputData.joinedGroupNames.length-1];
             var finalGroup = outputData.joinedGroups[outputData.joinedGroups.length-1];
 
-            var groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName);
+            var groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName, true);
             var groupMemberRankings = getRankings(groupMemberNames, finalGroup);
 
             var reorderedGroups = [];
@@ -775,9 +774,9 @@ Author: Alexander Mattheis
                 var group1 = outputData.firstGroups[i];
                 var group2 = outputData.secondGroups[i];
 
-                var memberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.joinedGroupNames[i]);
-                var member1Names = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.firstGroupsNames[i]);
-                var member2Names = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.secondGroupsNames[i]);
+                var memberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.joinedGroupNames[i], true);
+                var member1Names = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.firstGroupsNames[i], true);
+                var member2Names = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.secondGroupsNames[i], true);
 
                 var sortedGroupAndNames = getSortedGroup(group, memberNames, groupMemberRankings);
                 var sorted1GroupAndNames = getSortedGroup(group1, member1Names, groupMemberRankings);
@@ -1140,6 +1139,20 @@ Author: Alexander Mattheis
 
         // tree
         viewmodel.newickString = ko.observable(outputData.newickString);
+
+        // distance matrix
+        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
+
+        outputData.distanceMatrix
+            = bases.clustering.getMatrixAsTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined, true);
+
+        interfaceInstance.roundValues(algorithmName, outputData);
+
+        viewmodel.distanceMatrix =  ko.observableArray(outputData.distanceMatrix);
+
+        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
+            viewmodel.distanceMatrix[i] = ko.observableArray(outputData.distanceMatrix[i]);
+        }
     }
 
     /**
@@ -1152,7 +1165,7 @@ Author: Alexander Mattheis
             var finalGroupName = outputData.refinedProgressiveAlignmentName;
             var finalGroup = outputData.refinedProgressiveAlignment;
 
-            var groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName);
+            var groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName, true);
             var groupMemberRankings = getRankings(groupMemberNames, finalGroup);
 
             outputData.refinedProgressiveAlignment = getSortedGroup(finalGroup, groupMemberNames, groupMemberRankings)[0];
@@ -1160,7 +1173,7 @@ Author: Alexander Mattheis
             // sort progressive alignment
             finalGroupName = outputData.progressiveAlignmentName;
             finalGroup = outputData.progressiveAlignment;
-            groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName);
+            groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName, true);
             groupMemberRankings = getRankings(groupMemberNames, finalGroup);
 
             outputData.progressiveAlignment = getSortedGroup(finalGroup, groupMemberNames, groupMemberRankings)[0];

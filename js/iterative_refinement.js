@@ -105,7 +105,7 @@ $(document).ready(function () {
         var ioData = computeFengDoolittle();
         var startMsa = ioData[1].progressiveAlignment.slice();
         var startMsaName = ioData[1].joinedGroupNames[ioData[1].joinedGroupNames.length - 1];
-        var startMsaSequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(startMsaName);
+        var startMsaSequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(startMsaName, false);
 
         var names = getNamesInOrderAddedToMSA(ioData[1].treeBranches[ioData[1].treeBranches.length - 1]);
 
@@ -123,16 +123,15 @@ $(document).ready(function () {
             var msaRefinedWithName = getRealignment(mrData[1][0], mrData[1][1], mrData[0], removedSequenceName, ioData[1].distanceMatrix, ioData[1].nameOfSequence);
 
             // [3] compute score of the MSA and refined MSA (replace startMsa with refinedMsa if [refinedMsa score] > [startMsa score])
-            var msaWithName = getBetterMultiSequenceAlignment([startMsa, startMsaSequenceNames], msaRefinedWithName);
+            var msaWithName = getBetterMultiSequenceAlignment([startMsa, startMsaName], msaRefinedWithName);
             startMsa = msaWithName[0];
             startMsaName = msaWithName[1];
-            startMsaSequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(startMsaName);
+            startMsaSequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(startMsaName, false);
         }
 
+        debugger;
         // storing data from Feng-Doolittle and refined alignment
-        storeAlignmentData(ioData[1].progressiveAlignment, ioData[1].score, ioData[1].newickString,
-            ioData[1].joinedGroupNames[ioData[1].joinedGroupNames.length - 1], startMsa,
-            multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, startMsa), startMsaName);
+        storeAlignmentData(ioData, startMsa, multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, startMsa), startMsaName);
 
         return [inputData, outputData];
     }
@@ -482,17 +481,21 @@ $(document).ready(function () {
 
     /**
      * Stores the alignment data from input.
-     * @param msa {Array} - The original multi-sequence alignment.
-     * @param score {number} - The original multi-sequence alignment score.
-     * @param newickTreeString {string} - The string, which encodes the phylogenetic tree.
-     * @param msaName {string} - The name of the progressive alignment.
+     * @param fengDoolittleData {[input, output]} - The input and output data of Feng-Doolittle.
+     * @param refinedMsa {Array} - The refined multi-sequence alignment.
+     * @param refinedScore {number} - The refined multi-sequence alignment score.
+     * @param refinedMsaName {string} - The refined multi-sequence alignment name.
      */
-    function storeAlignmentData(msa, score, newickTreeString, msaName, refinedMsa, refinedScore, refinedMsaName) {
-        outputData.progressiveAlignment = msa;
-        outputData.score = score;
+    function storeAlignmentData(fengDoolittleData, refinedMsa, refinedScore, refinedMsaName) {
+        outputData.progressiveAlignment = fengDoolittleData[1].progressiveAlignment;
+        outputData.score = fengDoolittleData[1].score;
 
-        outputData.newickString = newickTreeString;
-        outputData.progressiveAlignmentName = msaName;
+        outputData.newickString = fengDoolittleData[1].newickString;
+        outputData.progressiveAlignmentName = fengDoolittleData[1].joinedGroupNames[fengDoolittleData[1].joinedGroupNames.length - 1];
+
+        outputData.distanceMatrix = fengDoolittleData[1].distanceMatrix;
+        outputData.distanceMatrixLength = fengDoolittleData[1].distanceMatrixLength;
+        outputData.remainingClusters = fengDoolittleData[1].remainingClusters;
 
         outputData.refinedProgressiveAlignment = refinedMsa;
         outputData.refinedScore = refinedScore;

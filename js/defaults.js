@@ -97,7 +97,7 @@ var CHARACTER = {
  * Stores the displayed clustering algorithm names.
  */
 var CLUSTERING_ALGORITHMS = {
-    NEIGHBOUR_JOINING: "Neighbour-Joining",
+    NEIGHBOUR_JOINING: "Neighbour-Joining", /* Hint: Change name also in the Agglomerative-Clustering.html or it won't work anymore */
     UPGMA: "Unweighted PGMA",
     WPGMA: "Weighted PGMA"
 };
@@ -131,7 +131,7 @@ var INPUT = {
 };
 
 var ITERATIVE_REFINEMENT_STRATEGIES = {
-    MIN_DISTANCE_PAIR: "Minimum Distance-Pair",
+    MIN_DISTANCE_PAIR: "Minimum Distance-Pair",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore */
     ONE_VS_ALL: "One-vs-All"
 };
 

@@ -966,7 +966,7 @@ Author: Alexander Mattheis
      * @param groupName {string} - The group name which encoding the group members.
      * @return {Array} - The array with the group members.
      */
-    function getIndividualSequenceNames(groupName) {
+    function getIndividualSequenceNames(groupName, commaSeparated) {
         var names = [];
 
         if (groupName !== undefined) {
@@ -979,7 +979,10 @@ Author: Alexander Mattheis
                     i++;
                 }
 
-                names.push(number.length > 0 ? character + SYMBOLS.COMMA + number : character);
+                if (commaSeparated)
+                    names.push(number.length > 0 ? character + SYMBOLS.COMMA + number : character);
+                else
+                    names.push(number.length > 0 ? character + number : character);
             }
         }
 

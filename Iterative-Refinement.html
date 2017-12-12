@@ -35,7 +35,7 @@ Author: Alexander Mattheis
       In the following, we provide first at all a comparison between the Feng-Doolittle alignment and the final realignment.
       Below this the iteratively computed intermediate realignments together
       with the guide tree used for the realignment are shown.
-      The score improving realignments are marked blue.
+      The <em>Minimum Distance-Pair</em> strategy provides also a distance table.
       Our iterative refinement starts from an alignment computed with the
       <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
       algorithm. And the sum-of-pairs (SoP) score of the final MSA is simply the score sum of all pairwise
@@ -325,5 +325,49 @@ Author: Alexander Mattheis
                 PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
             </a>
         </div>
+    <!-- /ko -->
+
+    <div class="group_hint">
+        <b>Hint: </b> Visualization is only shown, if there are no negative distances.
+    </div>
+
+    <!-- ko if: $root.input.selectedApproach() == "Minimum Distance-Pair" -->
+        <h2>Distance Table</h2>
+        <!-- ko if: $root.output.progressiveAlignment()[0].length > 0 -->
+            <div class="distance_table">
+                <table class="distances">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <!-- ko foreach: $root.output.remainingClusters()[0] -->
+                                <th data-bind="drawChar: [$data, undefined]"></th>
+                            <!-- /ko -->
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- ko foreach: $root.output.distanceMatrix() --> <!-- to get i-indexes = $parentContext.$index() -->
+                            <tr>
+                                <th data-bind="drawChar: [$root.output.remainingClusters()[0][$index()], undefined]"></th>
+
+                                <!-- ko foreach: $root.output.distanceMatrix()[0] --> <!-- to get j-indexes = $index() -->
+                                    <!-- ko if: $index() >= $parentContext.$index() -->
+                                        <td class="non_selectable_entry"
+                                            data-bind="text: $root.output.distanceMatrix()[$parentContext.$index()][$index()]">
+                                        </td>
+                                    <!-- /ko -->
+
+                                    <!-- ko if: $index() < $parentContext.$index() -->
+                                        <td class="non_selectable_entry gray"
+                                            data-bind="text:  $root.output.distanceMatrix()[$parentContext.$index()][$index()]">
+                                        </td>
+                                    <!-- /ko -->
+                                <!-- /ko -->
+                            </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
+        <!-- /ko -->
     <!-- /ko -->
 </div>

@@ -116,29 +116,8 @@ Author: Alexander Mattheis
      * @param outputData {Object} - Output data which is modified.
      */
     function roundValues(algorithmName, outputData) {
-        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
-            // every possibility
-            for (var i = 0; i < outputData.iterationData.length; i++) {
-                // every round
-                for (var j = 0; j < outputData.iterationData[i].length; j++) {
-
-                    // every matrix row
-                    for (var l = 0; l < outputData.iterationData[i][j][8].length; l++) {
-
-                        // every entry
-                        for (var k = 0; k < outputData.iterationData[i][j][8][l].length; k++) {
-                            outputData.iterationData[i][j][8][l][k]
-                                = round(outputData.iterationData[i][j][8][l][k], 1);
-                        }
-                    }
-
-                    outputData.iterationData[i][j][0] = round(outputData.iterationData[i][j][0], 4); // score
-                    outputData.iterationData[i][j][2] = round(outputData.iterationData[i][j][2], 4); // lambda
-                }
-            }
-
-        } else if (algorithmName === ALGORITHMS.FENG_DOOLITTLE
-            || algorithmName === ALGORITHMS.AGGLOMERATIVE_CLUSTERING) {  // if Feng-Doolittle or Agglomerative
+        if (algorithmName === ALGORITHMS.AGGLOMERATIVE_CLUSTERING
+            || algorithmName === ALGORITHMS.FENG_DOOLITTLE) {  // if Feng-Doolittle or Agglomerative
             // iterate over each distance matrix
             for (var k = 0; k < outputData.distanceMatrices.length; k++) {
 
@@ -148,8 +127,8 @@ Author: Alexander Mattheis
                     // iterate over each entry
                     for (var j = 0; j < outputData.distanceMatrices[k][i].length; j++) {
                         // if (j > i)  // only the values upper the diagonal
-                            outputData.distanceMatrices[k][i][j]
-                                = round(outputData.distanceMatrices[k][i][j], 1);
+                        outputData.distanceMatrices[k][i][j]
+                            = round(outputData.distanceMatrices[k][i][j], 1);
                     }
                 }
             }
@@ -169,8 +148,35 @@ Author: Alexander Mattheis
                     }
                 }
             }
+        } else if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
+            // every possibility
+            for (var i = 0; i < outputData.iterationData.length; i++) {
+                // every round
+                for (var j = 0; j < outputData.iterationData[i].length; j++) {
+
+                    // every matrix row
+                    for (var l = 0; l < outputData.iterationData[i][j][8].length; l++) {
+
+                        // every entry
+                        for (var k = 0; k < outputData.iterationData[i][j][8][l].length; k++) {
+                            outputData.iterationData[i][j][8][l][k]
+                                = round(outputData.iterationData[i][j][8][l][k], 1);
+                        }
+                    }
+
+                    outputData.iterationData[i][j][0] = round(outputData.iterationData[i][j][0], 4); // score
+                    outputData.iterationData[i][j][2] = round(outputData.iterationData[i][j][2], 4); // lambda
+                }
+            }
         } else if (algorithmName === ALGORITHMS.HIRSCHBERG) {
             // do nothing, because there is nothing to round
+        } else if (algorithmName === ALGORITHMS.ITERATIVE_REFINMENT) {
+            // iterate over each row
+            for (var i = 0; i < outputData.distanceMatrix.length; i++) {
+                // iterate over each entry
+                for (var j = 0; j < outputData.distanceMatrix[i].length; j++)
+                    outputData.distanceMatrix[i][j] = round(outputData.distanceMatrix[i][j], 1);
+            }
         } else if (algorithmName === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {
             var alignmentPairsCount = outputData.librariesData[0].length;
             var primLibValues = outputData.librariesData[2];
