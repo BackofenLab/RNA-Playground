@@ -8,34 +8,41 @@ Author: Alexander Mattheis
 <div id="algorithm_description">
   <div class="description">
       Originally proposed by <a href="https://doi.org/10.1016/0022-2836(87)90316-0">Geoffrey J. Barton and Michael J.E. Sternberg</a>
-      many different iterative refinement approaches were introduced to improve the score (e.g. the sum-of-pairs (SoP))
+      many different iterative refinement approaches were introduced to improve the MSA-score (e.g. the sum-of-pairs (SoP))
       of a progressive alignment
       (i.e. an alignment created with
       <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
       or another similar approach)
-      like Round-robin, in which the sequences are realigned in the order,
-      they have been added to the multiple sequence alignment (using the guide-tree).
+      like Round-robin, in which the sequences are realigned in order.
       If the score improves through the realignment,
       then the multi-sequence alignment is kept.
       And this approach can also be divided into different strategies:
+      you have always to go over each aligned sequence, remove the gaps and in the approach
 
       <ol>
           <li>
-              <em>Minimum Distance-Pair:</em> From each aligned sequence remove gaps and realign immediately against
-              the nearest sequence in the distance table you get from
-              <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a> algorithm.
+              <em>Minimum Distance Pair:</em> You realign immediately against
+                                              the nearest sequence in the distance table you get
+                                              from <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a> algorithm.
           </li>
+
           <li>
-              <em>One-vs-All:</em> From each aligned sequence remove gaps and realign immediately against all
-              sequences in the multiple-sequence-alignment using progressive alignment procedure of
-              <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle</a>.
+              <em>Pairwise Best Pair:</em> You realign immediately against all
+                                           sequences in the multiple-sequence-alignment using progressive alignment procedure
+                                           of <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle</a>
+                                           (align against sequence with pairwise-best score).
+          </li>
+
+          <li>
+              <em>One-vs-All:</em> You realign once against every sequence in the multiple-sequence alignment
+                                   and select from the resulting multiple-sequence-alignments the one with highest MSA-score.
           </li>
       </ol>
 
       In the following, we provide first at all a comparison between the Feng-Doolittle alignment and the final realignment.
       Below this the iteratively computed intermediate realignments together
       with the guide tree used for the realignment are shown.
-      The <em>Minimum Distance-Pair</em> strategy has also a distance table.
+      The <em>Minimum Distance Pair</em> strategy has also a distance table.
       Our iterative refinement starts from an alignment computed with the
       <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
       algorithm. And the sum-of-pairs (SoP) score of the final MSA is simply the score sum of all pairwise
@@ -331,7 +338,7 @@ Author: Alexander Mattheis
         <b>Hint: </b> Visualization is only shown, if there are no negative distances.
     </div>
 
-    <!-- ko if: $root.input.selectedApproach() == "Minimum Distance-Pair" -->
+    <!-- ko if: $root.input.selectedApproach() == "Minimum Distance Pair" -->
         <h2>Distance Table</h2>
         <!-- ko if: $root.output.progressiveAlignment()[0].length > 0 -->
             <div class="distance_table">

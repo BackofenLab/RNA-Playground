@@ -131,8 +131,9 @@ var INPUT = {
 };
 
 var ITERATIVE_REFINEMENT_STRATEGIES = {
-    MIN_DISTANCE_PAIR: "Minimum Distance-Pair",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore */
-    ONE_VS_ALL: "One-vs-All"
+    MIN_DISTANCE_PAIR: "Minimum Distance Pair",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore */
+    ONE_VS_ALL: "One-vs-All",
+    PAIRWISE_BEST_PAIR: "Pairwise Best Pair"
 };
 
 /**
@@ -526,7 +527,11 @@ var HIERARCHICAL_CLUSTERING_DEFAULTS = {
 };
 
 var ITERATIVE_SEQUENCE_DEFAULTS = {  /* sequences from lecture */
-    APPROACHES: [ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR, ITERATIVE_REFINEMENT_STRATEGIES.ONE_VS_ALL],
+    APPROACHES: [
+        ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR,
+        ITERATIVE_REFINEMENT_STRATEGIES.ONE_VS_ALL,
+        ITERATIVE_REFINEMENT_STRATEGIES.PAIRWISE_BEST_PAIR
+    ],
 
     SEQUENCES: [ /* input from T-Coffee paper does not work */
         "ACGT",

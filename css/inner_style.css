@@ -36,7 +36,7 @@ small {
 table {
     border-collapse: collapse;
     display: inline-block;
-    margin: 0px;
+    margin: 0;
     text-align: center;
 }
 
@@ -65,7 +65,7 @@ th {
 /*---- CLASS STYLING ----*/
 .add_remove {
     height: 22px;
-    padding: 0px;
+    padding: 0;
     text-align: center;
     width: 22px;
 }
@@ -95,15 +95,15 @@ th {
 }
 
 .arrows_d { /* diagonal */
-    background-position: 0px 0px;
+    background-position: 0 0;
 }
 
 .arrows_l { /* left */
-    background-position: 0px -38px;
+    background-position: 0 -38px;
 }
 
 .arrows_t { /* top */
-    background-position: 0px -73px;
+    background-position: 0 -73px;
 }
 
 .calculation, .calculation_horizontal, .calculation_vertical,
@@ -371,7 +371,7 @@ th {
 }
 
 .pairwise_data_header th {
-    border-bottom: 0px;
+    border-bottom: 0;
     height: 24px;
     padding-left: 10px;
     text-align: left;

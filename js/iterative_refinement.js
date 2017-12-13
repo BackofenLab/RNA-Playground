@@ -112,7 +112,7 @@ $(document).ready(function () {
         for (var i = 0; i < names.length; i++) {
             var removedSequenceName = names[i];
 
-            // create copy of the alignment before a realignment
+            // create a copy of the alignment before a realignment
             var msa = startMsa.slice();  // shallow copy, because the elements itself are not modified
             var msaSequenceNames = startMsaSequenceNames.slice();
 
@@ -298,8 +298,8 @@ $(document).ready(function () {
 
         if (inputData.iterativeRefinementSubalgorithm === ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR)
             realignment = getMinDistanceRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, distanceMatrix);
-        else if (inputData.iterativeRefinementSubalgorithm === ITERATIVE_REFINEMENT_STRATEGIES.ONE_VS_ALL)
-            realignment = getOneVsAllRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, sequenceIdentificator);
+        else if (inputData.iterativeRefinementSubalgorithm === ITERATIVE_REFINEMENT_STRATEGIES.PAIRWISE_BEST_PAIR)
+            realignment = getPairwiseBestRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, sequenceIdentificator);
 
         return realignment;
     }
@@ -415,7 +415,7 @@ $(document).ready(function () {
      * @param sequenceIdentificator {Object} - An object which identifies a sequence and returns its name.
      * @return {Array} - The MSA in which the removed sequence is realigned.
      */
-    function getOneVsAllRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, sequenceIdentificator) {
+    function getPairwiseBestRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, sequenceIdentificator) {
         multiSequenceAlignmentInstance.setIO(inputData, outputData);
 
         // realign removed sequence with best sequence
