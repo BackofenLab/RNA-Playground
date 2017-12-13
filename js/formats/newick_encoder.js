@@ -31,7 +31,7 @@ Author: Alexander Mattheis
     /**
      * Returns a Newick-Format representation of a phylogenetic tree
      * by a (depth-first-search) post order traversal of the tree.
-     * @param tree - The phylogenetic tree from which you want get the representation.
+     * @param tree {Object} - The phylogenetic tree from which you want get the representation.
      * @return {string} - The Newick string of the given tree.
      */
     function getEncoding(tree) {

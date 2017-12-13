@@ -65,7 +65,16 @@ Author: Alexander Mattheis
                     id="approach_selector"></select>
         </div>
     </div>
-    <br />
+
+    <div class="row">
+        <div class="colW100"><label>Round-Robin order:</label></div>
+
+        <div class="colW400">
+            <select class="selector smaller" data-bind="options: input.availableOrders, selectedOptions: input.selectedOrder"
+                    id="order_selector"></select>
+        </div>
+    </div>
+
     <!-- ko foreach: $root.input.sequences() -->
         <div class="row">
             <div class="colW100">

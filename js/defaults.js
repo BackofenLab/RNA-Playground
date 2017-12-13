@@ -14,7 +14,7 @@ Author: Alexander Mattheis
  * Multiple constants of same "logic" (for example with similar naming) stored in structures.
  */
 
-/* HINT: alphabetically ordered (also within definitions) and structures after constants */
+/* HINT: alphabetically ordered (also within definitions) and structures (i.e. {}) after constants */
 
 // constants
 var END_SO_ON = ".."
@@ -128,6 +128,12 @@ var INPUT = {
     LENGTH_MIN: 0,
     MAX: 10,  // abs: absolute value
     MIN: -10
+};
+
+var ITERATIVE_REFINEMENT_ORDERS = {
+    INPUT_ORDER: "Input-Sequences Order",
+    LEFT_FIRST: "Post-Order Left-First",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore */
+    RIGHT_FIRST: "Post-Order Right-First"
 };
 
 var ITERATIVE_REFINEMENT_STRATEGIES = {
@@ -533,6 +539,12 @@ var ITERATIVE_SEQUENCE_DEFAULTS = {  /* sequences from lecture */
         ITERATIVE_REFINEMENT_STRATEGIES.PAIRWISE_BEST_PAIR
     ],
 
+    ORDERS: [
+        ITERATIVE_REFINEMENT_ORDERS.INPUT_ORDER,
+        ITERATIVE_REFINEMENT_ORDERS.LEFT_FIRST,
+        ITERATIVE_REFINEMENT_ORDERS.RIGHT_FIRST
+    ],
+
     SEQUENCES: [ /* input from T-Coffee paper does not work */
         "ACGT",
         "AT",
@@ -545,6 +557,7 @@ var ITERATIVE_SEQUENCE_DEFAULTS = {  /* sequences from lecture */
         "GC"],  /* some bugfix for Knockout problem */
 
     STANDARD_APPROACH: [ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR],
+    STANDARD_ORDER: [ITERATIVE_REFINEMENT_ORDERS.RIGHT_FIRST],
 
     FUNCTION: {
         BASE_COSTS: -1,

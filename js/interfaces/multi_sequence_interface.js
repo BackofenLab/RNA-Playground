@@ -119,6 +119,9 @@ Author: Alexander Mattheis
         } else if (isIterativeRefinement) {
             this.availableApproaches = ko.observableArray(ITERATIVE_SEQUENCE_DEFAULTS.APPROACHES);
             this.selectedApproach = ko.observableArray(ITERATIVE_SEQUENCE_DEFAULTS.STANDARD_APPROACH);
+
+            this.availableOrders = ko.observableArray(ITERATIVE_SEQUENCE_DEFAULTS.ORDERS);
+            this.selectedOrder = ko.observableArray(ITERATIVE_SEQUENCE_DEFAULTS.STANDARD_ORDER);
         }
 
         this.clusterNames = ko.computed(

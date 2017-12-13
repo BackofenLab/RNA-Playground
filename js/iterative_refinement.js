@@ -93,6 +93,7 @@ $(document).ready(function () {
         multiSequenceAlignmentInstance.setInput(inputViewmodel);
 
         inputData.iterativeRefinementSubalgorithm = inputViewmodel.selectedApproach()[0];  // because it's array from which we choose
+        inputData.roundRobinOrder = inputViewmodel.selectedOrder()[0];
     }
 
     /**
@@ -107,7 +108,7 @@ $(document).ready(function () {
         var startMsaName = ioData[1].joinedGroupNames[ioData[1].joinedGroupNames.length - 1];
         var startMsaSequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(startMsaName, false);
 
-        var names = getNamesInOrderAddedToMSA(ioData[1].treeBranches[ioData[1].treeBranches.length - 1]);
+        var names = getNamesInOrder(ioData[1].treeBranches[ioData[1].treeBranches.length - 1], ioData[1].clusterNames);
 
         for (var i = 0; i < names.length; i++) {
             var removedSequenceName = names[i];
@@ -167,12 +168,20 @@ $(document).ready(function () {
 
     /**
      * Returns the names of sequences in order added to the MSA by doing an post-order-traversal.
-     * @param tree - The phylogenetic tree from which you want get the representation.
+     * @param tree {Object} - The phylogenetic tree from which you want get the representation.
+     * @param sequenceNames {Array} - The names of the sequences.
      * @return {Array} - The names of the sequences in order they have been added to the MSA.
      */
-    function getNamesInOrderAddedToMSA(tree) {
+    function getNamesInOrder(tree, sequenceNames) {
         var names = [];
-        postOrder(tree, names);
+
+        if (inputData.roundRobinOrder === ITERATIVE_REFINEMENT_ORDERS.INPUT_ORDER)
+            names = sequenceNames;
+        if (inputData.roundRobinOrder === ITERATIVE_REFINEMENT_ORDERS.LEFT_FIRST)
+            postOrder(tree, names, false);
+        else if (inputData.roundRobinOrder === ITERATIVE_REFINEMENT_ORDERS.RIGHT_FIRST)
+            postOrder(tree, names, true);
+
         return names;  // needed because else you get reverse order
     }
 
@@ -180,13 +189,19 @@ $(document).ready(function () {
      * Does a post-order traversal to get the sequence names.
      * @param node {Object} - The node from which on traversal takes place. At the beginning it is the root node.
      * @param names {Array} - The array which is filled with names.
+     * @param rightFirst {boolean} - Tells if we first look on the right node or not.
      */
-    function postOrder(node, names) {
+    function postOrder(node, names, rightFirst) {
         if (node === undefined)
             return;
 
-        postOrder(node.rightChild, names);
-        postOrder(node.leftChild, names);
+        if (rightFirst) {
+            postOrder(node.rightChild, names, rightFirst);
+            postOrder(node.leftChild, names, rightFirst);
+        } else {
+            postOrder(node.leftChild, names, rightFirst);
+            postOrder(node.rightChild, names, rightFirst);
+        }
 
         var isLeaf = node.leftChild === undefined && node.rightChild === undefined;
 
