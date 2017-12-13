@@ -414,36 +414,6 @@ $(document).ready(function () {
      * @param msaSequenceNames {Array} - The names of sequences in the multi-sequence-alignment.
      * @param removedSequence - The removed sequence which should be realigned.
      * @param removedSequenceName {string} - The name of the sequence which is removed.
-     * @param sequenceIdentificator {Object} - An object which identifies a sequence and returns its name.
-     * @return {Array} - The MSA in which the removed sequence is realigned.
-     */
-    function getPairwiseBestRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, sequenceIdentificator) {
-        multiSequenceAlignmentInstance.setIO(inputData, outputData);
-
-        // realign removed sequence with best sequence
-        var cleanSequence = removedSequence.replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
-        var bestAlignment
-            = multiSequenceAlignmentInstance.getBestAlignment([cleanSequence], multiSequenceAlignmentInstance.replaceGapsWithPlaceHolder(msa));
-
-        var bestElementName
-            = sequenceIdentificator[bestAlignment[2].replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
-
-        var msaName = removedSequenceName + (msaSequenceNames.toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY);
-
-        // only for visualization
-        outputData.guideAlignments.push(bestAlignment);
-        outputData.guideAlignmentsNames.push(removedSequenceName + SYMBOLS.ALIGN + bestElementName);
-
-        return [multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, bestAlignment), msaName];
-    }
-
-    /**
-     * Returns the realignment of the removed sequence
-     * with the input MSA using the minimum distance approach (described in the algorithm HTML-file).
-     * @param msa {Array} - The multi-sequence alignment to which the removed sequence should be realigned.
-     * @param msaSequenceNames {Array} - The names of sequences in the multi-sequence-alignment.
-     * @param removedSequence - The removed sequence which should be realigned.
-     * @param removedSequenceName {string} - The name of the sequence which is removed.
      * @return {Array} - The MSA in which the removed sequence is realigned and the score contained.
      */
     function getOneVsAllRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName) {
@@ -479,6 +449,36 @@ $(document).ready(function () {
         outputData.guideAlignmentsNames.push(removedSequenceName + SYMBOLS.ALIGN + bestPairwisePartnerName);
 
         return [bestMsa, msaName, bestScore];
+    }
+
+    /**
+     * Returns the realignment of the removed sequence
+     * with the input MSA using the minimum distance approach (described in the algorithm HTML-file).
+     * @param msa {Array} - The multi-sequence alignment to which the removed sequence should be realigned.
+     * @param msaSequenceNames {Array} - The names of sequences in the multi-sequence-alignment.
+     * @param removedSequence - The removed sequence which should be realigned.
+     * @param removedSequenceName {string} - The name of the sequence which is removed.
+     * @param sequenceIdentificator {Object} - An object which identifies a sequence and returns its name.
+     * @return {Array} - The MSA in which the removed sequence is realigned.
+     */
+    function getPairwiseBestRealignment(msa, msaSequenceNames, removedSequence, removedSequenceName, sequenceIdentificator) {
+        multiSequenceAlignmentInstance.setIO(inputData, outputData);
+
+        // realign removed sequence with best sequence
+        var cleanSequence = removedSequence.replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
+        var bestAlignment
+            = multiSequenceAlignmentInstance.getBestAlignment([cleanSequence], multiSequenceAlignmentInstance.replaceGapsWithPlaceHolder(msa));
+
+        var bestElementName
+            = sequenceIdentificator[bestAlignment[2].replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
+
+        var msaName = removedSequenceName + (msaSequenceNames.toString()).replace(MULTI_SYMBOLS.COMMA, SYMBOLS.EMPTY);
+
+        // only for visualization
+        outputData.guideAlignments.push(bestAlignment);
+        outputData.guideAlignmentsNames.push(removedSequenceName + SYMBOLS.ALIGN + bestElementName);
+
+        return [multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, bestAlignment), msaName];
     }
 
     /**
