@@ -484,6 +484,7 @@ th {
     clear: left;
     float: left;
     width: 167px;
+    margin-bottom: 0 !important;
 }
 
 .scrollable {
