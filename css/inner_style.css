@@ -242,6 +242,8 @@ th {
     border-bottom: 1px solid #a0a0a0;
     border-left: 1px solid #a0a0a0;
     border-right: 1px solid #a0a0a0;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
     width: 244px;
 }
 
@@ -436,6 +438,8 @@ th {
     border-bottom: 1px solid #a0a0a0;
     border-left: 1px solid #a0a0a0;
     border-right: 1px solid #a0a0a0;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
     width: 798px;
 }
 
@@ -483,9 +487,9 @@ th {
     border-right: 1px solid #a0a0a0;
     clear: left;
     float: left;
-    width: 167px;
-    margin-top: 0 !important;
     margin-bottom: 0 !important;
+    margin-top: 0 !important;
+    width: 167px;
 }
 
 .scrollable {
