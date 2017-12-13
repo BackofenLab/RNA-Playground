@@ -99,7 +99,7 @@ TestCase("test_notredame_higgins_heringa", {
         assertEquals(1.5, Math.round(outputData.distanceMatrix[["b", "c"]] * 10) / 10);
 
         // output: phylogenetic tree
-        assertEquals("(c:0.6264,(a:0.4904,b:0.4904):0.136);", outputData.newickString);
+        assertEquals("((b:0.4904,a:0.4904):0.136,c:0.6264);", outputData.newickString);
 
         // output: joinment
         // matrix a~b (is mirrored)

@@ -609,8 +609,8 @@ Author: Alexander Mattheis
         for (var i = 0; i < treeBranches.length; i++) {
             var treeBranch = treeBranches[i];
 
-            var leftChildName = treeBranch.leftChild.name;
-            var rightChildName = treeBranch.rightChild.name;
+            var leftChildName = treeBranch.rightChild.name;
+            var rightChildName = treeBranch.leftChild.name;
             var groupName = treeBranch.name;
 
             alignGroups(leftChildName, rightChildName, groupName);

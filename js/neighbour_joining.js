@@ -209,8 +209,8 @@ Author: Alexander Mattheis
      */
     function computeDistances(subtree) {
         // retrieve values
-        var cluster1Name = subtree.leftChild.name;
-        var cluster2Name = subtree.rightChild.name;
+        var cluster1Name = subtree.rightChild.name;
+        var cluster2Name = subtree.leftChild.name;
         var newClusterName = subtree.name;
 
         var clusterNames = clusteringInstance.currentClusterNames;

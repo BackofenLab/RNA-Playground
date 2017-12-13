@@ -196,14 +196,14 @@ $(document).ready(function () {
             return;
 
         if (rightFirst) {
-            postOrder(node.rightChild, names, rightFirst);
             postOrder(node.leftChild, names, rightFirst);
+            postOrder(node.rightChild, names, rightFirst);
         } else {
-            postOrder(node.leftChild, names, rightFirst);
             postOrder(node.rightChild, names, rightFirst);
+            postOrder(node.leftChild, names, rightFirst);
         }
 
-        var isLeaf = node.leftChild === undefined && node.rightChild === undefined;
+        var isLeaf = node.rightChild === undefined && node.leftChild === undefined;
 
         if (isLeaf) names.push(node.name);
     }

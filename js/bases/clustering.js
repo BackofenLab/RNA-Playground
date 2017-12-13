@@ -434,8 +434,8 @@ Author: Alexander Mattheis
     function appendToTree(cluster1Name, cluster2Name, newClusterName, distance1, distance2) {
         // create node
         var node = {};
-        node.leftChild = getNode(cluster1Name, distance1);
-        node.rightChild = getNode(cluster2Name, distance2);
+        node.rightChild = getNode(cluster1Name, distance1);
+        node.leftChild = getNode(cluster2Name, distance2);
         node.name = newClusterName;
         node.value = distance2;  // non-final evolutionary distance for edge above this node
 
@@ -466,8 +466,8 @@ Author: Alexander Mattheis
 
         // create node
         var node = {};
-        node.leftChild = undefined;
         node.rightChild = undefined;
+        node.leftChild = undefined;
         node.name = name;
         node.value = value;  // the value of a edge above a node
 

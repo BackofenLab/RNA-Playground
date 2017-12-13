@@ -41,6 +41,6 @@ TestCase("test_wpgma", {
         var ioData = algorithm.compute();
         var outputData = ioData[1];
 
-        assertEquals("((a:3,b:3):2,(e:3,(c:1,d:1):2):2);", outputData.newickString);
+        assertEquals("(((d:1,c:1):2,e:3):2,(b:3,a:3):2);", outputData.newickString);
     }
 });

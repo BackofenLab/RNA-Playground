@@ -97,8 +97,8 @@ $(document).ready(function () {
      */
     function computeUpgmaDistance(subtree, outputData) {
         // retrieve values
-        var cluster1Name = subtree.leftChild.name;
-        var cluster2Name = subtree.rightChild.name;
+        var cluster1Name = subtree.rightChild.name;
+        var cluster2Name = subtree.leftChild.name;
         var newClusterName = subtree.name;
 
         var cluster1Cardinality = outputData.cardinalities[cluster1Name];
@@ -131,8 +131,8 @@ $(document).ready(function () {
      */
     function computeWpgmaDistance(subtree, outputData) {
         // retrieve values
-        var cluster1Name = subtree.leftChild.name;
-        var cluster2Name = subtree.rightChild.name;
+        var cluster1Name = subtree.rightChild.name;
+        var cluster2Name = subtree.leftChild.name;
         var newClusterName = subtree.name;
 
         var clusterNames = clusteringInstance.remainingClusterNames;

@@ -42,6 +42,6 @@ TestCase("test_neighbour_joining", {
         var ioData = algorithm.compute();
         var outputData = ioData[1];
 
-        assertEquals("((d:2,e:1):2,(c:4,(a:2,b:3):3):0);", outputData.newickString);
+        assertEquals("(((b:3,a:2):3,c:4):0,(e:1,d:2):2);", outputData.newickString);
     }
 });

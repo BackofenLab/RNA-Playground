@@ -62,7 +62,7 @@ Author: Alexander Mattheis
         postOrder(node.leftChild, true);
         postOrder(node.rightChild, false);
 
-        var isLeaf = node.leftChild === undefined && node.rightChild === undefined;
+        var isLeaf = node.rightChild === undefined && node.leftChild === undefined;
         newickEncoderInstance.newickString += isLeaf ? node.name : SYMBOLS.EMPTY;
         newickEncoderInstance.newickString += SYMBOLS.COLON + Math.round(node.value * 10000) / 10000;  // rounded to four digits after decimal point
 

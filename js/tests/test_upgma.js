@@ -42,7 +42,7 @@ TestCase("test_upgma", {
         var ioData = algorithm.compute();
         var outputData = ioData[1];
 
-        assertEquals("((a:3,b:3):2,(e:3,(c:1,d:1):2):2);", outputData.newickString);
+        assertEquals("(((d:1,c:1):2,e:3):2,(b:3,a:3):2);", outputData.newickString);
     },
 
     /**
@@ -71,7 +71,7 @@ TestCase("test_upgma", {
         var ioData = algorithm.compute();
         var outputData = ioData[1];
 
-        assertEquals("(c:1.5,(a:1,b:1):0.5);", outputData.newickString);
+        assertEquals("((b:1,a:1):0.5,c:1.5);", outputData.newickString);
     },
 
     /**
@@ -102,6 +102,6 @@ TestCase("test_upgma", {
         var ioData = algorithm.compute();
         var outputData = ioData[1];
 
-        assertEquals("(c:3,(a:1.5,b:1.5):1.5);", outputData.newickString);
+        assertEquals("((b:1.5,a:1.5):1.5,c:3);", outputData.newickString);
     }
 });
