@@ -14,6 +14,7 @@ TestCase("test_iterative_refinement", {
 
         var inputData = {};
         inputData.iterativeRefinementSubalgorithm = ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR;
+        inputData.roundRobinOrder = ITERATIVE_REFINEMENT_ORDERS.RIGHT_FIRST;
 
         inputData.sequences = ["ACGT", "AT", "GCT", "GC"];
         inputData.arrayPositionsOfRemovedSequences = [];
