@@ -224,7 +224,8 @@ var LATEX = {
         NEIGHBOUR_JOINING_DELTA_2:
             "$$\\delta_t(i, ij) = \\frac{D_{i,j} - \\Delta_{i,j}}{2}, \\quad \\delta_t(j, ij) = \\frac{D_{i,j} + \\Delta_{i,j}}{2} = D_{i,j} - \\delta_t(i, ij)$$",
         UPGMA_DELTA_1:
-            "$$\\delta_m(k, ij) = \\frac{D_{k,i} \\cdot |i| + D_{k,j} \\cdot |j|}{|i| + |j|}$$",
+            "$$\\delta_m(k, ij) = \\frac{D_{k,i} \\cdot |i| + D_{k,j} \\cdot |j|}{|i| + |j|} " +
+            "= \\frac{1}{|k| |ij|} \\sum_{s \\in k} \\sum_{t \\in ij} D_{s,t}$$",
         UPGMA_DELTA_2:
             "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$",
         WPGMA_DELTA_1:
