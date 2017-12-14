@@ -97,7 +97,9 @@ var CHARACTER = {
  * Stores the displayed clustering algorithm names.
  */
 var CLUSTERING_ALGORITHMS = {
+    COMPLETE_LINKAGE: "Complete-Linkage",
     NEIGHBOUR_JOINING: "Neighbour-Joining", /* Hint: Change name also in the Agglomerative-Clustering.html or it won't work anymore! */
+    SINGLE_LINKAGE: "Single-Linkage",
     UPGMA: "Unweighted PGMA",
     WPGMA: "Weighted PGMA"
 };
@@ -219,10 +221,14 @@ var LATEX = {
     },
 
     FORMULAS: {  /* contains complete formulas */
+        COMPLETE_LINKAGE_DELTA_1: "$$\\delta_m(k, ij) = \\max_{s \\in k,\\, t \\in ij} D_{s,t}$$",
+        COMPLETE_LINKAGE_DELTA_2: "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$",
         NEIGHBOUR_JOINING_DELTA_1:
             "$$\\delta_m(k, ij) = \\frac{D_{k,i} + D_{k,j} - D_{i,j}}{2}$$",
         NEIGHBOUR_JOINING_DELTA_2:
             "$$\\delta_t(i, ij) = \\frac{D_{i,j} - \\Delta_{i,j}}{2}, \\quad \\delta_t(j, ij) = \\frac{D_{i,j} + \\Delta_{i,j}}{2} = D_{i,j} - \\delta_t(i, ij)$$",
+        SINGLE_LINKAGE_DELTA_1: "$$\\delta_m(k, ij) = \\min_{s \\in k,\\, t \\in ij} D_{s,t}$$",
+        SINGLE_LINKAGE_DELTA_2: "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$",
         UPGMA_DELTA_1:
             "$$\\delta_m(k, ij) = \\frac{D_{k,i} \\cdot |i| + D_{k,j} \\cdot |j|}{|i| + |j|} " +
             "= \\frac{1}{|k| |ij|} \\sum_{s \\in k} \\sum_{t \\in ij} D_{s,t}$$",
@@ -520,15 +526,33 @@ var ALIGNMENT_DEFAULTS = {
  * Stores the default parameters for clustering algorithms.
  */
 var HIERARCHICAL_CLUSTERING_DEFAULTS = {
-    APPROACHES: [CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING, CLUSTERING_ALGORITHMS.UPGMA, CLUSTERING_ALGORITHMS.WPGMA],
+    APPROACHES: [
+        CLUSTERING_ALGORITHMS.COMPLETE_LINKAGE,
+        CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING,
+        CLUSTERING_ALGORITHMS.SINGLE_LINKAGE,
+        CLUSTERING_ALGORITHMS.UPGMA,
+        CLUSTERING_ALGORITHMS.WPGMA
+    ],
     CSV_TABLE:  /* input from https://en.wikipedia.org/wiki/Neighbor_joining */
     " 0 ;  5 ;  9 ;  9 ;  8" + "\n" +
     "   ;  0 ; 10 ; 10 ;  9" + "\n" +
     "   ;    ;  0 ;  8 ;  7" + "\n" +
     "   ;    ;    ;  0 ;  3" + "\n" +
     "   ;    ;    ;    ;  0" ,
-    FORMULAS: [LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_1, LATEX.FORMULAS.UPGMA_DELTA_1, LATEX.FORMULAS.WPGMA_DELTA_1],
-    SUB_FORMULAS: [LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_2, LATEX.FORMULAS.UPGMA_DELTA_2, LATEX.FORMULAS.WPGMA_DELTA_2],
+    FORMULAS: [
+        LATEX.FORMULAS.COMPLETE_LINKAGE_DELTA_1,
+        LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_1,
+        LATEX.FORMULAS.SINGLE_LINKAGE_DELTA_1,
+        LATEX.FORMULAS.UPGMA_DELTA_1,
+        LATEX.FORMULAS.WPGMA_DELTA_1
+    ],
+
+    SUB_FORMULAS: [
+        LATEX.FORMULAS.COMPLETE_LINKAGE_DELTA_2,
+        LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_2,
+        LATEX.FORMULAS.SINGLE_LINKAGE_DELTA_2,
+        LATEX.FORMULAS.UPGMA_DELTA_2,
+        LATEX.FORMULAS.WPGMA_DELTA_2],
 
     STANDARD_APPROACH: [CLUSTERING_ALGORITHMS.UPGMA]
 };

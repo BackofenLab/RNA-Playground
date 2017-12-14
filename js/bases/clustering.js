@@ -185,8 +185,10 @@ Author: Alexander Mattheis
         var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in fundamental hierarchical clustering algorithms
 
         initializeStructs();
-        if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.UPGMA)
-            initializeCardinalities();
+        if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.COMPLETE_LINKAGE
+            || inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.SINGLE_LINKAGE
+            || inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.UPGMA)
+            initializeClusters();
 
         for (var i = 0; i < numOfIterations; i++) {
             var minimum = determineMatrixMinimum(outputData.distanceMatrix);
@@ -222,6 +224,7 @@ Author: Alexander Mattheis
         clusteringInstance.treeParts = [];
 
         outputData.cardinalities = {};  // needed for distance computations (for example in UPGMA)
+        outputData.clusterMembers = {};  // needed for distance computation (for example in Single Linkage)
 
         // stores the created tree branches in the order
         // in which they were created to avoid a repeated tree traversal during the progressive alignment
@@ -245,11 +248,13 @@ Author: Alexander Mattheis
     /**
      * Initializes the size-parameters of the clusters.
      */
-    function initializeCardinalities() {
+    function initializeClusters() {
         clusteringInstance.nameIndex = inputData.initialNamingIndex;  // do not change that!
 
-        for (var i = 0; i < clusteringInstance.nameIndex; i++)
+        for (var i = 0; i < clusteringInstance.nameIndex; i++) {
             outputData.cardinalities[outputData.clusterNames[i]] = 1;
+            outputData.clusterMembers[outputData.clusterNames[i]] = outputData.clusterNames[i];
+        }
     }
 
     /**
@@ -336,12 +341,17 @@ Author: Alexander Mattheis
      * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function createNewCluster(cluster1Name, cluster2Name) {
+        debugger;
         var newClusterName = cluster1Name + cluster2Name;  // getNextClusterName();  // alternative name generation
 
         if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.UPGMA) {
             var firstClusterCardinality = outputData.cardinalities[cluster1Name];
             var SecondClusterCardinality = outputData.cardinalities[cluster2Name];
             outputData.cardinalities[newClusterName] = firstClusterCardinality + SecondClusterCardinality;
+        } else if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.SINGLE_LINKAGE
+            || inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.COMPLETE_LINKAGE) {  // store names of members
+            outputData.clusterMembers[newClusterName]
+                = outputData.clusterMembers[cluster1Name].concat(outputData.clusterMembers[cluster2Name]);
         }
 
         return newClusterName;

@@ -36,6 +36,7 @@ test:
   - js/tests/test_needleman_wunsch.js
   - js/tests/test_neighbour_joining.js
   - js/tests/test_notredame_higgins_heringa.js
+  - js/tests/test_single_linkage.js
   - js/tests/test_smith_waterman.js
   - js/tests/test_sum_of_pairs.js
   - js/tests/test_upgma.js

@@ -39,8 +39,8 @@ $(document).ready(function () {
      * Computes an agglomerative clustering with different hierarchical approaches.
      * @constructor
      * @augments Clustering
-     * @see: https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902
-     * and http://journals.sagepub.com/doi/abs/10.1177/001316446602600201
+     * @see: https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902 (3)
+     * and http://journals.sagepub.com/doi/abs/10.1177/001316446602600201 (4)
      *
      * Complete Linkage (Furthest Neighbour) by
      * Sørensen, Thorvald.
@@ -89,13 +89,79 @@ $(document).ready(function () {
      * @param subtree {Object} - The subtree for the new cluster.
      */
     function computeDistances(subtree) {
+        debugger;
         var inputData = clusteringInstance.getInput();
         var outputData = clusteringInstance.getOutput();
 
-        if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.UPGMA)
+        if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.COMPLETE_LINKAGE)
+            computeCompleteLinkageDistance(subtree, outputData);
+        else if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.SINGLE_LINKAGE)
+            computeSingleLinkageDistance(subtree, outputData);
+        else if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.UPGMA)
             computeUpgmaDistance(subtree, outputData);
         else if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.WPGMA)
             computeWpgmaDistance(subtree, outputData);
+    }
+
+    /**
+     * Computes the distance of the new cluster to the other clusters.
+     * @example:
+     * dist(c, k = i union j) = max_{s in c, t in k} dist(s, t)
+     * @param subtree {Object} - The subtree for the new cluster.
+     * @param outputData {Object} - Contains all output data.
+     */
+    function computeCompleteLinkageDistance(subtree, outputData) {
+        computeSingleOrCompleteLinkage(subtree, outputData, Math.max);
+    }
+
+    /**
+     * Computes nearest or furthest neighbour, dependant which optimization function is used as input.
+     * @param subtree {Object} - The subtree for the new cluster.
+     * @param outputData {Object} - Contains all output data.
+     * @param optimum {Function} - The function which should be used for optimization {Math.min, Math.max}.
+     */
+    function computeSingleOrCompleteLinkage(subtree, outputData, optimum) {
+        // retrieve values
+        var newClusterName = subtree.name;
+
+        var membersOfNewCluster = outputData.clusterMembers[newClusterName];
+        var clusterNames = clusteringInstance.remainingClusterNames;
+
+        // iterate over each cluster for which the distance have to be recomputed
+        for (var x = 0; x < clusterNames.length; x++) {
+            var membersOfRemainingCluster = outputData.clusterMembers[clusterNames[x]];
+
+            var values = [];
+
+            // iterate over all members in the remaining cluster to which the distance have to be recalculated
+            for (var i = 0; i < membersOfRemainingCluster.length; i++) {  // c
+                var s = membersOfRemainingCluster[i];  // s is a cluster name
+
+                // iterate over all members in the new joined cluster
+                for (var j = 0; j < membersOfNewCluster.length; j++) {  // k
+                    var t = membersOfNewCluster[j];  // t is a cluster name
+
+                    values.push(clusteringInstance.getMatrixValue(outputData.distanceMatrix, s, t));  // dist(s, t)
+                }
+            }
+
+            var optimalValue = values.reduce(function(a, b) {
+                return optimum(a, b);
+            });
+
+            outputData.distanceMatrix[[clusterNames[x], newClusterName]] = optimalValue;  // hint: do not change order of arguments
+        }
+    }
+
+    /**
+     * Computes the distance of the new cluster to the other clusters.
+     * @example:
+     * dist(c, k = i union j) = min_{s in c, t in k} dist(s, t)
+     * @param subtree {Object} - The subtree for the new cluster.
+     * @param outputData {Object} - Contains all output data.
+     */
+    function computeSingleLinkageDistance(subtree, outputData) {
+        computeSingleOrCompleteLinkage(subtree, outputData, Math.min);
     }
 
     /**
