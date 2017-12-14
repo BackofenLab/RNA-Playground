@@ -39,6 +39,19 @@ $(document).ready(function () {
      * Computes an agglomerative clustering with different hierarchical approaches.
      * @constructor
      * @augments Clustering
+     * @see: https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902
+     * and http://journals.sagepub.com/doi/abs/10.1177/001316446602600201
+     *
+     * Complete Linkage (Furthest Neighbour) by
+     * Sørensen, Thorvald.
+     * "A method of establishing groups of equal amplitude in plant sociology based on similarity
+     * of species and its application to analyses of the vegetation on Danish commons."
+     * Biol. Skr. 5 (1948): 1-34.
+     *
+     * Single Linkage (Nearest neighbour) by
+     * Kazimierz Florek, Jozef Lukaszewicz, Julian Perkal, Hugo Steinhaus and Stefan Zubrzycki
+     * "Sur la liaison et la division des points d'un ensemble fini."
+     * Colloquium Mathematicae. Vol. 2. No. 3-4. 1951.
      *
      * UPGMA (average linkage) by
      * Sokal, Robert R.

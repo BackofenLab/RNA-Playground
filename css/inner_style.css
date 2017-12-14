@@ -313,6 +313,10 @@ th {
     padding: 5px;
 }
 
+.listed li {
+    margin: 10px 0;
+}
+
 .main_output {
     padding-top: 5px;
     max-width: 600px;

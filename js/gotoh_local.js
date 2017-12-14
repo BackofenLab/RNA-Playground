@@ -43,6 +43,15 @@ $(document).ready(function () {
      * Combination of the Smith-Waterman and Gotoh-Algorithm.
      * @constructor
      * @augments Alignment
+     * @see: https://doi.org/10.1016/0022-2836(82)90398-9 and https://doi.org/10.1016/0022-2836(81)90087-5
+     *
+     * Gotoh, Osamu.
+     * "An improved algorithm for matching biological sequences."
+     * Journal of molecular biology 162.3 (1982): 705-708.
+     *
+     * Smith, Temple F., and Michael S. Waterman.
+     * "Identification of common molecular subsequences."
+     * Journal of molecular biology 147.1 (1981): 195-197.
      */
     function GotohLocal() {
         gotohLocalInstance = this;

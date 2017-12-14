@@ -27,11 +27,12 @@ Author: Alexander Mattheis
      * and many more.
      * @constructor
      * @augments Clustering
+     * @see: https://doi.org/10.1093/oxfordjournals.molbev.a040454 and https://doi.org/10.1093/oxfordjournals.molbev.a040527
      *
      * Saitou, Naruya, and Masatoshi Nei.
      * "The neighbor-joining method: a new method for reconstructing phylogenetic trees."
      * Molecular biology and evolution 4.4 (1987): 406-425.
-     *                  and
+     *
      * Studier, James A., and Karl J. Keppler.
      * "A note on the neighbor-joining algorithm of Saitou and Nei."
      * Molecular biology and evolution 5.6 (1988): 729-731.
