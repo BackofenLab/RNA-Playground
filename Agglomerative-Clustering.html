@@ -11,37 +11,44 @@ Author: Alexander Mattheis
         from evolutionary distances:
         <ul>
             <li>
-                <em>Complete Linkage</em>
+                <em>Complete Linkage (Furthest Neighbour)</em>
                 by Thorvald S&oslash;rensen (1948)
+                - Joins the two clusters $i$ and $j$ whose biggest inter-cluster-distance $D_{i,j}$
+                (defined between elements of the cluster)
+                is minimal between all clusters.
             </li>
 
             <li>
-                <em>Neighbour-Joining</em> of
+                <em>Neighbour-Joining (Nearest Neighbour for clusters)</em> of
                 <a href="https://doi.org/10.1093/oxfordjournals.molbev.a040454">Naruya Saitou and Masatoshi Nei (1987)</a>
                 modified by
                 <a href="https://doi.org/10.1093/oxfordjournals.molbev.a040527">James A. Studier and Karl J. Keppler (1988)</a>
+                - Joins the two clusters $i$ and $j$ whose distance $M_{i,j}$ is minimal between all clusters.
             </li>
 
             <li>
-                <em>Single Linkage</em>
+                <em>Single Linkage (Nearest Neighbour for elements between two different clusters)</em>
                 by <a href="https://eudml.org/doc/209969">Kazimierz Florek, J&oacute;zef &Lstrok;ukaszewicz, Julian Perkal, Hugo Steinhaus and Stefan Zubrzycki (1951)</a>
+                - Joins the two clusters $i$ and $j$ whose lowest inter-cluster-distance $D_{i,j}$ is minimal between all clusters.
             </li>
 
             <li>
                 <em>Unweighted Pair Group Method with Arithmetic Mean (Average Linkage)</em> by <br />
                 <a href="https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902">Robert R. Sokal and Charles D. Michener (1958)</a>
+                - Joins the two clusters $i$ and $j$ whose average inter-cluster-distance $D_{i,j}$ is minimal between all clusters.
             </li>
 
             <li>
                 <em>Weighted Pair Group Method with Arithmetic Mean (Simple Average)</em> by
                 <a href="http://journals.sagepub.com/doi/abs/10.1177/001316446602600201">Louis L. McQuitty (1967)</a>
+                - Joins the two clusters $i$ and $j$ whose weighted-average inter-cluster-distance $D_{i,j}$ is minimal between all clusters.
             </li>
         </ul>
 
         Neighbour-Joining is considered to be
         the more realistic approach (giving biologically more relevant results),
-        because unlike UPGMA (WPGMA) it does not assume the same evolution rate for merged taxa
-        (branch lengths of different taxa can be different).
+        because unlike UPGMA (Complete Linkage, Single Linkage or WPGMA) it does not assume
+        the same evolution rate for merged taxa (branch lengths of different taxa can be different).
         This comes from the fact,that UPGMA assumes an ultrametric tree
         (a tree in which distances from the root to the leafs are always the same)
         and Neighbour-Joining only an additive tree (a tree in which branch lengths can be arbitrary).
@@ -55,7 +62,7 @@ Author: Alexander Mattheis
         between singleton clusters (containing only one element)
         and in this matrix $D$ or in a matrix $M$ (e.g. a neighbour-joining matrix) derived from that
         you search for the entry with the lowest value $D_{min} = D_{i,j}$ (where $i \neq j$)
-        resp.  $M_{min} = M_{i,j}$.
+        resp. $M_{min} = M_{i,j}$.
         You merge the clusters $i$ and $j$ to a new cluster $ij = i \cup j$
         and recompute the distances to the remaining clusters with some distance formula $\delta_m$
         given with the respective approach.
