@@ -27,12 +27,13 @@ Author: Alexander Mattheis
 
             In detail, to enable traceback calculation in quadratic time a divide-and-conquer
             strategy is applied. Here, we want to identify where the traceback "passes
-            through" the center row of the matrix.
+            through" the center row of the matrix (first divide-step on left picture).
+            <img class="embedded_picture" src="hirschberg_traceback.png" align="left"/>
             To this end, first the middle row $i = \lfloor n/2 \rfloor$, where $n = |a|$
             has to be computed for both matrices $D$ and $D'$. Given that $D_{i,j}$
             holds the best prefix score up to and including $a_i,b_j$ and $D'_{i,j}$
             provides the same for the suffixes starting in $a_{i+1},b_{j+1}$, the
-            optimal overall alignment score can be found as the summation of some column $j$,
+            optimal overall alignment score can be found as the summation of some column $j$, <br \>
             i.e. $\exists_{j} : D_{n,m} = D_{i,j}+D'_{i,j} = D'_{0,0}$.
             This position $j$ provides a decomposition of the traceback problem into
             the respective prefix and suffix strings for which the procedure is iterated

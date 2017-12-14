@@ -170,6 +170,10 @@ th {
     padding-top: 10px;
 }
 
+.embedded_picture {
+    margin: 15px 20px 5px 0;
+}
+
 .entry {
     border-bottom: 0;
     font-family: serif;
@@ -282,9 +286,9 @@ th {
 }
 
 .hirschberg_static_size {  /* a way to avoid problems with MathJax */
-    height: 925px;
-    max-height: 925px;
-    min-height: 925px;
+    height: 1060px; /* without picture 925px */
+    max-height: 1060px;
+    min-height: 1060px;
 }
 
 .inner_column {
@@ -646,6 +650,10 @@ _:-moz-tree-row(hover), .gotoh_static_size {
 }
 
 _:-moz-tree-row(hover), .gotoh_local_static_size {
+    margin-bottom: 40px;
+}
+
+_:-moz-tree-row(hover), .hirschberg_static_size {
     margin-bottom: 40px;
 }
 

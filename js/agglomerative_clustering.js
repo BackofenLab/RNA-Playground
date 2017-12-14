@@ -89,7 +89,6 @@ $(document).ready(function () {
      * @param subtree {Object} - The subtree for the new cluster.
      */
     function computeDistances(subtree) {
-        debugger;
         var inputData = clusteringInstance.getInput();
         var outputData = clusteringInstance.getOutput();
 
