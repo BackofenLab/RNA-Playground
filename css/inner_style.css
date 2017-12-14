@@ -641,6 +641,30 @@ _:-ms-lang(x), _:-webkit-full-screen, input[type="text"]:focus {
     outline: black solid 1px;
 }
 
+_:-ms-lang(x), _:-webkit-full-screen, .gotoh_local_static_size {
+    height: 685px;
+    max-height: 685px;
+    min-height: 685px;
+}
+
+_:-ms-lang(x), _:-webkit-full-screen, .gotoh_static_size {
+    height: 880px;
+    max-height: 880px;
+    min-height: 880px;
+}
+
+_:-ms-lang(x), _:-webkit-full-screen, .hirschberg_static_size {
+    height: 1100px;
+    max-height: 1100px;
+    min-height: 1100px;
+}
+
+_:-ms-lang(x), _:-webkit-full-screen, .waterman_smith_bayer_static_size {
+    height: 790px;
+    max-height: 790px;
+    min-height: 790px;
+}
+
 /* Mozilla Linux Ubuntu */
 _:-moz-tree-row(hover), .gotoh_local_static_size {
 	height: 730px;
