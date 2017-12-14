@@ -42,9 +42,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="90.034068"
-     inkscape:cy="332.23793"
+     inkscape:zoom="2"
+     inkscape:cx="81.053614"
+     inkscape:cy="294.11096"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -128,20 +128,6 @@
        d="m 374.39832,745.71936 -199.39834,0"
        id="path4720"
        inkscape:connector-curvature="0" />
-    <rect
-       style="fill:#5582bb;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="rect5092"
-       width="42.317799"
-       height="30.214296"
-       x="279.83737"
-       y="663.50763" />
-    <rect
-       y="855.48718"
-       x="477.82727"
-       height="30.214296"
-       width="42.317799"
-       id="rect5090"
-       style="fill:#5582bb;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        xml:space="preserve"
        style="font-size:35.71741486px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -398,45 +384,45 @@
        style="fill:#fbfbfa;fill-opacity:1;stroke:#db0000;stroke-width:5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <g
        id="g3111"
-       transform="matrix(1.1159027,0,0,1.1159027,156.4881,-87.628789)"
-       style="opacity:1;fill:#000000;fill-opacity:1">
+       transform="matrix(1.1159027,0,0,1.1159027,156.4881,-89.628789)"
+       style="fill:#000000;fill-opacity:1">
       <g
          id="g3186"
          transform="matrix(1.2748303,0,0,1.2748303,-289.2677,748.80172)"
          style="fill:#000000;fill-opacity:1">
         <text
            id="text3188"
-           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;font-family:Cambria Math;fill-opacity:1"
+           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;font-family:Cambria Math"
            y="13.669291"
            x="265.95001"
            xml:space="preserve">ہ</text>
         <text
            id="text3190"
-           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;font-family:Cambria Math;fill-opacity:1"
+           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;font-family:Cambria Math"
            y="14.270139"
            x="271.20001"
            xml:space="preserve">𝑛</text>
         <text
            id="text3192"
-           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;font-family:Cambria Math;fill-opacity:1"
+           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;font-family:Cambria Math"
            y="14.270139"
            x="280.04999"
            xml:space="preserve">/</text>
         <text
            id="text3194"
-           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;font-family:Cambria Math;fill-opacity:1"
+           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;font-family:Cambria Math"
            y="14.270139"
            x="287.39999"
            xml:space="preserve">2</text>
         <text
            id="text3196"
-           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;font-family:Cambria Math;fill-opacity:1"
+           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;font-family:Cambria Math"
            y="13.669291"
            x="295.64999"
            xml:space="preserve">ۂ</text>
         <text
            id="text3198"
-           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;font-family:Calibri;fill-opacity:1"
+           style="font-size:15px;font-style:normal;font-weight:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;font-family:Calibri"
            y="14.270139"
            x="300.89999"
            xml:space="preserve"> </text>
@@ -445,12 +431,12 @@
     <text
        sodipodi:linespacing="125%"
        id="text3107"
-       y="771.64862"
+       y="769.64862"
        x="186.01915"
-       style="font-size:28.01738739000000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;opacity:1;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+       style="font-size:28.01738739px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
        xml:space="preserve"><tspan
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;font-family:Arial;-inkscape-font-specification:Arial"
-         y="771.64862"
+         y="769.64862"
          x="186.01915"
          id="tspan3109"
          sodipodi:role="line"><tspan

@@ -286,6 +286,11 @@ th {
 }
 
 .hirschberg_static_size {  /* a way to avoid problems with MathJax */
+    /*
+    Hint: In Firefox also a margin has to be set.
+    Search for "_:-moz-tree-row(hover), .hirschberg_static_size"
+    in this file.
+    */
     height: 1060px; /* without picture 925px */
     max-height: 1060px;
     min-height: 1060px;
