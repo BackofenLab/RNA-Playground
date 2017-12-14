@@ -131,9 +131,9 @@ var INPUT = {
 };
 
 var ITERATIVE_REFINEMENT_ORDERS = {
-    INPUT_ORDER: "Input-Sequences Order",
-    LEFT_FIRST: "Post-Order Left-First",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore! */
-    RIGHT_FIRST: "Post-Order Right-First"
+    INPUT_ORDER: "input-sequences order",
+    LEFT_FIRST: "guide-tree left-to-right traversal",
+    RIGHT_FIRST: "guide-tree right-to-left traversal"
 };
 
 var ITERATIVE_REFINEMENT_STRATEGIES = {
