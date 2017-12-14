@@ -14,13 +14,13 @@ Author: Alexander Mattheis
  * Multiple constants of same "logic" (for example with similar naming) stored in structures.
  */
 
-/* HINT: alphabetically ordered (also within definitions) and structures (i.e. {}) after constants */
+/* Hint: alphabetically ordered (also within definitions) and structures (i.e. {}) after constants. */
 
 // constants
 var END_SO_ON = ".."
 var EPSILON = 0.000000001;  // some very low number to test against
 
-var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant
+var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant!
 
 var HIRSCHBERG_LOWER_NODE = 2;  // name for a node of the computation tree
 var HIRSCHBERG_UPPER_NODE = 1;  // name for a node of the computation tree
@@ -65,7 +65,7 @@ var ALIGNMENT_TYPES = {  // contains a list of alignment types
 /**
  * Stores HTML-code for arrows.
  */
-var ARROWS = {  // HINT: inner quotes have to be this here: " " or it won't work!
+var ARROWS = {  // Hint: inner quotes have to be this here: " " or it won't work!
     LEFT: '<div class="arrows_l"></div>',
     LEFT_NAME: ".arrows_l",
     TOP: '<div class="arrows_t"></div>',
@@ -97,7 +97,7 @@ var CHARACTER = {
  * Stores the displayed clustering algorithm names.
  */
 var CLUSTERING_ALGORITHMS = {
-    NEIGHBOUR_JOINING: "Neighbour-Joining", /* Hint: Change name also in the Agglomerative-Clustering.html or it won't work anymore */
+    NEIGHBOUR_JOINING: "Neighbour-Joining", /* Hint: Change name also in the Agglomerative-Clustering.html or it won't work anymore! */
     UPGMA: "Unweighted PGMA",
     WPGMA: "Weighted PGMA"
 };
@@ -132,13 +132,13 @@ var INPUT = {
 
 var ITERATIVE_REFINEMENT_ORDERS = {
     INPUT_ORDER: "Input-Sequences Order",
-    LEFT_FIRST: "Post-Order Left-First",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore */
+    LEFT_FIRST: "Post-Order Left-First",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore! */
     RIGHT_FIRST: "Post-Order Right-First"
 };
 
 var ITERATIVE_REFINEMENT_STRATEGIES = {
-    MIN_DISTANCE_PAIR: "Minimum Distance Pair",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore */
-    ONE_VS_ALL: "One-vs-All",
+    MIN_DISTANCE_PAIR: "Minimum Distance Pair",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore! */
+    ONE_VS_ALL: "One-vs-All",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore! */
     PAIRWISE_BEST_PAIR: "Pairwise Best Pair"
 };
 
@@ -505,8 +505,8 @@ var TOGGLE_LINK_TEXT = {
 var ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     CALCULATION_HIRSCHBERG: "distance",
-    SEQUENCE_1: "AATCG",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "AACG",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "AATCG",  // Hint: UPPERCASE letters!
+    SEQUENCE_2: "AACG",  // Hint: UPPERCASE letters!
 
     FUNCTION: {
         GAP: -2,
@@ -606,8 +606,8 @@ var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
 var NORMALIZED_ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     LENGTH: 10,
-    SEQUENCE_1: "CTTGACCATU",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "GCATTUGCCUU",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "CTTGACCATU",  // Hint: UPPERCASE letters!
+    SEQUENCE_2: "GCATTUGCCUU",  // Hint: UPPERCASE letters!
 
     FUNCTION: {
         GAP: -2,
@@ -634,8 +634,8 @@ var REACTION_TIME_REDRAWING = {
 var SUBADDITIVE_ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     GAP_FUNCTION: "affine",
-    SEQUENCE_1: "CG",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "CCGA",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "CG",  // Hint: UPPERCASE letters!
+    SEQUENCE_2: "CCGA",  // Hint: UPPERCASE letters!
 
     FUNCTION: {
         BASE_COSTS: -3,
@@ -650,7 +650,7 @@ var CLUSTER_NAMES =
     ["a", "b", "c", "d", "e", "f", "g", "h",
         "i", "j", "k", "l", "m", "n", "o", "p",
         "q", "r", "s", "t", "u", "v", "w", "x",
-        "y", "z"];   // Hint: there have to be at least one element in the list
+        "y", "z"];   // Hint: There have to be at least one element in the list!
 
 var EMPTY_ALIGNMENT = [SYMBOLS.EMPTY, SYMBOLS.EMPTY, SYMBOLS.EMPTY];
 

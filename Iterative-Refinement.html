@@ -27,15 +27,15 @@ Author: Alexander Mattheis
           </li>
 
           <li>
+              <em>One-vs-All:</em> You realign once against every sequence in the multiple-sequence alignment
+                                   and select from the resulting multiple-sequence-alignments the one with highest MSA-score.
+          </li>
+
+          <li>
               <em>Pairwise Best Pair:</em> You realign immediately against all
                                            sequences in the multiple-sequence-alignment using progressive alignment procedure
                                            of <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle</a>
                                            (align against sequence with pairwise-best score).
-          </li>
-
-          <li>
-              <em>One-vs-All:</em> You realign once against every sequence in the multiple-sequence alignment
-                                   and select from the resulting multiple-sequence-alignments the one with highest MSA-score.
           </li>
       </ol>
 
@@ -320,7 +320,11 @@ Author: Alexander Mattheis
                     <small>
                         <b>Hints:</b> Last blue marked result,
                                       if existent shows the final realignment and else the initial alignment will be the final realignment. <br />
-                                      Remaining alignments fulfill the MSA definition (i.e. gap-only columns are removed).
+                                      Remaining alignments fulfill the MSA definition (i.e. gap-only columns are removed). <br />
+                                      <!-- ko if: $root.input.selectedApproach() == "One-vs-All" -->
+                                          If the <em>One-vs-All</em> strategy is used,
+                                          then for each removed sequence only the resulting MSA-realignment with best score is shown.
+                                      <!-- /ko -->
                     </small>
                 </th>
             </tr>
