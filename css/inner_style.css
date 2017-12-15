@@ -16,12 +16,12 @@ form input {
     user-focus: ignore;
 }
 
-input[type="text"] {
-    text-transform: uppercase;
-}
-
 input[type="number"] {
     width: 35px;
+}
+
+input[type="text"] {
+    text-transform: uppercase;
 }
 
 label {
@@ -354,9 +354,9 @@ th {
 
 .outcome {
     display: inline-block;
+    margin-bottom: 10px;
     margin-top: 5px;
     padding-left: 30px;
-    margin-bottom: 10px;
 }
 
 .output {
