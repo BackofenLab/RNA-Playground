@@ -64,6 +64,7 @@ Author: Alexander Mattheis
 
         var isLeaf = node.rightChild === undefined && node.leftChild === undefined;
         newickEncoderInstance.newickString += isLeaf ? node.name : SYMBOLS.EMPTY;
+        // Hint: Do not change the rounding or the displayed tree could get wrong, because of floating-point errors!
         newickEncoderInstance.newickString += SYMBOLS.COLON + Math.round(node.value * 10000) / 10000;  // rounded to four digits after decimal point
 
         if (isLeftChild) // whenever you wrote down a node name, you have to set a comma if it is a left child and else a right bracket

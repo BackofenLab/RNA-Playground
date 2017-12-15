@@ -110,27 +110,28 @@ $(document).ready(function () {
 
         var names = getNamesInOrder(ioData[1].treeBranches[ioData[1].treeBranches.length - 1], ioData[1].clusterNames);
 
-        for (var i = 0; i < names.length; i++) {
-            var removedSequenceName = names[i];
+        if (names.length > 1) {
+            for (var i = 0; i < names.length; i++) {
+                var removedSequenceName = names[i];
 
-            // create a copy of the alignment before a realignment
-            var msa = startMsa.slice();  // shallow copy, because the elements itself are not modified
-            var msaSequenceNames = startMsaSequenceNames.slice();
+                // create a copy of the alignment before a realignment
+                var msa = startMsa.slice();  // shallow copy, because the elements itself are not modified
+                var msaSequenceNames = startMsaSequenceNames.slice();
 
-            // [1] remove sequence from MSA
-            var mrData = getMsaAndRemovedSequence(removedSequenceName, msa, msaSequenceNames); // ([MSA], [removed sequence])
+                // [1] remove sequence from MSA
+                var mrData = getMsaAndRemovedSequence(removedSequenceName, msa, msaSequenceNames); // ([MSA], [removed sequence])
 
-            // [2] realign the removed sequence
-            var msaRefinedWithName = getRealignment(mrData[1][0], mrData[1][1], mrData[0], removedSequenceName, ioData[1].distanceMatrix, ioData[1].nameOfSequence);
+                // [2] realign the removed sequence
+                var msaRefinedWithName = getRealignment(mrData[1][0], mrData[1][1], mrData[0], removedSequenceName, ioData[1].distanceMatrix, ioData[1].nameOfSequence);
 
-            // [3] compute score of the MSA and refined MSA (replace startMsa with refinedMsa if [refinedMsa score] > [startMsa score])
-            var msaWithName = getBetterMultiSequenceAlignment([startMsa, startMsaName], msaRefinedWithName);
-            startMsa = msaWithName[0];
-            startMsaName = msaWithName[1];
-            startMsaSequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(startMsaName, false);
+                // [3] compute score of the MSA and refined MSA (replace startMsa with refinedMsa if [refinedMsa score] > [startMsa score])
+                var msaWithName = getBetterMultiSequenceAlignment([startMsa, startMsaName], msaRefinedWithName);
+                startMsa = msaWithName[0];
+                startMsaName = msaWithName[1];
+                startMsaSequenceNames = multiSequenceAlignmentInstance.getIndividualSequenceNames(startMsaName, false);
+            }
         }
 
-        debugger;
         // storing data from Feng-Doolittle and refined alignment
         storeAlignmentData(ioData, startMsa, multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, startMsa), startMsaName);
 
