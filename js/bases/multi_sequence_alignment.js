@@ -266,7 +266,7 @@ Author: Alexander Mattheis
      * So, here the MSA-length definition used (Feng-Doolittle is a MSA algorithm):
      * length is the number of columns in the global alignment of the sequences.
      * Hint 2: Verified with original paper.
-     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
+     * @param alignment {Object}
      * - The triple of strings for which the length has to be computed.
      * @see: https://doi.org/10.1016/S0076-6879(96)66023-6
      * Feng, Da-Fei, and Russell F. Doolittle.
@@ -280,7 +280,7 @@ Author: Alexander Mattheis
 
     /**
      * Returns the number of gaps in the alignment.
-     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
+     * @param alignment {Object}
      * - The triple of strings for which the number of gaps has to be computed.
      * @return {number} - The number of gaps in the alignment.
      */
@@ -290,7 +290,7 @@ Author: Alexander Mattheis
 
     /**
      * Counts the number of gaps in the given sequence.
-     * @param sequence {string} - The sequence for which the number of gaps has to be counted.
+     * @param sequence {alignedSequenceA|matchOrMismatchString|alignedSequenceB} - The sequence for which the number of gaps has to be counted.
      * @return {number} - The number of gaps.
      */
     function countNumberOfGaps(sequence) {
@@ -306,7 +306,7 @@ Author: Alexander Mattheis
 
     /**
      * Returns the number of gap starts in the alignment.
-     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
+     * @param alignment {Object}
      * - The triple of strings for which the number of gaps has to be computed.
      * @return {number} - The number of gaps in the alignment.
      */
@@ -316,7 +316,7 @@ Author: Alexander Mattheis
 
     /**
      * Counts the number of gap starts in the given sequence.
-     * @param sequence {string} - The sequence for which the number of gaps has to be counted.
+     * @param sequence {alignedSequenceA|matchOrMismatchString|alignedSequenceB} - The sequence for which the number of gaps has to be counted.
      * @return {number} - The number of gaps.
      */
     function countNumberOfGapsStarts(sequence) {
@@ -449,7 +449,7 @@ Author: Alexander Mattheis
             }
         }
 
-        return (1/alignmentLength) * doubleSum + numOfGaps * inputData.enlargement + numOfGapStarts * inputData.baseCosts;
+        return (1 / alignmentLength) * doubleSum + numOfGaps * inputData.enlargement + numOfGapStarts * inputData.baseCosts;
     }
 
     /**
@@ -902,16 +902,17 @@ Author: Alexander Mattheis
 
                 var sequenceA = sequences[0];
                 var sequenceB = sequences[1];
+                var gapSize = 0;
 
                 for (var k = 0; k < sequenceB.length; k++) {
                     if (sequenceB[k] === SYMBOLS.GAP) {
-                        var gapSize = getGapSize(k, sequenceB);
+                        gapSize = getGapSize(k, sequenceB);
                         score += inputData.baseCosts + gapSize * inputData.enlargement;
-                        k += gapSize-1;
+                        k += gapSize - 1;
                     } else if (sequenceA[k] === SYMBOLS.GAP) {
-                        var gapSize = getGapSize(k, sequenceA);
+                        gapSize = getGapSize(k, sequenceA);
                         score += inputData.baseCosts + gapSize * inputData.enlargement;
-                        k += gapSize-1;
+                        k += gapSize - 1;
                     } else
                         score += sequenceB[k] === sequenceA[k] ? inputData.match : inputData.mismatch;
                 }
@@ -964,6 +965,7 @@ Author: Alexander Mattheis
     /**
      * Returns the names of the individual group members.
      * @param groupName {string} - The group name which encoding the group members.
+     * @param commaSeparated {boolean} - Tells if between a name-string and a number should be a comma or not.
      * @return {Array} - The array with the group members.
      */
     function getIndividualSequenceNames(groupName, commaSeparated) {

@@ -179,7 +179,7 @@ Author: Alexander Mattheis
      */
     function compute() {
         if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING)
-           return computeNeighbourJoining();
+            return computeNeighbourJoining();
 
         var distanceMatrixCopy = jQuery.extend(true, {}, outputData.distanceMatrix);  // deep copy
         var numOfIterations = inputData.numOfStartClusters - 1;  // always lower by one in fundamental hierarchical clustering algorithms
@@ -199,7 +199,7 @@ Author: Alexander Mattheis
 
         getMatrixKeys(outputData.distanceMatrix, true);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
-        outputData.newickString = newickEncoderInstance.getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
+        outputData.newickString = newickEncoderInstance.getEncoding(outputData.treeBranches[outputData.treeBranches.length - 1]);
         return [inputData, outputData];
     }
 
@@ -281,7 +281,7 @@ Author: Alexander Mattheis
             }
         }
 
-        outputData.minimums.push(Math.round(minValue*10)/10);  // only for visualization
+        outputData.minimums.push(Math.round(minValue * 10) / 10);  // only for visualization
 
         // create structure for better understandable access
         var minimum = {};
@@ -325,7 +325,7 @@ Author: Alexander Mattheis
      * @return {string} - The name of the new cluster.
      */
     function mergeClusters(cluster1Name, cluster2Name) {
-        var newClusterName = createNewCluster(cluster1Name, cluster2Name)
+        var newClusterName = createNewCluster(cluster1Name, cluster2Name);
         clusteringInstance.lastCurrentClusterNames = clusteringInstance.currentClusterNames.slice();  // shallow copy
         removeEntriesWith(cluster1Name, cluster2Name);
         clusteringInstance.currentClusterNames.push(newClusterName);
@@ -414,6 +414,7 @@ Author: Alexander Mattheis
      * a3, b3, ...              THIRD ...       (52 <= index < 78)
      * @return {string} - Cluster name.
      */
+
     /*
     function getNextClusterName() {
         var clusterName = SYMBOLS.EMPTY;
@@ -451,7 +452,7 @@ Author: Alexander Mattheis
 
         outputData.treeBranches.push(node);
         clusteringInstance.treeParts.push(node);
-        return clusteringInstance.treeParts[clusteringInstance.treeParts.length-1];
+        return clusteringInstance.treeParts[clusteringInstance.treeParts.length - 1];
     }
 
     /**
@@ -461,10 +462,12 @@ Author: Alexander Mattheis
      * @return {Object} - The node with the given parameters.
      */
     function getNode(name, value) {
+        var node = {};
+
         // search for an existing node
         for (var i = 0; i < clusteringInstance.treeParts.length; i++) {
             if (clusteringInstance.treeParts[i].name === name) {
-                var node = clusteringInstance.treeParts.splice(i, 1)[0];  // removes and returns the removed element
+                node = clusteringInstance.treeParts.splice(i, 1)[0];  // removes and returns the removed element
 
                 if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING)
                     node.value = value;  // do not subtract in neighbour-joining, because already final value
@@ -475,7 +478,6 @@ Author: Alexander Mattheis
         }
 
         // create node
-        var node = {};
         node.rightChild = undefined;
         node.leftChild = undefined;
         node.name = name;
@@ -486,20 +488,17 @@ Author: Alexander Mattheis
 
     /**
      * Computes the distance of the new cluster to the other clusters.
-     * Hint: It is really UPGMA and not WPGMA!
-     * Calculated distances in UPGMA are unweighted
-     * with respect to the cluster-sizes. From this the "unweighted"-term results.
      * @example:
      * dist(c, k = i union j) = [|i|* dist(c, i) + |j|* dist(c, j)] / [|i|+|j|]
      * @param subtree {Object} - The subtree for the new cluster.
      * @param iteration {number} - The subtree for the new cluster.
-     * @param subtree {maxNumIterations} - The subtree for the new cluster.
+     * @param maxNumIterations {number} - The maximum number of iterations.
      */
     function computeDistances(subtree, iteration, maxNumIterations) {
         childInstance.computeDistances(subtree);
         clusteringInstance.remainingClusterNames.push(subtree.name);
 
-        if (iteration === maxNumIterations-1)
+        if (iteration === maxNumIterations - 1)
             subtree.value = 0;
 
         outputData.remainingClusters.push(jQuery.extend(true, [], clusteringInstance.remainingClusterNames));  // for visualization
@@ -519,13 +518,13 @@ Author: Alexander Mattheis
         var value1 = distanceMatrix[[cluster1Name, cluster2Name]];
         var value2 = distanceMatrix[[cluster2Name, cluster1Name]];
 
-        if(isNaN(value1))
+        if (isNaN(value1))
             return value2;
         return value1;
     }
 
     /**
-     * Convertes the given distance matrix (associative array) into an two-dimensional array.
+     * Converts the given distance matrix (associative array) into an two-dimensional array.
      * Hint: "Associative arrays" do not have a defined order (browser-dependant).
      * @param distanceMatrix {Object} - The distance-value which are converted into a two-dimensional array.
      * @param distanceMatrixLength {number} - The number of clusters in the distance matrix.
@@ -586,7 +585,7 @@ Author: Alexander Mattheis
      * Creates a matrix with the given size.
      * @param size - The width and height of the matrix.
      */
-    function createMatrix (size) {
+    function createMatrix(size) {
         var matrix = new Array(size);
 
         for (var i = 0; i < size; i++) {
@@ -628,13 +627,5 @@ Author: Alexander Mattheis
      */
     function getNewickEncoder() {
         return newickEncoderInstance;
-    }
-
-    /**
-     * Sets the current child algorithm.
-     * @param algorithm {Object} - The algorithm which should be used by this class.
-     */
-    function setLastChild(algorithm) {
-        childInstance = algorithm;
     }
 }());

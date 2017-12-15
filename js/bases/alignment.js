@@ -201,7 +201,7 @@ Author: Alexander Mattheis
         if (aChar === SYMBOLS.NONE || bChar === SYMBOLS.NONE) matchOrMismatch = 0;  // extension for Feng-Doolittle
 
         if (inputData.substitutionFunction !== undefined)  // extension for T-Coffee
-            matchOrMismatch = inputData.substitutionFunction(i,j);
+            matchOrMismatch = inputData.substitutionFunction(i, j);
 
         // gap recursion-functions
         outputData.horizontalGaps[i][j] = horizontalOptimum(optimum, i, j, bChar);
@@ -231,11 +231,11 @@ Author: Alexander Mattheis
      * @return {number} - The optimal value.
      */
     function horizontalOptimum(optimum, i, j, char) {
-        var enlargmentBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);  // Hint: case s(.,#) = 0
+        var enlargementBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);  // Hint: case s(.,#) = 0
 
         return optimum(
-            outputData.horizontalGaps[i][j - 1] + enlargmentBaseCosts[0],
-            outputData.matrix[i][j - 1] +  enlargmentBaseCosts[1] +  enlargmentBaseCosts[0]);
+            outputData.horizontalGaps[i][j - 1] + enlargementBaseCosts[0],
+            outputData.matrix[i][j - 1] + enlargementBaseCosts[1] + enlargementBaseCosts[0]);
     }
 
     /**
@@ -263,11 +263,11 @@ Author: Alexander Mattheis
      * @return {number} - The optimal value.
      */
     function verticalOptimum(optimum, i, j, char) {
-        var enlargmentBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);  // Hint: case s(#, .) = 0
+        var enlargementBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);  // Hint: case s(#, .) = 0
 
         return optimum(
-            outputData.verticalGaps[i - 1][j] + enlargmentBaseCosts[0],
-            outputData.matrix[i - 1][j] + enlargmentBaseCosts[1] +  enlargmentBaseCosts[0])
+            outputData.verticalGaps[i - 1][j] + enlargementBaseCosts[0],
+            outputData.matrix[i - 1][j] + enlargementBaseCosts[1] + enlargementBaseCosts[0])
     }
 
     /**
