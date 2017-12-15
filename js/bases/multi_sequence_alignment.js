@@ -83,7 +83,7 @@ Author: Alexander Mattheis
 
     /**
      * Returns the non-first position of sequences which are multiple times in the sequences.
-     * @param sequences - The sequences which are checked for duplicates.
+     * @param sequences {Array} - The sequences which are checked for duplicates.
      */
     function getDuplicatePositions(sequences) {
         var positions = {};
@@ -406,7 +406,7 @@ Author: Alexander Mattheis
      * by using the approximative formula from 1996 of Feng and Doolittle.
      * Hint: Usually random shuffling is used (1987),
      * but then the algorithm would become non-deterministic and it couldn't be tested so easy.
-     * @param alignmentLength - The length of the alignment (number of columns).
+     * @param alignmentLength {number} - The length of the alignment (number of columns).
      * @param sequenceA {string} - The first (not aligned) sequence.
      * @param sequenceB {string} - The second (not aligned) sequence.
      * @param numOfGaps {number} - The number of gaps in the alignment of sequence a and b.

@@ -16,7 +16,7 @@ Author: Alexander Mattheis
 
 /* Hint: alphabetically ordered (also within definitions) and structures (i.e. {}) after constants. */
 
-// constants
+/*---- CONSTANTS ----*/
 var END_SO_ON = "..";
 var EPSILON = 0.000000001;  // some very low number to test against
 
@@ -34,7 +34,7 @@ var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight traceba
 
 var SMITH_WATERMAN_STOP = "0";
 
-// structs
+/*---- STRUCTS ----*/
 /**
  * Stores the implemented algorithm names.
  */
@@ -309,6 +309,7 @@ var LATEX = {
         "S_{i,j-1} 		& + & s^r(-,b_j)      \\\\" +
         "0" +
         "\\end{cases}",
+
         WATERMAN_SMITH_BEYER_MIN:
         "\\begin{cases}" +
         "\\displaystyle     \\min_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\" +
@@ -435,35 +436,6 @@ var SUBADDITIVE_FUNCTIONS = {
 };
 
 /**
- * Stores non-LaTeX symbols used in the program.
- */
-var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
-    ALIGN: "~",
-    AND: "&",
-    BRACKET_LEFT: "(",
-    BRACKET_RIGHT: ")",
-    COLON: ":",
-    COMMA: ",",
-    DUMMY: "/",  // have to be a non-letter
-    EMPTY: "",
-    EQUAL: "=",
-    GAP: "_",  // Hint: Do not change without a good reason! Can break the interface code!
-    G_LITTLE: "g",
-    HYPHEN: "-",  // Hint: Do not change without a good reason! Can break the loader!
-    INFINITY: "∞",
-    MINUS: "-",  // Hint: Do not change without a good reason! Can break the interface code! Regular expressions have to be changed.
-    NEGATIVE_INFINITY: "-∞",
-    NEW_LINE: "\n",
-    NONE: "#",  // Hint: Do not change without a good reason! Can break the interface code!
-    PLUS: "+",
-    SEMICOLON: ";",
-    SEPARATOR: "_",
-    SPACE: " ",
-    STAR: "*",
-    VERTICAL_BAR: "|"
-};
-
-/**
  * Stores SVG-parameters of the SVG-overlay above the page.
  */
 var SVG = {
@@ -495,6 +467,35 @@ var SVG = {
 };
 
 /**
+ * Stores non-LaTeX symbols used in the program.
+ */
+var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
+    ALIGN: "~",
+    AND: "&",
+    BRACKET_LEFT: "(",
+    BRACKET_RIGHT: ")",
+    COLON: ":",
+    COMMA: ",",
+    DUMMY: "/",  // have to be a non-letter
+    EMPTY: "",
+    EQUAL: "=",
+    GAP: "_",  // Hint: Do not change without a good reason! Can break the interface code!
+    G_LITTLE: "g",
+    HYPHEN: "-",  // Hint: Do not change without a good reason! Can break the loader!
+    INFINITY: "∞",
+    MINUS: "-",  // Hint: Do not change without a good reason! Can break the interface code! Regular expressions have to be changed.
+    NEGATIVE_INFINITY: "-∞",
+    NEW_LINE: "\n",
+    NONE: "#",  // Hint: Do not change without a good reason! Can break the interface code!
+    PLUS: "+",
+    SEMICOLON: ";",
+    SEPARATOR: "_",
+    SPACE: " ",
+    STAR: "*",
+    VERTICAL_BAR: "|"
+};
+
+/**
  * Stores the download-name and the encoding of the table you want to download.
  */
 var TABLE = {
@@ -507,7 +508,7 @@ var TOGGLE_LINK_TEXT = {
     SHOW: "show intermediate steps"
 };
 
-// defaults (are based on constants and have to be below)
+/*---- DEFAULTS ----*/
 /**
  * Stores the default parameters for alignment algorithms.
  */
@@ -674,7 +675,7 @@ var SUBADDITIVE_ALIGNMENT_DEFAULTS = {
     }
 };
 
-// lists (used for check ups and more)
+/*---- LISTS ----*/
 var CLUSTER_NAMES =
     ["a", "b", "c", "d", "e", "f", "g", "h",
         "i", "j", "k", "l", "m", "n", "o", "p",

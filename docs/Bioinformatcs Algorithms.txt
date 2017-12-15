@@ -122,3 +122,6 @@ Hint: You have not to put the public class methods in the namespace!
 /*-------------------------------------------------------TESTS--------------------------------------------------------*/
 Unit-Tests are stored under "js/tests/". The file "UnitTests.jstd" is specifying Unit-Test file paths.
 The tool/plugin which was used to create the Unit-Tests is called "JsTestDriver".
+
+/*-------------------------------------------------UPLOAD ON SERVER---------------------------------------------------*/
+Look into alignment.html for information.

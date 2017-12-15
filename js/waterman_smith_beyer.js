@@ -334,7 +334,7 @@ $(document).ready(function () {
     /**
      * Computes the vertical position from which you get to the currentValue.
      * @param algorithm {Object} - Contains an alignment algorithm.
-     * @param currentValue - The value from the current cell.
+     * @param currentValue {number} - The value from the current cell.
      * @param position {Object} - Current cell position in matrix.
      * @param outputData {Object} - Contains all output data.
      * @return {number} - The matching position. You get back NaN if such position does not exists.
@@ -353,7 +353,7 @@ $(document).ready(function () {
     /**
      * Computes the horizontal position from which you get to the currentValue.
      * @param algorithm {Object} - Contains an alignment algorithm.
-     * @param currentValue - The value from the current cell.
+     * @param currentValue {number} - The value from the current cell.
      * @param position {Object} - Current cell position in matrix.
      * @param outputData {Object} - Contains all output data.
      * @return {number} - The matching position. You get back NaN if such position does not exists.

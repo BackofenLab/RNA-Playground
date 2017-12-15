@@ -15,8 +15,7 @@ Author: Alexander Mattheis
     var interfaceInstance;
 
     /**
-     * Is used to work with the input and output (the interface) of an alignment algorithm.
-     * It contains the basic methods and the viewmodel for the output.
+     * Is used to work with the input and output (the interface) of an algorithm.
      * This class is used by the various interface scripts as superclass.
      * @constructor
      */

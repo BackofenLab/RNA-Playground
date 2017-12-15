@@ -37,6 +37,7 @@ $(document).ready(function () {
     /*---- ALGORITHM ----*/
     /**
      * Computes an agglomerative clustering with different hierarchical approaches.
+     * Hint: Neighbour-Joining has an own Javascript-file.
      * @constructor
      * @augments Clustering
      * @see: https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902 (3)

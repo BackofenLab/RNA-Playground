@@ -23,7 +23,7 @@ Author: Alexander Mattheis
 
     /**
      * Contains functions to compute a hierarchical clustering (at the moment only hierarchical agglomerative clustering).
-     * It is used by agglomerative clustering algorithms as superclass
+     * It is used by hierarchical clustering algorithms as superclass
      * to avoid code duplicates.
      * @param child {Object} - The child algorithm which inherits from this class.
      * @constructor

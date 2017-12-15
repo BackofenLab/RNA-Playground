@@ -227,9 +227,9 @@ $(document).ready(function () {
     /**
      * Computes a structure L with elements
      * containing the sequence identity or zero.
-     * @param alignments - The alignments for which you want compute a structure that returns position sequence identities.
-     * @param sequenceA - The first sequence which is used to create positions.
-     * @param sequenceB - The second sequence which is used to create positions.
+     * @param alignments {Array} - The alignments for which you want compute a structure that returns position sequence identities.
+     * @param sequenceA {string} - The first sequence which is used to create positions.
+     * @param sequenceB {string} - The second sequence which is used to create positions.
      * @param tracebacks {Array} - The tracebacks of local alignments which tell the defined positions.
      * @return {Object} - A structure containing the weights for specific positions.
      */
@@ -297,9 +297,9 @@ $(document).ready(function () {
      * @param L {Object} - The structure which stores the weight.
      * @param alignments - The alignments for which you want compute a structure that returns position sequence identities
      * @param tracebacks {Array} - The tracebacks of local alignments which tell the defined positions.
-     * @param sequenceIdentity - The sequence identity for a global alignment like the one in alignments.
-     * @param alignmentLength - The sequence length for a global alignment like the one in alignments.
-     * @param global - Tells if it is a global or a local alignment.
+     * @param sequenceIdentity {number} - The sequence identity for a global alignment like the one in input alignments.
+     * @param alignmentLength {number} - The sequence length for a global alignment like the one in alignments.
+     * @param global {boolean} - Tells if it is a global or a local alignment.
      */
     function increaseDiversity(L, alignments, tracebacks, sequenceIdentity, alignmentLength, global) {
         var startPos = new bases.alignment.Vector(0, 0);
@@ -378,8 +378,8 @@ $(document).ready(function () {
      * (common mistake to forget that)
      * Hint 2: It is a separated function and this allows to turn it off for more performance (if needed).
      * @param L {Object} - The structure which stores the weight.
-     * @param sequenceA - The first sequence which is used to create positions.
-     * @param sequenceB - The second sequence which is used to create positions.
+     * @param sequenceA {string} - The first sequence which is used to create positions.
+     * @param sequenceB {string} - The second sequence which is used to create positions.
      * @param traceback {Array} - Contains position-information of a local sequences.
      * @return {Object} - A structure containing the weights for specific positions.
      */
@@ -643,7 +643,7 @@ $(document).ready(function () {
 
     /**
      * Returns the individual arguments of a set of key-pairs.
-     * @param keyPairs - The key-pairs from which the arguments are retrieved.
+     * @param keyPairs {Array} - The key-pairs from which the arguments are retrieved.
      * @return {Array} - The set of individual arguments.
      */
     function getIndividualArguments(keyPairs) {

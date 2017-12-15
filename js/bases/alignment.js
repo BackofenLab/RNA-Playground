@@ -35,7 +35,7 @@ Author: Alexander Mattheis
      * Changes the label of a vector. It is used to create a vector with a specific label.
      * @example
      * create(new Vector(i,j), MATRICES.HORIZONTAL)
-     * @param Vector - The vector of which the label should be changed.
+     * @param Vector {Object} - The vector of which the label should be changed.
      * @param label {string} - The string label from "defaults.js".
      * @return {Vector} - The vector with the changed label.
      */

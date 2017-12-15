@@ -37,8 +37,6 @@ Author: Alexander Mattheis
 
         this.svg = createSVG();
 
-        this.phylogeneticTree = undefined;
-
         // bindings
         ko.bindingHandlers.drawChar = {
             update: function (element, valueAccessor) {
