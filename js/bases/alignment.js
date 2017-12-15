@@ -48,7 +48,7 @@ Author: Alexander Mattheis
      * Contains functions to compute optimal alignments.
      * It is used by global and local alignment algorithms as superclass
      * to avoid code duplicates.
-     * @param child - The child algorithm which inherits from this class.
+     * @param child {Object} - The child algorithm which inherits from this class.
      * @constructor
      */
     function Alignment(child) {
@@ -692,10 +692,10 @@ Author: Alexander Mattheis
     /**
      * Tests if the difference between to values is lower some parameter Epsilon.
      * Hint: It would maybe work without this function. So, this function is only for security reasons.
-     * @param value1 - The first value.
-     * @param value2 - The second value.
-     * @param epsilon - The small number you test against.
-     * @return {boolean} - The
+     * @param value1 {number} - The first value.
+     * @param value2 {number} - The second value.
+     * @param epsilon {number} - The small number you test against.
+     * @return {boolean} - The result which tells you if the difference of the two given values is lower an epsilon or not.
      */
     function differenceLowerEpsilon(value1, value2, epsilon) {
         var difference = value1 - value2;

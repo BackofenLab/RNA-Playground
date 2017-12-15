@@ -22,9 +22,9 @@ Author: Alexander Mattheis
 
     /**
      * Contains functions to compute multi-sequence alignments.
-     * It is used multi-sequence alignment algorithms as superclass
+     * It is used by multi-sequence alignment algorithms as superclass
      * to avoid code duplicates.
-     * @param child - The child algorithm which inherits from this class.
+     * @param child {Object} - The child algorithm which inherits from this class.
      * @constructor
      */
     function MultiSequenceAlignment(child) {
@@ -407,10 +407,10 @@ Author: Alexander Mattheis
      * Hint: Usually random shuffling is used (1987),
      * but then the algorithm would become non-deterministic and it couldn't be tested so easy.
      * @param alignmentLength - The length of the alignment (number of columns).
-     * @param sequenceA - The first (not aligned) sequence.
-     * @param sequenceB - The second (not aligned) sequence.
-     * @param numOfGaps - The number of gaps in the alignment of sequence a and b.
-     * @param numOfGapStarts - The number of gap starts in the alignment of sequence a and b.
+     * @param sequenceA {string} - The first (not aligned) sequence.
+     * @param sequenceB {string} - The second (not aligned) sequence.
+     * @param numOfGaps {number} - The number of gaps in the alignment of sequence a and b.
+     * @param numOfGapStarts {number} - The number of gap starts in the alignment of sequence a and b.
      * @see: https://doi.org/10.1016/S0076-6879(96)66023-6
      * Feng, Da-Fei and Doolittle, Russell F. «[21] Progressive alignment of amino
      * acid sequences and construction of phylogenetic trees from them».
@@ -780,7 +780,7 @@ Author: Alexander Mattheis
     /**
      * If traceback path and matrix have been already computed,
      * then the traceback path is not recomputed.
-     * @param output
+     * @param output {Object} - Output data which have to be initialized.
      */
     function initializeOutput(output) {
         var parentGroupName = outputData.currentGroupName;

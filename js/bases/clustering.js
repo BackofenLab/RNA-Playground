@@ -25,6 +25,7 @@ Author: Alexander Mattheis
      * Contains functions to compute a hierarchical clustering (at the moment only hierarchical agglomerative clustering).
      * It is used by agglomerative clustering algorithms as superclass
      * to avoid code duplicates.
+     * @param child {Object} - The child algorithm which inherits from this class.
      * @constructor
      */
     function Clustering(child) {
@@ -388,7 +389,7 @@ Author: Alexander Mattheis
 
     /**
      * Removes cluster name from remaining names.
-     * @param clusterName - The name which should be removed.
+     * @param clusterName {string} - The name which should be removed.
      */
     function removeFromRemaining(clusterName) {
         var index = clusteringInstance.remainingClusterNames.indexOf(clusterName);
@@ -583,7 +584,7 @@ Author: Alexander Mattheis
 
     /**
      * Creates a matrix with the given size.
-     * @param size - The width and height of the matrix.
+     * @param size {number} - The width and height of the matrix.
      */
     function createMatrix(size) {
         var matrix = new Array(size);
