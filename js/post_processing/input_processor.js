@@ -110,8 +110,8 @@ Author: Alexander Mattheis
 
     /**
      * Linking inputs to get some special behaviour (removing non allowed bases).
-     * @param algorithmInput - The input div in which the behaviour is changed.
-     * @param functionParameters - The parameters which should have the given behaviour.
+     * @param algorithmInput {Element} - The input div in which the behaviour is changed.
+     * @param functionParameters {Element} - The parameters which should have the given behaviour.
      */
     function linkBasicInputsBehaviour(algorithmInput, functionParameters) {
         var functionArguments = {"functionParameters": functionParameters};
@@ -145,7 +145,7 @@ Author: Alexander Mattheis
     /**
      * Negates the function parameters of an algorithm.
      * Hint: The input has to be of class "optimization_type".
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function negateOptimizationParameters(e) {
         var functionParameters = e.data.functionParameters;
@@ -159,7 +159,7 @@ Author: Alexander Mattheis
      * which can lead to problems with traceback or visualization.
      * It is especially used for the function parameters of an algorithm.
      * Hint: The input has to be of class "fx_parameter".
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function removeCriticalNumbers(e) {
         if (CHARACTER.NUMBERS.test(this.value))
@@ -254,7 +254,7 @@ Author: Alexander Mattheis
                 Knockout fires an event, if the <select>-Tag is filled with Knockout:
                 https://stackoverflow.com/questions/16521552/knockout-fires-change-event-when-select-list-initializing
                 */
-                if(event.cancelable !== undefined) {  // to filter out Knockout-events and let pass all other events
+                if (event.cancelable !== undefined) {  // to filter out Knockout-events and let pass all other events
                     update(algorithm, viewmodels, processInput, changeOutput);
                 }
             },
@@ -324,7 +324,7 @@ Author: Alexander Mattheis
                     "calculationVerticalTable": [],
                     "iterationTablesArray": iterationTablesArray,
                     "mainOutput": mainOutput,
-                    "number": -(i+1),  // iteration numbers are negative in "defaults.js"
+                    "number": -(i + 1),  // iteration numbers are negative in "defaults.js"
                     "selectableEntryClass": selectableEntryClass,
                     "visualViewmodel": visualViewmodel
                 };
@@ -443,7 +443,7 @@ Author: Alexander Mattheis
         for (var i = 0; i < MAX_NUMBER_ITERATIONS; i++) {
             var currentTableNumber = (i + 1);
             linkIterationDownloadLink(
-                $(".table_download_"+ currentTableNumber),
+                $(".table_download_" + currentTableNumber),
                 $(".calculation_" + currentTableNumber),
                 -currentTableNumber,  // iteration numbers are negative in "defaults.js"
                 visualViewmodel);
@@ -488,7 +488,7 @@ Author: Alexander Mattheis
 
     /**
      * Reinitializes overlays after an event wih the browser window or a scrolling event of a table.
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function reinitialize(e) {
         var visualViewmodel = e.data.visualViewmodel;
@@ -568,7 +568,7 @@ Author: Alexander Mattheis
 
     /**
      * Selects a table entry and triggers a function of the visualizer to highlight the entry.
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function selectTableEntry(e) {
         // retrieve data
@@ -602,7 +602,7 @@ Author: Alexander Mattheis
     /**
      * Highlights a table cell and its neighbours by the help of a visualizer function
      * which shows the neighbours that were needed to compute its cell value.
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function selectCell(e) {
         // retrieve data
@@ -658,7 +658,7 @@ Author: Alexander Mattheis
 
         visualViewmodel.showFlow(cellCoordinates,
             calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], iterationTablesArray,
-            mainOutput, -(number+1));  // MATRICES.ITERATION_NUMBER_i are negative
+            mainOutput, -(number + 1));  // MATRICES.ITERATION_NUMBER_i are negative
     }
 
     /**

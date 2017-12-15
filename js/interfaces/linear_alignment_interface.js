@@ -32,6 +32,8 @@ Author: Alexander Mattheis
 
     /**
      * Function managing objects.
+     * @param Algorithm {Object} - The algorithm which is started.
+     * @param algorithmName {string} - The name of the algorithm which is started.
      */
     function startLinearAlignmentAlgorithm(Algorithm, algorithmName) {
         imports();
@@ -137,11 +139,10 @@ Author: Alexander Mattheis
 
         if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
             string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MAX;
+        else if (secondRecursion)
+            string += LATEX.FORMULA.CURRENT_BACKWARD + SYMBOLS.EQUAL + LATEX.MIN;
         else
-            if (secondRecursion)
-                string += LATEX.FORMULA.CURRENT_BACKWARD + SYMBOLS.EQUAL + LATEX.MIN;
-            else
-                string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
+            string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
 
         if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
             string += LATEX.RECURSION.SMITH_WATERMAN_MODIFIED;
@@ -196,12 +197,12 @@ Author: Alexander Mattheis
                 .replace(LATEX.FORMULA.J_MINUS_ONE, LATEX.FORMULA.J_PLUS_ONE);
 
             // replace a_i with a_{i+1} and b_j ...
-			string = string
+            string = string
                 .replace(LATEX.FORMULA.SEQ_A_I, LATEX.FORMULA.SEQ_A_I_PLUS_1)
                 .replace(LATEX.FORMULA.SEQ_B_J, LATEX.FORMULA.SEQ_B_J_PLUS_1);
 
-			// add initialization information
-			string += LATEX.NEW_LINE + LATEX.RECURSION.HIRSCHBERG_INITIALIZATION;
+            // add initialization information
+            string += LATEX.NEW_LINE + LATEX.RECURSION.HIRSCHBERG_INITIALIZATION;
         }
 
         string += LATEX.MATH_REGION;  // stopping LaTeX math region
@@ -499,9 +500,8 @@ Author: Alexander Mattheis
         var backwardTwoRowsCharacters = twoRowsCharacters[1];
 
         var forwardTwoRowsCharactersPositions = twoRowsCharactersPositions[0];
-        var backwardTwoRowsCharactersPositions = twoRowsCharactersPositions[1];;
+        var backwardTwoRowsCharactersPositions = twoRowsCharactersPositions[1];
 
-        debugger;
         // main output
         viewmodels.output.forwardMatrices(outputData.forwardMatrices);
         viewmodels.output.backwardMatrices(outputData.backwardMatrices);

@@ -30,15 +30,15 @@ Author: Alexander Mattheis
         this.sequencesNumberChanged = false;
         this.lastNumberOfSequences = 0;
 
-            // public class methods
+        // public class methods
         this.startMultiSequenceInterface = startMultiSequenceInterface;
         this.getMaxNumberOfAlignments = getMaxNumberOfAlignments;
     }
 
     /**
      * Function managing objects.
-     * @param Algorithm - The algorithm which is started.
-     * @param algorithmName - The name of the algorithm which is started.
+     * @param Algorithm {Object} - The algorithm which is started.
+     * @param algorithmName {string} - The name of the algorithm which is started.
      */
     function startMultiSequenceInterface(Algorithm, algorithmName) {
         imports();
@@ -130,7 +130,7 @@ Author: Alexander Mattheis
             }
         );
 
-        this.addRow = function() {
+        this.addRow = function () {
             setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
                 MathJax.Hub.Queue(["Typeset", MathJax.Hub])
             }, REUPDATE_TIMEOUT_MS);
@@ -138,7 +138,7 @@ Author: Alexander Mattheis
             viewmodel.sequences.push(SYMBOLS.EMPTY);
         };
 
-        this.removeRow = function() {
+        this.removeRow = function () {
             setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
                 MathJax.Hub.Queue(["Typeset", MathJax.Hub])
             }, REUPDATE_TIMEOUT_MS);
@@ -173,7 +173,7 @@ Author: Alexander Mattheis
         var sequences = inputViewmodel.sequences();
         var hashTable = {};
 
-        var uniqueSequences = sequences.filter(function(sequence) {
+        var uniqueSequences = sequences.filter(function (sequence) {
             if (hashTable.hasOwnProperty(sequence))
                 return false;  // remove/filter
 
@@ -183,7 +183,7 @@ Author: Alexander Mattheis
         });
 
         var n = uniqueSequences.length;
-        return  (n * (n-1)) / 2;  // Gauss-formula
+        return (n * (n - 1)) / 2;  // Gauss-formula
     }
 
     /**
@@ -286,6 +286,7 @@ Author: Alexander Mattheis
 
             if (algorithm.type === ALGORITHMS.ITERATIVE_REFINMENT) {
                 inputViewmodel.selectedApproach([$("#approach_selector option:selected").val()]);
+                inputViewmodel.selectedOrder([$("#order_selector option:selected").val()]);
             } else if (algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {
                 inputViewmodel.baseCostsLocal(Number($("#base_costs_local").val()));
                 inputViewmodel.enlargementLocal(Number($("#enlargement_local").val()));
@@ -367,7 +368,6 @@ Author: Alexander Mattheis
      */
     function changeFengDoolittleOutput(outputData, viewmodels) {
         // distance matrices
-        debugger;
         outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData, false, true);
 
         alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
@@ -391,7 +391,7 @@ Author: Alexander Mattheis
                 viewmodels.output.distanceMatrices[i][j](outputData.distanceMatrices[i][j]);
             }
         }
-        debugger;
+
         viewmodels.output.remainingClusters(outputData.remainingClusters);
         viewmodels.output.minimums(outputData.minimums);
 
@@ -468,7 +468,6 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
     function changeIterativeRefinementOutput(outputData, viewmodels) {
-        debugger;
         // final output
         alignmentInterfaceInstance.reorderFinalAlignments(outputData);  // do not move down this function
         viewmodels.output.progressiveAlignment(outputData.progressiveAlignment);

@@ -41,7 +41,7 @@ Author: Alexander Mattheis
         // hint: this is working, because value from last cluster is always 0
         // example: ..[CLUSTER_NAME]:0) -to-> ..[CLUSTER_NAME]
         newickEncoderInstance.newickString
-            = newickEncoderInstance.newickString.slice(0, newickEncoderInstance.newickString.length-3) + SYMBOLS.SEMICOLON;
+            = newickEncoderInstance.newickString.slice(0, newickEncoderInstance.newickString.length - 3) + SYMBOLS.SEMICOLON;
 
         return newickEncoderInstance.newickString;
     }

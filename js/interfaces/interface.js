@@ -91,7 +91,6 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions.
      */
     function executeAlgorithmInterfaceCode(algorithm, viewmodels) {
-        debugger;
         if (TREE_ALGORITHMS.indexOf(algorithm.type) !== -1)
             viewmodels.visual.drawTree();
     }
@@ -207,7 +206,7 @@ Author: Alexander Mattheis
      */
     function round(number, decimalPlaces) {
         var factor = Math.pow(10, decimalPlaces);
-        return Math.round(number*factor)/factor;
+        return Math.round(number * factor) / factor;
     }
 
     /**
@@ -224,7 +223,7 @@ Author: Alexander Mattheis
             // in each round the matrix gets smaller by one, because two matrices are merged
             for (var i = 0; i < outputData.distanceMatrices.length; i++) {
                 outputData.distanceMatrices[i] = bases.clustering.getMatrixAsTable(outputData.distanceMatrices[i],
-                    matrixLength-i, outputData.remainingClusters[i], outputData.keys[i], fillBothHalves);
+                    matrixLength - i, outputData.remainingClusters[i], outputData.keys[i], fillBothHalves);
             }
 
             return outputData.distanceMatrices;
@@ -233,7 +232,7 @@ Author: Alexander Mattheis
         // else compute Neighbour-Joining matrices
         for (var i = 0; i < outputData.neighbourJoiningMatrices.length; i++) {
             outputData.neighbourJoiningMatrices[i] = bases.clustering.getMatrixAsTable(outputData.neighbourJoiningMatrices[i],
-                matrixLength-i, outputData.remainingClusters[i], outputData.keys[i], fillBothHalves);
+                matrixLength - i, outputData.remainingClusters[i], outputData.keys[i], fillBothHalves);
         }
 
         return outputData.neighbourJoiningMatrices;

@@ -82,7 +82,7 @@ Author: Alexander Mattheis
             if (i === 0)
                 string += SYMBOLS.COMMA;
             else
-                string += leftString.charAt(i-1) + SYMBOLS.COMMA;
+                string += leftString.charAt(i - 1) + SYMBOLS.COMMA;
 
             string += round(matrix[i]) + SYMBOLS.NEW_LINE;  // Hint: it is allowed to have a line break in the last line
         }
@@ -100,7 +100,7 @@ Author: Alexander Mattheis
 
         for (var i = 0; i < row.length; i++) {
             if (typeof row[i] === "number")
-                matrixRow.push(Math.round(row[i]*10000)/10000);
+                matrixRow.push(Math.round(row[i] * 10000) / 10000);
             else
                 matrixRow.push(row[i]);
         }

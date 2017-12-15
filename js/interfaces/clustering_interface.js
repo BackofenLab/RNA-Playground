@@ -99,7 +99,6 @@ Author: Alexander Mattheis
      * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
      */
     function processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel) {
-        debugger;
         visualViewmodel.removeAllContents();
 
         // when page was loaded the inputs have not to be updated or you get wrong inputs
@@ -120,7 +119,6 @@ Author: Alexander Mattheis
      * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
-        debugger;
         // tree
         viewmodels.output.newickString(outputData.newickString);
         viewmodels.visual.drawTree();
@@ -246,20 +244,20 @@ Author: Alexander Mattheis
 
         // distance matrices
         var tableNames = createLaTeXDistanceTableNames(outputData);
-        viewmodel.matrixDLatex = ko.observable(tableNames[0]).extend({ deferred: true });
-        viewmodel.matrixDStarLatex = ko.observable(tableNames[1]).extend({ deferred: true });
+        viewmodel.matrixDLatex = ko.observable(tableNames[0]).extend({deferred: true});
+        viewmodel.matrixDStarLatex = ko.observable(tableNames[1]).extend({deferred: true});
 
         outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, true);
 
-        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
+        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({deferred: true});
 
         // iteration over each matrix
         for (var i = 0; i < outputData.distanceMatrices.length; i++) {
-            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({ deferred: true });
+            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({deferred: true});
 
             // iteration over each row of the matrix
             for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
-                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({ deferred: true });
+                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({deferred: true});
             }
         }
 
@@ -269,21 +267,21 @@ Author: Alexander Mattheis
         // neighbour joining matrices
         outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true, false);
 
-        viewmodel.neighbourJoiningMatrices = ko.observableArray(outputData.neighbourJoiningMatrices).extend({ deferred: true });
+        viewmodel.neighbourJoiningMatrices = ko.observableArray(outputData.neighbourJoiningMatrices).extend({deferred: true});
 
         // iteration over each matrix
         for (var i = 0; i < outputData.neighbourJoiningMatrices.length; i++) {
-            viewmodel.neighbourJoiningMatrices[i] = ko.observableArray(outputData.neighbourJoiningMatrices[i]).extend({ deferred: true });
+            viewmodel.neighbourJoiningMatrices[i] = ko.observableArray(outputData.neighbourJoiningMatrices[i]).extend({deferred: true});
 
             // iteration over each row of the matrix
             for (var j = 0; j < outputData.neighbourJoiningMatrices[i].length; j++) {
-                viewmodel.neighbourJoiningMatrices[i][j] = ko.observableArray(outputData.neighbourJoiningMatrices[i][j]).extend({ deferred: true });
+                viewmodel.neighbourJoiningMatrices[i][j] = ko.observableArray(outputData.neighbourJoiningMatrices[i][j]).extend({deferred: true});
             }
         }
 
         interfaceInstance.roundValues(algorithmName, outputData);
 
-        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
-        viewmodel.minimums = ko.observable(outputData.minimums).extend({ deferred: true });
+        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({deferred: true});
+        viewmodel.minimums = ko.observable(outputData.minimums).extend({deferred: true});
     }
 }());

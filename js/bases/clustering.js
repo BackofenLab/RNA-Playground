@@ -342,7 +342,6 @@ Author: Alexander Mattheis
      * @see: It is based on the code of Alexander Mattheis in project Algorithms for Bioninformatics.
      */
     function createNewCluster(cluster1Name, cluster2Name) {
-        debugger;
         var newClusterName = cluster1Name + cluster2Name;  // getNextClusterName();  // alternative name generation
 
         if (inputData.clusteringSubalgorithm === CLUSTERING_ALGORITHMS.UPGMA) {

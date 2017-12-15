@@ -196,10 +196,10 @@ Author: Alexander Mattheis
         if (algorithm.type === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
             visualizerInstance.output.matrix = visualizerInstance.output.iterationData[0][iteration][8];
             if (iteration > 0) {  // for computed matrix Smith-Waterman is used with some lambda
-                input.deletion = visualizerInstance.output.iterationData[0][iteration-1][3];  // deletion value with lambda
-                input.insertion = visualizerInstance.output.iterationData[0][iteration-1][4];  // ....
-                input.match = visualizerInstance.output.iterationData[0][iteration-1][5];
-                input.mismatch = visualizerInstance.output.iterationData[0][iteration-1][6];
+                input.deletion = visualizerInstance.output.iterationData[0][iteration - 1][3];  // deletion value with lambda
+                input.insertion = visualizerInstance.output.iterationData[0][iteration - 1][4];  // ....
+                input.match = visualizerInstance.output.iterationData[0][iteration - 1][5];
+                input.mismatch = visualizerInstance.output.iterationData[0][iteration - 1][6];
             }
             visualizerInstance.lastIterationNumber = iteration;
         } else {
@@ -412,35 +412,35 @@ Author: Alexander Mattheis
 
         // with different moves, the long arrow has to be drawn different
         if (move === MOVE.HORIZONTAL) {
-            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE).toString();
-            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT.LINE).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * (1-CELL_PERCENT.LINE_HEAD_PENETRATION)).toString();
-            lastTop     =   (lastCell.offsetTop     + cellHeight    * CELL_PERCENT.LINE).toString();
+            left = (cell.offsetLeft + cellWidth * CELL_PERCENT.LINE).toString();
+            top = (cell.offsetTop + cellHeight * CELL_PERCENT.LINE).toString();
+            lastLeft = (lastCell.offsetLeft + cellWidth * (1 - CELL_PERCENT.LINE_HEAD_PENETRATION)).toString();
+            lastTop = (lastCell.offsetTop + cellHeight * CELL_PERCENT.LINE).toString();
         } else if (move === MOVE.P_TO_X) {
-            left        =   (cell.offsetLeft        + cellWidth     * (1-CELL_PERCENT.LINE)).toString();
-            top         =   (cell.offsetTop         + cellHeight    * (1-CELL_PERCENT.LINE)).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * (1-CELL_PERCENT.LINE)).toString();
-            lastTop     =   (lastCell.offsetTop     + cellHeight    * CELL_PERCENT.LINE).toString();
+            left = (cell.offsetLeft + cellWidth * (1 - CELL_PERCENT.LINE)).toString();
+            top = (cell.offsetTop + cellHeight * (1 - CELL_PERCENT.LINE)).toString();
+            lastLeft = (lastCell.offsetLeft + cellWidth * (1 - CELL_PERCENT.LINE)).toString();
+            lastTop = (lastCell.offsetTop + cellHeight * CELL_PERCENT.LINE).toString();
         } else if (move === MOVE.Q_TO_X) {
-            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE).toString();
-            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT.LINE).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * (1-CELL_PERCENT.LINE)).toString();
-            lastTop     =   (lastCell.offsetTop     + cellHeight    * (1-CELL_PERCENT.LINE)).toString();
+            left = (cell.offsetLeft + cellWidth * CELL_PERCENT.LINE).toString();
+            top = (cell.offsetTop + cellHeight * CELL_PERCENT.LINE).toString();
+            lastLeft = (lastCell.offsetLeft + cellWidth * (1 - CELL_PERCENT.LINE)).toString();
+            lastTop = (lastCell.offsetTop + cellHeight * (1 - CELL_PERCENT.LINE)).toString();
         } else if (move === MOVE.VERTICAL) {
-            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE).toString();
-            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT.LINE).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT.LINE).toString();
-            lastTop     =   (lastCell.offsetTop     + cellHeight    * (1-CELL_PERCENT.LINE_HEAD_PENETRATION)).toString();
+            left = (cell.offsetLeft + cellWidth * CELL_PERCENT.LINE).toString();
+            top = (cell.offsetTop + cellHeight * CELL_PERCENT.LINE).toString();
+            lastLeft = (lastCell.offsetLeft + cellWidth * CELL_PERCENT.LINE).toString();
+            lastTop = (lastCell.offsetTop + cellHeight * (1 - CELL_PERCENT.LINE_HEAD_PENETRATION)).toString();
         } else if (move === MOVE.X_TO_P) {
-            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE_2).toString();
-            top         =   (cell.offsetTop         + cellHeight    * CELL_PERCENT.LINE).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT.LINE_2).toString();
-            lastTop     =   (lastCell.offsetTop     + cellHeight    * (1 - CELL_PERCENT.LINE)).toString();
+            left = (cell.offsetLeft + cellWidth * CELL_PERCENT.LINE_2).toString();
+            top = (cell.offsetTop + cellHeight * CELL_PERCENT.LINE).toString();
+            lastLeft = (lastCell.offsetLeft + cellWidth * CELL_PERCENT.LINE_2).toString();
+            lastTop = (lastCell.offsetTop + cellHeight * (1 - CELL_PERCENT.LINE)).toString();
         } else if (move === MOVE.X_TO_Q) {
-            left        =   (cell.offsetLeft        + cellWidth     * CELL_PERCENT.LINE).toString();
-            top         =   (cell.offsetTop         + cellHeight    * (1-CELL_PERCENT.LINE)).toString();
-            lastLeft    =   (lastCell.offsetLeft    + cellWidth     * CELL_PERCENT.LINE).toString();
-            lastTop     =   (lastCell.offsetTop     + cellHeight    * CELL_PERCENT.LINE).toString();
+            left = (cell.offsetLeft + cellWidth * CELL_PERCENT.LINE).toString();
+            top = (cell.offsetTop + cellHeight * (1 - CELL_PERCENT.LINE)).toString();
+            lastLeft = (lastCell.offsetLeft + cellWidth * CELL_PERCENT.LINE).toString();
+            lastTop = (lastCell.offsetTop + cellHeight * CELL_PERCENT.LINE).toString();
         }
 
         // define svg dimensions
@@ -650,7 +650,6 @@ Author: Alexander Mattheis
      * @return {matrix} - The appropriate matrix to the number which was passed.
      */
     function getMatrix(number) {
-        debugger;
         switch (number) {
             case MATRICES.VERTICAL_NUMBER:
                 return replaceInfinities(visualizerInstance.output.verticalGaps);
@@ -660,9 +659,9 @@ Author: Alexander Mattheis
                 if (MATRICES.ITERATION_NUMBER_5 <= number && number <= MATRICES.ITERATION_NUMBER_1)
                     if (visualizerInstance.output.iterationData !== undefined
                         && visualizerInstance.output.iterationData[0] !== undefined
-                        && visualizerInstance.output.iterationData[0][-(number+1)] !== undefined
-                        && visualizerInstance.output.iterationData[0][-(number+1)][8] !== undefined)
-                        return visualizerInstance.output.iterationData[0][-(number+1)][8];  // iteration numbers are negative in "defaults.js"
+                        && visualizerInstance.output.iterationData[0][-(number + 1)] !== undefined
+                        && visualizerInstance.output.iterationData[0][-(number + 1)][8] !== undefined)
+                        return visualizerInstance.output.iterationData[0][-(number + 1)][8];  // iteration numbers are negative in "defaults.js"
         }
 
         return visualizerInstance.output.matrix;
@@ -841,14 +840,14 @@ Author: Alexander Mattheis
             var definedMaxY = 0;
 
             // go through each path (in SVG figures defined as paths)
-            for (var i = 0; i < svgPaths.length; i++){
+            for (var i = 0; i < svgPaths.length; i++) {
                 var path = svgPaths[i].attributes.getNamedItem("d").value.split(",");
 
                 // go through each element of the path
-                for (var j = 1; j < path.length; j++){
+                for (var j = 1; j < path.length; j++) {
                     var currentY = parseInt(path[j].split("L")[0]);
 
-                    if(definedMaxY < currentY)
+                    if (definedMaxY < currentY)
                         definedMaxY = currentY;
                 }
             }
@@ -868,7 +867,7 @@ Author: Alexander Mattheis
                         var currentY = path[j].split("L");
 
                         // adjustment
-                        if(currentY.length !== 1)
+                        if (currentY.length !== 1)
                             correctedPath = correctedPath + SYMBOLS.COMMA + (parseInt(currentY[0]) - heightAdjustment).toString() + "L" + currentY[1];
                         else
                             correctedPath = correctedPath + SYMBOLS.COMMA + (parseInt(currentY[0]) - heightAdjustment).toString();
@@ -878,7 +877,7 @@ Author: Alexander Mattheis
                 }
 
                 // adjust text-heights
-                for( var i = 0; i < svgTexts.length; i++ ){
+                for (var i = 0; i < svgTexts.length; i++) {
                     svgTexts[i].setAttribute("y", (parseInt(svgTexts[i].attributes.getNamedItem("y").value) - heightAdjustment).toString());
                 }
             }

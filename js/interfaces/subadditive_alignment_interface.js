@@ -32,8 +32,8 @@ Author: Alexander Mattheis
 
     /**
      * Function managing objects.
-     * @param Algorithm - The algorithm which is started.
-     * @param algorithmName - The name of the algorithm which is started.
+     * @param Algorithm {Object} - The algorithm which is started.
+     * @param algorithmName {string} - The name of the algorithm which is started.
      */
     function startSubadditiveAlignmentAlgorithm(Algorithm, algorithmName) {
         imports();
@@ -183,23 +183,23 @@ Author: Alexander Mattheis
 
         string += LATEX.BEGIN_CASES;  // starting LaTeX case region
 
-            if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
-                string += LATEX.FORMULA.MAXIMIZE_HORIZONTAL + LATEX.NEW_LINE;
-            else
-                string += LATEX.FORMULA.MINIMIZE_HORIZONTAL + LATEX.NEW_LINE;
+        if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
+            string += LATEX.FORMULA.MAXIMIZE_HORIZONTAL + LATEX.NEW_LINE;
+        else
+            string += LATEX.FORMULA.MINIMIZE_HORIZONTAL + LATEX.NEW_LINE;
 
-            string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
-            string += viewmodel.match() >= 0 ? LATEX.SPACE + viewmodel.match() : viewmodel.match();
-            string += SYMBOLS.AND + LATEX.FORMULA.MATCH + LATEX.NEW_LINE;
+        string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
+        string += viewmodel.match() >= 0 ? LATEX.SPACE + viewmodel.match() : viewmodel.match();
+        string += SYMBOLS.AND + LATEX.FORMULA.MATCH + LATEX.NEW_LINE;
 
-            string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
-            string += viewmodel.mismatch() >= 0 ? LATEX.SPACE + viewmodel.mismatch() : viewmodel.mismatch();
-            string += SYMBOLS.AND + LATEX.FORMULA.MISMATCH + LATEX.NEW_LINE;
+        string += LATEX.FORMULA.DIAGONAL + LATEX.ALIGNED_PLUS;
+        string += viewmodel.mismatch() >= 0 ? LATEX.SPACE + viewmodel.mismatch() : viewmodel.mismatch();
+        string += SYMBOLS.AND + LATEX.FORMULA.MISMATCH + LATEX.NEW_LINE;
 
-            if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
-                string += LATEX.FORMULA.MAXIMIZE_VERTICAL;
-            else
-                string += LATEX.FORMULA.MINIMIZE_VERTICAL;
+        if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
+            string += LATEX.FORMULA.MAXIMIZE_VERTICAL;
+        else
+            string += LATEX.FORMULA.MINIMIZE_VERTICAL;
 
         string += LATEX.END_CASES;  // stopping LaTeX case region
 
@@ -333,16 +333,16 @@ Author: Alexander Mattheis
     function getSubformula(algorithmName, viewmodel) {
         var string = LATEX.MATH_REGION;
 
-            string += getGapFunction(algorithmName, viewmodel);
+        string += getGapFunction(algorithmName, viewmodel);
 
-            string += SYMBOLS.EQUAL;
-            string += viewmodel.baseCosts() >= 0
-                ? viewmodel.baseCosts() + SYMBOLS.PLUS
-                : SYMBOLS.BRACKET_LEFT + viewmodel.baseCosts() + SYMBOLS.BRACKET_RIGHT + SYMBOLS.PLUS;
+        string += SYMBOLS.EQUAL;
+        string += viewmodel.baseCosts() >= 0
+            ? viewmodel.baseCosts() + SYMBOLS.PLUS
+            : SYMBOLS.BRACKET_LEFT + viewmodel.baseCosts() + SYMBOLS.BRACKET_RIGHT + SYMBOLS.PLUS;
 
-            string += viewmodel.enlargement() >= 0
-                ? viewmodel.enlargement() + getMultiplier(algorithmName, viewmodel)
-                : SYMBOLS.BRACKET_LEFT + viewmodel.enlargement() + SYMBOLS.BRACKET_RIGHT + getMultiplier(algorithmName, viewmodel);
+        string += viewmodel.enlargement() >= 0
+            ? viewmodel.enlargement() + getMultiplier(algorithmName, viewmodel)
+            : SYMBOLS.BRACKET_LEFT + viewmodel.enlargement() + SYMBOLS.BRACKET_RIGHT + getMultiplier(algorithmName, viewmodel);
 
         string += LATEX.MATH_REGION;
         return string;
@@ -431,7 +431,7 @@ Author: Alexander Mattheis
             inputViewmodel.match(Number($("#match").val()));
             inputViewmodel.mismatch(Number($("#mismatch").val()));
 
-            if(algorithm.type === ALGORITHMS.WATERMAN_SMITH_BEYER) {
+            if (algorithm.type === ALGORITHMS.WATERMAN_SMITH_BEYER) {
                 if ($("#affine").is(":checked"))
                     inputViewmodel.subadditiveFunction(SUBADDITIVE_FUNCTIONS.AFFINE);
                 else if ($("#logarithmic").is(":checked"))
