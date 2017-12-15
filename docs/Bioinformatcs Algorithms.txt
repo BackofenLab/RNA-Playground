@@ -10,8 +10,8 @@ Author: Alexander Mattheis
 /*-------------------------*/
 
 /*-----------------------------------------------------DEVELOPMENT----------------------------------------------------*/
-The DNA-bionformatics part of
-the project was developed by Alexander Mattheis (supervised by Martin Raden)
+The "Bioinformatics Algorithms" part of
+the project (see "alignment.html") was developed by Alexander Mattheis (supervised by Martin Raden)
 with the cross-platform IDE "PhpStorm 2017.2.4".
 
 /*----------------------------------------------EXTENDING VISUALIZATION-----------------------------------------------*/
@@ -24,11 +24,11 @@ Hint:
 Algorithm names have to be eventually added
 into the lists of algorithms (SVG_ARROW_ALGORITHMS, MULTI_TABLE_ALGORITHMS, ...) in the "default.js"
 to activate automatically an algorithm visualization
-(look at HTML-elements class-names for example in NW to get a visualization).
+(use same HTML-element naming (like for example in the "Needleman-Wunsch.html") to get a visualization.
 
 /*------------------------------------IMPLEMENTING NEW ALGORITHM FOR VISUALIZATION------------------------------------*/
--   create a new page "ExampleAlgorithm.html" in "/"
-    (use hyphens for the page name or PascalCase https://en.wikipedia.org/wiki/PascalCase)
+-   create a new page "Example-Algorithm.html" in "/"
+    (use hyphens for the page name i.e. "Needleman-Wunsch.html" or "Agglomerative-Clustering.html")
 -   create a new script "example_algorithm.js" in "js/"
     (use underscores for the script name and lowercase letters)
 -   go into "index.html" and enter your algorithm name (without underscores) in the algorithm menu area:
@@ -39,18 +39,10 @@ to activate automatically an algorithm visualization
         </ul>
     </div>
 
-    or
-
-    <div id="algorithm_menu">
-        <ul>
-            <li><a href="#">ExampleAlgorithm</a></li>
-        </ul>
-    </div>
-
 /*-----------------------------------------------------INHERITANCE----------------------------------------------------*/
 In this project simulated inheritance is used because ECMAScript 5
 does not support real, Java-like inheritance like in ECMAScript 6 (from 2015).
-But ECMAScript 5 is also fully supported by older browsers and tablet/smartphone browsers.
+But, ECMAScript 5 is also fully supported by older browsers and tablet/smartphone browsers.
 
 Examples for simulated inheritance you find under "js/procedures/bases/":
 from the classes there, other classes like Needleman-Wunsch inherit functions
@@ -62,18 +54,18 @@ through an instance of the parent class (with the related functions: getInput, g
 /*--------------------------------------------------INPUT PROCESSING--------------------------------------------------*/
 The "InputProcessor"-class under "js/post_processing/input_processor.js"
 is used for forwarding input to the algorithms and output to the visualizer.
-It removes wrong inputs before data is passed to a algorithm
+It removes wrong inputs before data is passed to an algorithm
 and it defines the behaviour of different input types.
 
 Example:    Result selection
 -   after a click on a result,
     the input processor is selecting a table entry of the results table (id: "results")
 -   the table and the entry is then sent from this class to the visualizer
-    which highlights the entry
+    which highlights the entry in the table
 
 /*-----------------------------------------------------INTERFACES-----------------------------------------------------*/
 Interfaces under "js/interfaces/" are used to work with the input and output (the interface) of the algorithm.
-Such interfaces are bind to specific algorithms.
+Such interfaces are bound to specific algorithms.
 The "InputProcessor" is executing interfaces to get an algorithm output.
 
 /*--------------------------------------------------------HINTS-------------------------------------------------------*/
@@ -94,20 +86,20 @@ translated:
     In the Developer version (so, probably in the next Firefox version),
     it does not appear and also in no other browser.
     I have now rewritten the tables and separated the footer
-    from the actual table. Now the problem never occurs. >>
+    from the actual table. Now, the problem never occurs. >>
 
 /*------------------------------------------------------LOADING-------------------------------------------------------*/
 The loading of an algorithm-page into a webpage is done in the "loader.js"-file.
 In this file is a function "updateDocumentView(algorithm, view)" which loads the page into a "div".
-If you want add a new algorithm you have to extend this file
+If you want add a new algorithm, you have probably to extend this file
 and add the Javascript algorithm name into the structure ALGORITHMS in the file "defaults.js".
 
-Hint: Do also a look into EXTENDING VISUALIZATION!
+Hint: Do also have a look into EXTENDING VISUALIZATION!
 
 /*-------------------------------------------------------PATHS--------------------------------------------------------*/
 Many Javascript-paths are stored under "js/defaults.js".
 
-Hint:	If you want change file-paths, then you have also to change paths in the "alignment.html" or your webpage.
+Hint:	If you want change file-paths, then you have also to change paths in the "alignment.html" of your webpage.
 
 /*--------------------------------------------------PUBLIC METHODS----------------------------------------------------*/
 Namespaces are storing methods, which are visible out of the namespace:
@@ -125,8 +117,8 @@ and constructors storing methods which are visible out of the namespace over an 
         this.getDistanceTable = getDistanceTable;
     }
 
-Hint: You have not to store the public class methods as a namespace argument.
+Hint: You have not to put the public class methods in the namespace!
 
 /*-------------------------------------------------------TESTS--------------------------------------------------------*/
 Unit-Tests are stored under "js/tests/". The file "UnitTests.jstd" is specifying Unit-Test file paths.
-The tool/plugin which was used to create the Unit-Tests is "JsTestDriver".
+The tool/plugin which was used to create the Unit-Tests is called "JsTestDriver".

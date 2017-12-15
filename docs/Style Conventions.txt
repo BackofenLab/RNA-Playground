@@ -130,4 +130,4 @@ is only used in constructors of this project and for invokers which are not the 
 /*--- "use strict"; ----*/
 To write good Javascript-code the strict-mode has to be used.
 The strict-command has to be written
-into the first line of every Javascript-file.
+into the second line of every Javascript-file after the comment-header.
