@@ -17,7 +17,7 @@ Author: Alexander Mattheis
 /* Hint: alphabetically ordered (also within definitions) and structures (i.e. {}) after constants. */
 
 // constants
-var END_SO_ON = ".."
+var END_SO_ON = "..";
 var EPSILON = 0.000000001;  // some very low number to test against
 
 var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant!
@@ -40,7 +40,7 @@ var SMITH_WATERMAN_STOP = "0";
  */
 var ALGORITHMS = {  // contains a list of algorithms with an own javascript-file (javascript names without extension)
     AGGLOMERATIVE_CLUSTERING: "agglomerative_clustering",
-	ARSLAN_EGECIOGLU_PEVZNER: "arslan_egecioglu_pevzner",
+    ARSLAN_EGECIOGLU_PEVZNER: "arslan_egecioglu_pevzner",
     FENG_DOOLITTLE: "feng_doolittle",
     GOTOH: "gotoh",
     GOTOH_LOCAL: "gotoh_local",
@@ -139,8 +139,8 @@ var ITERATIVE_REFINEMENT_ORDERS = {
 };
 
 var ITERATIVE_REFINEMENT_STRATEGIES = {
-    MIN_DISTANCE_PAIR: "Minimum Distance Pair",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore! */
-    ONE_VS_ALL: "One-vs-All",  /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore! */
+    MIN_DISTANCE_PAIR: "Minimum Distance Pair", /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore! */
+    ONE_VS_ALL: "One-vs-All", /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore! */
     PAIRWISE_BEST_PAIR: "Pairwise Best Pair"
 };
 
@@ -180,7 +180,8 @@ var LATEX = {
     SUPERSCRIPT: "^",
     TEXT_START: "\\texttt{",
 
-    FORMULA: {  /* contains subparts of a formula */
+    FORMULA: {
+        /* contains subparts of a formula */
         CURRENT: "D_{i,j}",
         CURRENT_BACKWARD: "D'_{i,j}",
         CURRENT_P: "P_{i,j}",
@@ -220,7 +221,8 @@ var LATEX = {
         ZERO: "0"
     },
 
-    FORMULAS: {  /* contains complete formulas */
+    FORMULAS: {
+        /* contains complete formulas */
         COMPLETE_LINKAGE_DELTA_1: "$$\\delta_m(k, ij) = \\max_{s \\in k,\\, t \\in ij} D_{s,t}$$",
         COMPLETE_LINKAGE_DELTA_2: "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$",
         NEIGHBOUR_JOINING_DELTA_1:
@@ -230,8 +232,8 @@ var LATEX = {
         SINGLE_LINKAGE_DELTA_1: "$$\\delta_m(k, ij) = \\min_{s \\in k,\\, t \\in ij} D_{s,t}$$",
         SINGLE_LINKAGE_DELTA_2: "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$",
         UPGMA_DELTA_1:
-            "$$\\delta_m(k, ij) = \\frac{D_{k,i} \\cdot |i| + D_{k,j} \\cdot |j|}{|i| + |j|} " +
-            "= \\frac{1}{|k| |ij|} \\sum_{s \\in k} \\sum_{t \\in ij} D_{s,t}$$",
+        "$$\\delta_m(k, ij) = \\frac{D_{k,i} \\cdot |i| + D_{k,j} \\cdot |j|}{|i| + |j|} " +
+        "= \\frac{1}{|k| |ij|} \\sum_{s \\in k} \\sum_{t \\in ij} D_{s,t}$$",
         UPGMA_DELTA_2:
             "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$",
         WPGMA_DELTA_1:
@@ -242,92 +244,92 @@ var LATEX = {
 
     RECURSION: {
         GOTOH:
-        "\\begin{cases}"                            +
-        "D_{i-1,j-1}	& + & s(a_i,b_j)    \\\\"   +
-        "P_{i,j}                            \\\\"   +
-        "Q_{i,j}                                "   +
+        "\\begin{cases}" +
+        "D_{i-1,j-1}	& + & s(a_i,b_j)    \\\\" +
+        "P_{i,j}                            \\\\" +
+        "Q_{i,j}                                " +
         "\\end{cases}",
 
         GOTOH_LOCAL:
-        "\\begin{cases}"                            +
-        "S_{i-1,j-1}	& + & s(a_i,b_j)    \\\\"   +
-        "P_{i,j}                            \\\\"   +
-        "Q_{i,j}                            \\\\"   +
-        "0                                      "   +
+        "\\begin{cases}" +
+        "S_{i-1,j-1}	& + & s(a_i,b_j)    \\\\" +
+        "P_{i,j}                            \\\\" +
+        "Q_{i,j}                            \\\\" +
+        "0                                      " +
         "\\end{cases}",
 
         GOTOH_P:
-        "\\begin{cases}"                            +
-        "D_{i-1,j}      & + & g(1)		    \\\\"   +
-        "P_{i-1,j}      & + & \\beta"              +
+        "\\begin{cases}" +
+        "D_{i-1,j}      & + & g(1)		    \\\\" +
+        "P_{i-1,j}      & + & \\beta" +
         "\\end{cases}",
 
         GOTOH_Q:
-        "\\begin{cases}"                            +
-        "D_{i,j-1}      & + & g(1)		    \\\\"   +
-        "Q_{i,j-1}      & + & \\beta"              +
+        "\\begin{cases}" +
+        "D_{i,j-1}      & + & g(1)		    \\\\" +
+        "Q_{i,j-1}      & + & \\beta" +
         "\\end{cases}",
 
         HIRSCHBERG_BACKWARD:
-        "\\begin{cases}"                            +
-        "D'_{i+1,j+1}   & + &  s(a_i,b_j)   \\\\"   +
-        "D'_{i+1,j}     & + &  \\gamma      \\\\"   +
-        "D'_{i,j+1}     & + &  \\gamma"             +
+        "\\begin{cases}" +
+        "D'_{i+1,j+1}   & + &  s(a_i,b_j)   \\\\" +
+        "D'_{i+1,j}     & + &  \\gamma      \\\\" +
+        "D'_{i,j+1}     & + &  \\gamma" +
         "\\end{cases}",
 
         HIRSCHBERG_FORWARD:
-        "\\begin{cases}"                            +
-        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
-        "D_{i-1,j}      & + & \\gamma       \\\\"   +
-        "D_{i,j-1} 		& + & \\gamma"              +
+        "\\begin{cases}" +
+        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\" +
+        "D_{i-1,j}      & + & \\gamma       \\\\" +
+        "D_{i,j-1} 		& + & \\gamma" +
         "\\end{cases}",
 
         HIRSCHBERG_INITIALIZATION:
-        "D'_{n,m} = 0, \\quad D'_{n,j}= (m-j)\\gamma, \\quad D'_{i,m}= (n-i)\\gamma",
+            "D'_{n,m} = 0, \\quad D'_{n,j}= (m-j)\\gamma, \\quad D'_{i,m}= (n-i)\\gamma",
 
         NEEDLEMAN_WUNSCH:
-        "\\begin{cases}"                            +
-        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
-        "D_{i-1,j}      & + & s(a_i,-)      \\\\"   +
-        "D_{i,j-1} 		& + & s(-,b_j)"             +
+        "\\begin{cases}" +
+        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\" +
+        "D_{i-1,j}      & + & s(a_i,-)      \\\\" +
+        "D_{i,j-1} 		& + & s(-,b_j)" +
         "\\end{cases}",
 
         SMITH_WATERMAN:
-        "\\begin{cases}"                            +
-        "S_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
-        "S_{i-1,j}      & + & s(a_i,-)      \\\\"   +
-        "S_{i,j-1} 		& + & s(-,b_j)      \\\\"   +
-        "0"                                         +
+        "\\begin{cases}" +
+        "S_{i-1,j-1}    & + & s(a_i,b_j)    \\\\" +
+        "S_{i-1,j}      & + & s(a_i,-)      \\\\" +
+        "S_{i,j-1} 		& + & s(-,b_j)      \\\\" +
+        "0" +
         "\\end{cases}",
 
-      SMITH_WATERMAN_MODIFIED:
-        "\\begin{cases}"                            +
-        "S_{i-1,j-1}    & + & s^r(a_i,b_j)    \\\\"	+
-        "S_{i-1,j}      & + & s^r(a_i,-)      \\\\"	+
-        "S_{i,j-1} 		& + & s^r(-,b_j)      \\\\"	+
-        "0"                                         +
+        SMITH_WATERMAN_MODIFIED:
+        "\\begin{cases}" +
+        "S_{i-1,j-1}    & + & s^r(a_i,b_j)    \\\\" +
+        "S_{i-1,j}      & + & s^r(a_i,-)      \\\\" +
+        "S_{i,j-1} 		& + & s^r(-,b_j)      \\\\" +
+        "0" +
         "\\end{cases}",
         WATERMAN_SMITH_BEYER_MIN:
-        "\\begin{cases}"                                                                                                +
-        "\\displaystyle     \\min_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\"           +
-        "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]"      +
-        "\\displaystyle     \\min_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}"                  +
+        "\\begin{cases}" +
+        "\\displaystyle     \\min_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\" +
+        "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]" +
+        "\\displaystyle     \\min_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}" +
         "\\end{cases}",
 
         WATERMAN_SMITH_BEYER_MAX:
-        "\\begin{cases}"                                                                                                +
-        "\\displaystyle     \\max_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\"           +
-        "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]"      +
-        "\\displaystyle     \\max_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}"                  +
+        "\\begin{cases}" +
+        "\\displaystyle     \\max_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\" +
+        "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]" +
+        "\\displaystyle     \\max_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}" +
         "\\end{cases}"
     },
 
     SUB_FORMULAS: {
         ARSLAN_EGECIOGLE_PEVZNER_SCORING:
-        "s^r(a_i,b_j) = "                                                    +
-        "\\begin{cases}"                                                    +
-        "s(a_i,b_j) - 2 \\lambda^{r-1}    &  a_i, b_j \\in \\Sigma     \\\\"      +
-        "s(a_i,b_j) - \\lambda^{r-1}      &  a_i =\\_ \\vee b_j = \\_ "           +
+        "s^r(a_i,b_j) = " +
+        "\\begin{cases}" +
+        "s(a_i,b_j) - 2 \\lambda^{r-1}    &  a_i, b_j \\in \\Sigma     \\\\" +
+        "s(a_i,b_j) - \\lambda^{r-1}      &  a_i =\\_ \\vee b_j = \\_ " +
         "\\end{cases}",
 
         GOTOH_GAP_FUNCTION: "g(k) = \\alpha + \\beta \\cdot k"
@@ -391,9 +393,9 @@ var PATHS = {
     ALIGNMENT_INTERFACE: "js/interfaces/alignment_interface.js",
     INPUT_PROCESSOR: "js/post_processing/input_processor.js",
     INTERFACE: "js/interfaces/interface.js",
-    LINEAR_ALIGNMENT_INTERFACE: "js/interfaces/linear_alignment_interface.js",  /* only if needed, else can be commented out */
-    MULTI_SEQUENCE_INTERFACE: "js/interfaces/multi_sequence_interface.js",  /* only if needed, else can be commented out */
-    SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js",  /* only if needed, else can be commented out */
+    LINEAR_ALIGNMENT_INTERFACE: "js/interfaces/linear_alignment_interface.js", /* only if needed, else can be commented out */
+    MULTI_SEQUENCE_INTERFACE: "js/interfaces/multi_sequence_interface.js", /* only if needed, else can be commented out */
+    SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js", /* only if needed, else can be commented out */
     VISUALIZER: "js/post_processing/visualizer.js",
 
     LIBS: {
@@ -471,7 +473,7 @@ var SVG = {
     STROKE_DASHARRAY: "3,6",
     TRACEBACK_LONG_ARROW_COLOR: "black",
 
-    MARKER : {
+    MARKER: {
         ID_TRACEBACK: "triangle_traceback",
         ID_FLOW: "triangle_flow",
         ORIENT: "auto",
@@ -487,7 +489,7 @@ var SVG = {
         }
     },
 
-    TRIANGLE : {
+    TRIANGLE: {
         D: "M 0 0 L 0 8 L 8 4 z"  // M: move to, L: line to
     }
 };
@@ -533,12 +535,12 @@ var HIERARCHICAL_CLUSTERING_DEFAULTS = {
         CLUSTERING_ALGORITHMS.UPGMA,
         CLUSTERING_ALGORITHMS.WPGMA
     ],
-    CSV_TABLE:  /* input from https://en.wikipedia.org/wiki/Neighbor_joining */
+    CSV_TABLE: /* input from https://en.wikipedia.org/wiki/Neighbor_joining */
     " 0 ;  5 ;  9 ;  9 ;  8" + "\n" +
     "   ;  0 ; 10 ; 10 ;  9" + "\n" +
     "   ;    ;  0 ;  8 ;  7" + "\n" +
     "   ;    ;    ;  0 ;  3" + "\n" +
-    "   ;    ;    ;    ;  0" ,
+    "   ;    ;    ;    ;  0",
     FORMULAS: [
         LATEX.FORMULAS.COMPLETE_LINKAGE_DELTA_1,
         LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_1,
@@ -557,7 +559,8 @@ var HIERARCHICAL_CLUSTERING_DEFAULTS = {
     STANDARD_APPROACH: [CLUSTERING_ALGORITHMS.UPGMA]
 };
 
-var ITERATIVE_SEQUENCE_DEFAULTS = {  /* sequences from lecture */
+var ITERATIVE_SEQUENCE_DEFAULTS = {
+    /* sequences from lecture */
     APPROACHES: [
         ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR,
         ITERATIVE_REFINEMENT_STRATEGIES.ONE_VS_ALL,
@@ -570,7 +573,7 @@ var ITERATIVE_SEQUENCE_DEFAULTS = {  /* sequences from lecture */
         ITERATIVE_REFINEMENT_ORDERS.RIGHT_FIRST
     ],
 
-    SEQUENCES: [ /* input from T-Coffee paper does not work */
+    SEQUENCES: [/* input from T-Coffee paper does not work */
         "ACGT",
         "AT",
         "GCT",
@@ -579,7 +582,7 @@ var ITERATIVE_SEQUENCE_DEFAULTS = {  /* sequences from lecture */
         "ACGT",
         "AT",
         "GCT",
-        "GC"],  /* some bugfix for Knockout problem */
+        "GC"], /* some bugfix for Knockout problem */
 
     STANDARD_APPROACH: [ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR],
     STANDARD_ORDER: [ITERATIVE_REFINEMENT_ORDERS.LEFT_FIRST],
@@ -592,12 +595,13 @@ var ITERATIVE_SEQUENCE_DEFAULTS = {  /* sequences from lecture */
     }
 };
 
-var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
+var MULTI_SEQUENCE_DEFAULTS = {
+    /* example from paper */
     CALCULATION: "similarity",
     GLOBAL_ALIGNMENTS_PER_SEQUENCE: 1,
     LOCAL_ALIGNMENTS_PER_SEQUENCE: 2,
 
-    SEQUENCES: [ /* input from T-Coffee paper */
+    SEQUENCES: [/* input from T-Coffee paper */
         "GARFIELD-THE-LAST-FAT-CAT",
         "GARFIELD-THE-FAST-CAT",
         "GARFIELD-THE-VERY-FAST-CAT",
@@ -606,7 +610,7 @@ var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
         "GARFIELD-THE-LAST-FAT-CAT",
         "GARFIELD-THE-FAST-CAT",
         "GARFIELD-THE-VERY-FAST-CAT",
-        "THE-FAT-CAT"],  /* some bugfix for Knockout problem */
+        "THE-FAT-CAT"], /* some bugfix for Knockout problem */
 
     USE_LOCAL_LIBRARY: false,
 
@@ -681,7 +685,7 @@ var EMPTY_ALIGNMENT = [SYMBOLS.EMPTY, SYMBOLS.EMPTY, SYMBOLS.EMPTY];
 
 var GLOBAL_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.HIRSCHBERG, ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.WATERMAN_SMITH_BEYER];
 var LOCAL_ALGORITHMS = [ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.SMITH_WATERMAN];
-var MULTI_SEQUENCE_ALGORITHMS = [ALGORITHMS.FENG_DOOLITTLE, ALGORITHMS.ITERATIVE_REFINMENT,  ALGORITHMS.NOTREDAME_HIGGINS_HERINGA];
+var MULTI_SEQUENCE_ALGORITHMS = [ALGORITHMS.FENG_DOOLITTLE, ALGORITHMS.ITERATIVE_REFINMENT, ALGORITHMS.NOTREDAME_HIGGINS_HERINGA];
 
 /**
  * Algorithms which use exactly three tables for their computations.

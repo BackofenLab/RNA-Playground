@@ -54,7 +54,7 @@ Author: Alexander Mattheis
 
         // public class methods
         this.computeDistances = computeDistances;
-        
+
         this.getSuperclass = getSuperclass;
     }
 
@@ -63,6 +63,7 @@ Author: Alexander Mattheis
      * which is using the inputViewmodel properties in its computations.
      * @param inputViewmodel {Object} - The InputViewmodel of an appropriate algorithm.
      */
+
     /* Only needed if an own interface is created for this class, but now it uses just the interface of agglomerative clustering.
     function setInput(inputViewmodel) {
         clusteringInstance.setIO(inputData, outputData);
@@ -110,7 +111,7 @@ Author: Alexander Mattheis
 
         clusteringInstance.getMatrixKeys(outputData.distanceMatrix, true);  // only for visualization called again, to store also the last matrix
         outputData.distanceMatrix = distanceMatrixCopy;  // write-back
-        outputData.newickString = clusteringInstance.getNewickEncoder().getEncoding(outputData.treeBranches[outputData.treeBranches.length-1]);
+        outputData.newickString = clusteringInstance.getNewickEncoder().getEncoding(outputData.treeBranches[outputData.treeBranches.length - 1]);
         return [inputData, outputData];
     }
 

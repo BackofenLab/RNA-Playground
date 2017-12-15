@@ -43,7 +43,7 @@ $(document).ready(function () {
      * and http://journals.sagepub.com/doi/abs/10.1177/001316446602600201 (4)
      *
      * Complete Linkage (Furthest Neighbour) by
-     * Sørensen, Thorvald.
+     * Sorensen, Thorvald.
      * "A method of establishing groups of equal amplitude in plant sociology based on similarity
      * of species and its application to analyses of the vegetation on Danish commons."
      * Biol. Skr. 5 (1948): 1-34.
@@ -144,7 +144,7 @@ $(document).ready(function () {
                 }
             }
 
-            var optimalValue = values.reduce(function(a, b) {
+            var optimalValue = values.reduce(function (a, b) {
                 return optimum(a, b);
             });
 

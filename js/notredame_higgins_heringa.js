@@ -47,7 +47,7 @@ $(document).ready(function () {
      * @augments MultiSequenceAlignment
      * @see https://doi.org/10.1006/jmbi.2000.4042
      *
-     * Notredame, Cédric, Desmond G. Higgins, and Jaap Heringa.
+     * Notredame, Cedric, Desmond G. Higgins, and Jaap Heringa.
      * "T-Coffee: A novel method for fast and accurate multiple sequence alignment."
      * Journal of molecular biology 302.1 (2000): 205-217.
      */
@@ -124,7 +124,7 @@ $(document).ready(function () {
         computeExtendedWeightPrimaryLibrary();
         startProgressiveAlignment();
 
-        outputData.score = multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
+        outputData.score = multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, outputData.progressiveAlignment);
         return [inputData, outputData];
     }
 
@@ -302,7 +302,7 @@ $(document).ready(function () {
      * @param global - Tells if it is a global or a local alignment.
      */
     function increaseDiversity(L, alignments, tracebacks, sequenceIdentity, alignmentLength, global) {
-        var startPos = new bases.alignment.Vector(0,0);
+        var startPos = new bases.alignment.Vector(0, 0);
 
         // go over each alignment and add new positions
         for (var i = 1; i < alignments.length; i++) {  // "i=1", to jump over the first alignment, because it's done
@@ -390,8 +390,8 @@ $(document).ready(function () {
         var sequenceBPositions;
 
         if (global) {
-            sequenceAPositions = global ? getAllPositions(sequenceA) : positions[0];
-            sequenceBPositions = global ? getAllPositions(sequenceB) : positions[1];
+            sequenceAPositions = getAllPositions(sequenceA);
+            sequenceBPositions = getAllPositions(sequenceB);
         } else {  // if local
             var positions = getPositionsFromTraceback(traceback);
 
@@ -405,8 +405,8 @@ $(document).ready(function () {
             for (var j = 0; j < sequenceBPositions.length; j++) {
                 var posJ = sequenceBPositions[j];
 
-                if (L[[posI,posJ]] === undefined)
-                    L[[posI,posJ]] = 0;
+                if (L[[posI, posJ]] === undefined)
+                    L[[posI, posJ]] = 0;
             }
         }
 
@@ -445,7 +445,7 @@ $(document).ready(function () {
             if (verticalDifference === 1 && horizontalDifference === 1) {  // diagonal case
                 positionsInA.push(path[k].i);
                 positionsInB.push(path[k].j);
-            }  else if (horizontalDifference > 0) {  // horizontal case
+            } else if (horizontalDifference > 0) {  // horizontal case
                 positionsInB.push(path[k].j);
             } else if (verticalDifference > 0) {  // vertical case
                 // Hint: for Gotoh really "else if" is needed because you can switch between matrices
@@ -480,7 +480,7 @@ $(document).ready(function () {
         // sort using the score, to remove worst alignments
         var switches = [];
 
-        alignmentsAndScores.sort(function (a,b) {  // sorted in reverse order: 17 14 12 10 8 ...
+        alignmentsAndScores.sort(function (a, b) {  // sorted in reverse order: 17 14 12 10 8 ...
             var value = b[1] - a[1];
             switches.push(value);
             return value;
@@ -488,7 +488,7 @@ $(document).ready(function () {
 
         var i = 0;
 
-        sequencePairs.sort(function (a,b) {  // sort sequence-pairs with same order
+        sequencePairs.sort(function (a, b) {  // sort sequence-pairs with same order
             return switches[i++];
         });
 
@@ -821,7 +821,7 @@ $(document).ready(function () {
      * This is why just an iteration through the branches is done.
      * @param treeBranches {Object} - The tree branches which are defining the order for the merging process.
      * @see: https://doi.org/10.1006/jmbi.2000.4042
-     * Notredame, Cédric, Desmond G. Higgins, and Jaap Heringa.
+     * Notredame, Cedric, Desmond G. Higgins, and Jaap Heringa.
      * "T-Coffee: A novel method for fast and accurate multiple sequence alignment."
      * Journal of molecular biology 302.1 (2000): 205-217.
      */
@@ -848,7 +848,7 @@ $(document).ready(function () {
      * @param j {number} - The position in the second sequence.
      * @returns {number} - The position specific score.
      * @see: https://doi.org/10.1006/jmbi.2000.4042
-     * Notredame, Cédric, Desmond G. Higgins, and Jaap Heringa.
+     * Notredame, Cedric, Desmond G. Higgins, and Jaap Heringa.
      * "T-Coffee: A novel method for fast and accurate multiple sequence alignment."
      * Journal of molecular biology 302.1 (2000): 205-217.
      *
@@ -894,14 +894,14 @@ $(document).ready(function () {
 
                 if (L !== undefined) {
                     // neutral symbols should produce always zero weight
-                    if (preSequenceA[i-1] !== SYMBOLS.NONE && preSequenceB[j-1] !== SYMBOLS.NONE) {  // "-1" because counting starts with 1
+                    if (preSequenceA[i - 1] !== SYMBOLS.NONE && preSequenceB[j - 1] !== SYMBOLS.NONE) {  // "-1" because counting starts with 1
                         var argI = i - getNumberOfNeutrals(preSequenceA, i);  // remove the number of neutrals to get the position within sequence
                         var argJ = j - getNumberOfNeutrals(preSequenceB, j);
 
                         if (switchArguments)
-                            weight += L[[argJ,argI]] !== undefined ? L[[argJ,argI]] : 0;
+                            weight += L[[argJ, argI]] !== undefined ? L[[argJ, argI]] : 0;
                         else
-                            weight += L[[argI,argJ]] !== undefined ? L[[argI,argJ]] : 0;  // not defined positions have always score 0
+                            weight += L[[argI, argJ]] !== undefined ? L[[argI, argJ]] : 0;  // not defined positions have always score 0
                     }
                 }
             }

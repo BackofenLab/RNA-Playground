@@ -197,7 +197,7 @@ $(document).ready(function () {
      */
     function horizontalOptimum(optimum, i, j) {
         var optimumValue;
-        var value ;
+        var value;
 
         if (optimum === Math.min) {
             optimumValue = Number.POSITIVE_INFINITY;
@@ -232,7 +232,7 @@ $(document).ready(function () {
      */
     function verticalOptimum(optimum, i, j) {
         var optimumValue;
-        var value ;
+        var value;
 
         if (optimum === Math.min) {
             optimumValue = Number.POSITIVE_INFINITY;

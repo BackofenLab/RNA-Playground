@@ -100,7 +100,6 @@ $(document).ready(function () {
      * Starts the computation.
      */
     function compute() {
-        debugger;
         initializeStructs();
 
         var ioData = computeFengDoolittle();
@@ -162,7 +161,7 @@ $(document).ready(function () {
     /**
      * Computes Feng-Doolittle output.
      */
-    function computeFengDoolittle(input) {
+    function computeFengDoolittle() {
         fengDoolittleInstance.setIO(inputData, {});
         return fengDoolittleInstance.compute();
     }
@@ -261,7 +260,7 @@ $(document).ready(function () {
 
     /**
      * Removes gap-only columns.
-     * Hint: Is a part of the original algorithm by Geoffrey J.Barton and Michael J.E.Sternberg.
+     * Hint: Is a part of the original algorithm by Geoffrey J.Barton and Michael J. E. Sternberg.
      * @param msa {Array} - The msa from which gap only columns should be removed.
      * @return {Array} - The msa without gap-only columns.
      */
@@ -428,7 +427,7 @@ $(document).ready(function () {
      * with the input MSA using the minimum distance approach (described in the algorithm HTML-file).
      * @param msa {Array} - The multi-sequence alignment to which the removed sequence should be realigned.
      * @param msaSequenceNames {Array} - The names of sequences in the multi-sequence-alignment.
-     * @param removedSequence - The removed sequence which should be realigned.
+     * @param removedSequence {string} - The removed sequence which should be realigned.
      * @param removedSequenceName {string} - The name of the sequence which is removed.
      * @return {Array} - The MSA in which the removed sequence is realigned and the score contained.
      */
@@ -472,7 +471,7 @@ $(document).ready(function () {
      * with the input MSA using the minimum distance approach (described in the algorithm HTML-file).
      * @param msa {Array} - The multi-sequence alignment to which the removed sequence should be realigned.
      * @param msaSequenceNames {Array} - The names of sequences in the multi-sequence-alignment.
-     * @param removedSequence - The removed sequence which should be realigned.
+     * @param removedSequence {string} - The removed sequence which should be realigned.
      * @param removedSequenceName {string} - The name of the sequence which is removed.
      * @param sequenceIdentificator {Object} - An object which identifies a sequence and returns its name.
      * @return {Array} - The MSA in which the removed sequence is realigned.
@@ -495,16 +494,6 @@ $(document).ready(function () {
         outputData.guideAlignmentsNames.push(removedSequenceName + SYMBOLS.ALIGN + bestElementName);
 
         return [multiSequenceAlignmentInstance.createGroup([cleanSequence], msa, bestAlignment), msaName];
-    }
-
-    /**
-     * Removes a string with the given name from an array.
-     * @param element {string} - The string which should be removed.
-     * @param stringArray {Array} - The array from which the element should be removed.
-     */
-    function removeName(element, stringArray) {
-        var index = stringArray.indexOf(element);
-        stringArray.splice(index, 1);
     }
 
     /**
