@@ -1018,7 +1018,7 @@ Author: Alexander Mattheis
         var value = 0;
 
         if (leftNumberA === leftNumberB) {
-            value = rightNumberB > rightNumberA ? -1 : (rightNumberB > rightNumberA ? 1 : 0);
+            value = rightNumberB > rightNumberA ? -1 : (rightNumberB < rightNumberA ? 1 : 0);
             switches.push(value);
             return value;
         }
