@@ -489,7 +489,10 @@ Author: Alexander Mattheis
                 var bChar = inputData.sequenceB[currentPositionB];
 
                 alignedSequenceA += aChar;
-                matchOrMismatchString += bChar === aChar ? SYMBOLS.STAR : SYMBOLS.VERTICAL_BAR;
+                if (aChar !== SYMBOLS.NONE && bChar !== SYMBOLS.NONE)  // for Feng-Doolittle
+                    matchOrMismatchString += bChar === aChar ? SYMBOLS.STAR : SYMBOLS.VERTICAL_BAR;
+                else
+                    matchOrMismatchString += SYMBOLS.SPACE;
                 alignedSequenceB += bChar;
 
                 currentPositionB++;
