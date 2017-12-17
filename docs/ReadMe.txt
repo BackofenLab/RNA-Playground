@@ -9,6 +9,16 @@ Author: Alexander Mattheis
 /*---------READ ME---------*/
 /*-------------------------*/
 
+/*-------------------------------------------------------COMMENTS-----------------------------------------------------*/
+In comments use this " (symbol) and not this ' (symbol) to emphasize something.
+
+/*------------------------------------------------------CONSTANTS-----------------------------------------------------*/
+Nearly all constants are stored in the "defaults.js".
+Namespaces, HTML class-names and events like "mouse-over" etc. are not stored in the "defaults.js"
+because else it would slow down the development process.
+If you have multiple constants of same "logic" (for example with similar naming)
+then you store them in a structure.
+
 /*-----------------------------------------------------DEVELOPMENT----------------------------------------------------*/
 The "Bioinformatics Algorithms" part of
 the project (see "alignment.html") was developed by Alexander Mattheis (supervised by Martin Raden)
@@ -88,6 +98,21 @@ translated:
     I have now rewritten the tables and separated the footer
     from the actual table. Now, the problem never occurs. >>
 
+/*------------------------------------------------------KEYWORDS------------------------------------------------------*/
+ /*---- "this"-keyword ----*/
+The "this"-keyword is not used in this project to reference the method-object,
+instead an instance on the object is created in the constructor.
+The idea behind this? In Javascript "this" points on the
+invoker-object which has called the method. So, with the strict-mode it is undefined
+in methods which are called by other methods.
+This can lead to bugs and so the "this"-keyword
+is only used in constructors of this project and for invokers which are not the class-object.
+
+/*--- "use strict"; ----*/
+To write good Javascript-code the strict-mode has to be used.
+The strict-command has to be written
+into the second line of every Javascript-file after the comment-header.
+
 /*------------------------------------------------------LOADING-------------------------------------------------------*/
 The loading of an algorithm-page into a webpage is done in the "loader.js"-file.
 In this file is a function "updateDocumentView(algorithm, view)" which loads the page into a "div".
@@ -95,6 +120,71 @@ If you want add a new algorithm, you have probably to extend this file
 and add the Javascript algorithm name into the structure ALGORITHMS in the file "defaults.js".
 
 Hint: Do also have a look into EXTENDING VISUALIZATION!
+
+/*-----------------------------------------------ORDER IN CONSTRUCTORS------------------------------------------------*/
+1.  variables:
+    this.inputUpdatesStarted = false;
+
+2.  bindings:
+    ko.bindingHandlers.drawChar = {
+        ...
+    };
+
+3.  public methods (linking):
+    this.activateInputUpdates = activateInputUpdates;
+    this.inputUpdatesActivated = inputUpdatesActivated;
+    this.linkElements = linkElements;
+    this.updateGUI = updateGUI;
+
+/*---------------------------------------------ORDER OF PROGRAM ELEMENTS----------------------------------------------*/
+1.  namespace with its static methods:
+    namespace("needlemanWunsch", startNeedlemanWunsch);
+
+2.  class instances:
+    var needlemanWunschInstance;
+
+3.  shared variables
+    var inputData = {};
+    var outputData = {};
+
+4.  start-function:
+    startNeedlemanWunsch() {...}
+
+5.  imports:
+    imports()
+
+6.1 Input constructor (with its used methods below):
+    function InputViewmodel() {...}
+
+    HINT:   Methods are defined directly below in the order
+            in which they are called in the parent method.
+            With this design you can read a class like a book or an article
+            (speeds up workflow).
+
+            Example:
+            function parent() {
+                child1();
+                child2();
+            }
+
+            function child1() {
+                someMethod();
+                ...
+            }
+
+            function someMethod() {
+                ...
+            }
+
+            function child2() {
+                ...
+            }
+
+6.2 Algorithm constructor (with its methods):
+    NeedlemanWunsch() {...}
+
+6.3 Output constructor (with its methods):
+    function OutputViewmodel(outputData) {...}
 
 /*-------------------------------------------------------PATHS--------------------------------------------------------*/
 Many Javascript-paths are stored under "js/defaults.js".
@@ -119,9 +209,17 @@ and constructors storing methods which are visible out of the namespace over an 
 
 Hint: You have not to put the public class methods in the namespace!
 
+/*-------------------------------------------------SHARED VARIABLES---------------------------------------------------*/
+Variables which are stored outside a constructor.
+
 /*-------------------------------------------------------TESTS--------------------------------------------------------*/
 Unit-Tests are stored under "js/tests/". The file "UnitTests.jstd" is specifying Unit-Test file paths.
 The tool/plugin which was used to create the Unit-Tests is called "JsTestDriver".
 
 /*-------------------------------------------------UPLOAD ON SERVER---------------------------------------------------*/
 Look into alignment.html for information.
+
+/*----------------------------------------------------VARIABLES-------------------------------------------------------*/
+Variables have to be always stored inside the constructor
+to avoid variable conflicts with other classes in the same namespace.
+An exception are "shared variables" which are used between the "classes".
