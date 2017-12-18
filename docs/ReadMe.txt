@@ -70,7 +70,7 @@ and it defines the behaviour of different input types.
 Example:    Result selection
 -   after a click on a result,
     the input processor is selecting a table entry of the results table (id: "results")
--   the table and the entry is then sent from this class to the visualizer
+-   the table and the entry row number is then sent from this class to the visualizer
     which highlights the entry in the table
 
 /*-----------------------------------------------------INTERFACES-----------------------------------------------------*/
