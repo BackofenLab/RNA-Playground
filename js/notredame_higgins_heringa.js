@@ -280,7 +280,7 @@ $(document).ready(function () {
             L[definedKeys[i]] = sequenceIdentity;  // overwriting wrong value
 
         // new feature to enlarge sequence pool (not contained in original algorithm)
-        increaseDiversity(L, alignments, tracebacks, sequenceIdentity, alignmentLength, global);
+        increaseDiversity(L, alignments, tracebacks, alignmentLength, global);
 
         if (global)
             createZeroEdgesKeys(L, sequenceA, sequenceB, undefined);
@@ -297,17 +297,19 @@ $(document).ready(function () {
      * @param L {Object} - The structure which stores the weight.
      * @param alignments - The alignments for which you want compute a structure that returns position sequence identities
      * @param tracebacks {Array} - The tracebacks of local alignments which tell the defined positions.
-     * @param sequenceIdentity {number} - The sequence identity for a global alignment like the one in input alignments.
      * @param alignmentLength {number} - The sequence length for a global alignment like the one in alignments.
      * @param global {boolean} - Tells if it is a global or a local alignment.
      */
-    function increaseDiversity(L, alignments, tracebacks, sequenceIdentity, alignmentLength, global) {
+    function increaseDiversity(L, alignments, tracebacks, alignmentLength, global) {
         var startPos = new bases.alignment.Vector(0, 0);
+        var sequenceIdentity = 0;
 
         // go over each alignment and add new positions
         for (var i = 1; i < alignments.length; i++) {  // "i=1", to jump over the first alignment, because it's done
-            if (global)
+            if (global) {
+                sequenceIdentity = getSequenceIdentity(alignments[i]);
                 addOptimalAlignment(L, alignments[i], alignmentLength, sequenceIdentity, startPos);
+            }
             else {  // local
                 // for local alignment recompute sequence identity and length and set start position using tracebacks
                 sequenceIdentity = getSequenceIdentity(alignments[i]);
@@ -317,6 +319,20 @@ $(document).ready(function () {
                 addOptimalAlignment(L, alignments[i], alignmentLength, sequenceIdentity, startPos);
             }
         }
+    }
+
+    /**
+     * Computes the sequence identity for an alignment.
+     * @param alignment {[alignedSequenceB, matchOrMismatchString, alignedSequenceA]} - The encoded alignment string.
+     * @return {number} - The sequence identity.
+     */
+    function getSequenceIdentity(alignment) {
+        var matchMismatchString = alignment[1];
+        var numMatches = (matchMismatchString.match(MULTI_SYMBOLS.MATCH) || []).length;  // match function returns null, if there is no match
+        var numMismatches = (matchMismatchString.match(MULTI_SYMBOLS.MISMATCH) || []).length;
+
+        var sequenceIdentity = (100 * numMatches) / (numMatches + numMismatches);
+        return sequenceIdentity !== Number.POSITIVE_INFINITY ? sequenceIdentity : 0;
     }
 
     /**
@@ -355,20 +371,6 @@ $(document).ready(function () {
                     L[[startPos.i + numCharactersInA, startPos.j + numCharactersInB]] = sequenceIdentity;
             }
         }
-    }
-
-    /**
-     * Computes the sequence identity for an alignment.
-     * @param alignment {[alignedSequenceB, matchOrMismatchString, alignedSequenceA]} - The encoded alignment string.
-     * @return {number} - The sequence identity.
-     */
-    function getSequenceIdentity(alignment) {
-        var matchMismatchString = alignment[1];
-        var numMatches = (matchMismatchString.match(MULTI_SYMBOLS.MATCH) || []).length;  // match function returns null, if there is no match
-        var numMismatches = (matchMismatchString.match(MULTI_SYMBOLS.MISMATCH) || []).length;
-
-        var sequenceIdentity = (100 * numMatches) / (numMatches + numMismatches);
-        return sequenceIdentity !== Number.POSITIVE_INFINITY ? sequenceIdentity : 0;
     }
 
     /**
