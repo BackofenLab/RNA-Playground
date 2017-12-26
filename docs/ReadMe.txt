@@ -121,6 +121,31 @@ and add the Javascript algorithm name into the structure ALGORITHMS in the file 
 
 Hint: Do also have a look into EXTENDING VISUALIZATION!
 
+/*----------------------------------------------------OFFLINE USAGE---------------------------------------------------*/
+MathJax
+1. 	Download MathJax v2.7.1 source code from https://github.com/mathjax/MathJax/releases
+2. 	Extract it somewhere. 
+3. 	Rename the extracted folder to "MathJax".
+4. 	Copy extracted folder into the downloaded RNA-Playground folder
+5. 	Replace your MathJax-Import 
+	<script type="text/javascript" async 
+		src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+	</script>
+	
+	with local
+	
+	<script type="text/javascript" src="MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+Corporate-Design
+1. 	Download http://rna.informatik.uni-freiburg.de/resources/corporate-design.css
+2. 	Copy the file to the other css-files of the downloaded RNA-Playground folder 
+3. 	Replace your CSS-Import
+	<link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> 
+	
+	with local
+	
+	<link rel="stylesheet" type="text/css" href="css/corporate-design.css"/>
+
 /*-----------------------------------------------ORDER IN CONSTRUCTORS------------------------------------------------*/
 1.  variables:
     this.inputUpdatesStarted = false;
