@@ -1,4 +1,4 @@
-/*
+﻿/*
 University of Freiburg WS 2017/2018
 Chair for Bioinformatics
 Supervisor: Martin Raden
@@ -248,3 +248,8 @@ Look into alignment.html for information.
 Variables have to be always stored inside the constructor
 to avoid variable conflicts with other classes in the same namespace.
 An exception are "shared variables" which are used between the "classes".
+
+/*----------------------------------------------------VIDEO LINK------------------------------------------------------*/
+Presentation (without licensed pictures) explaining the architecture, 
+objected oriented programming within the project and the Unit-Tests:
+https://youtu.be/mRXmV0J1nAA (available after presentation as not listed video)
