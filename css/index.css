@@ -17,6 +17,11 @@ div[id=output] {
     text-align: justify;
 }
 
+.dotplotContainer {
+	max-height: 600px;
+	overflow: scroll;
+}
+
 .userInput {
     border: 1px solid #c4c4c4;
     width: 300px;
