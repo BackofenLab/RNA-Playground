@@ -466,13 +466,23 @@ function dotplot(sequence, table, pname, use_log_value) {
             .on("mouseout", mouseout);
         cell.append("text")
             .attr("x", function(d) { return x(d.x)+10; })
-            .attr("y", x.rangeBand()/2)
+            .attr("y", x.rangeBand()/4)
             .attr("dy", ".32em")
             .attr("text-anchor", "start")
             .attr("display", "none")
             .attr("fill", "red")
-            //.text("hello");
+            .text(function(d) { return "i="+(d.y+1); })
+            .append("svg:tspan")
+            .attr("x", function(d) { return x(d.x)+10; })
+            .attr("y", x.rangeBand()/4*2)
+            .attr("dy", ".32em")
+            .text(function(d) { return "j="+(d.x+1); })
+            .append("svg:tspan")
+            .attr("x", function(d) { return x(d.x)+10; })
+            .attr("y", x.rangeBand()/4*3)
+            .attr("dy", ".32em")
             .text(function(d) { return (d.z).toFixed(4); })
+            
     }
     return dev;
 }
