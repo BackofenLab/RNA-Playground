@@ -279,6 +279,7 @@ function NussinovMatrixViewModel() {
 
     // functions for visualization and interaction
     self.clickStructure = function (clicked_cell, dom) {
+        $(".col_table").scrollLeft(0);
         var offset = $("#matrix_body").position();
         color += 1;
         if (color >= colors.length - 1) color = 0;
@@ -290,6 +291,8 @@ function NussinovMatrixViewModel() {
         cell = JSON.parse(cell);
 
         $('td.cell').css("background", "white");
+        $('td.cell_mea').css("background", "white");
+
         drawFullTrace(offset, cell);
     };
 
@@ -336,7 +339,6 @@ function NussinovMatrixViewModel() {
             color += 1;
             if (color >= colors.length - 1)color = 0;
 
-
             drawArrows(parents, cW, cH);
         }
     }
@@ -345,13 +347,14 @@ function NussinovMatrixViewModel() {
         if (clicked_cell.i > clicked_cell.j) {
             return;
         }
-
+        $(".col_table").scrollLeft(0);
         var offset = $("#matrix_body").position();
         var cell = JSON.stringify(clicked_cell);
         cell = JSON.parse(cell);
 
-        $(structTableCells).css({'background': '#FFF'});
+        $("#structTableCells").css({'background': '#FFF'});
         $('td.cell').css("background", "white");
+        $('td.cell_mea').css("background", "white");
         drawSingleTraceStep(offset, cell);
     };
 
