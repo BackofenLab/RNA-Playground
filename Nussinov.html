@@ -122,7 +122,7 @@
                <tr>
                    <th class="cell_th" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
                    <!-- ko foreach: { data: cell, as: 'v' } -->
-                   <td class="cell" data-bind="text: v.i < v.j+2 ? v.value : '', event: { mousedown: $root.clickCell.bind(this) }"></td>
+                   <td class="cell" data-bind="text: v.i < v.j+2 ? v.value : '',  attr: {title: 'i=' + v.i + ' j=' + v.j}, event: { mousedown: $root.clickCell.bind(this) }"></td>
                    <!-- /ko -->
                </tr>
 
