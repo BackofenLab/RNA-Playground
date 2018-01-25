@@ -301,7 +301,7 @@ function hidetext() {
 function dotplot(sequence, table, pname, use_log_value) {
     //console.log('hi', sequence, table, pname);
     var maindic = {};
-    
+
     var bpp = [];
     var mlp = [];
     var keys=["source","target","value"];
@@ -355,10 +355,11 @@ function dotplot(sequence, table, pname, use_log_value) {
 
     //var svg = d3.select("#output").append("svg")
     var dev = document.createElement("div");
+    d3.select(dev).style("overflow-x", "scroll");
     var svg = d3.select(dev).append("svg")
         .attr("id", pname)
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .style("width", width + margin.left + margin.right + "px")
+        .style("height", height + margin.top + margin.bottom + "px")
         .style("margin-left", -margin.left/2 + "px")
         .append("g")
         .attr("fill", "black")
@@ -434,7 +435,7 @@ function dotplot(sequence, table, pname, use_log_value) {
             .data(row.filter(function(d) { return d.z; }))
             .enter().append("g")
             .attr("class", "dp_cell");
-        
+
         cell.append("rect")
 	        .attr("x", function(d) { return x(d.x) ; })
 	        //.attr("cy", 26)

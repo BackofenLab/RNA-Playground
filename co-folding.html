@@ -3,7 +3,7 @@
 		<div class="colW600">
 			To predict RNA-RNA interactions optimizing both intra- as well as
 			intermolecular base pairs one can use a so called co-folding approach.
-			Here, the two interacting sequences are concatenated (using a 
+			Here, the two interacting sequences are concatenated (using a
 			non-pairing linker sequence) to a single pseudo-sequence
 			that is then folded via single structure prediction.
 			When using a full nearest-neighbor energy model, special care has
@@ -11,16 +11,16 @@
 			<a href="http://dx.doi.org/10.1007/BF00818163">Ivo L. Hofacker and coworkers (1994)</a>.
 			<br>
 			<br>
-			Here, we extend the 
+			Here, we extend the
 			<a href="index.jsp?toolName=Nussinov">Nussinov</a> algorithm for
-			such a co-folding scheme. No special linker treatment is necessary, since 
+			such a co-folding scheme. No special linker treatment is necessary, since
 			we do a base pair maximization without taking the base pair's context
 			into account. We can directly use the Nussinov algorithm without
 			any extensions when using a linker sequence of length $l+1$
 			($L=\text{X}_{1}..\text{X}_{l+1}$),
-			where $l$ denotes the minimal loop length. The linker's length enables 
+			where $l$ denotes the minimal loop length. The linker's length enables
 			intermolecular base pairs between the concatenated sequence ends.
-			Thus, for two sequences $S^{1}$ and $S^{2}$, 
+			Thus, for two sequences $S^{1}$ and $S^{2}$,
 			the hybrid sequence used for folding is given by $S=S^{1}LS^{2}$.
 			<br />
 			<br />
@@ -28,13 +28,13 @@
 			table $D$, where an entry $D_{i,j}$ provides the maximal number of
 			base pairs of any nested structure for the subsequence from $S_{i}$ to $S_{j}$.
 			The entry $D_{1,n}$ provides the overall maximal number of base pairs
-			for the whole hybrid sequence $S$ of length $n=|S^{1}|+l+1+|S^{2}|$. 
+			for the whole hybrid sequence $S$ of length $n=|S^{1}|+l+1+|S^{2}|$.
 			Watson-Crick as well as GU base pairs are considered complementary.
 			<br />
 			Beside the identification of an according optimal hybrid structure
-			via traceback (intra- and intermolecular base pairs are given by $()$ and $[\;]$, resp.), 
+			via traceback (intra- and intermolecular base pairs are given by $()$ and $[\;]$, resp.),
 			we provide an exhaustive enumeration of up to 15 suboptimal hybrids
-			using the algorithm by 
+			using the algorithm by
 			<a href="http://dx.doi.org/10.1002/(SICI)1097-0282(199902)49:2%3C145::AID-BIP4%3E3.0.CO;2-G">Stefan Wuchty et al. (1999)</a>.
 			For each structure, the according traceback is visualized on selection.
 		</div>
@@ -44,7 +44,7 @@
 	</div>
 
     <div id="inputContainer">
-    
+
         <div class="row">
             <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S^{1}$:</div>
             <div class="colW400">
@@ -90,7 +90,7 @@
                 <label for="delta" style="margin-left:10px;">for suboptimal traceback</label>
             </div>
         </div>
-        
+
         <div><div style="font-size: 120%">Used recursion (<a href="index.jsp?toolName=Nussinov">Nussinov</a> algorithm):</div></div>
 
 	    <div id="rec_id" data-bind="text: latex()[0]"></div>
@@ -99,9 +99,9 @@
     </div>
 
     <div id="output" style="margin:0;">
-    
+
 	    <div class="row">
-	        <div class="col">
+	        <div class="col_table">
 	            <canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
 	            <table style="margin:0;">
 	                <thead>
@@ -113,15 +113,15 @@
 	                    <!-- /ko -->
 	                </tr>
 	                </thead>
-	
+
 	                <tbody id="matrix_body" data-bind="foreach: { data: cells()[0], as: 'cell' }">
 	                <tr>
 	                    <th class="cell_th" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
 	                    <!-- ko foreach: { data: cell, as: 'v' } -->
-	                    <td class="cell" data-bind="text: v.i < v.j+2 ? v.value : '', event: { mousedown: $root.clickCell.bind(this) }"></td>
+	                    <td class="cell" data-bind="text: v.i < v.j+2 ? v.value : '', event: { mousedown: $root.clickCell.bind(this) }, attr: {title: 'i=' + v.i + ' j=' + v.j}"></td>
 	                    <!-- /ko -->
 	                </tr>
-	
+
 	                </tbody>
 	            </table>
 		        <br />
@@ -133,27 +133,27 @@
 	            </tr>
 	            </table>
 	        </div>
-	        
-	        <div class="col">
+
+	        <div class="col_structures">
 		        <table id="structures" style="margin:0;">
 		            <thead>
 	    	        <tr>
 		    	        <th id="structTableHeading">Possible Structures</th>
 	            	</tr>
 		            </thead>
-	
+
 		            <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
 	    		        <tr><td id="structTableCells" data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure4d}"
 		            	onclick="fornaRendering( getHybridSequence(document.getElementById('rawSeq').value,document.getElementById('rawSeq2').value,document.getElementById('ll').value), this)"></td></tr>
 		            </tbody>
 	    	    </table>
 	        </div>
-	        
+
 	    </div>
-	    
+
 	    <div class="row">
 	    	<div class="col">
-	    		Select a structure from the list or (multiple times) a cell of $D$ 
+	    		Select a structure from the list or (multiple times) a cell of $D$
 	    		to see according tracebacks. Note, the structure list is limited to
 	    		the first 15 structures identified via traceback and thus depends
 	    		on the recursion case order.
@@ -161,38 +161,38 @@
 	    		Below, we provide a graphical depiction of the selected hybrid structure.
 	    		Note, the rendering does not support a minimal loop length of 0.
    		</div>
-   		
+
 		<div id="structureVisualization" style="margin:0;">
 			<div id="fornaInputStructure" style="height: 300px; background:white;"></div>
 			<span style="padding-left:15px;font-size:80%;">
-				Visualization done with 
+				Visualization done with
 				<a href="http://rna.tbi.univie.ac.at/forna">forna</a>.
 				Base pairs are given by red edges, the sequence backbone is given by
-				gray edges. 
+				gray edges.
 			</span>
 		</div>
-	    
+
 	    <h2>Visualization of interacting base pairs (selected structure)</h2>
-	
+
 		<div class="row">
 	        <div id="4dVisual" class="hybridVisual">
 	        </div>
 		</div>
-	    
+
 	    <div class="row">
 	    	<div class="col">
 	    		The box provides an ASCII representation of the interacting
-	    		base pairs of the selected structure with $S^{1}$ on top and $S^{2}$ 
-	    		on the bottom. 
-	    		Note, sequence $S^{2}$ is reversed (running from right ($5'$) to left 
+	    		base pairs of the selected structure with $S^{1}$ on top and $S^{2}$
+	    		on the bottom.
+	    		Note, sequence $S^{2}$ is reversed (running from right ($5'$) to left
 	    		($3'$)) within this representation.
 	    		Note further, if no interacting
-	    		base pairs are present, no visualization is done. 
+	    		base pairs are present, no visualization is done.
 	   		</div>
 	    </div>
-	    
+
     </div>
-    
+
     <script src="js/visualize.js"></script>
 
 	<!-- ensure structure list changes clear the forna rendering -->

@@ -3,25 +3,25 @@
 		<div class="colW600">
 			To predict the structure with maximum expected accuracy (MEA) for a given
 			RNA sequence, the algorithm introduced by
-			<a href="http://dx.doi.org/10.1261/rna.1643609">Zhi J. Lu and co-workers (2009)</a> 
+			<a href="http://dx.doi.org/10.1261/rna.1643609">Zhi J. Lu and co-workers (2009)</a>
 			uses the sequence's base pair and
-			unpaired probabilities. The approach follows a 
-			<a href="index.jsp?toolName=Nussinov">Nussinov</a>-like 
+			unpaired probabilities. The approach follows a
+			<a href="index.jsp?toolName=Nussinov">Nussinov</a>-like
 			recursion using
-			the probabilities derived from  
+			the probabilities derived from
 			<a href="http://dx.doi.org/10.1002/bip.360290621">John S. McCaskill</a>'s algorithm.
 			<br />
 			<br />
-			Here, we use our 
+			Here, we use our
 			<a href="index.jsp?toolName=McCaskill">simplified McCaskill approach</a>
-			for the probability computation. Therein we apply 
+			for the probability computation. Therein we apply
 			a Nussinov-like energy scoring scheme, i.e. each base pair of a structure
 			contributes a fixed energy term $E_{bp}$ independent of its context.
 			<br />
 			<br />
 			Furthermore, beside the identification of an optimal MEA structure
 			via traceback, we provide an exhaustive enumeration of up to 15 suboptimal structures
-			using the algorithm by 
+			using the algorithm by
 			<a href="http://dx.doi.org/10.1002/(SICI)1097-0282(199902)49:2%3C145::AID-BIP4%3E3.0.CO;2-G">Stefan Wuchty et al. (1999)</a>.
 			For each structure, the according traceback is visualized on selection.
 		</div>
@@ -31,7 +31,7 @@
 	</div>
 
     <div id="inputContainer">
-    
+
         <div class="row">
             <div class="colW250" style="font-size: 120%; vertical-align: bottom; ">RNA sequence:</div>
             <div class="colW400">
@@ -63,7 +63,7 @@
                 <label for="energy" data-bind="text: input.energy"></label>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="colW250" style="font-size: 120%">'Normalized' temperature $RT$:</div>
             <div class="colW400">
@@ -71,7 +71,7 @@
                 <label for="energy_normal" data-bind="text: input.energy_normal"></label>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="colW250" style="font-size: 120%">Base pair weighting $\gamma$:</div>
             <div class="colW400">
@@ -96,47 +96,47 @@
         </div>
 
         <div class="row">
-            <div class="col" id="rec_select" style="display: none;">MaxExpAcc</div>
+            <div id="rec_select" style="display: none;">MaxExpAcc</div>
         </div>
 
     </div>
 
 
     <div id="output">
-    
+
     	<h2>MEA structure prediction</h2>
-    	
+
     	<div>
-    		The MEA structure predictions uses the following recursion to fill 
+    		The MEA structure predictions uses the following recursion to fill
     		a dynamic programming table $M$. An entry $M_{i,j}$ provides the
     		MEA score for the subsequence $S_{i}..S_{j}$, such that the overall
     		score is found in $M_{1,n}$ for a sequence of length $n$.
     	</div>
-	    
+
 	    <div id="rec_id_0" data-bind="text: latex()[0]"></div>
-	
+
 	    <div class="row" style="margin:0;">
-	        <div class="col">
+	        <div class="col_table">
 	            <canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
 	            <table style="margin:0;">
 	                <thead>
 	                <tr>
-	                    <th class="cell_th">$M$</th>
-	                    <th class="cell_th"></th>
+	                    <th class="cell_mea_th">$M$</th>
+	                    <th class="cell_mea_th"></th>
 	                    <!-- ko foreach: { data: seqList, as: 'base' } -->
-	                    <th class="cell_th" data-bind="writeSeq: [base, $index()+1]"></th>
+	                    <th class="cell_mea_th" data-bind="writeSeq: [base, $index()+1]"></th>
 	                    <!-- /ko -->
 	                </tr>
 	                </thead>
-	
+
 	                <tbody id="matrix_body" data-bind="foreach: { data: cells()[0], as: 'cell' }">
 	                <tr>
-	                    <th class="cell_th" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
+	                    <th class="cell_mea_th" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
 	                    <!-- ko foreach: { data: cell, as: 'v' } -->
-	                    <td class="cell" data-bind="text: v.i < v.j+2 ? v.value : '', event: { mousedown: $root.clickCell.bind(this) }"></td>
+	                    <td class="cell_mea" data-bind="text: v.i < v.j+2 ? v.value : '', event: { mousedown: $root.clickCell.bind(this) }, attr: {title: 'i=' + v.i + ' j=' + v.j}"></td>
 	                    <!-- /ko -->
 	                </tr>
-	
+
 	                </tbody>
 	            </table>
 	            <br />
@@ -148,59 +148,59 @@
 	            </tr>
 	            </table>
 	        </div>
-	        
-	        <div class="col">
+
+	        <div class="col_structures">
 		        <table id="structures" style="margin:0;">
 		            <thead>
 		            <tr>
 		            	<th id="structTableHeading">Possible Structures</th>
 		            </tr>
 		            </thead>
-		
+
 		            <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
 		            <tr><td id="structTableCells" data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"
 		            	onclick="fornaRendering( document.getElementById('rawSeq').value, this)"></td></tr>
 		            </tbody>
 		        </table>
 	        </div>
-	
+
 	    </div>
 
     	<div>
-    		Select a structure from the list or a cell of $M$ 
+    		Select a structure from the list or a cell of $M$
     		to see according tracebacks. Note, the structure list is limited to
     		the first 15 structures identified via traceback.
     		<br>
     		Below, we provide a graphical depiction of the selected structure.
     		Note, the rendering does not support a minimal loop length of 0.
    		</div>
-   		
+
 		<div id="structureVisualization" style="margin:0;">
 			<div id="fornaInputStructure" style="height: 300px; background:white;"></div>
 			<span style="padding-left:15px;font-size:80%;">
-				Visualization done with 
+				Visualization done with
 				<a href="http://rna.tbi.univie.ac.at/forna">forna</a>.
 				Base pairs are given by red edges, the sequence backbone is given by
-				gray edges. 
+				gray edges.
 			</span>
 		</div>
-	    
+
 	    <h2>Probabilities used</h2>
 
 		<div>
 			Given the partition functions $Q$ and $Q^{bp}$ provided by the
-			<a href="index.jsp?toolName=McCaskill">McCaskill</a> 
+			<a href="index.jsp?toolName=McCaskill">McCaskill</a>
 			algorithm, we can compute the
 			probabilities of individual base pairs $(i,j)$ within the structure
-			ensemble, i.e. $P^{bp}_{i,j} = \sum_{P \ni (i,j)} \exp(-E(P)/RT) / Z$ given by 
+			ensemble, i.e. $P^{bp}_{i,j} = \sum_{P \ni (i,j)} \exp(-E(P)/RT) / Z$ given by
 			the sum of the Boltzmann probabilities of all structures that contain the
-			base pair. For its computation, the following recursion is used, which 
+			base pair. For its computation, the following recursion is used, which
 			covers both the case that $(i,j)$ is an external base pair as well
 			as that $(i,j)$ is directly enclosed by an outer base pair $(p,q)$.
 		</div>
 
         <div id="rec_id" data-bind="text: latex()[1]"></div>
-        
+
         <div>
 	        <table id="matrixPbp" style="margin:0;">
 	            <thead>
@@ -212,7 +212,7 @@
 	                <!-- /ko -->
 	            </tr>
 	            </thead>
-	
+
 	            <tbody id='matrix_data' data-bind="foreach: { data: cells()[1], as: 'cell' }">
 	            <tr>
 	                <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
@@ -225,16 +225,16 @@
 	        <br>
 	        <a href="javascript:generate_tables()">Download Tables</a>
         </div>
-	
-	
+
+
         <div>
         	The following formula is used to compute the probability $P^u_{i}$
         	that a given sequence position $S_{i}$ is not paired. The probabilities
         	are directly inferred from the base pair probabilities $P^{bp}$.
         </div>
-	
+
         <div id="rec_id" data-bind="text: latex()[2]"></div>
-        
+
         <div>
 	        <table id="matrixPu" style="margin:0;">
 	            <thead>
@@ -246,7 +246,7 @@
 	                <!-- /ko -->
 	            </tr>
 	            </thead>
-	
+
 	            <tbody id='matrix_data' data-bind="foreach: { data: cells()[2], as: 'cell' }">
 	            <tr>
 	                <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
@@ -259,9 +259,9 @@
 	        <br>
 	        <a href="javascript:generate_tables()">Download Tables</a>
         </div>
-    
+
     </div>
-    
+
 
     <script src="js/visualize.js"></script>
 
