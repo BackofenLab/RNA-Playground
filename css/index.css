@@ -66,7 +66,7 @@ table {
 .col_table{
   position: relative;
   max-width: 70%;
-  overflow-x: auto;
+  overflow-x: scroll;
   display: inline-block;
 	margin-left: 20px;
 	vertical-align:top;
@@ -76,7 +76,7 @@ table {
 
 .col_structures {
   max-width: 20%;
-  overflow-x: auto;
+  overflow-x: scroll;
 	display: inline-block;
 	margin-left: 20px;
 	vertical-align:top;
@@ -171,7 +171,7 @@ table {
 }
 
 .scroll_table {
-    overflow-x: auto;
+    overflow-x: scroll;
     margin: 0px;
 }
 
