@@ -355,7 +355,7 @@ function dotplot(sequence, table, pname, use_log_value) {
 
     //var svg = d3.select("#output").append("svg")
     var dev = document.createElement("div");
-    d3.select(dev).style("overflow-x", "scroll");
+//    d3.select(dev).style("overflow-x", "scroll");
     var svg = d3.select(dev).append("svg")
         .attr("id", pname)
         .style("width", width + margin.left + margin.right + "px")
