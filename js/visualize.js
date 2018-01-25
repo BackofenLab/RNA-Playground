@@ -339,7 +339,6 @@ function NussinovMatrixViewModel() {
             color += 1;
             if (color >= colors.length - 1)color = 0;
 
-            console.log("cW:", cW, " cH:", cH);
             drawArrows(parents, cW, cH);
         }
     }
