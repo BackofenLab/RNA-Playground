@@ -71,7 +71,8 @@ table {
 	margin-left: 20px;
 	vertical-align:top;
 	*zoom: 1;
-    *display: inline;
+  *display: inline;
+  padding-top: 32px;
 }
 
 .col_structures {
@@ -82,6 +83,7 @@ table {
 	vertical-align:top;
 	*zoom: 1;
     *display: inline;
+    padding-top: 32px;
 }
 
 .cell_count {
