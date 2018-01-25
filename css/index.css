@@ -19,11 +19,11 @@ div[id=output] {
 
 .dotplotContainer {
 	max-height: 600px;
-	overflow: scroll;
+	overflow: auto;
 }
 
 .tableContainer {
-	overflow: scroll;
+	overflow: auto;
 	margin: 0px;
 	padding: 0px;
 }

@@ -1,251 +1,215 @@
+<div class="row" id="introduction">
+  <div class="colW600">
+    <a href="http://dx.doi.org/10.1002/bip.360290621">John S. McCaskill (1990)</a> introduced an efficient dynamic programming algorithm to compute the partition function $Z=\sum_{P} \exp(-E(P)/RT)$ over all possible nested structures $P$ that can be
+    formed by a given RNA sequence $S$ with $E(P)$ = energy of structure $P$, $R$ = gas constant, and $T$ = temperature.
+    <br />
+    <br /> Here, we provide a simplified version of the approach using a Nussinov-like energy scoring scheme, i.e. each base pair of a structure contributes a fixed energy term $E_{bp}$ independent of its context. Given this, we populate two dynamic programming
+    tables $Q$ and $Q^{bp}$. $Q_{i,j}$ provides the partition function for subsequence from position $i$ to $j$, while $Q^{bp}_{i,j}$ holds the partition function of the subsequence given the constraint that position $i$ and $j$ form a base pair (or 0
+    if no base pair is possible). Watson-Crick as well as GU base pairs are considered complementary. The overall partition function is given by $Z = Q_{1,n}$ for a sequence of length $n$.
+    <br />
+    <br /> Given these partition function terms, we can compute base pair probabilities $P^{bp}$ as well as probabilities that a certain subsequence is unpaired $P^{u}$, i.e. its positions are not involved in any base pair. Such probabilities can be visualized
+    using a dotplot. In this matrix-like representation, each value of a cell $i,j$ is represented by an according dot where its size is in relation to the value.
+  </div>
+  <div class="colW150">
+    <img alt="dotplot of base pair probabilities" src="McCaskill-120x90.png" width=120 height=90>
+  </div>
+</div>
 
-	<div class="row" id="introduction">
-		<div class="colW600">
-			<a href="http://dx.doi.org/10.1002/bip.360290621">John S. McCaskill (1990)</a>
-			introduced an efficient dynamic programming algorithm to compute the
-			partition function $Z=\sum_{P} \exp(-E(P)/RT)$ over all possible nested structures $P$
-			that can be formed by a given RNA sequence $S$ with $E(P)$ = energy of structure $P$,
-			$R$ = gas constant, and $T$ = temperature.
-			<br />
-			<br />
-			Here, we provide a simplified version of the approach using a
-			Nussinov-like energy scoring scheme, i.e. each base pair of a structure
-			contributes a fixed energy term $E_{bp}$ independent of its context. Given this,
-			we populate two dynamic programming tables $Q$ and $Q^{bp}$. $Q_{i,j}$ provides
-			the partition function for subsequence from position $i$ to $j$, while
-			$Q^{bp}_{i,j}$ holds the partition function of the subsequence
-			given the constraint that position $i$ and $j$ form a base pair
-			(or 0 if no base pair is possible).
-			Watson-Crick as well as GU base	pairs are considered complementary.
-			The overall partition function is given by $Z = Q_{1,n}$ for a sequence
-			of length $n$.
-			<br />
-			<br />
-			Given these partition function terms, we can compute base pair
-			probabilities $P^{bp}$ as well as probabilities that a certain subsequence is
-			unpaired $P^{u}$, i.e. its positions are not involved in any base pair.
-			Such probabilities can be visualized using a dotplot. In this matrix-like
-			representation, each value of a cell $i,j$ is represented by an
-			according dot where its size is in relation to the value.
-		</div>
-		<div class="colW150">
-			<img alt="dotplot of base pair probabilities" src="McCaskill-120x90.png" width=120 height=90 >
-		</div>
-	</div>
+<div id="inputContainer">
 
-    <div id="inputContainer">
-
-        <div class="row">
-            <div class="colW250" style="font-size: 120%">RNA sequence $S$:</div>
-            <div class="colW400">
-                <input data-bind="value: rawSeq" class="userInput"
-                       placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
-                       style="text-transform:uppercase">
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="colW250" style="font-size: 120%">Minimal loop length $l$:</div>
-            <div class="colW400">
-                <select data-bind="value: loopLength" id="ll" style="width:40px;">
-                    <option value=0>0</option>
-                    <option value=1>1</option>
-                    <option value=2>2</option>
-                    <option value=3>3</option>
-                    <option value=4>4</option>
-                    <option value=5>5</option>
-                </select>
-                <label for="ll" style="margin-left:10px;">i.e. minimal number of enclosed positions</label>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="colW250" style="font-size: 120%">Energy weight of base pair $E_{bp}$:</div>
-            <div class="colW400">
-                <input data-bind="value: input.energy" id="energy" type="range" max="2" min="-2" step="(max - min) / 100">
-                <label for="energy" data-bind="text: input.energy"></label>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="colW250" style="font-size: 120%">'Normalized' temperature $RT$:</div>
-            <div class="colW400">
-                <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="1" step="(max - min) / 100">
-                <label for="energy_normal" data-bind="text: input.energy_normal"></label>
-            </div>
-        </div>
-
-        <div class="row">
-            <div id="rec_select" style="display: none;">mcCaskill</div>
-        </div>
-
+  <div class="row">
+    <div class="colW250" style="font-size: 120%">RNA sequence $S$:</div>
+    <div class="colW400">
+      <input data-bind="value: rawSeq" class="userInput" placeholder="Example 'GCACGACG'" onkeydown="validate(event)" style="text-transform:uppercase">
     </div>
+  </div>
 
-    <div id="output" >
-
-		<h2>Partition functions</h2>
-
-        <div>The following recursions are used to compute the partition functions $Q$ and $Q^{bp}$.</div>
-
-        <div id="rec_id_0" data-bind="text: latex()[0]"></div>
-
-  	    <div id="rec_id_1" data-bind="text: latex()[1]"></div>
-
-
- 		<div class="scroll_table">
-        <table id="matrixQ">
-            <thead>
-            <tr>
-                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$Q$</th>
-                <th class="cell_count"></th>
-                <!-- ko foreach: { data: seqList, as: 'base' } -->
-                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
-                <!-- /ko -->
-            </tr>
-            </thead>
-
-            <tbody id='matrix_data'  data-bind="foreach: { data: cells()[0], as: 'cell' }">
-            <tr>
-                <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
-                <!-- ko foreach: { data: cell, as: 'v' } -->
-                <td  class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : '#f2f3f1' }, attr: {title: 'i=' + v.i + ' j=' + v.j}"></td>
-								<!-- <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td> -->
-
-                <!-- /ko -->
-            </tr>
-            </tbody>
-
-        </table>
-        </div>
-
-
-
- 		</div>
-		<div class="scroll_table">
-        <table id="matrixQb" >
-            <thead>
-            <tr>
-                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$Q^{bp}$</th>
-                <th class="cell_count"></th>
-                <!-- ko foreach: { data: seqList, as: 'base' } -->
-                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
-                <!-- /ko -->
-            </tr>
-            </thead>
-
-            <tbody id='matrix_data' data-bind="foreach: { data: cells()[1], as: 'cell' }">
-            <tr>
-                <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
-                <!-- ko foreach: { data: cell, as: 'v' } -->
-                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', attr: {title: 'i=' + v.i + ' j=' + v.j} "></td>
-                <!-- /ko -->
-            </tr>
-            </tbody>
-        </table>
-			</div>
-		    <div><a href="javascript:generate_tables()">Download Tables</a></div>
-
-
-		<h2>Base pair probabilities</h2>
-
-		<div>
-			Given the partition functions $Q$ and $Q^{bp}$ we can now compute the
-			probabilities of individual base pairs $(i,j)$ within the structure
-			ensemble, i.e. $P^{bp}_{i,j} = \sum_{P \ni (i,j)} \exp(-E(P)/RT) / Z$ given by
-			the sum of the Boltzmann probabilities of all structures that contain the
-			base pair. For its computation, the following recursion is used, which
-			covers both the case that $(i,j)$ is an external base pair as well
-			as that $(i,j)$ is directly enclosed by an outer base pair $(p,q)$.
-			<br>
-			<br>
-			Base pair probabilities can be used for structure prediction using
-			e.g. a
-			<a href="index.jsp?toolName=MEA">maximum expected accuracy (MEA) approach</a>.
-		</div>
-
-        <div id="rec_id_2" data-bind="text: latex()[2]"></div>
-
-				<div class="scroll_table">
-
-        <table id="matrixPbp">
-            <thead>
-            <tr>
-                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^{bp}$</th>
-                <th class="cell_count"></th>
-                <!-- ko foreach: { data: seqList, as: 'base' } -->
-                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
-                <!-- /ko -->
-            </tr>
-            </thead>
-
-            <tbody id='matrix_data' data-bind="foreach: { data: cells()[2], as: 'cell' }">
-            <tr>
-                <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
-                <!-- ko foreach: { data: cell, as: 'v' } -->
-                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', attr: {title: 'i=' + v.i + ' j=' + v.j}"></td>
-                <!-- /ko -->
-            </tr>
-            </tbody>
-        </table>
-			</div>
-        <div><a href="javascript:generate_tables()">Download Tables</a></div>
-
-		<div>
-			The base pair probabilities $P^{bp}$ can be visualized by a dotplot, where
-			larger dots represent higher probabilities.
-		</div>
-
-        <div id="paired_dotplot" class="scroll_table"></div>
-
-		<h2>Unpaired probabilities / accessibility</h2>
-
-		<div>
-			Analogously to base pair probabilities, we can also compute
-			the probability that a given subsequence $S_{i}..S_{j}$ of an RNA sequence
-			is <em>not</em> involved in any intramolecular base pair.
-			<br>
-			<br>
-			Unpaired probabilities can be interpreted as the accessibility of
-			a given region of an RNA to further structure formation. Thus, it
-			can be used to enhance RNA-RNA interaction prediction approaches,
-			e.g. see our
-			<a href="index.jsp?toolName=accessibility">accessibility-based prediction</a>
-			implementation.
-		</div>
-
-        <div id="rec_id_3" data-bind="text: latex()[3]"></div>
-			<div class="scroll_table">
-        <table id="matrixPu">
-            <thead>
-            <tr>
-                <th class="cell_count"  style="font-size: 16px; color: darkslategray">$P^u$</th>
-                <th class="cell_count"></th>
-                <!-- ko foreach: { data: seqList, as: 'base' } -->
-                <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
-                <!-- /ko -->
-            </tr>
-            </thead>
-
-            <tbody id='matrix_data' data-bind="foreach: { data: cells()[3], as: 'cell' }">
-            <tr>
-                <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
-                <!-- ko foreach: { data: cell, as: 'v' } -->
-                <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', attr: {title: 'i=' + v.i + ' j=' + v.j}"></td>
-                <!-- /ko -->
-            </tr>
-            </tbody>
-        </table>
-			</div>
-        <div><a href="javascript:generate_tables()">Download Tables</a></div>
-
-		<div>
-			The probabilities of subsequences to be unpaired $P^{u}$ can be visualized by a dotplot, where
-			larger dots represent higher probabilities.
-		</div>
-
-        <div id="unpaired_dotplot" class="scroll_table"></div>
-
-		<br />
-
+  <div class="row">
+    <div class="colW250" style="font-size: 120%">Minimal loop length $l$:</div>
+    <div class="colW400">
+      <select data-bind="value: loopLength" id="ll" style="width:40px;">
+        <option value=0>0</option>
+        <option value=1>1</option>
+        <option value=2>2</option>
+        <option value=3>3</option>
+        <option value=4>4</option>
+        <option value=5>5</option>
+      </select>
+      <label for="ll" style="margin-left:10px;">i.e. minimal number of enclosed positions</label>
     </div>
-    <script src="js/visualize.js"></script>
+  </div>
+
+  <div class="row">
+    <div class="colW250" style="font-size: 120%">Energy weight of base pair $E_{bp}$:</div>
+    <div class="colW400">
+      <input data-bind="value: input.energy" id="energy" type="range" max="2" min="-2" step="(max - min) / 100">
+      <label for="energy" data-bind="text: input.energy"></label>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="colW250" style="font-size: 120%">'Normalized' temperature $RT$:</div>
+    <div class="colW400">
+      <input data-bind="value: input.energy_normal" id="energy_normal" type="range" max="5" min="1" step="(max - min) / 100">
+      <label for="energy_normal" data-bind="text: input.energy_normal"></label>
+    </div>
+  </div>
+
+  <div class="row">
+    <div id="rec_select" style="display: none;">mcCaskill</div>
+  </div>
+
+</div>
+
+<div id="output">
+
+  <h2>Partition functions</h2>
+
+  <div>The following recursions are used to compute the partition functions $Q$ and $Q^{bp}$.</div>
+
+  <div id="rec_id_0" data-bind="text: latex()[0]"></div>
+
+  <div id="rec_id_1" data-bind="text: latex()[1]"></div>
+
+
+  <div class="scroll_table">
+    <table id="matrixQ">
+      <thead>
+        <tr>
+          <th class="cell_count" style="font-size: 16px; color: darkslategray">$Q$</th>
+          <th class="cell_count"></th>
+          <!-- ko foreach: { data: seqList, as: 'base' } -->
+          <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
+          <!-- /ko -->
+        </tr>
+      </thead>
+
+      <tbody id='matrix_data' data-bind="foreach: { data: cells()[0], as: 'cell' }">
+        <tr>
+          <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
+          <!-- ko foreach: { data: cell, as: 'v' } -->
+          <td class="cell_count" data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : '#f2f3f1' }, attr: {title: 'i=' + v.i + ' j=' + v.j}"></td>
+          <!-- <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td> -->
+
+          <!-- /ko -->
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+
+
+
+<div class="scroll_table">
+  <table id="matrixQb">
+    <thead>
+      <tr>
+        <th class="cell_count" style="font-size: 16px; color: darkslategray">$Q^{bp}$</th>
+        <th class="cell_count"></th>
+        <!-- ko foreach: { data: seqList, as: 'base' } -->
+        <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
+        <!-- /ko -->
+      </tr>
+    </thead>
+
+    <tbody id='matrix_data' data-bind="foreach: { data: cells()[1], as: 'cell' }">
+      <tr>
+        <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
+        <!-- ko foreach: { data: cell, as: 'v' } -->
+        <td class="cell_count" data-bind="text: v.i < v.j+2 ? v.value : '', attr: {title: 'i=' + v.i + ' j=' + v.j} "></td>
+        <!-- /ko -->
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div><a href="javascript:generate_tables()">Download Tables</a></div>
+
+
+<h2>Base pair probabilities</h2>
+
+<div>
+  Given the partition functions $Q$ and $Q^{bp}$ we can now compute the probabilities of individual base pairs $(i,j)$ within the structure ensemble, i.e. $P^{bp}_{i,j} = \sum_{P \ni (i,j)} \exp(-E(P)/RT) / Z$ given by the sum of the Boltzmann probabilities
+  of all structures that contain the base pair. For its computation, the following recursion is used, which covers both the case that $(i,j)$ is an external base pair as well as that $(i,j)$ is directly enclosed by an outer base pair $(p,q)$.
+  <br>
+  <br> Base pair probabilities can be used for structure prediction using e.g. a
+  <a href="index.jsp?toolName=MEA">maximum expected accuracy (MEA) approach</a>.
+</div>
+
+<div id="rec_id_2" data-bind="text: latex()[2]"></div>
+
+<div class="scroll_table">
+
+  <table id="matrixPbp">
+    <thead>
+      <tr>
+        <th class="cell_count" style="font-size: 16px; color: darkslategray">$P^{bp}$</th>
+        <th class="cell_count"></th>
+        <!-- ko foreach: { data: seqList, as: 'base' } -->
+        <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
+        <!-- /ko -->
+      </tr>
+    </thead>
+    <tbody id='matrix_data' data-bind="foreach: { data: cells()[2], as: 'cell' }">
+      <tr>
+        <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
+        <!-- ko foreach: { data: cell, as: 'v' } -->
+        <td class="cell_count" data-bind="text: v.i < v.j+2 ? v.value : '', attr: {title: 'i=' + v.i + ' j=' + v.j}"></td>
+        <!-- /ko -->
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div><a href="javascript:generate_tables()">Download Tables</a></div>
+
+<div>
+  The base pair probabilities $P^{bp}$ can be visualized by a dotplot, where larger dots represent higher probabilities.
+</div>
+
+<div id="paired_dotplot" class="scroll_table"></div>
+
+<h2>Unpaired probabilities / accessibility</h2>
+
+<div>
+  Analogously to base pair probabilities, we can also compute the probability that a given subsequence $S_{i}..S_{j}$ of an RNA sequence is <em>not</em> involved in any intramolecular base pair.
+  <br>
+  <br> Unpaired probabilities can be interpreted as the accessibility of a given region of an RNA to further structure formation. Thus, it can be used to enhance RNA-RNA interaction prediction approaches, e.g. see our
+  <a href="index.jsp?toolName=accessibility">accessibility-based prediction</a> implementation.
+</div>
+
+<div id="rec_id_3" data-bind="text: latex()[3]"></div>
+<div class="scroll_table">
+  <table id="matrixPu">
+    <thead>
+      <tr>
+        <th class="cell_count" style="font-size: 16px; color: darkslategray">$P^u$</th>
+        <th class="cell_count"></th>
+        <!-- ko foreach: { data: seqList, as: 'base' } -->
+        <th class="cell_count" data-bind="writeSeq: [base, $index()+1]"></th>
+        <!-- /ko -->
+      </tr>
+    </thead>
+
+    <tbody id='matrix_data' data-bind="foreach: { data: cells()[3], as: 'cell' }">
+      <tr>
+        <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
+        <!-- ko foreach: { data: cell, as: 'v' } -->
+        <td class="cell_count" data-bind="text: v.i < v.j+2 ? v.value : '', attr: {title: 'i=' + v.i + ' j=' + v.j}"></td>
+        <!-- /ko -->
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div><a href="javascript:generate_tables()">Download Tables</a></div>
+
+<div>
+  The probabilities of subsequences to be unpaired $P^{u}$ can be visualized by a dotplot, where larger dots represent higher probabilities.
+</div>
+
+<div id="unpaired_dotplot" class="scroll_table"></div>
+
+</div>
+
+<br />
+
+</div>
+<script src="js/visualize.js"></script>
