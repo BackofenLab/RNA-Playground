@@ -255,6 +255,7 @@ function NussinovMatrixViewModel() {
 
     // functions for visualization and interaction
     self.clickStructure4d = function (clicked_cell, dom) {
+        $(".col_table").scrollLeft(0);
         var offset = $("#matrix_body").position();
         color += 1;
         if (color >= colors.length - 1) color = 0;
@@ -274,7 +275,7 @@ function NussinovMatrixViewModel() {
         cell = JSON.parse(cell);
 
         $('td.cell').css("background", "white");
-        //drawFullTrace(offset, cell);
+        drawFullTrace(offset, cell);
     };
 
     // functions for visualization and interaction
