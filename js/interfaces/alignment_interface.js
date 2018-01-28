@@ -29,8 +29,8 @@ Author: Alexander Mattheis
 
         this.startProcessing = interfaceInstance.startProcessing;
         this.roundValues = interfaceInstance.roundValues;
-        this.getDistanceTable = interfaceInstance.getDistanceTable;
         this.getDistanceTables = interfaceInstance.getDistanceTables;
+        this.getLaTeXFormula = interfaceInstance.getLaTeXFormula;
 
         // public class methods
         this.imports = imports;
@@ -40,17 +40,18 @@ Author: Alexander Mattheis
         this.getColumnData = getColumnData;
         this.getMinimaData = getMinimaData;
         this.getTwoRowsSubmatricesData = getTwoRowsSubmatricesData;
-        this.getLaTeXFormula = getLaTeXFormula;
         this.reorderGroupSequences = reorderGroupSequences;
         this.getLibrariesData = getLibrariesData;
         this.removeNeutralSymbols = removeNeutralSymbols;
         this.sortWithClusterTuples = sortWithClusterTuples;
+        this.reorderFinalAlignments = reorderFinalAlignments;
     }
 
     /**
      * Handling imports.
      */
     function imports() {
+        interfaceInstance.imports();
         $.getScript(PATHS.ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
@@ -94,7 +95,9 @@ Author: Alexander Mattheis
         } else if (MULTI_SEQUENCE_ALGORITHMS.indexOf(algorithmName) >= 0) {  // if multi-sequence alignment algorithm
             if (algorithmName === ALGORITHMS.FENG_DOOLITTLE)
                 createFengDoolittleOutputViewmodel(algorithmName, viewmodel, outputData);
-            else
+            else if (algorithmName === ALGORITHMS.ITERATIVE_REFINMENT)
+                createIterativeRefinementOutputViewmodel(algorithmName, viewmodel, outputData);
+            else if (algorithmName === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)
                 createTcoffeeOutputViewmodel(algorithmName, viewmodel, outputData);
         }
     }
@@ -267,46 +270,46 @@ Author: Alexander Mattheis
         var backwardTwoRowsCharactersPositions = twoRowsCharactersPositions[1];
 
         // main output
-        viewmodel.forwardMatrices = ko.observable(outputData.forwardMatrices).extend({ deferred: true });
-        viewmodel.backwardMatrices = ko.observable(outputData.backwardMatrices).extend({ deferred: true });
+        viewmodel.forwardMatrices = ko.observable(outputData.forwardMatrices).extend({deferred: true});
+        viewmodel.backwardMatrices = ko.observable(outputData.backwardMatrices).extend({deferred: true});
 
         // iteration over each matrix
         for (var i = 0; i < outputData.forwardMatrices.length; i++) {
-            viewmodel.forwardMatrices[i] = ko.observableArray(outputData.forwardMatrices[i]).extend({ deferred: true });
+            viewmodel.forwardMatrices[i] = ko.observableArray(outputData.forwardMatrices[i]).extend({deferred: true});
 
             // iteration over each row of the matrix
             for (var j = 0; j < outputData.forwardMatrices[i].length; j++) {
-                viewmodel.forwardMatrices[i][j] = ko.observableArray(outputData.forwardMatrices[i][j]).extend({ deferred: true });
+                viewmodel.forwardMatrices[i][j] = ko.observableArray(outputData.forwardMatrices[i][j]).extend({deferred: true});
             }
         }
 
         for (var i = 0; i < outputData.backwardMatrices.length; i++) {
-            viewmodel.backwardMatrices[i] = ko.observableArray(outputData.backwardMatrices[i]).extend({ deferred: true });
+            viewmodel.backwardMatrices[i] = ko.observableArray(outputData.backwardMatrices[i]).extend({deferred: true});
 
             // iteration over each row of the matrix
             for (var j = 0; j < outputData.backwardMatrices[i].length; j++) {
-                viewmodel.backwardMatrices[i][j] = ko.observableArray(outputData.backwardMatrices[i][j]).extend({ deferred: true });
+                viewmodel.backwardMatrices[i][j] = ko.observableArray(outputData.backwardMatrices[i][j]).extend({deferred: true});
             }
         }
 
         viewmodel.alignments = ko.observableArray(outputData.alignments);
 
         // matrix of all minima
-        viewmodel.tracecellLines = ko.observable(outputData.tracecellLines).extend({ deferred: true });
+        viewmodel.tracecellLines = ko.observable(outputData.tracecellLines).extend({deferred: true});
         viewmodel.globalMinima = ko.observable(minimaData);
 
         // header
-        viewmodel.recursionNumbersContainer = ko.observable(outputData.recursionNumbersContainer).extend({ deferred: true });
+        viewmodel.recursionNumbersContainer = ko.observable(outputData.recursionNumbersContainer).extend({deferred: true});
         viewmodel.traceFunctions = ko.observable(traceFunctionsData);
         viewmodel.currentGlobalRow = ko.observable(rowData);
 
         // table header (to avoid a problem between Knockout and MathJax the LaTeX code is generated in viewmodel and not in the view)
-        viewmodel.matrixDLatex = ko.observable(getLaTeXFormula(LATEX.FORMULA.D));
-        viewmodel.matrixDPrimeLatex = ko.observable(getLaTeXFormula(LATEX.FORMULA.D_PRIME));
-        viewmodel.sumLatex = ko.observable(getLaTeXFormula(LATEX.SUM));
+        viewmodel.matrixDLatex = ko.observable(interfaceInstance.getLaTeXFormula(LATEX.FORMULA.D));
+        viewmodel.matrixDPrimeLatex = ko.observable(interfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_PRIME));
+        viewmodel.sumLatex = ko.observable(interfaceInstance.getLaTeXFormula(LATEX.SUM));
 
         viewmodel.secondSequences = ko.observable(outputData.secondSequences);
-        viewmodel.secondSequencePositions = ko.observable(outputData.secondSequencePositions).extend({ deferred: true });
+        viewmodel.secondSequencePositions = ko.observable(outputData.secondSequencePositions).extend({deferred: true});
 
         // addition table
         viewmodel.forwardRows = ko.observable(outputData.forwardRows);
@@ -317,7 +320,7 @@ Author: Alexander Mattheis
         // gimmicks/optimizations
         viewmodel.showMatrices = ko.observable(false);
 
-        viewmodel.toggleVisibility = function() {
+        viewmodel.toggleVisibility = function () {
             viewmodel.showMatrices(!viewmodel.showMatrices());
         };
 
@@ -328,33 +331,33 @@ Author: Alexander Mattheis
         );
 
         // generated two rows submatrices (intermediate steps)
-        viewmodel.prefixTwoRowsCharacters = ko.observable(forwardTwoRowsCharacters).extend({ deferred: true });
-        viewmodel.suffixTwoRowsCharacters = ko.observable(backwardTwoRowsCharacters).extend({ deferred: true });
+        viewmodel.prefixTwoRowsCharacters = ko.observable(forwardTwoRowsCharacters).extend({deferred: true});
+        viewmodel.suffixTwoRowsCharacters = ko.observable(backwardTwoRowsCharacters).extend({deferred: true});
 
-        viewmodel.prefixTwoRowsCharactersPositions = ko.observable(forwardTwoRowsCharactersPositions).extend({ deferred: true });
-        viewmodel.suffixTwoRowsCharactersPositions = ko.observable(backwardTwoRowsCharactersPositions).extend({ deferred: true });
+        viewmodel.prefixTwoRowsCharactersPositions = ko.observable(forwardTwoRowsCharactersPositions).extend({deferred: true});
+        viewmodel.suffixTwoRowsCharactersPositions = ko.observable(backwardTwoRowsCharactersPositions).extend({deferred: true});
 
-        viewmodel.prefixTwoRowsMatrices = ko.observableArray(forwardTwoRowsMatrices).extend({ deferred: true });
+        viewmodel.prefixTwoRowsMatrices = ko.observableArray(forwardTwoRowsMatrices).extend({deferred: true});
 
         // iteration over each matrix (forward matrices)
         for (var i = 0; i < forwardTwoRowsMatrices.length; i++) {
-            viewmodel.prefixTwoRowsMatrices[i] = ko.observableArray(forwardTwoRowsMatrices[i]).extend({ deferred: true });
+            viewmodel.prefixTwoRowsMatrices[i] = ko.observableArray(forwardTwoRowsMatrices[i]).extend({deferred: true});
 
             // iteration over each row of the matrix
             for (var j = 0; j < forwardTwoRowsMatrices[i].length; j++) {
-                viewmodel.prefixTwoRowsMatrices[i][j] = ko.observableArray(forwardTwoRowsMatrices[i][j]).extend({ deferred: true });
+                viewmodel.prefixTwoRowsMatrices[i][j] = ko.observableArray(forwardTwoRowsMatrices[i][j]).extend({deferred: true});
             }
         }
 
-        viewmodel.suffixTwoRowsMatrices = ko.observableArray(backwardTwoRowsMatrices).extend({ deferred: true });
+        viewmodel.suffixTwoRowsMatrices = ko.observableArray(backwardTwoRowsMatrices).extend({deferred: true});
 
         // iteration over each matrix (backward matrices)
         for (var i = 0; i < backwardTwoRowsMatrices.length; i++) {
-            viewmodel.suffixTwoRowsMatrices[i] = ko.observableArray(backwardTwoRowsMatrices[i]).extend({ deferred: true });
+            viewmodel.suffixTwoRowsMatrices[i] = ko.observableArray(backwardTwoRowsMatrices[i]).extend({deferred: true});
 
             // iteration over each row of the matrix
             for (var j = 0; j < backwardTwoRowsMatrices[i].length; j++) {
-                viewmodel.suffixTwoRowsMatrices[i][j] = ko.observableArray(backwardTwoRowsMatrices[i][j]).extend({ deferred: true });
+                viewmodel.suffixTwoRowsMatrices[i][j] = ko.observableArray(backwardTwoRowsMatrices[i][j]).extend({deferred: true});
             }
         }
 
@@ -377,7 +380,7 @@ Author: Alexander Mattheis
             var firstSequencePositions = outputData.firstSequencePositions[k];
 
             string += LATEX.SPACE_SMALL;
-            
+
             for (var i = 0; i < firstSequence.length; i++) {
                 if (i >= MAX_TRACE_FUNCTION_ARG_LEN) {  // cut after a certain number of arguments
                     string += SYMBOLS.SPACE + END_SO_ON;
@@ -387,8 +390,8 @@ Author: Alexander Mattheis
                 string += LATEX.TEXT_START;
                 string += firstSequence[i];
                 string += LATEX.CLOSE;
-                if (i==0 || i+1 == firstSequence.length) {
-                	string += LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + firstSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
+                if (i === 0 || i + 1 === firstSequence.length) {
+                    string += LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + firstSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
                 }
             }
 
@@ -406,8 +409,8 @@ Author: Alexander Mattheis
                 string += LATEX.TEXT_START;
                 string += secondSequence[i];
                 string += LATEX.CLOSE;
-                if (i == 0 || i + 1 == secondSequence.length) {
-                	string += LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + secondSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
+                if (i === 0 || i + 1 === secondSequence.length) {
+                    string += LATEX.SUBORDINATE + LATEX.CURLY_BRACKET_LEFT + secondSequencePositions[i] + LATEX.CURLY_BRACKET_RIGHT;
                 }
             }
 
@@ -431,12 +434,12 @@ Author: Alexander Mattheis
 
         // iterate over all rounds
         for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
-            rows.push(outputData.firstSequencePositions[k][outputData.relativeSplittingPoint[k][0]-1]);
+            rows.push(outputData.firstSequencePositions[k][outputData.relativeSplittingPoint[k][0] - 1]);
         }
 
         if (outputData.recursionNumbersContainer.length > 0 && !outputData.lastTracecellIsSource) {  // add last row minimum position
             var lastRound = outputData.relativeSplittingPoint.length - 1;
-            rows.push(outputData.firstSequencePositions[0][outputData.relativeSplittingPoint[lastRound][0]-1]);
+            rows.push(outputData.firstSequencePositions[0][outputData.relativeSplittingPoint[lastRound][0] - 1]);
         }
 
         return rows;
@@ -453,7 +456,7 @@ Author: Alexander Mattheis
         var column;
         // iterate over all rounds
         for (var k = 0; k < outputData.recursionNumbersContainer.length; k++) {
-            column = outputData.secondSequencePositions[k][outputData.relativeSplittingPoint[k][1]-1];
+            column = outputData.secondSequencePositions[k][outputData.relativeSplittingPoint[k][1] - 1];
 
             if (column === undefined)
                 column = outputData.secondSequencePositions[k][0] - 1;  // select first defined position and then "-1"
@@ -464,7 +467,7 @@ Author: Alexander Mattheis
         if (outputData.recursionNumbersContainer.length > 0 && !outputData.lastTracecellIsSource) {  // add last row minimum position
             var lastRound = outputData.relativeSplittingPoint.length - 1;
 
-            column = outputData.secondSequencePositions[0][outputData.relativeSplittingPoint[lastRound][1]-1];
+            column = outputData.secondSequencePositions[0][outputData.relativeSplittingPoint[lastRound][1] - 1];
 
             if (column === undefined)
                 column = outputData.secondSequencePositions[0][0] - 1;  // select first defined position and then "-1"
@@ -502,10 +505,6 @@ Author: Alexander Mattheis
      * @return {Object} - The submatrices data.
      */
     function getTwoRowsSubmatricesData(outputData) {
-        var submatricesOfEachRound = [];
-        var substringsOfEachRound = [];
-        var subpositionsOfEachRound = [];
-
         var forwardSubmatricesOfEachRound = [];
         var forwardSubstringsOfEachRound = [];
         var forwardSubpositionsOfEachRound = [];
@@ -573,7 +572,7 @@ Author: Alexander Mattheis
         var lowerPos = -1;
 
         for (var i = 1; i <= posI; i++) {
-            upperRow = forwardMatrix[i-1];
+            upperRow = forwardMatrix[i - 1];
             lowerRow = forwardMatrix[i];
 
             if (i - 1 === 0) {
@@ -622,14 +621,14 @@ Author: Alexander Mattheis
         var rotatedBackwardMatrix = getRotatedMatrix(backwardMatrix);
 
         for (var i = rotatedBackwardMatrix.length - 1; i > posI; i--) {
-            upperRow = rotatedBackwardMatrix[i-1];
+            upperRow = rotatedBackwardMatrix[i - 1];
             lowerRow = rotatedBackwardMatrix[i];
 
-            upperChar = leftString[i-2];
-            lowerChar = leftString[i-1];
+            upperChar = leftString[i - 2];
+            lowerChar = leftString[i - 1];
 
-            upperPos = leftPositions[i-2];
-            lowerPos = leftPositions[i-1];
+            upperPos = leftPositions[i - 2];
+            lowerPos = leftPositions[i - 1];
 
             twoRowsMatrices.push([upperRow, lowerRow]);
             twoRowsCharacters.push([upperChar, lowerChar]);
@@ -651,15 +650,6 @@ Author: Alexander Mattheis
             rotatedMatrix.push(backwardMatrix[i].reverse());
 
         return rotatedMatrix;
-    }
-
-    /**
-     * Returns a LaTeX enclosed formula.
-     * @param formula {string} - The string which has to be enclosed in LaTeX math mode.
-     * @return {string} - The LaTeX math mode enclosed formula.
-     */
-    function getLaTeXFormula(formula) {
-        return LATEX.MATH_REGION + formula + LATEX.MATH_REGION;
     }
 
     /**
@@ -699,24 +689,24 @@ Author: Alexander Mattheis
      */
     function createFengDoolittleOutputViewmodel(algorithmName, viewmodel, outputData) {
         // distance matrices
-        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData);
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, true);
 
         interfaceInstance.roundValues(algorithmName, outputData);
 
-        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
+        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({deferred: true});
 
         // iteration over each matrix
         for (var i = 0; i < outputData.distanceMatrices.length; i++) {
-            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({ deferred: true });
+            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({deferred: true});
 
             // iteration over each row of the matrix
             for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
-                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({ deferred: true });
+                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({deferred: true});
             }
         }
 
-        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
-        viewmodel.minimums = ko.observable(outputData.minimums).extend({ deferred: true });
+        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({deferred: true});
+        viewmodel.minimums = ko.observable(outputData.minimums).extend({deferred: true});
 
         // merge steps
         reorderGroupSequences(outputData);
@@ -746,7 +736,7 @@ Author: Alexander Mattheis
         // gimmicks/optimizations
         viewmodel.showMatrices = ko.observable(false);
 
-        viewmodel.toggleVisibility = function() {
+        viewmodel.toggleVisibility = function () {
             viewmodel.showMatrices(!viewmodel.showMatrices());
         };
 
@@ -759,14 +749,14 @@ Author: Alexander Mattheis
 
     /**
      * Reordering groups in alphabetical order for increasing readability.
-     * @param outputData - The output on which conversion is applied.
+     * @param outputData {Object} - The output on which reordering is applied.
      */
     function reorderGroupSequences(outputData) {
         if (outputData.joinedGroupNames.length > 0) {
-            var finalGroupName = outputData.joinedGroupNames[outputData.joinedGroupNames.length-1];
-            var finalGroup = outputData.joinedGroups[outputData.joinedGroups.length-1];
+            var finalGroupName = outputData.joinedGroupNames[outputData.joinedGroupNames.length - 1];
+            var finalGroup = outputData.joinedGroups[outputData.joinedGroups.length - 1];
 
-            var groupMemberNames = getIndividualElementNames(finalGroupName);
+            var groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName, true);
             var groupMemberRankings = getRankings(groupMemberNames, finalGroup);
 
             var reorderedGroups = [];
@@ -784,9 +774,9 @@ Author: Alexander Mattheis
                 var group1 = outputData.firstGroups[i];
                 var group2 = outputData.secondGroups[i];
 
-                var memberNames = getIndividualElementNames(outputData.joinedGroupNames[i]);
-                var member1Names = getIndividualElementNames(outputData.firstGroupsNames[i]);
-                var member2Names = getIndividualElementNames(outputData.secondGroupsNames[i]);
+                var memberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.joinedGroupNames[i], true);
+                var member1Names = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.firstGroupsNames[i], true);
+                var member2Names = bases.multiSequenceAlignment.getIndividualSequenceNames(outputData.secondGroupsNames[i], true);
 
                 var sortedGroupAndNames = getSortedGroup(group, memberNames, groupMemberRankings);
                 var sorted1GroupAndNames = getSortedGroup(group1, member1Names, groupMemberRankings);
@@ -813,29 +803,6 @@ Author: Alexander Mattheis
 
             outputData.progressiveAlignment = reorderedGroups[reorderedGroups.length - 1];
         }
-    }
-
-    /**
-     * Returns the individual names of the group members,
-     * where a name character separated by a comma from the name number.
-     * @param groupName - The group name from which the names extracted.
-     * @return {Array} - The array with the individual names.
-     */
-    function getIndividualElementNames(groupName) {
-        var names = [];
-
-        for (var i = 0; i < groupName.length; i++) {
-            var character = groupName[i];
-            var number = SYMBOLS.EMPTY;
-
-            while (i + 1 < groupName.length && groupName[i + 1].match(CHARACTER.NUMBER)) {
-                number += groupName[i + 1];
-                i++;
-            }
-            names.push(number.length > 0 ? character + SYMBOLS.COMMA + number : character);
-        }
-
-        return names;
     }
 
     /**
@@ -913,7 +880,7 @@ Author: Alexander Mattheis
 
         removeNeutralSymbols(outputData);
         interfaceInstance.roundValues(algorithmName, outputData);
-        alignmentInterfaceInstance.reorderGroupSequences(outputData);
+        reorderGroupSequences(outputData);
 
         // final output
         viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
@@ -937,8 +904,8 @@ Author: Alexander Mattheis
         viewmodel.extendedLibValues = ko.observable(outputData.librariesData[3]);
 
         // alignments
-        viewmodel.alignmentsGlobal = ko.observable(outputData.librariesData[4]).extend({ deferred: true });
-        viewmodel.alignmentsLocal = ko.observable(outputData.librariesData[5]).extend({ deferred: true });
+        viewmodel.alignmentsGlobal = ko.observable(outputData.librariesData[4]).extend({deferred: true});
+        viewmodel.alignmentsLocal = ko.observable(outputData.librariesData[5]).extend({deferred: true});
     }
 
     /**
@@ -996,7 +963,7 @@ Author: Alexander Mattheis
 
             if (tempPositionPairs.length !== 0) {  // don't show names of sequence pairs for which no L or EL exists
                 sortWithNumberTuples(tempPositionPairs, [tempPrimLibValues, tempExtendedLibValues]);
-                
+
                 sequencePairsNames.push([sequence1Name, sequence2Name]);
                 positionPairs.push(tempPositionPairs);
                 primLibValues.push(tempPrimLibValues);
@@ -1004,7 +971,7 @@ Author: Alexander Mattheis
             }
 
             alignmentsGlobal.push(alignmentAndScore[2]);
-            alignmentsLocal.push(alignmentAndScoreLocal !== undefined ? alignmentAndScoreLocal[2]: []);
+            alignmentsLocal.push(alignmentAndScoreLocal !== undefined ? alignmentAndScoreLocal[2] : []);
         }
 
         sortWithClusterTuples(sequencePairsNames, [positionPairs, primLibValues, extendedLibValues, alignmentsGlobal, alignmentsLocal]);
@@ -1020,7 +987,7 @@ Author: Alexander Mattheis
         var switches = [];
 
         // documentation {sort} - https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-        positionPairs.sort(function (a,b) {
+        positionPairs.sort(function (a, b) {
             var leftNumberA = Number(a[0]);
             var leftNumberB = Number(b[0]);
 
@@ -1033,7 +1000,7 @@ Author: Alexander Mattheis
         for (var j = 0; j < inputArrays.length; j++) {
             var i = 0;
 
-            inputArrays[j].sort(function (a,b) {  // sort with the sorting determined above
+            inputArrays[j].sort(function (a, b) {  // sort with the sorting determined above
                 return switches[i++];
             });
         }
@@ -1051,7 +1018,7 @@ Author: Alexander Mattheis
         var value = 0;
 
         if (leftNumberA === leftNumberB) {
-            value = rightNumberB > rightNumberA ? -1 : (rightNumberB > rightNumberA ? 1 : 0);
+            value = rightNumberB > rightNumberA ? -1 : (rightNumberB < rightNumberA ? 1 : 0);
             switches.push(value);
             return value;
         }
@@ -1071,7 +1038,7 @@ Author: Alexander Mattheis
         var switches = [];
 
         // documentation {sort} - https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-        sequencePairsNames.sort(function (a,b) {
+        sequencePairsNames.sort(function (a, b) {
             var leftNumberA = getNumber(a[0]);
             var leftNumberB = getNumber(b[0]);
 
@@ -1084,7 +1051,7 @@ Author: Alexander Mattheis
         for (var j = 0; j < inputArrays.length; j++) {
             var i = 0;
 
-            inputArrays[j].sort(function (a,b) {  // sort with the sorting determined above
+            inputArrays[j].sort(function (a, b) {  // sort with the sorting determined above
                 return switches[i++];
             });
         }
@@ -1099,11 +1066,11 @@ Author: Alexander Mattheis
      * a3, b3, ...              THIRD ...       (52 <= index < 78)
      *
      * CALCULATION:
-     * c = pos(a) + 0 * CLUSTER_NAMES.length = 2 + 0 = 2
+     * c = pos(c) + 0 * CLUSTER_NAMES.length = 2 + 0 = 2
      * a2 = pos(a) + (2-1) * CLUSTER_NAMES.length = 0 + 26 = 26
      * c2 = pos(a) + (2-1) * CLUSTER_NAMES.length = 2 + 26 = 28
-     * @param cluster
-     * @return {*}
+     * @param cluster {string} - The name of the cluster which should be translated into a number.
+     * @return {number} - The position of the cluster-name within all clusters.
      */
     function getNumber(cluster) {
         // hint: Number("[empty]") is replaced with 0 in JS
@@ -1124,7 +1091,7 @@ Author: Alexander Mattheis
      * @param outputData {Object} - The data which is used to fill the viewmodel.
      */
     function removeNeutralSymbols(outputData) {
-        var numJoinings =  outputData.firstGroups.length;
+        var numJoinings = outputData.firstGroups.length;
 
         for (var i = 0; i < numJoinings; i++) {
             for (var j = 0; j < outputData.firstGroups[i].length; j++)
@@ -1135,6 +1102,80 @@ Author: Alexander Mattheis
 
             for (var j = 0; j < outputData.joinedGroups[i].length; j++)
                 outputData.joinedGroups[i][j] = outputData.joinedGroups[i][j].replace(MULTI_SYMBOLS.NONE, SYMBOLS.GAP);
+        }
+    }
+
+    /**
+     * Creates the OutputViewmodel for Feng-Doolittle.
+     * @param algorithmName {string} - The name of the algorithm which is executed.
+     * @param viewmodel {Object} - The output viewmodel container which should be filled.
+     * @param outputData {Object} - The data which is used to fill the viewmodel.
+     */
+    function createIterativeRefinementOutputViewmodel(algorithmName, viewmodel, outputData) {
+        // final output
+        reorderFinalAlignments(outputData);  // do not move down this function
+        viewmodel.progressiveAlignment = ko.observable(outputData.progressiveAlignment);
+        viewmodel.score = ko.observable(outputData.score);
+        viewmodel.refinedProgressiveAlignment = ko.observable(outputData.refinedProgressiveAlignment);
+        viewmodel.refinedScore = ko.observable(outputData.refinedScore);
+
+        // realignment steps
+        reorderGroupSequences(outputData);  // do not move up this function
+        viewmodel.guideAlignments = ko.observable(outputData.guideAlignments);
+        viewmodel.guideAlignmentsNames = ko.observable(outputData.guideAlignmentsNames);
+
+        viewmodel.firstGroups = ko.observable(outputData.firstGroups);
+        viewmodel.firstGroupsNames = ko.observable(outputData.firstGroupsNames);
+
+        viewmodel.secondGroups = ko.observable(outputData.secondGroups);
+        viewmodel.secondGroupsNames = ko.observable(outputData.secondGroupsNames);
+
+        viewmodel.joinedGroups = ko.observable(outputData.joinedGroups);
+        viewmodel.realignmentsScores = ko.observable(outputData.realignmentsScores);
+        viewmodel.joinedGroupNames = ko.observable(outputData.joinedGroupNames);
+
+        viewmodel.accepted = ko.observable(outputData.accepted);
+
+        // tree
+        viewmodel.newickString = ko.observable(outputData.newickString);
+
+        // distance matrix
+        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({deferred: true});
+
+        outputData.distanceMatrix
+            = bases.clustering.getMatrixAsTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined, true);
+
+        interfaceInstance.roundValues(algorithmName, outputData);
+
+        viewmodel.distanceMatrix = ko.observableArray(outputData.distanceMatrix);
+
+        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
+            viewmodel.distanceMatrix[i] = ko.observableArray(outputData.distanceMatrix[i]);
+        }
+    }
+
+    /**
+     * Reorders the sequences of final alignment in order they have been given as input.
+     * @param outputData {Object} - The output on which reordering is applied.
+     */
+    function reorderFinalAlignments(outputData) {
+        if (outputData.joinedGroupNames.length > 0) {
+            // sort refined progressive alignment
+            var finalGroupName = outputData.refinedProgressiveAlignmentName;
+            var finalGroup = outputData.refinedProgressiveAlignment;
+
+            var groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName, true);
+            var groupMemberRankings = getRankings(groupMemberNames, finalGroup);
+
+            outputData.refinedProgressiveAlignment = getSortedGroup(finalGroup, groupMemberNames, groupMemberRankings)[0];
+
+            // sort progressive alignment
+            finalGroupName = outputData.progressiveAlignmentName;
+            finalGroup = outputData.progressiveAlignment;
+            groupMemberNames = bases.multiSequenceAlignment.getIndividualSequenceNames(finalGroupName, true);
+            groupMemberRankings = getRankings(groupMemberNames, finalGroup);
+
+            outputData.progressiveAlignment = getSortedGroup(finalGroup, groupMemberNames, groupMemberRankings)[0];
         }
     }
 }());

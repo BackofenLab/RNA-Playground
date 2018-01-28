@@ -16,12 +16,12 @@ form input {
     user-focus: ignore;
 }
 
-input[type="text"] {
-    text-transform: uppercase;
-}
-
 input[type="number"] {
     width: 35px;
+}
+
+input[type="text"] {
+    text-transform: uppercase;
 }
 
 label {
@@ -36,7 +36,7 @@ small {
 table {
     border-collapse: collapse;
     display: inline-block;
-    margin: 0px;
+    margin: 0;
     text-align: center;
 }
 
@@ -65,9 +65,14 @@ th {
 /*---- CLASS STYLING ----*/
 .add_remove {
     height: 22px;
-    padding: 0px;
+    padding: 0;
     text-align: center;
     width: 22px;
+}
+
+.alignment {
+    float: left;
+    margin-bottom: 10px;
 }
 
 .ancillary_output {
@@ -90,15 +95,15 @@ th {
 }
 
 .arrows_d { /* diagonal */
-    background-position: 0px 0px;
+    background-position: 0 0;
 }
 
 .arrows_l { /* left */
-    background-position: 0px -38px;
+    background-position: 0 -38px;
 }
 
 .arrows_t { /* top */
-    background-position: 0px -73px;
+    background-position: 0 -73px;
 }
 
 .calculation, .calculation_horizontal, .calculation_vertical,
@@ -165,6 +170,10 @@ th {
     padding-top: 10px;
 }
 
+.embedded_picture {
+    margin: 15px 20px 5px 0;
+}
+
 .entry {
     border-bottom: 0;
     font-family: serif;
@@ -186,6 +195,13 @@ th {
 
 .extra_large {
     max-width: 800px !important;
+}
+
+.extra_small {
+    float: left;
+    padding-bottom: 15px;
+    padding-right: 30px;
+    max-width: 370px !important;
 }
 
 .final {
@@ -230,7 +246,25 @@ th {
     border-bottom: 1px solid #a0a0a0;
     border-left: 1px solid #a0a0a0;
     border-right: 1px solid #a0a0a0;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
     width: 244px;
+}
+
+.gotoh_local_static_size {
+    height: 665px;
+    max-height: 665px;
+    min-height: 665px;
+}
+
+.gotoh_static_size {
+    height: 860px;
+    max-height: 860px;
+    min-height: 860px;
+}
+
+.gray {
+    color: lightgray;
 }
 
 .group_hint {
@@ -246,8 +280,20 @@ th {
 
 .hint {
     border-width: 1px;
+    height: 25px !important;
     padding-left: 8px;
     text-align: left;
+}
+
+.hirschberg_static_size {  /* a way to avoid problems with MathJax */
+    /*
+    Hint: In Firefox also a margin has to be set.
+    Search for "_:-moz-tree-row(hover), .hirschberg_static_size"
+    in this file.
+    */
+    height: 1060px; /* without picture 925px */
+    max-height: 1060px;
+    min-height: 1060px;
 }
 
 .inner_column {
@@ -276,6 +322,10 @@ th {
     padding: 5px;
 }
 
+.listed li {
+    margin: 10px 0;
+}
+
 .main_output {
     padding-top: 5px;
     max-width: 600px;
@@ -284,6 +334,14 @@ th {
 
 .merge_steps {
     margin-bottom: 10px;
+}
+
+.merge_steps_footer th {
+    border-top: none;
+    height: 24px;
+    padding-left: 10px;
+    text-align: left;
+    width: 787px;
 }
 
 .more_left {
@@ -296,9 +354,9 @@ th {
 
 .outcome {
     display: inline-block;
+    margin-bottom: 10px;
     margin-top: 5px;
     padding-left: 30px;
-    margin-bottom: 10px;
 }
 
 .output {
@@ -326,11 +384,17 @@ th {
 }
 
 .pairwise_data_header th {
-    border-bottom: 0px;
+    border-bottom: 0;
     height: 24px;
     padding-left: 10px;
     text-align: left;
     width: 254px;
+}
+
+.refined_alignment {
+    float: left;
+    margin-bottom: 10px;
+    margin-left: 30px;
 }
 
 .result {
@@ -387,6 +451,8 @@ th {
     border-bottom: 1px solid #a0a0a0;
     border-left: 1px solid #a0a0a0;
     border-right: 1px solid #a0a0a0;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
     width: 798px;
 }
 
@@ -434,6 +500,8 @@ th {
     border-right: 1px solid #a0a0a0;
     clear: left;
     float: left;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
     width: 167px;
 }
 
@@ -502,12 +570,22 @@ th {
     width: 220px;
 }
 
+.smaller {
+    width: 224px !important;
+}
+
 .thick_line {
     border-top: 2px solid #a0a0a0;
 }
 
 .top_border {
     border-top: 1px solid #a0a0a0;
+}
+
+.waterman_smith_bayer_static_size {
+    height: 770px;
+    max-height: 770px;
+    min-height: 770px;
 }
 
 /*---- ID STYLING ----*/
@@ -563,11 +641,87 @@ _:-ms-lang(x), _:-webkit-full-screen, input[type="text"]:focus {
     outline: black solid 1px;
 }
 
-/* Mozilla */
-_:-moz-tree-row(hover), input[type="number"]:focus {
-    outline: black solid 1px;
+_:-ms-lang(x), _:-webkit-full-screen, .gotoh_local_static_size {
+    height: 685px;
+    max-height: 685px;
+    min-height: 685px;
 }
 
-_:-moz-tree-row(hover), input[type="text"]:focus {
-    outline: black solid 1px;
+_:-ms-lang(x), _:-webkit-full-screen, .gotoh_static_size {
+    height: 880px;
+    max-height: 880px;
+    min-height: 880px;
 }
+
+_:-ms-lang(x), _:-webkit-full-screen, .hirschberg_static_size {
+    height: 1100px;
+    max-height: 1100px;
+    min-height: 1100px;
+}
+
+_:-ms-lang(x), _:-webkit-full-screen, .waterman_smith_bayer_static_size {
+    height: 790px;
+    max-height: 790px;
+    min-height: 790px;
+}
+
+/* Mozilla Linux Ubuntu */
+_:-moz-tree-row(hover), .gotoh_local_static_size {
+	height: 730px;
+    max-height: 730px;
+    min-height: 730px;
+}
+
+_:-moz-tree-row(hover), .gotoh_static_size {
+    height: 980px;
+    max-height: 980px;
+    min-height: 980px;
+}
+
+_:-moz-tree-row(hover), .hirschberg_static_size {
+    height: 1200px;
+	max-height: 1200px;
+	min-height: 1200px;
+}
+
+_:-moz-tree-row(hover), .waterman_smith_bayer_static_size {
+    height: 890px;
+    max-height: 890px;
+    min-height: 890px;
+}
+
+/* Mozilla Windows 7/8/10 */
+@media (-moz-windows-theme) { 
+	input[type="number"]:focus {
+		outline: black solid 1px;
+	}
+	
+	input[type="text"]:focus {
+		outline: black solid 1px;
+	}
+	
+	.gotoh_local_static_size {
+		height: 705px !important;
+		max-height: 705px !important;
+		min-height: 705px !important;
+	}
+	
+	.gotoh_static_size {
+		height: 900px !important;
+		max-height: 900px !important;
+		min-height: 900px !important;
+	}
+
+	.hirschberg_static_size { 
+		height: 1100px !important;
+		max-height: 1100px !important;
+		min-height: 1100px !important;
+	} 
+	
+	.waterman_smith_bayer_static_size {
+		height: 810px !important;
+		max-height: 810px !important;
+		min-height: 810px !important;
+	}
+}
+

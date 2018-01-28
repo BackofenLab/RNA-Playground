@@ -15,8 +15,7 @@ Author: Alexander Mattheis
     var interfaceInstance;
 
     /**
-     * Is used to work with the input and output (the interface) of an alignment algorithm.
-     * It contains the basic methods and the viewmodel for the output.
+     * Is used to work with the input and output (the interface) of an algorithm.
      * This class is used by the various interface scripts as superclass.
      * @constructor
      */
@@ -24,10 +23,19 @@ Author: Alexander Mattheis
         interfaceInstance = this;
 
         // public class methods
+        this.imports = imports;
         this.sharedInterfaceOperations = sharedInterfaceOperations;
         this.startProcessing = startProcessing;
         this.roundValues = roundValues;
         this.getDistanceTables = getDistanceTables;
+        this.getLaTeXFormula = getLaTeXFormula;
+    }
+
+    /**
+     * Handling imports.
+     */
+    function imports() {
+        $.getScript(PATHS.INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /**
@@ -82,7 +90,6 @@ Author: Alexander Mattheis
      * @param viewmodels {Object} - The viewmodels used to access visualization functions.
      */
     function executeAlgorithmInterfaceCode(algorithm, viewmodels) {
-        debugger;
         if (TREE_ALGORITHMS.indexOf(algorithm.type) !== -1)
             viewmodels.visual.drawTree();
     }
@@ -94,7 +101,6 @@ Author: Alexander Mattheis
      * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
      */
     function startProcessing(algorithm, inputViewmodel, visualViewmodel) {
-        debugger;
         algorithm.setInput(inputViewmodel);
         var ioData = algorithm.compute();
 
@@ -108,7 +114,39 @@ Author: Alexander Mattheis
      * @param outputData {Object} - Output data which is modified.
      */
     function roundValues(algorithmName, outputData) {
-        if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
+        if (algorithmName === ALGORITHMS.AGGLOMERATIVE_CLUSTERING
+            || algorithmName === ALGORITHMS.FENG_DOOLITTLE) {  // if Feng-Doolittle or Agglomerative
+            // iterate over each distance matrix
+            for (var k = 0; k < outputData.distanceMatrices.length; k++) {
+
+                // iterate over each row
+                for (var i = 0; i < outputData.distanceMatrices[k].length; i++) {
+
+                    // iterate over each entry
+                    for (var j = 0; j < outputData.distanceMatrices[k][i].length; j++) {
+                        // if (j > i)  // only the values upper the diagonal
+                        outputData.distanceMatrices[k][i][j]
+                            = round(outputData.distanceMatrices[k][i][j], 1);
+                    }
+                }
+            }
+
+            if (algorithmName === ALGORITHMS.AGGLOMERATIVE_CLUSTERING) {
+                for (var k = 0; k < outputData.neighbourJoiningMatrices.length; k++) {
+
+                    // iterate over each row
+                    for (var i = 0; i < outputData.neighbourJoiningMatrices[k].length; i++) {
+
+                        // iterate over each entry
+                        for (var j = 0; j < outputData.neighbourJoiningMatrices[k][i].length; j++) {
+                            if (j > i)  // only the values upper the diagonal
+                                outputData.neighbourJoiningMatrices[k][i][j]
+                                    = round(outputData.neighbourJoiningMatrices[k][i][j], 1);
+                        }
+                    }
+                }
+            }
+        } else if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER) {
             // every possibility
             for (var i = 0; i < outputData.iterationData.length; i++) {
                 // every round
@@ -128,25 +166,15 @@ Author: Alexander Mattheis
                     outputData.iterationData[i][j][2] = round(outputData.iterationData[i][j][2], 4); // lambda
                 }
             }
-
-        } else if (algorithmName === ALGORITHMS.FENG_DOOLITTLE
-            || algorithmName === ALGORITHMS.AGGLOMERATIVE_CLUSTERING) {  // if Feng-Doolittle or Agglomerative
-            // iterate over each distance matrix
-            for (var k = 0; k < outputData.distanceMatrices.length; k++) {
-
-                // iterate over each row
-                for (var i = 0; i < outputData.distanceMatrices[k].length; i++) {
-
-                    // iterate over each entry
-                    for (var j = 0; j < outputData.distanceMatrices[k][i].length; j++) {
-                        if (j > i)  // only the values upper the diagonal
-                            outputData.distanceMatrices[k][i][j]
-                                = round(outputData.distanceMatrices[k][i][j], 1);
-                    }
-                }
-            }
         } else if (algorithmName === ALGORITHMS.HIRSCHBERG) {
             // do nothing, because there is nothing to round
+        } else if (algorithmName === ALGORITHMS.ITERATIVE_REFINMENT) {
+            // iterate over each row
+            for (var i = 0; i < outputData.distanceMatrix.length; i++) {
+                // iterate over each entry
+                for (var j = 0; j < outputData.distanceMatrix[i].length; j++)
+                    outputData.distanceMatrix[i][j] = round(outputData.distanceMatrix[i][j], 1);
+            }
         } else if (algorithmName === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {
             var alignmentPairsCount = outputData.librariesData[0].length;
             var primLibValues = outputData.librariesData[2];
@@ -177,88 +205,44 @@ Author: Alexander Mattheis
      */
     function round(number, decimalPlaces) {
         var factor = Math.pow(10, decimalPlaces);
-        return Math.round(number*factor)/factor;
+        return Math.round(number * factor) / factor;
     }
 
     /**
      * Converts the distances stored in associative array into a real distance matrix.
-     * @param outputData - The output on which conversion is applied.
+     * @param outputData {Object} - The output on which conversion is applied.
+     * @param computeJoiningMatrices {boolean} - Tells if instead of distance matrices neighbour-joining matrices should be computed.
+     * @param fillBothHalves {boolean} - Tells if both halves of the matrix should be filled with values or not.
      * @return {Object} - The outputData with converted distance matrices.
      */
-    function getDistanceTables(outputData) {
-        debugger;
+    function getDistanceTables(outputData, computeJoiningMatrices, fillBothHalves) {
         var matrixLength = outputData.distanceMatrixLength;  // start length
 
-        // in each round the matrix gets smaller by one, because two matrices are merged
-        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
-            outputData.distanceMatrices[i]
-                = getDistanceTable(outputData.distanceMatrices[i], matrixLength-i, outputData.remainingClusters[i], outputData.keys[i]);
-        }
-
-        return outputData.distanceMatrices;
-    }
-
-    /**
-     * The distance matrix is an "associative array" and this has to be converted
-     * into a 2D-array which is displayable.
-     * Hint: "Associative arrays" do not have a defined order (browser-dependant).
-     */
-    function getDistanceTable(distanceMatrix, distanceMatrixLength, remainingClusters, matrixKeys) {
-        debugger;
-        var matrix = createMatrix(distanceMatrixLength);
-        if (matrixKeys === undefined)
-            matrixKeys = Object.keys(distanceMatrix);  // argument possibilities {a,b}, {a,c}, ...
-
-        // fill diagonals with zero
-        for (var i = 0; i < matrix.length; i++) {
-            for (var j = 0; j < matrix.length; j++) {
-                if (i === j)
-                    matrix[i][j] = 0;
+        if (!computeJoiningMatrices) {
+            // in each round the matrix gets smaller by one, because two matrices are merged
+            for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+                outputData.distanceMatrices[i] = bases.clustering.getMatrixAsTable(outputData.distanceMatrices[i],
+                    matrixLength - i, outputData.remainingClusters[i], outputData.keys[i], fillBothHalves);
             }
+
+            return outputData.distanceMatrices;
         }
 
-        // fill right upper half
-        for (var j = 0; j < matrixKeys.length; j++) {
-            var key = matrixKeys[j].split(SYMBOLS.COMMA);
-            var cluster1Position = getPositionByName(key[0], remainingClusters);
-            var cluster2Position = getPositionByName(key[1], remainingClusters);
-            var value = distanceMatrix[key];
-
-            matrix[cluster1Position][cluster2Position] = value;
+        // else compute Neighbour-Joining matrices
+        for (var i = 0; i < outputData.neighbourJoiningMatrices.length; i++) {
+            outputData.neighbourJoiningMatrices[i] = bases.clustering.getMatrixAsTable(outputData.neighbourJoiningMatrices[i],
+                matrixLength - i, outputData.remainingClusters[i], outputData.keys[i], fillBothHalves);
         }
 
-        return matrix;
+        return outputData.neighbourJoiningMatrices;
     }
 
     /**
-     * Creates a matrix with the given size.
-     * @param size - The width and height of the matrix.
+     * Returns a LaTeX enclosed formula.
+     * @param formula {string} - The string which has to be enclosed in LaTeX math mode.
+     * @return {string} - The LaTeX math mode enclosed formula.
      */
-    function createMatrix (size) {
-        var matrix = new Array(size);
-
-        for (var i = 0; i < size; i++) {
-            matrix[i] = [];
-        }
-
-        return matrix;
-    }
-
-    /**
-     * Returns for a cluster-name, its position in the distance matrix.
-     * @param clusterName {string} - The name of the cluster.
-     * @param remainingClusterNames {Array} - The remaining cluster names after execution of UPGMA.
-     */
-    function getPositionByName(clusterName, remainingClusterNames) {
-        var position = -1;
-
-        for (var i = 0; i < remainingClusterNames.length; i++) {
-            if (clusterName === remainingClusterNames[i]) {
-                position = i;
-                break;
-            }
-        }
-
-        return position;
+    function getLaTeXFormula(formula) {
+        return LATEX.MATH_REGION + formula + LATEX.MATH_REGION;
     }
 }());

@@ -2,111 +2,115 @@
 University of Freiburg WS 2017/2018
 Chair for Bioinformatics
 Supervisor: Martin Raden
-Author: Alexander Mattheis
+Authors: Alexander Mattheis, Martin Raden
 -->
 
-<div id="algorithm_description">
-    <div class="description">
-        <a href="https://dl.acm.org/citation.cfm?doid=360825.360861">Daniel S. Hirschberg</a>
-        introduced 1975 (submitted 1974) an approach to compute the longest common subsequence of two strings.
-        This approach can be adapted to compute the global alignment of two sequences
-        in quadratic time $O(nm)$ and only linear space, instead of quadratic space like in the original
-        <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch">Needleman-Wunsch (1970)</a> algorithm.
-        While it offers the optimal alignment <em>score</em> without changing the runtime,
-        additional efforts are needed to traceback an according alignment, since
-        the needed data was not stored.
-        The idea is that the tracebacks you get from a prefix- and a suffix-alignment are congruent
-        i.e. the traceback-cells are the same.
-        Because of this, rows $i$ of the prefix dynamic programming matrix  $D$
-        and the suffix matrix $D'$ (when using same coordinate system, see recursions)
-        can be added to identify the row's cell that is passed by an optimal traceback.
+<div class="hirschberg_static_size"> <!-- to avoid that MathJax disrupts the output -->
+    <div id="algorithm_description">
+        <div class="description">
+            <a href="https://dl.acm.org/citation.cfm?doid=360825.360861">Daniel S. Hirschberg</a>
+            introduced 1975 (submitted 1974) an approach to compute the longest common subsequence of two strings.
+            This approach can be adapted to compute the global alignment of two sequences
+            in quadratic time $O(nm)$ and only linear space, instead of quadratic space like in the original
+            <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch">Needleman-Wunsch (1970)</a> algorithm.
+            While it offers the optimal alignment <em>score</em> without changing the runtime,
+            additional efforts are needed to traceback an according alignment, since
+            the needed data was not stored.
+            The idea is that the tracebacks you get from a prefix- and a suffix-alignment are congruent
+            i.e. the traceback-cells are the same.
+            Because of this, rows $i$ of the prefix dynamic programming matrix  $D$
+            and the suffix matrix $D'$ (when using same coordinate system, see recursions)
+            can be added to identify the row's cell that is passed by an optimal traceback.
 
-        <br />
-        <br />
+            <br />
+            <br />
 
-        In detail, to enable traceback calculation in quadratic time a divide-and-conquer
-        strategy is applied. Here, we want to identify where the traceback "passes
-        through" the center row of the matrix.
-        To this end, first the middle row $i = \lfloor n/2 \rfloor$, where $n = |a|$
-        has to be computed for both matrices $D$ and $D'$. Given that $D_{i,j}$
-        holds the best prefix score up to and including $a_i,b_j$ and $D'_{i,j}$
-        provides the same for the suffixes starting in $a_{i+1},b_{j+1}$, the 
-        optimal overall alignment score can be found as the summation of some column $j$,
-        i.e. $\exists_{j} : D_{n,m} = D_{i,j}+D'_{i,j} = D'_{0,0}$.
-        This position $j$ provides a decomposition of the traceback problem into
-        the respective prefix and suffix strings for which the procedure is iterated
-        until (a) one of the substrings is empty or (b) only $a_n$ or $b_j$ is left, respectively.
+            In detail, to enable traceback calculation in quadratic time a divide-and-conquer
+            strategy is applied. Here, we want to identify where the traceback "passes
+            through" the center row of the matrix (first divide-step on left picture).
+            <img class="embedded_picture" src="hirschberg_traceback.png" align="left"/>
+            To this end, first the middle row $i = \lfloor n/2 \rfloor$, where $n = |a|$
+            has to be computed for both matrices $D$ and $D'$. Given that $D_{i,j}$
+            holds the best prefix score up to and including $a_i,b_j$ and $D'_{i,j}$
+            provides the same for the suffixes starting in $a_{i+1},b_{j+1}$, the
+            optimal overall alignment score can be found as the summation of some column $j$, <br \>
+            i.e. $\exists_{j} : D_{n,m} = D_{i,j}+D'_{i,j} = D'_{0,0}$.
+            This position $j$ provides a decomposition of the traceback problem into
+            the respective prefix and suffix strings for which the procedure is iterated
+            until (a) one of the substrings is empty or (b) only $a_n$ or $b_j$ is left, respectively.
 
-        <br />
-        <br />
+            <br />
+            <br />
 
-        In the following, only the leftmost optimal traceback-cell per row is identified. Note,
-        the introduced algorithm does not identify <em>all</em> traceback-cells.
-        Missing horizontal traceback-steps (within a row) have to be identified 
-        in an additional postprocessing.
-		In the following, we provide the series of the computed rows from the
-		$D$ and $D'$ matrix (optionally along with the computation details) and
-		the respective traceback subproblems, i.e. the according subsequences.
-		For each row $i$, the identified traceback-cell $j$ is highlighted.
-		Furthermore, we visualize all identified cells within a full matrix
-		representation along with a final complete traceback path and alignment.
-        <br />
-        <br />
+            In the following, only the leftmost optimal traceback-cell per row is identified. Note,
+            the introduced algorithm does not identify <em>all</em> traceback-cells.
+            Missing horizontal traceback-steps (within a row)
+            and vertical traceback-steps have to be identified
+            in an additional postprocessing.
+            In the following, we provide the series of the computed rows from the
+            $D$ and $D'$ matrix (optionally along with the computation details) and
+            the respective traceback subproblems, i.e. the according subsequences.
+            For rows $i$, the identified traceback-cell $j$ is highlighted.
+            Furthermore, we visualize all identified cells within a full matrix
+            representation along with a final complete traceback path and alignment.
+            <br />
+            <br />
 
-    </div>
-
-    <div class="picture">
-        <img src="Hirschberg-120x90.png" />
-    </div>
-</div>
-
-<h1>Input:</h1>
-<div id="algorithm_input">
-	<div class="row">
-		<div class="colW100"><label>Sequence $a$:</label></div>
-		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'"
-                                    title="Allowed are A-Z and '-'." type="text"></div>
-	</div>
-
-	<div class="row">
-		<div class="colW100"><label>Sequence $b$:</label></div>
-		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'"
-                                    title="Allowed are A-Z and '-'." type="text"></div>
-	</div>
-
-	<div class="row">
-		<div class="colW100"><label>Scoring in $s$:</label></div>
-
-		<div class="colW400">
-			<span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
-				Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
-				Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
-				Gap $\gamma$ <input class="fx_parameter" data-bind="value: input.gap" id="gap" type="number">
-			</span>
-
-			 <div class="group_hint">
-				<b>Hint:</b> <br />
-				For distance minimization, match scores should be smaller than all other scores.
-			</div>
-		</div>
-	</div>
-
-    <div class="row">
-		<div class="colW100">
-            <label>
-                <br />
-                <br />
-                Recursions:
-            </label>
         </div>
 
-		<div class="colW600">
-			<span data-bind="text: $root.input.formula"></span>
-            <br />
-            <br />
-            <span data-bind="text: $root.input.formulaBackward"></span>
-		</div>
-	</div>
+        <div class="picture">
+            <img src="Hirschberg-120x90.png" />
+        </div>
+    </div>
+
+    <h1>Input:</h1>
+    <div id="algorithm_input">
+        <div class="row">
+            <div class="colW100"><label>Sequence $a$:</label></div>
+            <div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'"
+                                        title="Allowed are A-Z and '-'." type="text"></div>
+        </div>
+
+        <div class="row">
+            <div class="colW100"><label>Sequence $b$:</label></div>
+            <div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'"
+                                        title="Allowed are A-Z and '-'." type="text"></div>
+        </div>
+
+        <div class="row">
+            <div class="colW100"><label>Scoring in $s$:</label></div>
+
+            <div class="colW400">
+                <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                    Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
+                    Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
+                    Gap $\gamma$ <input class="fx_parameter" data-bind="value: input.gap" id="gap" type="number">
+                </span>
+
+                 <div class="group_hint">
+                    <b>Hint:</b> <br />
+                    For distance minimization, match scores should be smaller than all other scores.
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="colW100">
+                <label>
+                    <br />
+                    <br />
+                    Recursions:
+                </label>
+            </div>
+
+            <div class="colW600">
+                <span data-bind="text: $root.input.formula"></span>
+                <br />
+                <br />
+                <span data-bind="text: $root.input.formulaBackward"></span>
+            </div>
+        </div>
+    </div>
 </div>
 
 <h1>Output</h1>
@@ -198,7 +202,7 @@ Author: Alexander Mattheis
             <table class="calculation tracecells_table">
                 <thead>
                     <tr>
-                        <th><small><b>Traced<br />cells</b></small></th>
+                        <th><small><b>Trace<br />cells</b></small></th>
                         <th></th>
                         <!-- ko foreach: input.sequence2 -->
                             <th data-bind="drawChar: [$data, undefined]"></th>
@@ -385,7 +389,7 @@ Author: Alexander Mattheis
 
                 </div>
 
-                 <h4>Addition <small>(Note, row numbers <b>i</b> refer to the full-length Needleman-Wunsch matrix)</small></h4>
+                <h4>Addition <small>(Note, row numbers <b>i</b> refer to the full-length Needleman-Wunsch matrix)</small></h4>
                 <div class="output">
                     <div class="main_output extra_large">
                         <table class="calculation">
@@ -402,10 +406,8 @@ Author: Alexander Mattheis
 
                                     <!-- ko foreach: $root.output.secondSequences()[$index()] -->
                                         <th>
-                                             <span data-bind="text: ($index()+1)"></span>
-<!-- 
-                                             <span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$index()][$index()]"></span>
- -->
+                                            <span data-bind="text: ($index()+1)"></span>
+                                            <!--<span data-bind="text: $root.output.secondSequencePositions()[$parentContext.$index()][$index()]"></span>-->
                                         </th>
                                     <!-- /ko -->
                                 </tr>

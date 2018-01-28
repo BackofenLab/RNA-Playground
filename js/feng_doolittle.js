@@ -102,7 +102,7 @@ $(document).ready(function () {
         multiSequenceAlignmentInstance.createDistanceMatrix();  // creates a function dist(a,b) between cluster names and distances
         multiSequenceAlignmentInstance.createProgressiveAlignment(multiSequenceAlignmentInstance.getPhylogeneticTree());
 
-        outputData.score = multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData , outputData.progressiveAlignment);
+        outputData.score = multiSequenceAlignmentInstance.getAffineSumOfPairsScore(inputData, outputData.progressiveAlignment);
         return [inputData, outputData];
     }
 

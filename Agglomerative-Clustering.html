@@ -1,0 +1,348 @@
+<!--
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Authors: Alexander Mattheis, Martin Raden
+-->
+
+<div id="algorithm_description">
+    <div class="description">
+        Different agglomerative (hierarchical) clustering algorithms were proposed to compute phylogenetic trees
+        from evolutionary distances:
+        <ul class="listed">
+            <li>
+                <em>Complete Linkage (Furthest Neighbour)</em>
+                by Thorvald S&oslash;rensen (1948)
+                - Merges the two clusters $i$ and $j$ whose biggest inter-cluster-distance $D_{i,j}$
+                (defined between elements of the cluster)
+                is minimal between all clusters.
+            </li>
+
+            <li>
+                <em>Neighbour-Joining (Nearest Neighbour on clusters)</em> of
+                <a href="https://doi.org/10.1093/oxfordjournals.molbev.a040454">Naruya Saitou and Masatoshi Nei (1987)</a>
+                modified by
+                <a href="https://doi.org/10.1093/oxfordjournals.molbev.a040527">James A. Studier and Karl J. Keppler (1988)</a>
+                - Merges the two clusters $i$ and $j$ whose value $M_{i,j}$ (defined further below) is minimal between all clusters.
+            </li>
+
+            <li>
+                <em>Single Linkage (Nearest Neighbour on elements between two different clusters)</em>
+                by Kazimierz Florek, J&oacute;zef &Lstrok;ukaszewicz, Julian Perkal, Hugo Steinhaus and Stefan Zubrzycki (1951)
+                - Merges the two clusters $i$ and $j$ whose lowest inter-cluster-distance $D_{i,j}$ is minimal between all clusters.
+            </li>
+
+            <li>
+                <em>Unweighted Pair Group Method with Arithmetic Mean (Group Average or Average Linkage)</em> by <br />
+                <a href="https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902">Robert R. Sokal and Charles D. Michener (1958)</a>
+                - Merges the two clusters $i$ and $j$ whose average inter-cluster-distance $D_{i,j}$ is minimal between all clusters.
+            </li>
+
+            <li>
+                <em>Weighted Pair Group Method with Arithmetic Mean (Simple Average)</em> by
+                <a href="http://journals.sagepub.com/doi/abs/10.1177/001316446602600201">Louis L. McQuitty (1967)</a>
+                - Merges the two clusters $i$ and $j$ whose weighted-average inter-cluster-distance $D_{i,j}$ is minimal between all clusters.
+            </li>
+        </ul>
+
+        Neighbour-Joining is considered to be
+        the more realistic approach (giving biologically more relevant results),
+        because unlike UPGMA (Complete Linkage, Single Linkage or WPGMA) it does not assume
+        the same evolution rate for merged taxa (branch lengths of different taxa can be different).
+        This comes from the fact,that UPGMA assumes an ultrametric tree
+        (a tree in which distances from the root to the leafs are always the same)
+        and Neighbour-Joining only an additive tree (a tree in which branch lengths can be arbitrary).
+        That makes the approach more reliable.
+
+        <br />
+        <br />
+
+        The principle of all agglomerative (bottom-up) approaches is always the same,
+        in the beginning you have given a matrix of pairwise evolutionary distances
+        between singleton clusters (containing only one element)
+        and in this matrix $D$ or in a matrix $M$ (e.g. a neighbour-joining matrix) derived from that
+        you search for the entry with the lowest value $D_{min} = D_{i,j}$ (where $i \neq j$)
+        resp. $M_{min} = M_{i,j}$.
+        You merge the clusters $i$ and $j$ to a new cluster $ij = i \cup j$
+        and recompute the distances to the remaining clusters with some distance formula $\delta_m$
+        given with the respective approach.
+        Afterwards the distance between $i,j$ and the merged cluster $ij$
+        in the tree is recomputed with a second formula $\delta_t$.
+        These stated steps are iterated for $O(N)$ rounds (usually $N-1$ rounds, but not in Neighbour-Joining),
+        where $N$ is number of input singleton clusters.
+
+        <br />
+        <br />
+
+        In the Neighbour-Joining approach,
+        the entries of the $N \times N$ neighbour-joining matrix $M$
+        are computed by $M_{i,j} = (N-2) \cdot D_{i,j} - D_{i,J} - D_{I,j}$,
+        where $D_{i,J} = \sum^N_{k=1} D_{i,k}$ ($D_{I,j}$ defined analogous)
+        is the total distance between cluster $i$ and all other clusters.
+        This matrix together with the distance computation formulas allows us
+        to find an additive tree.
+
+        <br />
+        <br />
+
+        For the given input, the
+        <ul>
+            <li>changing distance matrices (with intermediate matrices $M$)</li>
+            <li>phylogenetic tree</li>
+        </ul>
+        are computed and displayed in reversed order.
+    </div>
+
+    <div class="picture">
+        <img src="Agglomerative-Clustering-120x90.png" />
+    </div>
+</div>
+
+<h1>Input:</h1>
+<div id="algorithm_input">
+    <div class="row">
+		<div class="colW100"><label>Approach:</label></div>
+
+		<div class="colW400">
+            <select class="selector" data-bind="options: input.availableApproaches, selectedOptions: input.selectedApproach"
+                    id="approach_selector"></select>
+        </div>
+	</div>
+
+    <div class="row">
+		<div class="colW100">
+        </div>
+
+		<div class="colW600">
+			<span data-bind="text: $root.input.selectedFormula()"></span>
+            <span data-bind="text: $root.input.selectedSubformula()"></span>
+            <!-- ko if: $root.input.selectedApproach() == "Neighbour-Joining" -->
+                where $\Delta_{i,j} = \frac{D_{i,J} - D_{I,j}}{N-2}$
+            <!-- /ko -->
+		</div>
+	</div>
+
+    <div class="row">
+		<div class="colW100"><label>CSV-Data:</label></div>
+
+		<div class="colW400">
+            <textarea class="csv_data" data-bind="text: input.csvTable" id="csv_table"></textarea>
+            <br \>
+            <span class="error_hint" data-bind="text: input.errorInput"></span>
+
+            <div class="group_hint">
+                <b>Hints:</b> <br />
+                Empty columns interpreted as "0" and column-entries below the diagonal are ignored.
+                The ";"-symbol is used as a column separator and every non-empty line
+                has to have the same number of separators or there won't be an output. <br />
+            </div>
+        </div>
+	</div>
+</div>
+
+<h1>Output:</h1>
+<div id="algorithm_output">
+     <h2>Phylogenetic Tree</h2>
+
+    <div class="newick_tree">
+        <table class="result_header">
+            <thead>
+                <tr>
+                    <th>
+                        Newick Tree
+                    </th>
+                </tr>
+            </thead>
+        </table>
+
+        <div class="result_with_scrollbar">
+            <table class="result">
+                <tbody>
+                    <tr>
+                        <td class="entry entry_start">
+                            <code data-bind="text: $root.output.newickString()"></code>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ko if: $root.input.selectedApproach() != "Neighbour-Joining" -->
+        <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+            <div id="phylogenetic_tree"></div>
+        </div>
+
+        <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
+            <div class="group_hint">
+                <b>Visualization done with</b> <br />
+                Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br />
+                A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br />
+                <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                    PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+                </a>
+            </div>
+        <!-- /ko -->
+    <!-- /ko -->
+
+    <!-- ko if: $root.input.selectedApproach() == "Neighbour-Joining" -->
+        <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+            <div id="phylogenetic_tree"></div>
+        </div>
+
+        <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
+            <div class="group_hint">
+                <b>Visualization done with</b> <br />
+                Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br />
+                A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br />
+                <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                    PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+                </a>
+            </div>
+        <!-- /ko -->
+    <!-- /ko -->
+
+    <!-- ko if: $root.input.selectedApproach() != "Neighbour-Joining" -->
+        <h2>Distance Tables</h2>
+    <!-- /ko -->
+
+    <!-- ko if: $root.input.selectedApproach() == "Neighbour-Joining" -->
+        <h2>Distance & Neighbour Joining Tables</h2>
+    <!-- /ko -->
+    <div class="matrices">
+        <!-- ko foreach: $root.output.distanceMatrices() -->
+            <!-- ko if: $index() > 0 -->
+                <h3 class="header">Iteration <span data-bind="text: $index()"></span></h3>
+            <!-- /ko -->
+
+            <!-- ko if: $root.output.distanceMatrices()[$index()].length > 0 -->
+                <!-- ko if: $root.input.selectedApproach() != "Neighbour-Joining" -->
+                    <div class="distance_table">
+                        <table class="distances">
+                            <thead>
+                                <tr>
+                                    <th><span data-bind="text: $root.output.matrixDLatex()[$index()]"></span></th>
+                                    <!-- ko foreach: $root.output.remainingClusters()[$index()] -->
+                                        <th data-bind="drawChar: [$data, undefined]"></th>
+                                    <!-- /ko -->
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <!-- ko foreach: $root.output.distanceMatrices()[$index()] --> <!-- to get i-indexes = $parentContext.$index() -->
+                                    <tr>
+                                        <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
+                                        <!-- ko foreach: $root.output.distanceMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
+                                            <!-- ko if: $index() >= $parentContext.$index() -->
+                                                    <td class="non_selectable_entry"
+                                                        data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                                    </td>
+                                            <!-- /ko -->
+
+                                            <!-- ko if: $index() < $parentContext.$index() -->
+                                                    <td class="non_selectable_entry gray"
+                                                        data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                                    </td>
+                                            <!-- /ko -->
+                                        <!-- /ko -->
+                                    </tr>
+                                <!-- /ko -->
+
+                                <!-- ko if: $index() < $root.output.distanceMatrices().length-1 --> <!-- The last minimum is not computed -->
+                                    <tr>
+                                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+                                            <small>
+                                                <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[$index()]"></span>
+                                            </small>
+                                        </th>
+                                    </tr>
+                                <!-- /ko -->
+                            </tbody>
+                        </table>
+                    </div>
+                <!-- /ko -->
+
+                <!-- ko if: $root.input.selectedApproach() == "Neighbour-Joining" -->
+                    <div class="distance_table extra_small">
+                        <table class="distances">
+                            <thead>
+                                <tr>
+                                    <th><span data-bind="text: $root.output.matrixDLatex()[$index()]"></span></th>
+                                    <!-- ko foreach: $root.output.remainingClusters()[$index()] -->
+                                        <th data-bind="drawChar: [$data, undefined]"></th>
+                                    <!-- /ko -->
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <!-- ko foreach: $root.output.distanceMatrices()[$index()] --> <!-- to get i-indexes = $parentContext.$index() -->
+                                    <tr>
+                                        <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
+                                        <!-- ko foreach: $root.output.distanceMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
+                                            <!-- ko if: $index() >= $parentContext.$index() -->
+                                                <td class="non_selectable_entry"
+                                                    data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                                </td>
+                                            <!-- /ko -->
+
+                                            <!-- ko if: $index() < $parentContext.$index() -->
+                                                <td class="non_selectable_entry gray"
+                                                    data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                                </td>
+                                            <!-- /ko -->
+                                        <!-- /ko -->
+                                    </tr>
+                                <!-- /ko -->
+
+                                <!-- ko if: $index() < $root.output.distanceMatrices().length - 1 -->
+                                    <tr class="thick_line">
+                                        <th><span data-bind="text: $root.output.sumLatex"></span></th>
+                                        <!-- ko foreach: $root.output.totalDistancesPerRound()[$index()] -->
+                                            <td class="entry" data-bind="text: $data"></td>
+                                        <!-- /ko -->
+                                    </tr>
+                                <!-- /ko -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ko if: $index() < $root.output.distanceMatrices().length - 1 -->
+                        <div class="distance_table extra_small">
+                            <table class="distances">
+                                <thead>
+                                    <tr>
+                                        <th><span data-bind="text: $root.output.matrixDStarLatex()[$index()]"></span></th>
+                                        <!-- ko foreach: $root.output.remainingClusters()[$index()] -->
+                                            <th data-bind="drawChar: [$data, undefined]"></th>
+                                        <!-- /ko -->
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <!-- ko foreach: $root.output.neighbourJoiningMatrices()[$index()] --> <!-- to get i-indexes = $parentContext.$index() -->
+                                        <tr>
+                                            <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
+                                            <!-- ko foreach: $root.output.neighbourJoiningMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
+                                                <td class="non_selectable_entry"
+                                                    data-bind="text: $root.output.neighbourJoiningMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                                </td>
+                                            <!-- /ko -->
+                                        </tr>
+                                    <!-- /ko -->
+
+                                    <tr>
+                                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+                                            <small>
+                                                <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[$index()]"></span>
+                                            </small>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    <!-- /ko -->
+                <!-- /ko -->
+            <!-- /ko -->
+        <!-- /ko -->
+    </div>
+</div>

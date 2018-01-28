@@ -45,7 +45,7 @@ $(document).ready(function () {
      * @constructor
      * @see https://doi.org/10.1093/bioinformatics/17.4.327
      *
-     * Arslan, Abdullah N., Ömer Eğecioğlu, and Pavel A. Pevzner.
+     * Arslan, Abdullah N., Omer Egecioglu, and Pavel A. Pevzner.
      * "A new approach to sequence comparison: normalized sequence alignment."
      * Bioinformatics 17.4 (2001): 327-337.
      */
@@ -112,7 +112,7 @@ $(document).ready(function () {
 
         // storage of output
         outputData.iterationData = iterationData;
-        outputData.maxNumberIterations =  arslanEgeciougluPevznerInstance.numberOfIterations > MAX_NUMBER_ITERATIONS;
+        outputData.maxNumberIterations = arslanEgeciougluPevznerInstance.numberOfIterations > MAX_NUMBER_ITERATIONS;
         return [inputData, outputData];
     }
 
@@ -122,7 +122,7 @@ $(document).ready(function () {
      */
     function initializeInput(input) {
         input.sequenceB = inputData.sequenceB;
-        input.sequenceA =  inputData.sequenceA;
+        input.sequenceA = inputData.sequenceA;
         input.calculationType = inputData.calculationType;
         input.matrixHeight = inputData.sequenceA.length + 1;
         input.matrixWidth = inputData.sequenceB.length + 1;
@@ -205,7 +205,7 @@ $(document).ready(function () {
      * Computes score and length.
      * @param alignments {Object} - The alignments computed with Smith-Waterman.
      * @param i {number} - The selected alignments index.
-     * @return {[number,number]} - Score and length.
+     * @return {[number, number]} - Score and length.
      */
     function computeScoreAndLength(alignments, i) {
         return [getScore(alignments[i]), getAlignmentLength(alignments[i])];
@@ -270,14 +270,14 @@ $(document).ready(function () {
 
     /**
      * Creates a copy of the given iteration data to display it later on.
-     * @param score - The Smith-Waterman score you want store.
-     * @param alignmentLength - The alignment length you want store.
-     * @param lambda - The normalized score you want store.
-     * @param alignments - The alignments you want store.
-     * @param matrix - The matrix you want store.
-     * @param tracebackPaths - The tracebackPaths you want store.
-     * @param alignmentNumber - The number of the alignment to which parameters like score and lambda are stored.
-     * @param moreTracebacks - Tells if the algorithm has aborted before all alignments were calculated.
+     * @param score {number} - The Smith-Waterman score you want store.
+     * @param alignmentLength {number} - The alignment length you want store.
+     * @param lambda {number} - The normalized score you want store.
+     * @param alignments {Array} - The alignments you want store.
+     * @param matrix {Array} - The matrix you want store.
+     * @param tracebackPaths {Array} - The tracebackPaths you want store.
+     * @param alignmentNumber {number} - The number of the alignment to which parameters like score and lambda are stored.
+     * @param moreTracebacks {boolean} - Tells if the algorithm has aborted before all alignments were calculated.
      * @return {Object} - [score, lambda, deletion, insertion, match, mismatch, alignments matrix]
      */
     function getDataCopy(score, alignmentLength, lambda, alignments, matrix, tracebackPaths, alignmentNumber, moreTracebacks) {

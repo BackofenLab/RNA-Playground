@@ -8,13 +8,15 @@ Hint:   Some algorithms, structures and formats:
         - Feng-Doolittle (NW version)
         - Gotoh (with PAM- and BLOSSUM-matrices)
         - Needleman-Wunsch (with PAM- and BLOSSUM-matrices)
-        - Newick format
+        - Newick format (different type)
         - Sum-of-Pairs score (non-affine)
         - UPGMA/WPGMA
         have been also already been programmed before with Python
         in the project Algorithms for Bioninformatics by Daniel Maticzka and Omer Alkhnbashi.
 
-        Alexander Mattheis 2017-10-02
+Hint 2: Look into the import-hints below, if you upload this project on a server.
+
+        Alexander Mattheis 2017-12-15
 -->
 
 <!DOCTYPE html>
@@ -23,7 +25,9 @@ Hint:   Some algorithms, structures and formats:
         <meta charset="UTF-8">
         <title>Bioinformatics Algorithms</title>
 
-        <link rel="stylesheet" type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> <!-- stylesheet of RNA-Freiburg -->
+        <link rel="stylesheet" 
+		type="text/css" href="http://rna.informatik.uni-freiburg.de/resources/corporate-design.css"/> <!-- stylesheet of RNA-Freiburg online -->
+		<!-- <link rel="stylesheet" type="text/css" href="css/corporate-design.css"/> <!-- stylesheet of RNA-Freiburg offline -->
         <link rel="stylesheet" href="css/inner_style.css"> <!-- stylesheet for single pages -->
         <link rel="stylesheet" href="css/outer_style.css"> <!-- stylesheet for offline usage -->
 
@@ -39,14 +43,17 @@ Hint:   Some algorithms, structures and formats:
         <script src="js/libs/FileSaver.min.js"></script> <!-- allows to save files on the desktop -->
         <script src="js/libs/knockout-3.4.2.js"></script> <!-- to easify dynamic UI creation -->
         <script src="js/libs/jquery.js"></script> <!-- to traverse and transform HTML -->
-        <script type="text/javascript" async
+		<script type="text/javascript" async
                 src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
-        </script> <!-- to display LaTeX formulas -->
+        </script> <!-- to display LaTeX formulas online -->
+        <!-- <script type="text/javascript" src="MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script> <!-- to display LaTeX formulas offline -->
         <script src="js/libs/namespace.js"></script> <!-- to create namespaces -->
-	    <script type="text/javascript" src="js/libs/raphael-min.js"></script> <!-- SVG-rendering library -->
+	    <script type="text/javascript" src="js/libs/raphael-min.js"></script> <!-- SVG-rendering library for phylogenetic trees -->
 	    <script type="text/javascript" src="js/libs/jsphylosvg.js"></script> <!-- to draw phylogenetic trees -->
 
         <!-- IO -->
+        <script src="js/interfaces/dropdown_menu.js"></script> <!-- allows to choose an algorithm for loading -->
+
         <script src="js/interfaces/interface.js"></script> <!-- superclass for all interfaces -->
 
         <script src="js/interfaces/alignment_interface.js"></script> <!-- superclass for all interfaces of alignment algorithms -->
@@ -55,7 +62,6 @@ Hint:   Some algorithms, structures and formats:
         <script src="js/interfaces/linear_alignment_interface.js"></script> <!-- stores viewmodels and interface functions of linear alignment algorithms -->
         <script src="js/interfaces/multi_sequence_interface.js"></script> <!-- stores viewmodels and interface functions of multi-sequence algorithms -->
         <script src="js/interfaces/subadditive_alignment_interface.js"></script> <!-- stores viewmodels and interface functions of subadditive alignment algorithms -->
-        <script src="js/interfaces/dropdown_menu.js"></script> <!-- allows to choose an algorithm for loading -->
 
         <!-- CONTROLS "LOGIC" -->
         <script src="js/defaults.js"></script> <!-- stores all globally used constants -->
@@ -75,10 +81,18 @@ Hint:   Some algorithms, structures and formats:
 
         <script src="js/bases/clustering.js"></script> <!-- stores basic clustering functions -->
 
+        <!-- IMPORT HINTS: The following algorithms are also loaded by the loader!
+        This can lead to problems i.e. if you load "Needleman-Wunsch",
+        then remove the import "js/needleman_wunsch.js" before you load the algorithm with the loader or Knockout may fail!
+        Probably deactivate the reinitialize()-function in the loader.
+        So, never load the same resource twice. Therefore have also a look in the imports of the interface classes
+        if something goes wrong! -->
         <script src="js/agglomerative_clustering.js"></script> <!-- stores agglomerative clustering algorithms -->
+        <script src="js/feng_doolittle.js"></script> <!-- stores Feng-Doolittle algorithm -->
         <script src="js/gotoh.js"></script> <!-- stores Gotoh algorithm -->
         <script src="js/gotoh_local.js"></script> <!-- stores Gotoh (Local) algorithm -->
-        <script src="js/needleman_wunsch.js"></script> <!-- stores Gotoh (Local) algorithm -->
+        <script src="js/needleman_wunsch.js"></script> <!-- stores Needleman-Wunsch algorithm -->
+        <script src="js/neighbour_joining.js"></script> <!-- stores Neighbour-Joining algorithm -->
         <script src="js/smith_waterman.js"></script> <!-- stores Smith-Waterman algorithm -->
     </head>
 
@@ -111,6 +125,7 @@ Hint:   Some algorithms, structures and formats:
                     <li><a href="#">Gotoh</a></li>
                     <li><a href="#">Gotoh (Local)</a></li>
                     <li><a href="#">Hirschberg</a></li>
+                    <li><a href="#">Iterative Refinement</a></li>
                     <li><a href="#">Needleman-Wunsch</a></li>
                     <li><a href="#">Notredame-Higgins-Heringa</a></li>
                     <li><a href="#">Smith-Waterman</a></li>

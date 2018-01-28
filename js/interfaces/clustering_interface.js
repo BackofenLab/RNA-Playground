@@ -62,20 +62,24 @@ Author: Alexander Mattheis
         });
 
         this.selectedFormula = ko.computed(function () {
+            setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+            }, REUPDATE_TIMEOUT_MS);
+
             var approach = viewmodel.selectedApproach()[0];
             var position = viewmodel.availableApproaches.indexOf(approach);
             return HIERARCHICAL_CLUSTERING_DEFAULTS.FORMULAS[position];
         });
 
         this.selectedSubformula = ko.computed(function () {
+            setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+            }, REUPDATE_TIMEOUT_MS);
+
             var approach = viewmodel.selectedApproach()[0];
             var position = viewmodel.availableApproaches.indexOf(approach);
             return HIERARCHICAL_CLUSTERING_DEFAULTS.SUB_FORMULAS[position];
         });
-
-        setTimeout(function () {
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub])
-        }, REUPDATE_TIMEOUT_MS);
     }
 
     /**
@@ -95,7 +99,6 @@ Author: Alexander Mattheis
      * @param visualViewmodel {Object} - The VisualViewmodel used to access visualization functions.
      */
     function processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel) {
-        debugger;
         visualViewmodel.removeAllContents();
 
         // when page was loaded the inputs have not to be updated or you get wrong inputs
@@ -121,11 +124,13 @@ Author: Alexander Mattheis
         viewmodels.visual.drawTree();
 
         // distance matrices
-        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData);
-
-        interfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, true);
 
         viewmodels.output.distanceMatrices(outputData.distanceMatrices);
+
+        var tableNames = createLaTeXDistanceTableNames(outputData);
+        viewmodels.output.matrixDLatex(tableNames[0]);
+        viewmodels.output.matrixDStarLatex(tableNames[1]);
 
         // iteration over each matrix
         for (var i = 0; i < outputData.distanceMatrices.length; i++) {
@@ -144,9 +149,68 @@ Author: Alexander Mattheis
                 viewmodels.output.distanceMatrices[i][j](outputData.distanceMatrices[i][j]);
             }
         }
-        debugger;
+
+        viewmodels.output.totalDistancesPerRound(outputData.totalDistancesPerRound);
+
+        // neighbour joining matrices
+        outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true, false);
+
+        viewmodels.output.neighbourJoiningMatrices(outputData.neighbourJoiningMatrices);
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.neighbourJoiningMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.neighbourJoiningMatrices.length)
+                viewmodels.output.neighbourJoiningMatrices[i] = new Function();
+
+            viewmodels.output.neighbourJoiningMatrices[i](outputData.neighbourJoiningMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.neighbourJoiningMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.neighbourJoiningMatrices[i].length)
+                    viewmodels.output.neighbourJoiningMatrices[i][j] = new Function();
+
+                viewmodels.output.neighbourJoiningMatrices[i][j](outputData.neighbourJoiningMatrices[i][j]);
+            }
+        }
+
+        interfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
+
         viewmodels.output.remainingClusters(outputData.remainingClusters);
         viewmodels.output.minimums(outputData.minimums);
+    }
+
+    /**
+     * Creates Names for distance tables.
+     * @param outputData {Object} - Contains all output data.
+     * @return {[distanceMatrixNames,neighbourJoiningMatrixNames]}
+     */
+    function createLaTeXDistanceTableNames(outputData) {
+        var numMatrices = outputData.distanceMatrices.length;
+        var distanceMatrixNames = [];
+        var neighbourJoiningMatrixNames = [];
+
+        for (var i = 0; i < numMatrices; i++) {
+            var distanceMatrixName = SYMBOLS.EMPTY;
+            var neighbourJoiningMatrixName = SYMBOLS.EMPTY;
+
+            if (i !== 0) {
+                distanceMatrixName = interfaceInstance
+                    .getLaTeXFormula(LATEX.FORMULA.D_PURE + LATEX.SUPERSCRIPT + LATEX.CURLY_BRACKET_LEFT + i + LATEX.CURLY_BRACKET_RIGHT);
+
+                neighbourJoiningMatrixName = interfaceInstance
+                    .getLaTeXFormula(LATEX.FORMULA.D_STAR + LATEX.SUPERSCRIPT + LATEX.CURLY_BRACKET_LEFT + i + LATEX.CURLY_BRACKET_RIGHT);
+            } else {
+                distanceMatrixName = interfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_PURE);
+                neighbourJoiningMatrixName = interfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_STAR);
+            }
+
+            distanceMatrixNames.push(distanceMatrixName);
+            neighbourJoiningMatrixNames.push(neighbourJoiningMatrixName);
+        }
+
+        return [distanceMatrixNames, neighbourJoiningMatrixNames];
     }
 
     /**
@@ -179,23 +243,45 @@ Author: Alexander Mattheis
         viewmodel.newickString = ko.observable(outputData.newickString);
 
         // distance matrices
-        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData);
+        var tableNames = createLaTeXDistanceTableNames(outputData);
+        viewmodel.matrixDLatex = ko.observable(tableNames[0]).extend({deferred: true});
+        viewmodel.matrixDStarLatex = ko.observable(tableNames[1]).extend({deferred: true});
 
-        interfaceInstance.roundValues(algorithmName, outputData);
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, true);
 
-        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({ deferred: true });
+        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({deferred: true});
 
         // iteration over each matrix
         for (var i = 0; i < outputData.distanceMatrices.length; i++) {
-            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({ deferred: true });
+            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({deferred: true});
 
             // iteration over each row of the matrix
             for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
-                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({ deferred: true });
+                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({deferred: true});
             }
         }
 
-        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({ deferred: true });
-        viewmodel.minimums = ko.observable(outputData.minimums).extend({ deferred: true });
+        viewmodel.sumLatex = ko.observable(interfaceInstance.getLaTeXFormula(LATEX.SUM));
+        viewmodel.totalDistancesPerRound = ko.observableArray(outputData.totalDistancesPerRound);
+
+        // neighbour joining matrices
+        outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true, false);
+
+        viewmodel.neighbourJoiningMatrices = ko.observableArray(outputData.neighbourJoiningMatrices).extend({deferred: true});
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.neighbourJoiningMatrices.length; i++) {
+            viewmodel.neighbourJoiningMatrices[i] = ko.observableArray(outputData.neighbourJoiningMatrices[i]).extend({deferred: true});
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.neighbourJoiningMatrices[i].length; j++) {
+                viewmodel.neighbourJoiningMatrices[i][j] = ko.observableArray(outputData.neighbourJoiningMatrices[i][j]).extend({deferred: true});
+            }
+        }
+
+        interfaceInstance.roundValues(algorithmName, outputData);
+
+        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({deferred: true});
+        viewmodel.minimums = ko.observable(outputData.minimums).extend({deferred: true});
     }
 }());

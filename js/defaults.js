@@ -14,39 +14,41 @@ Author: Alexander Mattheis
  * Multiple constants of same "logic" (for example with similar naming) stored in structures.
  */
 
-/* HINT: alphabetically ordered (also within definitions) and structures after constants */
+/* Hint: alphabetically ordered (also within definitions) and structures (i.e. {}) after constants. */
 
-// constants
-var END_SO_ON = ".."
+/*---- CONSTANTS ----*/
+var END_SO_ON = "..";
 var EPSILON = 0.000000001;  // some very low number to test against
 
-var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant
+var FENG_DOOLITTLE_CONSTANT = 0.001;  // Hint: it has not to be used 0.001, but it is the paper constant!
 
-var HIRSCHBERG_LOWER_NODE = 2;
-var HIRSCHBERG_UPPER_NODE = 1;
+var HIRSCHBERG_LOWER_NODE = 2;  // name for a node of the computation tree
+var HIRSCHBERG_UPPER_NODE = 1;  // name for a node of the computation tree
 
 var MAX_NUMBER_ITERATIONS = 5;  // number of iterations in algorithm with convergence
 var MAX_NUMBER_TRACEBACKS = 10;  // stores the number of tracebacks after which an alignment algorithm stops to compute
 var MAX_TRACE_FUNCTION_ARG_LEN = 10;  // tells the allowed length of an argument to avoid a string which goes over the page border
 
 var REUPDATE_TIMEOUT_MS = 100;  // time in ms after which new LaTeX-Code is reinterpreted or outputs updated
-var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have been updated
+var REACTION_TIME_HIGHLIGHT = REUPDATE_TIMEOUT_MS + 50;  // to highlight tracebacks only after outputs have definitely been updated
 
 var SMITH_WATERMAN_STOP = "0";
 
-// structs
+/*---- STRUCTS ----*/
 /**
  * Stores the implemented algorithm names.
  */
-var ALGORITHMS = {  // contains a list of all implemented algorithms (javascript names without extension)
+var ALGORITHMS = {  // contains a list of algorithms with an own javascript-file (javascript names without extension)
     AGGLOMERATIVE_CLUSTERING: "agglomerative_clustering",
-	ARSLAN_EGECIOGLU_PEVZNER: "arslan_egecioglu_pevzner",
+    ARSLAN_EGECIOGLU_PEVZNER: "arslan_egecioglu_pevzner",
     FENG_DOOLITTLE: "feng_doolittle",
     GOTOH: "gotoh",
     GOTOH_LOCAL: "gotoh_local",
     HIRSCHBERG: "hirschberg",
+    ITERATIVE_REFINMENT: "iterative_refinement",
     NEEDLEMAN_WUNSCH: "needleman_wunsch",
-    NONE: "none",
+    NEIGHBOUR_JOINING: "neighbour_joining",
+    NONE: "none",  // this is not an algorithm :)
     NOTREDAME_HIGGINS_HERINGA: "notredame_higgins_heringa",
     SMITH_WATERMAN: "smith_waterman",
     WATERMAN_SMITH_BEYER: "waterman_smith_beyer"
@@ -63,7 +65,7 @@ var ALIGNMENT_TYPES = {  // contains a list of alignment types
 /**
  * Stores HTML-code for arrows.
  */
-var ARROWS = {  // HINT: inner quotes have to be this here: " " or it won't work!
+var ARROWS = {  // Hint: inner quotes have to be this here: " " or it won't work!
     LEFT: '<div class="arrows_l"></div>',
     LEFT_NAME: ".arrows_l",
     TOP: '<div class="arrows_t"></div>',
@@ -95,7 +97,9 @@ var CHARACTER = {
  * Stores the displayed clustering algorithm names.
  */
 var CLUSTERING_ALGORITHMS = {
-    NEIGHBOUR_JOINING: "Neighbour-Joining",
+    COMPLETE_LINKAGE: "Complete-Linkage",
+    NEIGHBOUR_JOINING: "Neighbour-Joining", /* Hint: Change name also in the Agglomerative-Clustering.html or it won't work anymore! */
+    SINGLE_LINKAGE: "Single-Linkage",
     UPGMA: "Unweighted PGMA",
     WPGMA: "Weighted PGMA"
 };
@@ -126,6 +130,18 @@ var INPUT = {
     LENGTH_MIN: 0,
     MAX: 10,  // abs: absolute value
     MIN: -10
+};
+
+var ITERATIVE_REFINEMENT_ORDERS = {
+    INPUT_ORDER: "input-sequences order",
+    LEFT_FIRST: "guide-tree left-to-right traversal",
+    RIGHT_FIRST: "guide-tree right-to-left traversal"
+};
+
+var ITERATIVE_REFINEMENT_STRATEGIES = {
+    MIN_DISTANCE_PAIR: "Minimum Distance Pair", /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore! */
+    ONE_VS_ALL: "One-vs-All", /* Hint: Change name also in the Iterative-Refinement.html or it won't work anymore! */
+    PAIRWISE_BEST_PAIR: "Pairwise Best Pair"
 };
 
 /**
@@ -161,9 +177,11 @@ var LATEX = {
     SPACE_SMALL: "\\;",
     SUBORDINATE: "_",
     SUM: "\\sum",
+    SUPERSCRIPT: "^",
     TEXT_START: "\\texttt{",
 
-    FORMULA: {  /* contains subparts of a formula */
+    FORMULA: {
+        /* contains subparts of a formula */
         CURRENT: "D_{i,j}",
         CURRENT_BACKWARD: "D'_{i,j}",
         CURRENT_P: "P_{i,j}",
@@ -172,6 +190,8 @@ var LATEX = {
         D_BIG: /D/g,
         D_BIG_UNDERSCORE: /D_/g,
         D_PRIME: "D'",
+        D_PURE: "D",
+        D_STAR: "M",
         D_PRIME_UNDERSCORE: "D'_",
         DELETION: "b_j = -",
         DIAGONAL: "D_{i-1,j-1}",
@@ -201,107 +221,116 @@ var LATEX = {
         ZERO: "0"
     },
 
-    FORMULAS: {  /* contains complete formulas */
-        NEIGHBOUR_JOINING_DELTA_1: "",
-        NEIGHBOUR_JOINING_DELTA_2: "",
+    FORMULAS: {
+        /* contains complete formulas */
+        COMPLETE_LINKAGE_DELTA_1: "$$\\delta_m(k, ij) = \\max_{s \\in k,\\, t \\in ij} D_{s,t}$$",
+        COMPLETE_LINKAGE_DELTA_2: "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$",
+        NEIGHBOUR_JOINING_DELTA_1:
+            "$$\\delta_m(k, ij) = \\frac{D_{k,i} + D_{k,j} - D_{i,j}}{2}$$",
+        NEIGHBOUR_JOINING_DELTA_2:
+            "$$\\delta_t(i, ij) = \\frac{D_{i,j} - \\Delta_{i,j}}{2}, \\quad \\delta_t(j, ij) = \\frac{D_{i,j} + \\Delta_{i,j}}{2} = D_{i,j} - \\delta_t(i, ij)$$",
+        SINGLE_LINKAGE_DELTA_1: "$$\\delta_m(k, ij) = \\min_{s \\in k,\\, t \\in ij} D_{s,t}$$",
+        SINGLE_LINKAGE_DELTA_2: "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$",
         UPGMA_DELTA_1:
-            "$$\\delta_1(l, ij)= \\frac{|i| \\cdot d_{l,i} + |j| \\cdot d_{l,j}}{|i| + |j|}$$",
+        "$$\\delta_m(k, ij) = \\frac{D_{k,i} \\cdot |i| + D_{k,j} \\cdot |j|}{|i| + |j|} " +
+        "= \\frac{1}{|k| |ij|} \\sum_{s \\in k} \\sum_{t \\in ij} D_{s,t}$$",
         UPGMA_DELTA_2:
-            "$$\\delta_2(l, ij)= \\frac{d_{min}}{2}$$",
+            "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$",
         WPGMA_DELTA_1:
-            "$$\\delta_1(l, ij)= \\frac{d_{l,i} + d_{l,j}}{2}$$",
+            "$$\\delta_m(k, ij) = \\frac{D_{k,i} + D_{k,j}}{2}$$",
         WPGMA_DELTA_2:
-            "$$\\delta_2(l, ij)= \\frac{d_{min}}{2}$$"
+            "$$\\delta_t(i, ij) = \\delta_t(j, ij) = \\frac{D_{min}}{2}$$"
     },
 
     RECURSION: {
         GOTOH:
-        "\\begin{cases}"                            +
-        "D_{i-1,j-1}	& + & s(a_i,b_j)    \\\\"   +
-        "P_{i,j}                            \\\\"   +
-        "Q_{i,j}                                "   +
+        "\\begin{cases}" +
+        "D_{i-1,j-1}	& + & s(a_i,b_j)    \\\\" +
+        "P_{i,j}                            \\\\" +
+        "Q_{i,j}                                " +
         "\\end{cases}",
 
         GOTOH_LOCAL:
-        "\\begin{cases}"                            +
-        "S_{i-1,j-1}	& + & s(a_i,b_j)    \\\\"   +
-        "P_{i,j}                            \\\\"   +
-        "Q_{i,j}                            \\\\"   +
-        "0                                      "   +
+        "\\begin{cases}" +
+        "S_{i-1,j-1}	& + & s(a_i,b_j)    \\\\" +
+        "P_{i,j}                            \\\\" +
+        "Q_{i,j}                            \\\\" +
+        "0                                      " +
         "\\end{cases}",
 
         GOTOH_P:
-        "\\begin{cases}"                            +
-        "D_{i-1,j}      & + & g(1)		    \\\\"   +
-        "P_{i-1,j}      & + & \\beta"              +
+        "\\begin{cases}" +
+        "D_{i-1,j}      & + & g(1)		    \\\\" +
+        "P_{i-1,j}      & + & \\beta" +
         "\\end{cases}",
 
         GOTOH_Q:
-        "\\begin{cases}"                            +
-        "D_{i,j-1}      & + & g(1)		    \\\\"   +
-        "Q_{i,j-1}      & + & \\beta"              +
+        "\\begin{cases}" +
+        "D_{i,j-1}      & + & g(1)		    \\\\" +
+        "Q_{i,j-1}      & + & \\beta" +
         "\\end{cases}",
 
         HIRSCHBERG_BACKWARD:
-        "\\begin{cases}"                            +
-        "D'_{i+1,j+1}   & + &  s(a_i,b_j)   \\\\"   +
-        "D'_{i+1,j}     & + &  \\gamma      \\\\"   +
-        "D'_{i,j+1}     & + &  \\gamma"             +
+        "\\begin{cases}" +
+        "D'_{i+1,j+1}   & + &  s(a_i,b_j)   \\\\" +
+        "D'_{i+1,j}     & + &  \\gamma      \\\\" +
+        "D'_{i,j+1}     & + &  \\gamma" +
         "\\end{cases}",
 
         HIRSCHBERG_FORWARD:
-        "\\begin{cases}"                            +
-        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
-        "D_{i-1,j}      & + & \\gamma       \\\\"   +
-        "D_{i,j-1} 		& + & \\gamma"              +
+        "\\begin{cases}" +
+        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\" +
+        "D_{i-1,j}      & + & \\gamma       \\\\" +
+        "D_{i,j-1} 		& + & \\gamma" +
         "\\end{cases}",
 
         HIRSCHBERG_INITIALIZATION:
-        "D'_{n,m} = 0, \\quad D'_{n,j}= (m-j)\\gamma, \\quad D'_{i,m}= (n-i)\\gamma",
+            "D'_{n,m} = 0, \\quad D'_{n,j}= (m-j)\\gamma, \\quad D'_{i,m}= (n-i)\\gamma",
 
         NEEDLEMAN_WUNSCH:
-        "\\begin{cases}"                            +
-        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
-        "D_{i-1,j}      & + & s(a_i,-)      \\\\"   +
-        "D_{i,j-1} 		& + & s(-,b_j)"             +
+        "\\begin{cases}" +
+        "D_{i-1,j-1}    & + & s(a_i,b_j)    \\\\" +
+        "D_{i-1,j}      & + & s(a_i,-)      \\\\" +
+        "D_{i,j-1} 		& + & s(-,b_j)" +
         "\\end{cases}",
 
         SMITH_WATERMAN:
-        "\\begin{cases}"                            +
-        "S_{i-1,j-1}    & + & s(a_i,b_j)    \\\\"   +
-        "S_{i-1,j}      & + & s(a_i,-)      \\\\"   +
-        "S_{i,j-1} 		& + & s(-,b_j)      \\\\"   +
-        "0"                                         +
+        "\\begin{cases}" +
+        "S_{i-1,j-1}    & + & s(a_i,b_j)    \\\\" +
+        "S_{i-1,j}      & + & s(a_i,-)      \\\\" +
+        "S_{i,j-1} 		& + & s(-,b_j)      \\\\" +
+        "0" +
         "\\end{cases}",
 
-      SMITH_WATERMAN_MODIFIED:
-        "\\begin{cases}"                            +
-        "S_{i-1,j-1}    & + & s^r(a_i,b_j)    \\\\"	+
-        "S_{i-1,j}      & + & s^r(a_i,-)      \\\\"	+
-        "S_{i,j-1} 		& + & s^r(-,b_j)      \\\\"	+
-        "0"                                         +
+        SMITH_WATERMAN_MODIFIED:
+        "\\begin{cases}" +
+        "S_{i-1,j-1}    & + & s^r(a_i,b_j)    \\\\" +
+        "S_{i-1,j}      & + & s^r(a_i,-)      \\\\" +
+        "S_{i,j-1} 		& + & s^r(-,b_j)      \\\\" +
+        "0" +
         "\\end{cases}",
+
         WATERMAN_SMITH_BEYER_MIN:
-        "\\begin{cases}"                                                                                                +
-        "\\displaystyle     \\min_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\"           +
-        "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]"      +
-        "\\displaystyle     \\min_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}"                  +
+        "\\begin{cases}" +
+        "\\displaystyle     \\min_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\" +
+        "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]" +
+        "\\displaystyle     \\min_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}" +
         "\\end{cases}",
 
         WATERMAN_SMITH_BEYER_MAX:
-        "\\begin{cases}"                                                                                                +
-        "\\displaystyle     \\max_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\"           +
-        "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]"      +
-        "\\displaystyle     \\max_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}"                  +
+        "\\begin{cases}" +
+        "\\displaystyle     \\max_{1 \\leq k \\leq j} \\{   D_{i,j-k}   &   +   &   g(k)          \\}   \\\\" +
+        "                                                   D_{i-1,j-1} &   +   &   s(a_i,b_j)          \\\\[5pt]" +
+        "\\displaystyle     \\max_{1 \\leq k \\leq i} \\{   D_{i-k,j}   &   +   &   g(k)          \\}" +
         "\\end{cases}"
     },
 
     SUB_FORMULAS: {
         ARSLAN_EGECIOGLE_PEVZNER_SCORING:
-        "s^r(a_i,b_j) = "                                                    +
-        "\\begin{cases}"                                                    +
-        "s(a_i,b_j) - 2 \\lambda^{r-1}    &  a_i, b_j \\in \\Sigma     \\\\"      +
-        "s(a_i,b_j) - \\lambda^{r-1}      &  a_i =\\_ \\vee b_j = \\_ "           +
+        "s^r(a_i,b_j) = " +
+        "\\begin{cases}" +
+        "s(a_i,b_j) - 2 \\lambda^{r-1}    &  a_i, b_j \\in \\Sigma     \\\\" +
+        "s(a_i,b_j) - \\lambda^{r-1}      &  a_i =\\_ \\vee b_j = \\_ " +
         "\\end{cases}",
 
         GOTOH_GAP_FUNCTION: "g(k) = \\alpha + \\beta \\cdot k"
@@ -343,6 +372,7 @@ var MOVE = {
 var MULTI_SYMBOLS = {
     BRACKET_LEFT: /\(/g,
     BRACKET_RIGHT: /\)/g,
+    COMMA: /,/g,
     DELIMITER: /-/g,
     GAP: /_/g,
     G_LITTLE_SPECIAL: /ğ/g,
@@ -363,6 +393,10 @@ var MULTI_SYMBOLS = {
 var PATHS = {
     ALIGNMENT_INTERFACE: "js/interfaces/alignment_interface.js",
     INPUT_PROCESSOR: "js/post_processing/input_processor.js",
+    INTERFACE: "js/interfaces/interface.js",
+    LINEAR_ALIGNMENT_INTERFACE: "js/interfaces/linear_alignment_interface.js", /* only if needed, else can be commented out */
+    MULTI_SEQUENCE_INTERFACE: "js/interfaces/multi_sequence_interface.js", /* only if needed, else can be commented out */
+    SUBADDITIVE_ALIGNMENT_INTERFACE: "js/interfaces/subadditive_alignment_interface.js", /* only if needed, else can be commented out */
     VISUALIZER: "js/post_processing/visualizer.js",
 
     LIBS: {
@@ -402,34 +436,6 @@ var SUBADDITIVE_FUNCTIONS = {
 };
 
 /**
- * Stores non-LaTeX symbols used in the program.
- */
-var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
-    ALIGN: "~",
-    AND: "&",
-    BRACKET_LEFT: "(",
-    BRACKET_RIGHT: ")",
-    COLON: ":",
-    COMMA: ",",
-    DUMMY: "/",  // have to be a non-letter
-    EMPTY: "",
-    EQUAL: "=",
-    GAP: "_",  // Hint: Do not change without a good reason! Can break the interface code!
-    G_LITTLE: "g",
-    INFINITY: "∞",
-    MINUS: "-",  // Hint: Do not change without a good reason! Can break the interface code! Regular expressions have to be changed.
-    NEGATIVE_INFINITY: "-∞",
-    NEW_LINE: "\n",
-    NONE: "#",  // Hint: Do not change without a good reason! Can break the interface code!
-    PLUS: "+",
-    SEMICOLON: ";",
-    SEPARATOR: "_",
-    SPACE: " ",
-    STAR: "*",
-    VERTICAL_BAR: "|"
-};
-
-/**
  * Stores SVG-parameters of the SVG-overlay above the page.
  */
 var SVG = {
@@ -439,7 +445,7 @@ var SVG = {
     STROKE_DASHARRAY: "3,6",
     TRACEBACK_LONG_ARROW_COLOR: "black",
 
-    MARKER : {
+    MARKER: {
         ID_TRACEBACK: "triangle_traceback",
         ID_FLOW: "triangle_flow",
         ORIENT: "auto",
@@ -455,9 +461,38 @@ var SVG = {
         }
     },
 
-    TRIANGLE : {
+    TRIANGLE: {
         D: "M 0 0 L 0 8 L 8 4 z"  // M: move to, L: line to
     }
+};
+
+/**
+ * Stores non-LaTeX symbols used in the program.
+ */
+var SYMBOLS = {  // contains all non-LaTeX symbols used in the project
+    ALIGN: "~",
+    AND: "&",
+    BRACKET_LEFT: "(",
+    BRACKET_RIGHT: ")",
+    COLON: ":",
+    COMMA: ",",
+    DUMMY: "/",  // have to be a non-letter
+    EMPTY: "",
+    EQUAL: "=",
+    GAP: "_",  // Hint: Do not change without a good reason! Can break the interface code!
+    G_LITTLE: "g",
+    HYPHEN: "-",  // Hint: Do not change without a good reason! Can break the loader!
+    INFINITY: "∞",
+    MINUS: "-",  // Hint: Do not change without a good reason! Can break the interface code! Regular expressions have to be changed.
+    NEGATIVE_INFINITY: "-∞",
+    NEW_LINE: "\n",
+    NONE: "#",  // Hint: Do not change without a good reason! Can break the interface code!
+    PLUS: "+",
+    SEMICOLON: ";",
+    SEPARATOR: "_",
+    SPACE: " ",
+    STAR: "*",
+    VERTICAL_BAR: "|"
 };
 
 /**
@@ -473,15 +508,15 @@ var TOGGLE_LINK_TEXT = {
     SHOW: "show intermediate steps"
 };
 
-// defaults (are based on constants and have to be below)
+/*---- DEFAULTS ----*/
 /**
  * Stores the default parameters for alignment algorithms.
  */
 var ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     CALCULATION_HIRSCHBERG: "distance",
-    SEQUENCE_1: "AATCG",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "AACG",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "AATCG",  // Hint: UPPERCASE letters!
+    SEQUENCE_2: "AACG",  // Hint: UPPERCASE letters!
 
     FUNCTION: {
         GAP: -2,
@@ -494,25 +529,80 @@ var ALIGNMENT_DEFAULTS = {
  * Stores the default parameters for clustering algorithms.
  */
 var HIERARCHICAL_CLUSTERING_DEFAULTS = {
-    APPROACHES: [CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING, CLUSTERING_ALGORITHMS.UPGMA, CLUSTERING_ALGORITHMS.WPGMA],
-    CSV_TABLE:  /* input from lecture Bioinformatics I */
-    " 0 ;  6 ; 10 ; 10 ; 10" + "\n" +
-    "   ;  0 ; 10 ; 10 ; 10" + "\n" +
-    "   ;    ;  0 ;  2 ;  6" + "\n" +
-    "   ;    ;    ;  0 ;  6" + "\n" +
-    "   ;    ;    ;    ;  0" ,
-    FORMULAS: [LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_1, LATEX.FORMULAS.UPGMA_DELTA_1, LATEX.FORMULAS.WPGMA_DELTA_1],
-    SUB_FORMULAS: [LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_2, LATEX.FORMULAS.UPGMA_DELTA_2, LATEX.FORMULAS.WPGMA_DELTA_2],
+    APPROACHES: [
+        CLUSTERING_ALGORITHMS.COMPLETE_LINKAGE,
+        CLUSTERING_ALGORITHMS.NEIGHBOUR_JOINING,
+        CLUSTERING_ALGORITHMS.SINGLE_LINKAGE,
+        CLUSTERING_ALGORITHMS.UPGMA,
+        CLUSTERING_ALGORITHMS.WPGMA
+    ],
+    CSV_TABLE: /* input from https://en.wikipedia.org/wiki/Neighbor_joining */
+    " 0 ;  5 ;  9 ;  9 ;  8" + "\n" +
+    "   ;  0 ; 10 ; 10 ;  9" + "\n" +
+    "   ;    ;  0 ;  8 ;  7" + "\n" +
+    "   ;    ;    ;  0 ;  3" + "\n" +
+    "   ;    ;    ;    ;  0",
+    FORMULAS: [
+        LATEX.FORMULAS.COMPLETE_LINKAGE_DELTA_1,
+        LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_1,
+        LATEX.FORMULAS.SINGLE_LINKAGE_DELTA_1,
+        LATEX.FORMULAS.UPGMA_DELTA_1,
+        LATEX.FORMULAS.WPGMA_DELTA_1
+    ],
+
+    SUB_FORMULAS: [
+        LATEX.FORMULAS.COMPLETE_LINKAGE_DELTA_2,
+        LATEX.FORMULAS.NEIGHBOUR_JOINING_DELTA_2,
+        LATEX.FORMULAS.SINGLE_LINKAGE_DELTA_2,
+        LATEX.FORMULAS.UPGMA_DELTA_2,
+        LATEX.FORMULAS.WPGMA_DELTA_2],
 
     STANDARD_APPROACH: [CLUSTERING_ALGORITHMS.UPGMA]
 };
 
-var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
+var ITERATIVE_SEQUENCE_DEFAULTS = {
+    /* sequences from lecture */
+    APPROACHES: [
+        ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR,
+        ITERATIVE_REFINEMENT_STRATEGIES.ONE_VS_ALL,
+        ITERATIVE_REFINEMENT_STRATEGIES.PAIRWISE_BEST_PAIR
+    ],
+
+    ORDERS: [
+        ITERATIVE_REFINEMENT_ORDERS.INPUT_ORDER,
+        ITERATIVE_REFINEMENT_ORDERS.LEFT_FIRST,
+        ITERATIVE_REFINEMENT_ORDERS.RIGHT_FIRST
+    ],
+
+    SEQUENCES: [/* input from T-Coffee paper does not work */
+        "ACGT",
+        "AT",
+        "GCT",
+        "GC"],
+    SEQUENCES_COPY: [
+        "ACGT",
+        "AT",
+        "GCT",
+        "GC"], /* some bugfix for Knockout problem */
+
+    STANDARD_APPROACH: [ITERATIVE_REFINEMENT_STRATEGIES.MIN_DISTANCE_PAIR],
+    STANDARD_ORDER: [ITERATIVE_REFINEMENT_ORDERS.LEFT_FIRST],
+
+    FUNCTION: {
+        BASE_COSTS: -1,
+        ENLARGEMENT: -3,
+        MATCH: 1,
+        MISMATCH: 0
+    }
+};
+
+var MULTI_SEQUENCE_DEFAULTS = {
+    /* example from paper */
     CALCULATION: "similarity",
     GLOBAL_ALIGNMENTS_PER_SEQUENCE: 1,
     LOCAL_ALIGNMENTS_PER_SEQUENCE: 2,
 
-    SEQUENCES: [ /* input from T-Coffee paper */
+    SEQUENCES: [/* input from T-Coffee paper */
         "GARFIELD-THE-LAST-FAT-CAT",
         "GARFIELD-THE-FAST-CAT",
         "GARFIELD-THE-VERY-FAST-CAT",
@@ -521,7 +611,7 @@ var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
         "GARFIELD-THE-LAST-FAT-CAT",
         "GARFIELD-THE-FAST-CAT",
         "GARFIELD-THE-VERY-FAST-CAT",
-        "THE-FAT-CAT"],  /* some bugfix for Knockout problem */
+        "THE-FAT-CAT"], /* some bugfix for Knockout problem */
 
     USE_LOCAL_LIBRARY: false,
 
@@ -546,8 +636,8 @@ var MULTI_SEQUENCE_DEFAULTS = {  /* example from paper */
 var NORMALIZED_ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     LENGTH: 10,
-    SEQUENCE_1: "CTTGACCATU",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "GCATTUGCCUU",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "CTTGACCATU",  // Hint: UPPERCASE letters!
+    SEQUENCE_2: "GCATTUGCCUU",  // Hint: UPPERCASE letters!
 
     FUNCTION: {
         GAP: -2,
@@ -557,13 +647,25 @@ var NORMALIZED_ALIGNMENT_DEFAULTS = {
 };
 
 /**
+ * MathJax and other plugins can disrupt the rendering of the overlay and in these cases the overlay has to be redrawn.
+ */
+var REACTION_TIME_REDRAWING = {
+    FIRST: 1000,
+    SECOND: 4000,  // same as above, but for slow computers and tablets
+    LONG_ARROWS: {
+        FIRST: 500,
+        SECOND: 4000  // same as above, but for slow computers and tablets
+    }
+};
+
+/**
  * Stores the default parameters for subadditive alignment algorithms.
  */
 var SUBADDITIVE_ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     GAP_FUNCTION: "affine",
-    SEQUENCE_1: "CG",  // hint: UPPERCASE letters!
-    SEQUENCE_2: "CCGA",  // hint: UPPERCASE letters!
+    SEQUENCE_1: "CG",  // Hint: UPPERCASE letters!
+    SEQUENCE_2: "CCGA",  // Hint: UPPERCASE letters!
 
     FUNCTION: {
         BASE_COSTS: -3,
@@ -573,18 +675,18 @@ var SUBADDITIVE_ALIGNMENT_DEFAULTS = {
     }
 };
 
-// lists (used for check ups and more)
+/*---- LISTS ----*/
 var CLUSTER_NAMES =
     ["a", "b", "c", "d", "e", "f", "g", "h",
         "i", "j", "k", "l", "m", "n", "o", "p",
         "q", "r", "s", "t", "u", "v", "w", "x",
-        "y", "z"];   // Hint: there have to be at least one element in the list
+        "y", "z"];   // Hint: There have to be at least one element in the list!
 
 var EMPTY_ALIGNMENT = [SYMBOLS.EMPTY, SYMBOLS.EMPTY, SYMBOLS.EMPTY];
 
 var GLOBAL_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.HIRSCHBERG, ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.WATERMAN_SMITH_BEYER];
 var LOCAL_ALGORITHMS = [ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.SMITH_WATERMAN];
-var MULTI_SEQUENCE_ALGORITHMS = [ALGORITHMS.FENG_DOOLITTLE, ALGORITHMS.NOTREDAME_HIGGINS_HERINGA];
+var MULTI_SEQUENCE_ALGORITHMS = [ALGORITHMS.FENG_DOOLITTLE, ALGORITHMS.ITERATIVE_REFINMENT, ALGORITHMS.NOTREDAME_HIGGINS_HERINGA];
 
 /**
  * Algorithms which use exactly three tables for their computations.
@@ -599,10 +701,22 @@ var MULTI_TABLE_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL];
  * when the browser window is resized
  * or if a table slider is used.
  */
-var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.WATERMAN_SMITH_BEYER, ALGORITHMS.HIRSCHBERG];
+var SVG_ARROW_ALGORITHMS = [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL, ALGORITHMS.HIRSCHBERG, ALGORITHMS.WATERMAN_SMITH_BEYER];
+
+/**
+ * Algorithms for which an initial table highlighting should be activated.
+ * It is used to automatically activate initial highlighting
+ * of for example traceback paths.
+ * Hint: HIRSCHBERG and AEP are not in the list,
+ * because they work with multiple tables without any "between-table" dependencies.
+ */
+var TABLE_INITIAL_HIGHLIGHT_ALGORITHMS =
+    [ALGORITHMS.GOTOH, ALGORITHMS.GOTOH_LOCAL,
+        ALGORITHMS.NEEDLEMAN_WUNSCH, ALGORITHMS.SMITH_WATERMAN, ALGORITHMS.WATERMAN_SMITH_BEYER];
 
 /**
  * Algorithms which displaying a phylogenetic tree.
  * It is used to activate initial tree drawing (redrawing have to be done manually, to save resources).
  */
-var TREE_ALGORITHMS = [ALGORITHMS.AGGLOMERATIVE_CLUSTERING, ALGORITHMS.FENG_DOOLITTLE, ALGORITHMS.NOTREDAME_HIGGINS_HERINGA];
+var TREE_ALGORITHMS = [ALGORITHMS.AGGLOMERATIVE_CLUSTERING, ALGORITHMS.FENG_DOOLITTLE,
+    ALGORITHMS.ITERATIVE_REFINMENT, ALGORITHMS.NOTREDAME_HIGGINS_HERINGA];

@@ -31,7 +31,7 @@ Author: Alexander Mattheis
     /**
      * Returns a Newick-Format representation of a phylogenetic tree
      * by a (depth-first-search) post order traversal of the tree.
-     * @param tree - The phylogenetic tree from which you want get the representation.
+     * @param tree {Object} - The phylogenetic tree from which you want get the representation.
      * @return {string} - The Newick string of the given tree.
      */
     function getEncoding(tree) {
@@ -41,7 +41,7 @@ Author: Alexander Mattheis
         // hint: this is working, because value from last cluster is always 0
         // example: ..[CLUSTER_NAME]:0) -to-> ..[CLUSTER_NAME]
         newickEncoderInstance.newickString
-            = newickEncoderInstance.newickString.slice(0, newickEncoderInstance.newickString.length-3) + SYMBOLS.SEMICOLON;
+            = newickEncoderInstance.newickString.slice(0, newickEncoderInstance.newickString.length - 3) + SYMBOLS.SEMICOLON;
 
         return newickEncoderInstance.newickString;
     }
@@ -62,9 +62,10 @@ Author: Alexander Mattheis
         postOrder(node.leftChild, true);
         postOrder(node.rightChild, false);
 
-        var isLeaf = node.leftChild === undefined && node.rightChild === undefined;
+        var isLeaf = node.rightChild === undefined && node.leftChild === undefined;
         newickEncoderInstance.newickString += isLeaf ? node.name : SYMBOLS.EMPTY;
-        newickEncoderInstance.newickString +=  SYMBOLS.COLON + Math.round(node.value * 10000) / 10000;  // rounded to four digits after decimal point
+        // Hint: Do not change the rounding or the displayed tree could get wrong, because of floating-point errors!
+        newickEncoderInstance.newickString += SYMBOLS.COLON + Math.round(node.value * 10000) / 10000;  // rounded to four digits after decimal point
 
         if (isLeftChild) // whenever you wrote down a node name, you have to set a comma if it is a left child and else a right bracket
             newickEncoderInstance.newickString += SYMBOLS.COMMA;

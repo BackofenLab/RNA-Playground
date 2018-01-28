@@ -16,8 +16,8 @@ var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
     /**
      * Loads the HTML-page of the algorithm into current document
      * by removing non-characters and replacing symbols in the algorithm name.
-     * @param algorithm - The algorithm name without extension you want to load.
-     * @param view - The view in which you want load the page.
+     * @param algorithm {string} - The algorithm name without extension you want to load.
+     * @param view {Element} - The view in which you want load the page.
      */
     function updateDocumentView(algorithm, view) {
         reinitialize();
@@ -27,7 +27,7 @@ var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
             .replace(MULTI_SYMBOLS.BRACKET_LEFT, SYMBOLS.EMPTY)
             .replace(MULTI_SYMBOLS.BRACKET_RIGHT, SYMBOLS.EMPTY)
             .replace(MULTI_SYMBOLS.G_LITTLE_SPECIAL, SYMBOLS.G_LITTLE)
-            .replace(MULTI_SYMBOLS.SPACE, SYMBOLS.EMPTY);
+            .replace(MULTI_SYMBOLS.SPACE, SYMBOLS.HYPHEN);
 
         var javascriptName = algorithm.toLowerCase()
             .replace(MULTI_SYMBOLS.BRACKET_LEFT, SYMBOLS.EMPTY)
@@ -52,7 +52,7 @@ var loaded = ALGORITHMS.NONE;  // tells globally which algorithm was loaded
 
         // design/controls logic
         /*
-        This two reinitialize are very important!
+        This two imports are very important!
         Without an import the classes are not reinitialized correctly for the next algorithm!
          */
         $.getScript(PATHS.INPUT_PROCESSOR);

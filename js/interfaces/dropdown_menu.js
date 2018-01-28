@@ -55,7 +55,7 @@ $(document).ready(function () {
     /**
      * Shows a hidden menu or closes an opened menu.
      * It updates the menu button during this process.
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function showHideMenu(e) {
         var menu = e.data.menu;
@@ -75,7 +75,7 @@ $(document).ready(function () {
      * Loads an algorithm with its HTML-page
      * and updates the display showing current selected algorithm.
      * Then it closes the algorithm menu again.
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function loadAlgorithm(e) {
         var algorithm = $(this).text();

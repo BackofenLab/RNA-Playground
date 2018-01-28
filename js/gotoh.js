@@ -145,7 +145,7 @@ $(document).ready(function () {
         var currentVerticalPosition = 1;
 
         for (var i = 1; i < inputData.matrixHeight; i++) {
-            if (inputData.sequenceA[i-1] === SYMBOLS.NONE)  // extension for Feng-Doolittle
+            if (inputData.sequenceA[i - 1] === SYMBOLS.NONE)  // extension for Feng-Doolittle
                 outputData.matrix[i][0] = outputData.matrix[i - 1][0];
             else {
                 outputData.matrix[i][0] = inputData.baseCosts + currentVerticalPosition * inputData.enlargement;
@@ -156,7 +156,7 @@ $(document).ready(function () {
         var currentHorizontalPosition = 1;
 
         for (var j = 1; j < inputData.matrixWidth; j++) {
-            if (inputData.sequenceB[j-1] === SYMBOLS.NONE)  // extension for Feng-Doolittle
+            if (inputData.sequenceB[j - 1] === SYMBOLS.NONE)  // extension for Feng-Doolittle
                 outputData.matrix[0][j] = outputData.matrix[0][j - 1];
             else {
                 outputData.matrix[0][j] = inputData.baseCosts + currentHorizontalPosition * inputData.enlargement;

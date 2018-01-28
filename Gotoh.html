@@ -2,122 +2,126 @@
 University of Freiburg WS 2017/2018
 Chair for Bioinformatics
 Supervisor: Martin Raden
-Author: Alexander Mattheis
+Authors: Martin Raden, Alexander Mattheis
 -->
 
-<div id="algorithm_description">
-    <div class="description">
-        The algorithm by <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Osamu Gotoh (1982)</a>
-        computes the optimal global alignment of two sequences when using an affine gap scoring.
-        Here, the scoring of a long consecutive gap (insertion/deletion) is favored over
-        a collection of small gaps with the same combined length.
-        This incorporates the assumption that a single large insertion/deletion event is 
-        biologically more likely to happen compared to many small insertions/deletions.
-        While sophisticated gap scoring models can be applied in the generic algorithm by
-        <a href="https://doi.org/10.1016/0001-8708(76)90202-4">Waterman-Smith-Beyer (1976)</a>,
-        affine gap scoring used in Gotoh's algorithm enables a reasonable gap model with 
-        reduced runtime.
-        <br />
-        <br />
-        Under the assumption that both input sequences $a$ and $b$ stem from the same origin,
-        a global alignment tries to identify matching parts and the 
-        changes needed to transfer one sequence into the other.
-        The changes are scored and an optimal set of changes is identified, which defines an alignment.
-        Gotoh's dynamic programming approach tabularizes optimal subsolutions in matrices $D,P$ and $Q$.
-        An entry $D_{i,j}$ represents the best score for the alignment of the 
-        prefixes $a_{1..i}$ with $b_{1..j}$, while an entry $P_{i,j}/Q_{i,j}$ provides the best score
-        under the additional constraint that the alignment ends in a gap within sequence $b/a$, respectively.
-        The according recursions and the used affine gap function $g$ are shown below. 
-        <br />
-        <br />
-        For the given input, the according tables $D,P$ and $Q$ are provided along with a list 
-        of according optimal alignments. 
-        On table cell selection, optimal traceback options are shown.
-        On alignment selection, an according traceback path is visualized in the table.
-    </div>
-
-    <div class="picture">
-        <img src="Gotoh-120x90.png" />
-    </div>
-</div>
-
-<div id="algorithm_input">
-    <div class="row">
-		<div class="colW100"><label>Sequence $a$:</label></div>
-		<div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'"
-                                    title="Allowed are A-Z and '-'." type="text"></div>
-	</div>
-
-	<div class="row">
-		<div class="colW100"><label>Sequence $b$:</label></div>
-		<div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'"
-                                    title="Allowed are A-Z and '-'." type="text"></div>
-	</div>
-
-    <div class="row">
-		<div class="colW100"><label>Optimization of:</label></div>
-		<div class="colW400">
-            <span class="group">
-                Distance <input class="optimization_type" data-bind="checked: input.calculation" id="distance"
-                                name="calculation" type="radio" value="distance">
-                Similarity <input class="optimization_type" data-bind="checked: input.calculation" id="similarity"
-                                  name="calculation" type="radio" value="similarity">
-            </span>
+<div class="gotoh_static_size"> <!-- to avoid that MathJax disrupts the output -->
+    <div id="algorithm_description">
+        <div class="description">
+            The algorithm by <a href="https://doi.org/10.1016/0022-2836(82)90398-9">Osamu Gotoh (1982)</a>
+            computes the optimal global alignment of two sequences when using an affine gap scoring.
+            Here, the scoring of a long consecutive gap (insertion/deletion) is favored over
+            a collection of small gaps with the same combined length.
+            This incorporates the assumption that a single large insertion/deletion event is
+            biologically more likely to happen compared to many small insertions/deletions.
+            While sophisticated gap scoring models can be applied in the generic algorithm by
+            <a href="https://doi.org/10.1016/0001-8708(76)90202-4">Waterman-Smith-Beyer (1976)</a>,
+            affine gap scoring used in Gotoh's algorithm enables a reasonable gap model with
+            reduced runtime.
+            <br />
+            <br />
+            Under the assumption that both input sequences $a$ and $b$ stem from the same origin,
+            a global alignment tries to identify matching parts and the
+            changes needed to transfer one sequence into the other.
+            The changes are scored and an optimal set of changes is identified, which defines an alignment.
+            Gotoh's dynamic programming approach tabularizes optimal subsolutions in matrices $D,P$ and $Q$.
+            An entry $D_{i,j}$ represents the best score for the alignment of the
+            prefixes $a_{1..i}$ with $b_{1..j}$, while an entry $P_{i,j}/Q_{i,j}$ provides the best score
+            under the additional constraint that the alignment ends in a gap within sequence $b/a$, respectively.
+            The according recursions and the used affine gap function $g$ are shown below.
+            <br />
+            <br />
+            For the given input, the according tables $D,P$ and $Q$ are provided along with a list
+            of according optimal alignments.
+            On table cell selection, optimal traceback options are shown.
+            On alignment selection, an according traceback path is visualized in the table.
         </div>
-	</div>
 
-    <div class="row">
-		<div class="colW100"><label>Scoring in $s$:</label></div>
-
-		<div class="colW400">
-            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
-                Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
-                Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
-            </span>
-		</div>
+        <div class="picture">
+            <img src="Gotoh-120x90.png" />
+        </div>
     </div>
 
-    <div class="row">
-		<div class="colW100"><label>Scoring in $g$:</label></div>
+    <h1>Input:</h1>
+    <div id="algorithm_input">
+        <div class="row">
+            <div class="colW100"><label>Sequence $a$:</label></div>
+            <div class="colW400"><input class="sequence" data-bind="value: input.sequence1" id="sequence_1" placeholder="EXAMPLE 'ATC'"
+                                        title="Allowed are A-Z and '-'." type="text"></div>
+        </div>
 
-		<div class="colW400">
-            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
-                Gap opening $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
-                Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
-            </span>
+        <div class="row">
+            <div class="colW100"><label>Sequence $b$:</label></div>
+            <div class="colW400"><input class="sequence" data-bind="value: input.sequence2" id="sequence_2" placeholder="EXAMPLE 'AGTC'"
+                                        title="Allowed are A-Z and '-'." type="text"></div>
+        </div>
 
-            <div class="group_hint">
-				<b>Hint:</b> <br />
-				For similarity maximization, <br /> match scores should be positive and all other scores lower. <br />
-                For distance minimization the reverse applies.
-			</div>
-		</div>
-    </div>
+        <div class="row">
+            <div class="colW100"><label>Optimization of:</label></div>
+            <div class="colW400">
+                <span class="group">
+                    Distance <input class="optimization_type" data-bind="checked: input.calculation" id="distance"
+                                    name="calculation" type="radio" value="distance">
+                    Similarity <input class="optimization_type" data-bind="checked: input.calculation" id="similarity"
+                                      name="calculation" type="radio" value="similarity">
+                </span>
+            </div>
+        </div>
 
-    <div class="row">
-		<div class="colW100">
-            <label>
+        <div class="row">
+            <div class="colW100"><label>Scoring in $s$:</label></div>
+
+            <div class="colW400">
+                <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                    Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
+                    Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
+                </span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="colW100"><label>Scoring in $g$:</label></div>
+
+            <div class="colW400">
+                <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                    Gap opening $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
+                    Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
+                </span>
+
+                <div class="group_hint">
+                    <b>Hint:</b> <br />
+                    For similarity maximization, <br /> match scores should be positive and all other scores lower. <br />
+                    For distance minimization the reverse applies.
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="colW100">
+                <label>
+                    <br />
+                    Recursions:
+                </label>
+            </div>
+
+            <div class="colW600">
+                <span data-bind="text: $root.input.formulaP"></span>
                 <br />
-                Recursions:
-            </label>
+                <br />
+                <span data-bind="text: $root.input.formulaQ"></span>
+                <br />
+                <br />
+                <span data-bind="text: $root.input.formula"></span>
+                <br />
+                <br />
+                <br />
+                <span data-bind="text: $root.input.gapFunction"></span>
+            </div>
         </div>
-
-		<div class="colW600">
-            <span data-bind="text: $root.input.formulaP"></span>
-            <br />
-            <br />
-            <span data-bind="text: $root.input.formulaQ"></span>
-            <br />
-            <br />
-            <span data-bind="text: $root.input.formula"></span>
-            <br />
-            <br />
-            <br />
-            <span data-bind="text: $root.input.gapFunction"></span>
-		</div>
-	</div>
+    </div>
 </div>
 
+<h1>Output:</h1>
 <div id="algorithm_output">
     <div class="output">
         <div class="main_output">
