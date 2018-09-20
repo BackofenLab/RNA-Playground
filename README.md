@@ -19,10 +19,18 @@ All approaches are [available in the Freiburg RNA Teaching webserver](http://rna
   - maximal [hybrid-only](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=hybrid-only) intermolecular base pair interaction prediction
   - [accessibility](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=accessibility)-incorporating interaction prediction
 - **General sequence alignment approaches**
-  - [Needleman-Wunsch](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch) (global, linear gap costs)
-  - [Gotoh](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh) (global, affine gap costs)
-  - [Waterman-Smith-Beyer](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Waterman-Smith-Beyer) (global, arbitrary gap costs)
-  - [Smith-Waterman](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Smith-Waterman) (local, linear gap costs)
+  - **pairwise alignment**
+    - [Needleman-Wunsch](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch) (global, linear gap costs, quadratic space)
+    - [Hirschberg](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Hirschberg) (global, linear gap costs, linear space)
+    - [Gotoh](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh) (global, affine gap costs)
+    - [Waterman-Smith-Beyer](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Waterman-Smith-Beyer) (global, arbitrary gap costs)
+    - [Smith-Waterman](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Smith-Waterman) (local, linear gap costs)
+    - [Arslan-Egecioglu-Pevzner](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Arslan-Egecioglu-Pevzner) (local, linear gap costs, normalized score)
+    - [Gotoh (Local)](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh%20(Local)) (local, affine gap costs)
+  - **multiple alignment**
+    - [Feng-Doolittle (Gotoh-based)](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle) (progressive, affine gap costs)
+    - [Iterative Refinement (Feng-Doolittle-based)](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Iterative%20Refinement) (progressive, affine gap costs, iterative refinement)
+    - [Notredame-Higgins-Heringa (t-coffee)](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Notredame-Higgins-Heringa) (progressive, data-derived scoring)
   
 Each algorithm comes with a short introduction with links to related
 literature, the according dynamic programming recursions 
