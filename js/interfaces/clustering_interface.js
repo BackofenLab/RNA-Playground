@@ -9,17 +9,16 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.clusteringInterface", ClusteringInterface, startClustering);
+    namespace("interfaces.clusteringInterface", ClusteringInterface);
 
     // instances
     var clusteringInterfaceInstance;
     var interfaceInstance;
-    var parserInstance;
 
     /**
-     * Is used to work with the input and output (the interface) of an alignment algorithm.
-     * It contains the basic methods and the viewmodel for the output.
-     * This class is used by the various interface scripts as superclass.
+     * Is used to work with the input and output (the interface) of a clustering algorithm.
+     * It contains the basic methods and the viewmodel for the output and input.
+     * This class should be used as a superclass for other clustering interfaces.
      * @constructor
      */
     function ClusteringInterface() {
@@ -28,18 +27,14 @@ Author: Alexander Mattheis
         // inheritance
         interfaceInstance = new interfaces.interface.Interface();
 
-        this.startProcessing = interfaceInstance.startProcessing;
-
         // public methods
-        this.startClustering = startClustering;
+        this.startClusteringInterface = startClusteringInterface;
     }
 
     /**
      * Function managing objects.
      */
-    function startClustering(Algorithm, algorithmName) {
-        interfaceInstance.imports();
-
+    function startClusteringInterface(Algorithm, algorithmName) {
         var inputViewmodel = new InputViewmodel(algorithmName);
         sharedInterfaceOperations(Algorithm, inputViewmodel, processInput, changeOutput);
     }
@@ -56,48 +51,35 @@ Author: Alexander Mattheis
     function InputViewmodel(algorithmName) {
         var viewmodel = this;
 
-        this.availableApproaches = ko.observableArray(AGGLOMERATIVE_CLUSTERING_DEFAULTS.APPROACHES);
-        this.selectedApproach = ko.observableArray(AGGLOMERATIVE_CLUSTERING_DEFAULTS.STANDARD_APPROACH);
+        this.availableApproaches = ko.observableArray(HIERARCHICAL_CLUSTERING_DEFAULTS.APPROACHES);
+        this.selectedApproach = ko.observableArray(HIERARCHICAL_CLUSTERING_DEFAULTS.STANDARD_APPROACH);
 
-        this.csvTable = ko.observable(AGGLOMERATIVE_CLUSTERING_DEFAULTS.CSV_TABLE);
+        this.csvTable = ko.observable(HIERARCHICAL_CLUSTERING_DEFAULTS.CSV_TABLE);
 
         this.errorInput = ko.computed(function () {
-            return checkInput(viewmodel.csvTable());
+            var parser = new formats.csvParser.CsvParser();
+            return parser.checkInput(viewmodel.csvTable());
         });
 
-        this.distanceMatrix = ko.computed(function () {
-           return getDistanceMatrix(viewmodel.errorInput() === SYMBOLS.EMPTY, viewmodel.csvTable());
+        this.selectedFormula = ko.computed(function () {
+            setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+            }, REUPDATE_TIMEOUT_MS);
+
+            var approach = viewmodel.selectedApproach()[0];
+            var position = viewmodel.availableApproaches.indexOf(approach);
+            return HIERARCHICAL_CLUSTERING_DEFAULTS.FORMULAS[position];
         });
 
-        setTimeout(function () {
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub])
-        }, REUPDATE_TIMEOUT_MS);
-    }
+        this.selectedSubformula = ko.computed(function () {
+            setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub])
+            }, REUPDATE_TIMEOUT_MS);
 
-    /**
-     * Checks with the help of a CSV-parser, 
-     * if the input is correct or not and returns the error output.
-     * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
-     * @return {string} - The error output, if it exists.
-     */
-    function checkInput(csvData) {
-        return formats.csvParser.checkInput(csvData);
-    }
-
-    /**
-     * Returns the distance matrix object created by a CSV-parser.
-     * @param isCorrectData {boolean} - If false, it returns an empty object and else the distance matrix object.
-     * @param csvData {string} - The csv string which has to be converted into a cluster algorithm distance matrix.
-     * @return {Object} - The distance matrix.
-     */
-    function getDistanceMatrix(isCorrectData, csvData) {
-        var distanceMatrix = {};
-
-        if (isCorrectData) {
-            // get data from parser
-        }
-
-        return distanceMatrix;
+            var approach = viewmodel.selectedApproach()[0];
+            var position = viewmodel.availableApproaches.indexOf(approach);
+            return HIERARCHICAL_CLUSTERING_DEFAULTS.SUB_FORMULAS[position];
+        });
     }
 
     /**
@@ -126,7 +108,7 @@ Author: Alexander Mattheis
         } else
             inputProcessor.activateInputUpdates();
 
-        //clusteringInterfaceInstance.startProcessing(algorithm, inputViewmodel, visualViewmodel);
+        interfaceInstance.startProcessing(algorithm, inputViewmodel, visualViewmodel);
     }
 
     /**
@@ -137,6 +119,98 @@ Author: Alexander Mattheis
      * @see Hint: The parameter inputProcessor is needed!
      */
     function changeOutput(outputData, inputProcessor, viewmodels) {
+        // tree
+        viewmodels.output.newickString(outputData.newickString);
+        viewmodels.visual.drawTree();
+
+        // distance matrices
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, true);
+
+        viewmodels.output.distanceMatrices(outputData.distanceMatrices);
+
+        var tableNames = createLaTeXDistanceTableNames(outputData);
+        viewmodels.output.matrixDLatex(tableNames[0]);
+        viewmodels.output.matrixDStarLatex(tableNames[1]);
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.distanceMatrices.length)
+                viewmodels.output.distanceMatrices[i] = new Function();
+
+            viewmodels.output.distanceMatrices[i](outputData.distanceMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.distanceMatrices[i].length)
+                    viewmodels.output.distanceMatrices[i][j] = new Function();
+
+                viewmodels.output.distanceMatrices[i][j](outputData.distanceMatrices[i][j]);
+            }
+        }
+
+        viewmodels.output.totalDistancesPerRound(outputData.totalDistancesPerRound);
+
+        // neighbour joining matrices
+        outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true, false);
+
+        viewmodels.output.neighbourJoiningMatrices(outputData.neighbourJoiningMatrices);
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.neighbourJoiningMatrices.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.neighbourJoiningMatrices.length)
+                viewmodels.output.neighbourJoiningMatrices[i] = new Function();
+
+            viewmodels.output.neighbourJoiningMatrices[i](outputData.neighbourJoiningMatrices[i]);
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.neighbourJoiningMatrices[i].length; j++) {
+                // new variables (rows) are not automatically functions...
+                if (j >= viewmodels.output.neighbourJoiningMatrices[i].length)
+                    viewmodels.output.neighbourJoiningMatrices[i][j] = new Function();
+
+                viewmodels.output.neighbourJoiningMatrices[i][j](outputData.neighbourJoiningMatrices[i][j]);
+            }
+        }
+
+        interfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
+
+        viewmodels.output.remainingClusters(outputData.remainingClusters);
+        viewmodels.output.minimums(outputData.minimums);
+    }
+
+    /**
+     * Creates Names for distance tables.
+     * @param outputData {Object} - Contains all output data.
+     * @return {[distanceMatrixNames,neighbourJoiningMatrixNames]}
+     */
+    function createLaTeXDistanceTableNames(outputData) {
+        var numMatrices = outputData.distanceMatrices.length;
+        var distanceMatrixNames = [];
+        var neighbourJoiningMatrixNames = [];
+
+        for (var i = 0; i < numMatrices; i++) {
+            var distanceMatrixName = SYMBOLS.EMPTY;
+            var neighbourJoiningMatrixName = SYMBOLS.EMPTY;
+
+            if (i !== 0) {
+                distanceMatrixName = interfaceInstance
+                    .getLaTeXFormula(LATEX.FORMULA.D_PURE + LATEX.SUPERSCRIPT + LATEX.CURLY_BRACKET_LEFT + i + LATEX.CURLY_BRACKET_RIGHT);
+
+                neighbourJoiningMatrixName = interfaceInstance
+                    .getLaTeXFormula(LATEX.FORMULA.D_STAR + LATEX.SUPERSCRIPT + LATEX.CURLY_BRACKET_LEFT + i + LATEX.CURLY_BRACKET_RIGHT);
+            } else {
+                distanceMatrixName = interfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_PURE);
+                neighbourJoiningMatrixName = interfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_STAR);
+            }
+
+            distanceMatrixNames.push(distanceMatrixName);
+            neighbourJoiningMatrixNames.push(neighbourJoiningMatrixName);
+        }
+
+        return [distanceMatrixNames, neighbourJoiningMatrixNames];
     }
 
     /**
@@ -163,5 +237,51 @@ Author: Alexander Mattheis
      * @see https://en.wikipedia.org/wiki/Model-view-viewmodel
      */
     function OutputViewmodel(algorithmName, outputData) {
+        var viewmodel = this;
+
+        // tree
+        viewmodel.newickString = ko.observable(outputData.newickString);
+
+        // distance matrices
+        var tableNames = createLaTeXDistanceTableNames(outputData);
+        viewmodel.matrixDLatex = ko.observable(tableNames[0]).extend({deferred: true});
+        viewmodel.matrixDStarLatex = ko.observable(tableNames[1]).extend({deferred: true});
+
+        outputData.distanceMatrices = interfaceInstance.getDistanceTables(outputData, false, true);
+
+        viewmodel.distanceMatrices = ko.observableArray(outputData.distanceMatrices).extend({deferred: true});
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.distanceMatrices.length; i++) {
+            viewmodel.distanceMatrices[i] = ko.observableArray(outputData.distanceMatrices[i]).extend({deferred: true});
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.distanceMatrices[i].length; j++) {
+                viewmodel.distanceMatrices[i][j] = ko.observableArray(outputData.distanceMatrices[i][j]).extend({deferred: true});
+            }
+        }
+
+        viewmodel.sumLatex = ko.observable(interfaceInstance.getLaTeXFormula(LATEX.SUM));
+        viewmodel.totalDistancesPerRound = ko.observableArray(outputData.totalDistancesPerRound);
+
+        // neighbour joining matrices
+        outputData.neighbourJoiningMatrices = interfaceInstance.getDistanceTables(outputData, true, false);
+
+        viewmodel.neighbourJoiningMatrices = ko.observableArray(outputData.neighbourJoiningMatrices).extend({deferred: true});
+
+        // iteration over each matrix
+        for (var i = 0; i < outputData.neighbourJoiningMatrices.length; i++) {
+            viewmodel.neighbourJoiningMatrices[i] = ko.observableArray(outputData.neighbourJoiningMatrices[i]).extend({deferred: true});
+
+            // iteration over each row of the matrix
+            for (var j = 0; j < outputData.neighbourJoiningMatrices[i].length; j++) {
+                viewmodel.neighbourJoiningMatrices[i][j] = ko.observableArray(outputData.neighbourJoiningMatrices[i][j]).extend({deferred: true});
+            }
+        }
+
+        interfaceInstance.roundValues(algorithmName, outputData);
+
+        viewmodel.remainingClusters = ko.observable(outputData.remainingClusters).extend({deferred: true});
+        viewmodel.minimums = ko.observable(outputData.minimums).extend({deferred: true});
     }
 }());

@@ -19,8 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("needlemanWunsch", startNeedlemanWunsch, NeedlemanWunsch,
-        initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback, getSuperclass);
+    namespace("needlemanWunsch", startNeedlemanWunsch, NeedlemanWunsch);
 
     // instances
     var alignmentInstance;
@@ -145,7 +144,7 @@ $(document).ready(function () {
         var outputData = alignmentInstance.getOutput();
 
         var lowerRightCorner = new bases.alignment.Vector(inputData.matrixHeight - 1, inputData.matrixWidth - 1);
-        
+
         outputData.moreTracebacks = false;
         outputData.tracebackPaths =
             alignmentInstance.getGlobalTraces([lowerRightCorner], inputData, outputData, -1, alignmentInstance.getNeighboured);

@@ -1,186 +1,184 @@
+<script>
+       function showRecursion() {
+           console.log("val:", $("#formula").val());
+           setTimeout(function () {      //introduces a little delay, so that the thing will close slowly and neatly
+               document.getElementById("recursion").innerHTML =  availableAlgorithms[$("#formula").val()].getRecursionInLatex();
+               rerendermath();
+               $(".animate1").empty();
+           }, 450);
+           rerendermath();
+       };
+   </script>
 
-    <script>
-        function showRecursion() {
-            console.log("val:", $("#formula").val());
-            setTimeout(function () {      //introduces a little delay, so that the thing will close slowly and neatly
-                document.getElementById("recursion").innerHTML =  availableAlgorithms[$("#formula").val()].getRecursionInLatex();
-                rerendermath();
-                $(".animate1").empty();
-            }, 450);
-            rerendermath();
+ <div class="row" id="introduction">
+   <div class="colW600">
+     The algorithm by
+     <a href="http://dx.doi.org/10.1137/0135006">Ruth Nussinov et al. (1978)</a>
+     computes for a given
+     RNA sequence the maximal number of base pairs of any nested structure.
+     To this end, dynamic programming is applied, which also enables the
+     identification of an according maximally base paired structure via traceback.
+     <br />
+     <br />
+     Here, we provide different recursions to fill the dynamic programming
+     table $D$, where an entry $D_{i,j}$ provides the maximal number of
+     base pairs of any nested structure for the subsequence from position $i$ to $j$.
+     The entry $D_{1,n}$ provides the overall maximal number of base pairs
+     for the whole sequence of length $n$. Watson-Crick as well as GU base
+     pairs are considered complementary.
+     <br />
+     Furthermore, beside the identification of an according optimal structure
+     via traceback, we provide an exhaustive enumeration of up to 15 suboptimal structures
+     using the algorithm by
+     <a href="http://dx.doi.org/10.1002/(SICI)1097-0282(199902)49:2%3C145::AID-BIP4%3E3.0.CO;2-G">Stefan Wuchty et al. (1999)</a>.
+     <br />
+     For each structure, the according traceback is visualized. Note, for
+     recursions implementing an
+     ambiguous decomposition different tracebacks might yield the same structure.
+     These will be listed several times, once for each traceback.
+   </div>
+   <div class="colW150">
+     <img alt="nested RNA structure" src="Nussinov-120x90.png" width=120 height=90 >
+   </div>
+ </div>
 
-        };
-    </script>
+   <div id="inputContainer">
 
-	<div class="row" id="introduction">
-		<div class="colW600">
-			The algorithm by 
-			<a href="http://dx.doi.org/10.1137/0135006">Ruth Nussinov et al. (1978)</a>
-			computes for a given 
-			RNA sequence the maximal number of base pairs of any nested structure. 
-			To this end, dynamic programming is applied, which also enables the 
-			identification of an according maximally base paired structure via traceback.
-			<br />
-			<br />
-			Here, we provide different recursions to fill the dynamic programming
-			table $D$, where an entry $D_{i,j}$ provides the maximal number of
-			base pairs of any nested structure for the subsequence from position $i$ to $j$.
-			The entry $D_{1,n}$ provides the overall maximal number of base pairs
-			for the whole sequence of length $n$. Watson-Crick as well as GU base
-			pairs are considered complementary.
-			<br />
-			Furthermore, beside the identification of an according optimal structure
-			via traceback, we provide an exhaustive enumeration of up to 15 suboptimal structures
-			using the algorithm by 
-			<a href="http://dx.doi.org/10.1002/(SICI)1097-0282(199902)49:2%3C145::AID-BIP4%3E3.0.CO;2-G">Stefan Wuchty et al. (1999)</a>.
-			<br />
-			For each structure, the according traceback is visualized. Note, for
-			recursions implementing an 
-			ambiguous decomposition different tracebacks might yield the same structure.
-			These will be listed several times, once for each traceback.
-		</div>
-		<div class="colW150">
-			<img alt="nested RNA structure" src="Nussinov-120x90.png" width=120 height=90 >
-		</div>
-	</div>
+       <div class="row">
+           <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S$:</div>
+           <div class="colW400">
+               <input id="rawSeq" data-bind="value: rawSeq" class="userInput"
+                      placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
+                      style="text-transform:uppercase" />
+           </div>
+       </div>
 
-    <div id="inputContainer">
-    
-        <div class="row">
-            <div class="colW200" style="font-size: 120%; vertical-align: bottom; ">RNA sequence $S$:</div>
-            <div class="colW400">
-                <input id="rawSeq" data-bind="value: rawSeq" class="userInput"
-                       placeholder="Example 'GCACGACG'" onkeydown="validate(event)"
-                       style="text-transform:uppercase" />
-            </div>
-        </div>
+       <div class="row">
+           <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
+           <div class="colW400">
+               <select data-bind="value: loopLength" id="ll" style="width:40px;">
+                   <option value=0>0</option>
+                   <option value=1>1</option>
+                   <option value=2>2</option>
+                   <option value=3>3</option>
+                   <option value=4>4</option>
+                   <option value=5>5</option>
+               </select>
+               <label for="ll" style="margin-left:10px;">i.e. minimal number of enclosed positions</label>
+           </div>
+       </div>
 
-        <div class="row">
-            <div class="colW200" style="font-size: 120%">Minimal loop length $l$:</div>
-            <div class="colW400">
-                <select data-bind="value: loopLength" id="ll" style="width:40px;">
-                    <option value=0>0</option>
-                    <option value=1>1</option>
-                    <option value=2>2</option>
-                    <option value=3>3</option>
-                    <option value=4>4</option>
-                    <option value=5>5</option>
-                </select>
-                <label for="ll" style="margin-left:10px;">i.e. minimal number of enclosed positions</label>
-            </div>
-        </div>
+       <div class="row">
+           <div class="colW200" style="font-size: 120%">Delta #bp to maximum:</div>
+           <div class="colW400">
+               <select id="delta" data-bind="value: input.delta" style="width:40px;">
+                   <option value=0>0</option>
+                   <option value=1>1</option>
+                   <option value=2>2</option>
+                   <option value=3>3</option>
+                   <option value=4>4</option>
+                   <option value=5>5</option>
+               </select>
+               <label for="delta" style="margin-left:10px;">for suboptimal traceback</label>
+           </div>
+       </div>
 
-        <div class="row">
-            <div class="colW200" style="font-size: 120%">Delta #bp to maximum:</div>
-            <div class="colW400">
-                <select id="delta" data-bind="value: input.delta" style="width:40px;">
-                    <option value=0>0</option>
-                    <option value=1>1</option>
-                    <option value=2>2</option>
-                    <option value=3>3</option>
-                    <option value=4>4</option>
-                    <option value=5>5</option>
-                </select>
-                <label for="delta" style="margin-left:10px;">for suboptimal traceback</label>
-            </div>
-        </div>
-        
-        <div class="row">
-            <script type="text/javascript">
-                showRecursion();
-            </script>
-            <div class="colW200" style="font-size: 120%">Recursion to be used:</div>
-            <div class="colW400">
-                <select onchange="showRecursion()" id= "formula" data-bind="value: input.recursion" style="width:150px;">
-                    <option value="nussinovUnique" selected="selected">Nussinov et al. (1978)</option>
-                    <option value="nussinovAmbiguous1">Ambiguous Variant 1</option>
-                    <option value="nussinovAmbiguous2">Ambiguous Variant 2</option>
-                </select>
-                <label for="formula" style="margin-left:10px;">used for matrix calculating</label>
-            </div>
-        </div>
-        
-        <div class="row" id="recursion" style="height: 110px;"></div>
-        <div id="rec_select" style="display: none;">nussinovUnique</div>
+       <div class="row">
+           <script type="text/javascript">
+               showRecursion();
+           </script>
+           <div class="colW200" style="font-size: 120%">Recursion to be used:</div>
+           <div class="colW400">
+               <select onchange="showRecursion()" id= "formula" data-bind="value: input.recursion" style="width:150px;">
+                   <option value="nussinovUnique" selected="selected">Nussinov et al. (1978)</option>
+                   <option value="nussinovAmbiguous1">Ambiguous Variant 1</option>
+                   <option value="nussinovAmbiguous2">Ambiguous Variant 2</option>
+               </select>
+               <label for="formula" style="margin-left:10px;">used for matrix calculating</label>
+           </div>
+       </div>
 
-    </div>
+       <div class="row" id="recursion" style="height: 110px;"></div>
+       <div id="rec_select" style="display: none;">nussinovUnique</div>
 
-    <div class="row" id="output" >
-    
-        <div class="col">
-            <canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
-            <table style="margin:0;">
-                <thead>
-                <tr>
-                    <th class="cell_th">$D$</th>
-                    <th class="cell_th"></th>
-                    <!-- ko foreach: { data: seqList, as: 'base' } -->
-                    <th class="cell_th" data-bind="writeSeq: [base, $index()+1]"></th>
-                    <!-- /ko -->
-                </tr>
-                </thead>
+   </div>
 
-                <tbody id="matrix_body" data-bind="foreach: { data: cells()[0], as: 'cell' }">
-                <tr>
-                    <th class="cell_th" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
-                    <!-- ko foreach: { data: cell, as: 'v' } -->
-                    <td class="cell" data-bind="text: v.i < v.j+2 ? v.value : '', event: { mousedown: $root.clickCell.bind(this) }"></td>
-                    <!-- /ko -->
-                </tr>
+   <div class="row" id="output" >
 
-                </tbody>
-            </table>
-	        <br />
-	        <a href="javascript:generate_tables()">Download Table</a>
-            <table style="display:none;margin:0;">
-            <tr>
-                <td id="info"
-                    style="display: none; border: 1px solid grey; padding: 6px 14px;letter-spacing: 2px; background: #fff;"></td>
-            </tr>
-            </table>
-        </div>
-        
-        <div class="col">
-	        <table id="structures" style="margin:0;" onchange="fornaClear()">
-	            <thead>
-	            <tr>
-	               <th id="structTableHeading">Possible Structures</th>
-	            </tr>
-	            </thead>
-	
-	            <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
-	            <tr><td id="structTableCells" data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"
-	            	 onclick="fornaRendering( document.getElementById('rawSeq').value, this)"></td></tr>
-	            </tbody>
-	        </table>
-        </div>
-        
-    </div>
-    
-    <div class="row">
-    	<div class="col">
-    		Select a structure from the list or (multiple times) a cell of $D$ 
-    		to see according tracebacks. Note, the structure list is limited to
-    		the first 15 structures identified via traceback and thus depends
-    		on the recursion case order.
-    		<br>
-    		Below, we provide a graphical depiction of the selected structure.
-    		Note, the rendering does not support a minimal loop length of 0.
-   		</div>
-    </div>
-    
-   			
-	<div id="structureVisualization">
-		<div id="fornaInputStructure" style="height: 300px; background:white;"></div>
-		<span style="padding-left:15px;font-size:80%;">
-			Visualization done with 
-			<a href="http://rna.tbi.univie.ac.at/forna">forna</a>.
-			Base pairs are given by red edges, the sequence backbone is given by
-			gray edges. 
-		</span>
-	</div>
+       <div class="col_table">
+           <canvas id="CanvasLayer" style="z-index: 0; border: 0px solid; position: absolute; width: 0px; height: 0px"></canvas>
+           <table style="margin:0;">
+               <thead>
+               <tr>
+                   <th class="cell_th">$D$</th>
+                   <th class="cell_th"></th>
+                   <!-- ko foreach: { data: seqList, as: 'base' } -->
+                   <th class="cell_th" data-bind="writeSeq: [base, $index()+1]"></th>
+                   <!-- /ko -->
+               </tr>
+               </thead>
 
-    <script src="js/visualize.js"></script>
-    
-	<!-- ensure structure list changes clear the forna rendering -->
-    <script type="text/javascript">/* <![CDATA[ */$("#structures").bind("DOMSubtreeModified", fornaClear);/* ]]> */</script>
+               <tbody id="matrix_body" data-bind="foreach: { data: cells()[0], as: 'cell' }">
+               <tr>
+                   <th class="cell_th" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
+                   <!-- ko foreach: { data: cell, as: 'v' } -->
+                   <td class="cell" data-bind="text: v.i < v.j+2 ? v.value : '',  attr: {title: 'i=' + v.i + ' j=' + v.j}, event: { mousedown: $root.clickCell.bind(this) }"></td>
+                   <!-- /ko -->
+               </tr>
+
+               </tbody>
+           </table>
+         <br />
+         <a href="javascript:generate_tables()">Download Table</a>
+           <table style="display:none;margin:0;">
+           <tr>
+               <td id="info"
+                   style="display: none; border: 1px solid grey; padding: 6px 14px;letter-spacing: 2px; background: #fff;"></td>
+           </tr>
+           </table>
+       </div>
+
+       <div class="col_structures">
+         <table id="structures" style="margin:0;" onchange="fornaClear()">
+             <thead>
+             <tr>
+                <th id="structTableHeading">Optimal Structures</th>
+             </tr>
+             </thead>
+
+             <tbody data-bind="foreach: { data: tracebacks, as: 'tb' }">
+             <tr><td id="structTableCells" data-bind="text: tb.structure, event: {mousedown:$parent.clickStructure}"
+                onclick="fornaRendering( document.getElementById('rawSeq').value, this)"></td></tr>
+             </tbody>
+         </table>
+       </div>
+
+   </div>
+
+   <div class="row">
+     <div class="col">
+       Select a structure from the list or (multiple times) a cell of $D$
+       to see according tracebacks. Note, the structure list is limited to
+       the first 15 structures identified via traceback and thus depends
+       on the recursion case order.
+       <br>
+       Below, we provide a graphical depiction of the selected structure.
+       Note, the rendering does not support a minimal loop length of 0.
+     </div>
+   </div>
+
+
+ <div id="structureVisualization">
+   <div id="fornaInputStructure" style="height: 300px; background:white;"></div>
+   <span style="padding-left:15px;font-size:80%;">
+     Visualization done with
+     <a href="http://rna.tbi.univie.ac.at/forna">forna</a>.
+     Base pairs are given by red edges, the sequence backbone is given by
+     gray edges.
+   </span>
+ </div>
+
+   <script src="js/visualize.js"></script>
+
+ <!-- ensure structure list changes clear the forna rendering -->
+<script type="text/javascript">/* <![CDATA[ */$("#structures").bind("DOMSubtreeModified", fornaClear);/* ]]> */</script>

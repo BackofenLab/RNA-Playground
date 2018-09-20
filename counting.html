@@ -2,16 +2,16 @@
 	<div class="row" id="introduction">
 		<div class="colW600">
 			The number of nested secondary structures that can be formed by an RNA sequence grows
-			exponentially with sequence length $n$ (about $\sim 2.3^{n}$, see 
+			exponentially with sequence length $n$ (about $\sim 2.3^{n}$, see
 			<a href="https://doi.org/10.1016/S0166-218X(98)00073-0">(Hofacker et al., 1997)</a>).
 			<br />
 			<br />
-			Here, we use a variant of the algorithm by 
+			Here, we use a variant of the algorithm by
 			<a href="http://dx.doi.org/10.1016/0025-5564(78)90099-8">Michael S. Waterman and Temple F. Smith (1970)</a>
 			to compute the exact number of nested structures a sequence can form.
 			The approach applies dynamic programming, i.e. tabularizes results for subproblems.
-			To this end, it populates a matrix $C$, where an entry $C_{i,j}$ 
-			provides the <em>exact number</em> of admissible structures for the subsequence from 
+			To this end, it populates a matrix $C$, where an entry $C_{i,j}$
+			provides the <em>exact number</em> of admissible structures for the subsequence from
 			position $i$ to $j$. The overall number of admissible structures for the
 			sequences can be found in the upper right corner $C_{1,n}$, where $n$ denotes
 			the sequence's length and Watson-Crick as well as GU base pairs are considered complementary.
@@ -55,7 +55,7 @@
     </div>
 
     <div id="output">
-
+			<div class="scroll_table">
         <table id="matrix">
             <thead>
             <tr>
@@ -71,14 +71,13 @@
             <tr>
                 <th class="cell_count" data-bind="writeSeq: [$root.seqList()[$index()], $index()+1]"></th>
                 <!-- ko foreach: { data: cell, as: 'v' } -->
-                    <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white' }"></td>
+                    <td class="cell_count"  data-bind="text: v.i < v.j+2 ? v.value : '', style: { background: (v.i==1 && v.j==$root.seqList().length) ? 'lightblue' : 'white'}, attr: {title: 'i=' + v.i + ' j=' + v.j}"></td>
                 <!-- /ko -->
             </tr>
             </tbody>
         </table>
-        
+			</div>
         <div><a href="javascript:generate_tables()">Download Table</a></div>
     </div>
 
     <script src="js/visualize.js"></script>
-

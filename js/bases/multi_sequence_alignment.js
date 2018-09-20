@@ -7,11 +7,8 @@ Author: Alexander Mattheis
 
 "use strict";
 
-(function () {  // namespace
-    // public methods
-    namespace("bases.multiSequenceAlignment", MultiSequenceAlignment, getInput, setInput,
-        computePairwiseData, initializeInput, computeWithAlgorithm, computeDistancesFromSimilarities,
-        createDistanceMatrix, getPhylogeneticTree, createProgressiveAlignment, getOutput, setIO, getLastChild);
+(function () {  // namespace ("getIndividualSequenceNames" is set static because creation of a full instance to get just the sequence names is too inefficient)
+    namespace("bases.multiSequenceAlignment", MultiSequenceAlignment, getIndividualSequenceNames);
 
     // instances
     var multiSequenceAlignmentInstance;
@@ -25,9 +22,9 @@ Author: Alexander Mattheis
 
     /**
      * Contains functions to compute multi-sequence alignments.
-     * It is used multi-sequence alignment algorithms as superclass
+     * It is used by multi-sequence alignment algorithms as superclass
      * to avoid code duplicates.
-     * @param child - The child algorithm which inherits from this class.
+     * @param child {Object} - The child algorithm which inherits from this class.
      * @constructor
      */
     function MultiSequenceAlignment(child) {
@@ -36,7 +33,7 @@ Author: Alexander Mattheis
         alignmentInstance = new bases.alignment.Alignment(this);
         gotohInstance = new gotoh.Gotoh();
 
-        // public methods
+        // public class methods
         this.getInput = getInput;
         this.setInput = setInput;
         this.computePairwiseData = computePairwiseData;
@@ -46,6 +43,12 @@ Author: Alexander Mattheis
         this.createDistanceMatrix = createDistanceMatrix;
         this.getPhylogeneticTree = getPhylogeneticTree;
         this.createProgressiveAlignment = createProgressiveAlignment;
+        this.getBestAlignment = getBestAlignment;
+        this.createGroup = createGroup;
+        this.replaceGapsWithPlaceHolder = replaceGapsWithPlaceHolder;
+        this.replacePlaceholdersWithGaps = replacePlaceholdersWithGaps;
+        this.getAffineSumOfPairsScore = getAffineSumOfPairsScore;
+        this.getIndividualSequenceNames = getIndividualSequenceNames;
         this.getOutput = getOutput;
 
         this.setIO = setIO;
@@ -68,6 +71,7 @@ Author: Alexander Mattheis
     function setInput(inputViewmodel) {
         inputData.sequences = inputViewmodel.sequences();
         inputData.arrayPositionsOfRemovedSequences = getDuplicatePositions(inputData.sequences);
+        inputData.initialNamingIndex = inputData.sequences.length;
 
         inputData.calculationType = inputViewmodel.calculation();
 
@@ -79,7 +83,7 @@ Author: Alexander Mattheis
 
     /**
      * Returns the non-first position of sequences which are multiple times in the sequences.
-     * @param sequences - The sequences which are checked for duplicates.
+     * @param sequences {Array} - The sequences which are checked for duplicates.
      */
     function getDuplicatePositions(sequences) {
         var positions = {};
@@ -262,7 +266,7 @@ Author: Alexander Mattheis
      * So, here the MSA-length definition used (Feng-Doolittle is a MSA algorithm):
      * length is the number of columns in the global alignment of the sequences.
      * Hint 2: Verified with original paper.
-     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
+     * @param alignment {Object}
      * - The triple of strings for which the length has to be computed.
      * @see: https://doi.org/10.1016/S0076-6879(96)66023-6
      * Feng, Da-Fei, and Russell F. Doolittle.
@@ -276,7 +280,7 @@ Author: Alexander Mattheis
 
     /**
      * Returns the number of gaps in the alignment.
-     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
+     * @param alignment {Object}
      * - The triple of strings for which the number of gaps has to be computed.
      * @return {number} - The number of gaps in the alignment.
      */
@@ -286,7 +290,7 @@ Author: Alexander Mattheis
 
     /**
      * Counts the number of gaps in the given sequence.
-     * @param sequence {string} - The sequence for which the number of gaps has to be counted.
+     * @param sequence {alignedSequenceA|matchOrMismatchString|alignedSequenceB} - The sequence for which the number of gaps has to be counted.
      * @return {number} - The number of gaps.
      */
     function countNumberOfGaps(sequence) {
@@ -302,7 +306,7 @@ Author: Alexander Mattheis
 
     /**
      * Returns the number of gap starts in the alignment.
-     * @param alignment {[alignedSequenceA, matchOrMismatchString, alignedSequenceB]}
+     * @param alignment {Object}
      * - The triple of strings for which the number of gaps has to be computed.
      * @return {number} - The number of gaps in the alignment.
      */
@@ -312,7 +316,7 @@ Author: Alexander Mattheis
 
     /**
      * Counts the number of gap starts in the given sequence.
-     * @param sequence {string} - The sequence for which the number of gaps has to be counted.
+     * @param sequence {alignedSequenceA|matchOrMismatchString|alignedSequenceB} - The sequence for which the number of gaps has to be counted.
      * @return {number} - The number of gaps.
      */
     function countNumberOfGapsStarts(sequence) {
@@ -402,11 +406,11 @@ Author: Alexander Mattheis
      * by using the approximative formula from 1996 of Feng and Doolittle.
      * Hint: Usually random shuffling is used (1987),
      * but then the algorithm would become non-deterministic and it couldn't be tested so easy.
-     * @param alignmentLength - The length of the alignment (number of columns).
-     * @param sequenceA - The first (not aligned) sequence.
-     * @param sequenceB - The second (not aligned) sequence.
-     * @param numOfGaps - The number of gaps in the alignment of sequence a and b.
-     * @param numOfGapStarts - The number of gap starts in the alignment of sequence a and b.
+     * @param alignmentLength {number} - The length of the alignment (number of columns).
+     * @param sequenceA {string} - The first (not aligned) sequence.
+     * @param sequenceB {string} - The second (not aligned) sequence.
+     * @param numOfGaps {number} - The number of gaps in the alignment of sequence a and b.
+     * @param numOfGapStarts {number} - The number of gap starts in the alignment of sequence a and b.
      * @see: https://doi.org/10.1016/S0076-6879(96)66023-6
      * Feng, Da-Fei and Doolittle, Russell F. «[21] Progressive alignment of amino
      * acid sequences and construction of phylogenetic trees from them».
@@ -445,7 +449,7 @@ Author: Alexander Mattheis
             }
         }
 
-        return (1/alignmentLength) * doubleSum + numOfGaps * inputData.enlargement + numOfGapStarts * inputData.baseCosts;
+        return (1 / alignmentLength) * doubleSum + numOfGaps * inputData.enlargement + numOfGapStarts * inputData.baseCosts;
     }
 
     /**
@@ -584,7 +588,8 @@ Author: Alexander Mattheis
     function getPhylogeneticTree() {
         inputData.numOfStartClusters = inputData.sequences.length - inputData.arrayPositionsOfRemovedSequences.length;
 
-        var clustering = new upgma.Upgma();
+        var clustering = new agglomerativeClustering.AgglomerativeClustering();
+        inputData.clusteringSubalgorithm = CLUSTERING_ALGORITHMS.UPGMA;
         clustering.setIO(inputData, outputData);
         var ioData = clustering.compute();
         return ioData[1].treeBranches;
@@ -604,8 +609,8 @@ Author: Alexander Mattheis
         for (var i = 0; i < treeBranches.length; i++) {
             var treeBranch = treeBranches[i];
 
-            var leftChildName = treeBranch.leftChild.name;
-            var rightChildName = treeBranch.rightChild.name;
+            var leftChildName = treeBranch.rightChild.name;
+            var rightChildName = treeBranch.leftChild.name;
             var groupName = treeBranch.name;
 
             alignGroups(leftChildName, rightChildName, groupName);
@@ -723,12 +728,15 @@ Author: Alexander Mattheis
             }
         }
 
-        var firstSequence
-            = outputData.nameOfSequence[maxSequence1.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
-        var secondSequence
-            = outputData.nameOfSequence[maxSequence2.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
+        if (outputData.nameOfSequence !== undefined) {  // not all multi-sequence-alignment algorithms need this
+            var firstSequence
+                = outputData.nameOfSequence[maxSequence1.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
+            var secondSequence
+                = outputData.nameOfSequence[maxSequence2.replace(MULTI_SYMBOLS.NONE, SYMBOLS.EMPTY).replace(MULTI_SYMBOLS.GAP, SYMBOLS.EMPTY)];
 
-        outputData.guideAlignmentsNames.push(firstSequence + SYMBOLS.ALIGN + secondSequence);
+            outputData.guideAlignmentsNames.push(firstSequence + SYMBOLS.ALIGN + secondSequence);
+        }
+
         return maxAlignment;
     }
 
@@ -739,10 +747,12 @@ Author: Alexander Mattheis
      * @return {[string, number]} - The alignment and score.
      */
     function getAlignmentAndScore(sequence1, sequence2) {
-        var alignmentAndScore = outputData.alignmentsAndScores[[sequence1, sequence2]];  // constant time!
+        if (outputData.alignmentsAndScores !== undefined) {  // optimization for Feng-Doolittle
+            var alignmentAndScore = outputData.alignmentsAndScores[[sequence1, sequence2]];  // constant time!
 
-        if (alignmentAndScore !== undefined && childInstance.type !== ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)  // T-Coffee extension
-            return alignmentAndScore;
+            if (alignmentAndScore !== undefined && childInstance.type !== ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)  // T-Coffee extension
+                return alignmentAndScore;
+        }
 
         var input = {};
         var output = {};
@@ -753,14 +763,16 @@ Author: Alexander Mattheis
 
         var ioData = computeWithAlgorithm(gotohInstance, input, output, sequence1, sequence2);
 
-        // extension for T-Coffee: needed for a Unit-Test
-        // if we have a recalculation (look at #optimization), then the matrix is not computed and undefined, we use the last one
-        outputData.currentMatrix = ioData[1].matrix === undefined ? outputData.currentMatrix : ioData[1].matrix;
+        if (childInstance.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {  // optimization for T-Coffee
+            // extension for T-Coffee: needed for a Unit-Test
+            // if we have a recalculation (look at #optimization), then the matrix is not computed and undefined, we use the last one
+            outputData.currentMatrix = ioData[1].matrix === undefined ? outputData.currentMatrix : ioData[1].matrix;
 
-        // #optimization:
-        // traceback paths are computed once for a group and then reused, because they do not change anymore
-        // look into Unit-Test: Notredame-Higgins-Heringa.pdf -> matrix ab~c on page 6
-        outputData.groupTracebackPaths[outputData.currentGroupName] = ioData[1].tracebackPaths;
+            // #optimization:
+            // traceback paths are computed once for a group and then reused, because they do not change anymore
+            // look into Unit-Test: Notredame-Higgins-Heringa.pdf -> matrix ab~c on page 6
+            outputData.groupTracebackPaths[outputData.currentGroupName] = ioData[1].tracebackPaths;
+        }
 
         return [ioData[1].alignments[0], ioData[1].score];
     }
@@ -768,7 +780,7 @@ Author: Alexander Mattheis
     /**
      * If traceback path and matrix have been already computed,
      * then the traceback path is not recomputed.
-     * @param output
+     * @param output {Object} - Output data which have to be initialized.
      */
     function initializeOutput(output) {
         var parentGroupName = outputData.currentGroupName;
@@ -868,6 +880,115 @@ Author: Alexander Mattheis
         }
 
         return group;
+    }
+
+    /**
+     * Computes the affine sum-of-pairs score for a given alignment.
+     * The Gotoh-score between every alignment is computed.
+     * These pairwise scores are summed up.
+     * Hint: The score for overlying gaps is zero.
+     * @param inputData {Object} - Contains all input data.
+     * @param alignment {Object} - The alignment for which the sum-of-pairs score is computed.
+     * @return {number} - The sum-of-pairs score.
+     */
+    function getAffineSumOfPairsScore(inputData, alignment) {
+        var score = 0;
+
+        // every alignment with every other alignment
+        for (var i = 1; i < alignment.length; i++) {
+            for (var j = 0; j < i; j++) {
+
+                var sequences = removeOverlyingGaps(alignment[j], alignment[i]);
+
+                var sequenceA = sequences[0];
+                var sequenceB = sequences[1];
+                var gapSize = 0;
+
+                for (var k = 0; k < sequenceB.length; k++) {
+                    if (sequenceB[k] === SYMBOLS.GAP) {
+                        gapSize = getGapSize(k, sequenceB);
+                        score += inputData.baseCosts + gapSize * inputData.enlargement;
+                        k += gapSize - 1;
+                    } else if (sequenceA[k] === SYMBOLS.GAP) {
+                        gapSize = getGapSize(k, sequenceA);
+                        score += inputData.baseCosts + gapSize * inputData.enlargement;
+                        k += gapSize - 1;
+                    } else
+                        score += sequenceB[k] === sequenceA[k] ? inputData.match : inputData.mismatch;
+                }
+            }
+        }
+
+        return score;
+    }
+
+    /**
+     * Removes overlying gaps in sequences, because they are not counted.
+     * @param sequence1 {string} - The first sequence.
+     * @param sequence2 {string} - The second sequence.
+     * @return {[string, string]} - The alignment without overlying gaps.
+     */
+    function removeOverlyingGaps(sequence1, sequence2) {
+        var newSequence1 = SYMBOLS.EMPTY;
+        var newSequence2 = SYMBOLS.EMPTY;
+
+        for (var i = 0; i < sequence1.length; i++) {
+            if (sequence1[i] === sequence2[i] && sequence1[i] === SYMBOLS.GAP)  // if overlying gaps
+                continue;
+
+            newSequence1 += sequence1[i];
+            newSequence2 += sequence2[i];
+        }
+
+        return [newSequence1, newSequence2];
+    }
+
+    /**
+     * Returns the size of gap.
+     * @param gapStartPosition {number} - The start position.
+     * @param sequence {string} - The sequence with the gap.
+     * @return {number} - The gap size.
+     */
+    function getGapSize(gapStartPosition, sequence) {
+        var gapSize = 0;
+
+        var i = gapStartPosition;
+
+        while (i < sequence.length && sequence[i] === SYMBOLS.GAP) {
+            gapSize++;
+            i++;
+        }
+
+        return gapSize;
+    }
+
+    /**
+     * Returns the names of the individual group members.
+     * @param groupName {string} - The group name which encoding the group members.
+     * @param commaSeparated {boolean} - Tells if between a name-string and a number should be a comma or not.
+     * @return {Array} - The array with the group members.
+     */
+    function getIndividualSequenceNames(groupName, commaSeparated) {
+        var names = [];
+
+        if (groupName !== undefined) {
+            for (var i = 0; i < groupName.length; i++) {
+                var character = groupName[i];
+                var number = SYMBOLS.EMPTY;
+
+                while (i + 1 < groupName.length && groupName[i + 1].match(CHARACTER.NUMBER)) {
+                    number += groupName[i + 1];
+                    i++;
+                }
+
+                if (commaSeparated)
+                    names.push(number.length > 0 ? character + SYMBOLS.COMMA + number : character);
+                else
+                    names.push(number.length > 0 ? character + number : character);
+            }
+        }
+
+        return names;
     }
 
     /**

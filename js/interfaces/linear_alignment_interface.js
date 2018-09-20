@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.linearAlignmentInterface", LinearAlignmentInterface, startLinearAlignmentAlgorithm);
+    namespace("interfaces.linearAlignmentInterface", LinearAlignmentInterface);
 
     // instances
     var alignmentInterfaceInstance;
@@ -32,6 +32,8 @@ Author: Alexander Mattheis
 
     /**
      * Function managing objects.
+     * @param Algorithm {Object} - The algorithm which is started.
+     * @param algorithmName {string} - The name of the algorithm which is started.
      */
     function startLinearAlignmentAlgorithm(Algorithm, algorithmName) {
         imports();
@@ -45,8 +47,7 @@ Author: Alexander Mattheis
      */
     function imports() {
         alignmentInterfaceInstance.imports();
-
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
+        //$.getScript(PATHS.LINEAR_ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /*---- INPUT ----*/
@@ -138,11 +139,10 @@ Author: Alexander Mattheis
 
         if (viewmodel.calculation() === ALIGNMENT_TYPES.SIMILARITY)
             string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MAX;
+        else if (secondRecursion)
+            string += LATEX.FORMULA.CURRENT_BACKWARD + SYMBOLS.EQUAL + LATEX.MIN;
         else
-            if (secondRecursion)
-                string += LATEX.FORMULA.CURRENT_BACKWARD + SYMBOLS.EQUAL + LATEX.MIN;
-            else
-                string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
+            string += LATEX.FORMULA.CURRENT + SYMBOLS.EQUAL + LATEX.MIN;
 
         if (algorithmName === ALGORITHMS.ARSLAN_EGECIOGLU_PEVZNER)
             string += LATEX.RECURSION.SMITH_WATERMAN_MODIFIED;
@@ -188,17 +188,21 @@ Author: Alexander Mattheis
             string = string.replace(LATEX.FORMULA.D_BIG, LATEX.FORMULA.S_BIG);
 
         if (algorithmName === ALGORITHMS.HIRSCHBERG && secondRecursion) {
+            // replace D with D'
             string = string.replace(LATEX.FORMULA.D_BIG_UNDERSCORE, LATEX.FORMULA.D_PRIME_UNDERSCORE);
-            string = string.replace(LATEX.FORMULA.I_MINUS_ONE, LATEX.FORMULA.I_PLUS_ONE);
-            string = string.replace(LATEX.FORMULA.J_MINUS_ONE, LATEX.FORMULA.J_PLUS_ONE);
-			// apply index shift by +1 for both sequences
-			string = string.replace(/a_i/g, "a_{i+1}").replace(/b_j/g, "b_{j+1}");
-			// add initialization information
-			string = string.replace(LATEX.MATH_REGION, LATEX.MATH_REGION +"\\begin{array}{l}");
-			string += "\\\\" + LATEX.FORMULA.D_PRIME_UNDERSCORE+"{n,m} = 0";
-			string += ", \\quad "+LATEX.FORMULA.D_PRIME_UNDERSCORE+"{n,j} = (m-j)\\gamma";
-			string += ", \\quad "+LATEX.FORMULA.D_PRIME_UNDERSCORE+"{i,m} = (n-i)\\gamma";
-			string += "\\end{array}";
+
+            // replace i-1 with i+1
+            string = string
+                .replace(LATEX.FORMULA.I_MINUS_ONE, LATEX.FORMULA.I_PLUS_ONE)
+                .replace(LATEX.FORMULA.J_MINUS_ONE, LATEX.FORMULA.J_PLUS_ONE);
+
+            // replace a_i with a_{i+1} and b_j ...
+            string = string
+                .replace(LATEX.FORMULA.SEQ_A_I, LATEX.FORMULA.SEQ_A_I_PLUS_1)
+                .replace(LATEX.FORMULA.SEQ_B_J, LATEX.FORMULA.SEQ_B_J_PLUS_1);
+
+            // add initialization information
+            string += LATEX.NEW_LINE + LATEX.RECURSION.HIRSCHBERG_INITIALIZATION;
         }
 
         string += LATEX.MATH_REGION;  // stopping LaTeX math region
@@ -496,9 +500,8 @@ Author: Alexander Mattheis
         var backwardTwoRowsCharacters = twoRowsCharacters[1];
 
         var forwardTwoRowsCharactersPositions = twoRowsCharactersPositions[0];
-        var backwardTwoRowsCharactersPositions = twoRowsCharactersPositions[1];;
+        var backwardTwoRowsCharactersPositions = twoRowsCharactersPositions[1];
 
-        debugger;
         // main output
         viewmodels.output.forwardMatrices(outputData.forwardMatrices);
         viewmodels.output.backwardMatrices(outputData.backwardMatrices);
@@ -551,9 +554,9 @@ Author: Alexander Mattheis
         viewmodels.output.currentGlobalRow(rowData);
 
         // table header (to avoid a problem between Knockout and MathJax the LaTeX code is generated in viewmodel and not in the view)
-        viewmodels.output.matrixDLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D));
-        viewmodels.output.matrixDPrimeLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_PRIME));
-        viewmodels.output.sumLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.SUM));
+        //viewmodels.output.matrixDLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D));
+        //viewmodels.output.matrixDPrimeLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.FORMULA.D_PRIME));
+        //viewmodels.output.sumLatex(alignmentInterfaceInstance.getLaTeXFormula(LATEX.SUM));
 
         viewmodels.output.secondSequences(outputData.secondSequences);
         viewmodels.output.secondSequencePositions(outputData.secondSequencePositions);

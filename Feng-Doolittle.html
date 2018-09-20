@@ -2,7 +2,7 @@
 University of Freiburg WS 2017/2018
 Chair for Bioinformatics
 Supervisor: Martin Raden
-Author: Alexander Mattheis
+Authors: Alexander Mattheis, Martin Raden
 -->
 
 <div id="algorithm_description">
@@ -19,7 +19,7 @@ Author: Alexander Mattheis
 	    <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh">our Gotoh implementation</a>.
         <br />
         In order to build a guide tree to generate the MSA, 
-	    observed similarity scores $S(a,b)$ of sequence pairs $a,b$ are converted into distances using
+	    observed similarity scores $S(a,b)$ of sequence pairs $a,b\in\Sigma^{*}$ are converted into distances using
         $D(a,b) = -ln(S^{eff}_{a,b} \cdot f)$, where we set the scaling factor $f=1$ (originally $f = 100$). <br />
         The 'effective' similarity score $S^{eff}$ is computed by $S^{eff}_{a,b} = (S(a,b) - S^{rand}_{a,b})/(S^{max}_{a,b} - S^{rand}_{a,b})$
         where $S^{max}_{a,b} = (S(a,a)+S(b,b))/2$ provides the best alignment score for both sequences.
@@ -33,7 +33,7 @@ Author: Alexander Mattheis
         S^{rand}_{a,b} =
         \frac{1}{L_{a,b}}
         \bigg(
-        \sum_{x \in \bigcup_{a}} \sum_{y \in \bigcup_{b}}
+        \sum_{x \in \Sigma} \sum_{y \in \Sigma}
         s(x,y) \cdot N_a(x) \cdot N_b(y)
         \bigg)
         + N_{a,b}^{e} \cdot \beta
@@ -45,11 +45,6 @@ Author: Alexander Mattheis
             <div class="colW150">$L_{a,b}$</div>
             <div class="colW400">number of columns in the alignment of $a,b$</div>
 	    </div>
-
-        <div class="row">
-            <div class="colW150">$\bigcup_{a}, \bigcup_{b}$</div>
-            <div class="colW400">characters present in $a$ and $b$</div>
-        </div>
 
         <div class="row">
             <div class="colW150">$s(x,y)$</div>
@@ -81,7 +76,7 @@ Author: Alexander Mattheis
 
         The resulting distances are then used
         to create a phylogenetic tree that guides the generation of the MSA, i.e. more related (similar) sequences are fused first.
-        Here, the UPGMA algorithm envisioned
+        Here, the <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Agglomerative-Clustering">UPGMA</a> algorithm envisioned
         by <a href="https://archive.org/details/cbarchive_33927_astatisticalmethodforevaluatin1902">Robert R. Sokal and Charles D. Michener (1958)</a> is applied.
         <br />
 	    The tree defines the order in which sequences or groups of sequences
@@ -339,41 +334,52 @@ Author: Alexander Mattheis
 
     <h2>Distance Table</h2>
 
-    <div class="distance_table">
-        <table class="distances">
-            <thead>
-                <tr>
-                    <th></th>
-                    <!-- ko foreach: $root.output.remainingClusters()[0] -->
-                        <th data-bind="drawChar: [$data, undefined]"></th>
-                    <!-- /ko -->
-                </tr>
-            </thead>
-
-            <tbody>
-                <!-- ko foreach: $root.output.distanceMatrices()[0][0]--> <!-- to get i-indexes = $parentContext.$index() -->
+    <!-- ko if: $root.output.progressiveAlignment()[0].length > 0 -->
+        <div class="distance_table">
+            <table class="distances">
+                <thead>
                     <tr>
-                        <th data-bind="drawChar: [$root.output.remainingClusters()[0][$index()], undefined]"></th>
-
-                        <!-- ko foreach: $root.output.distanceMatrices()[0][0] --> <!-- to get j-indexes = $index() -->
-                            <td class="non_selectable_entry"
-                                data-bind="text: $root.output.distanceMatrices()[0][$parentContext.$index()][$index()]"></td>
+                        <th></th>
+                        <!-- ko foreach: $root.output.remainingClusters()[0] -->
+                            <th data-bind="drawChar: [$data, undefined]"></th>
                         <!-- /ko -->
                     </tr>
-                <!-- /ko -->
+                </thead>
 
-                <tr>
-                    <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
-                        <small>
-                            <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[0]"></span>
-                        </small>
-                    </th>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                <tbody>
+                    <!-- ko foreach: $root.output.distanceMatrices()[0][0]--> <!-- to get i-indexes = $parentContext.$index() -->
+                        <tr>
+                            <th data-bind="drawChar: [$root.output.remainingClusters()[0][$index()], undefined]"></th>
 
-    <a href="#" data-bind="click: $root.output.toggleVisibility, text: $root.output.toggleLinkText"></a>
+                            <!-- ko foreach: $root.output.distanceMatrices()[0][0] --> <!-- to get j-indexes = $index() -->
+                                <!-- ko if: $index() >= $parentContext.$index() -->
+                                    <td class="non_selectable_entry"
+                                        data-bind="text: $root.output.distanceMatrices()[0][$parentContext.$index()][$index()]">
+                                    </td>
+                                <!-- /ko -->
+
+                                <!-- ko if: $index() < $parentContext.$index() -->
+                                    <td class="non_selectable_entry gray"
+                                        data-bind="text: $root.output.distanceMatrices()[0][$parentContext.$index()][$index()]">
+                                    </td>
+                                <!-- /ko -->
+                            <!-- /ko -->
+                        </tr>
+                    <!-- /ko -->
+
+                    <tr>
+                        <th class="hint" colspan=100%>  <!-- HINT: move colspan into "hint"-class when browsers are ready! -->
+                            <small>
+                                <b>Minimum:</b> <span data-bind="text: $root.output.minimums()[0]"></span>
+                            </small>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <a href="#" data-bind="click: $root.output.toggleVisibility, text: $root.output.toggleLinkText"></a>
+    <!-- /ko -->
 
     <div class="matrices" data-bind="visible: $root.output.showMatrices">
         <!-- ko foreach: $root.output.distanceMatrices() -->
@@ -396,9 +402,17 @@ Author: Alexander Mattheis
                                 <tr>
                                     <th data-bind="drawChar: [$root.output.remainingClusters()[$parentContext.$index()][$index()], undefined]"></th>
                                     <!-- ko foreach: $root.output.distanceMatrices()[$parentContext.$index()][$index()] --> <!-- to get j-indexes = $index() -->
-                                        <td class="non_selectable_entry"
-                                            data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
-                                        </td>
+                                        <!-- ko if: $index() >= $parentContext.$index() -->
+                                            <td class="non_selectable_entry"
+                                                data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                            </td>
+                                        <!-- /ko -->
+
+                                        <!-- ko if: $index() < $parentContext.$index() -->
+                                            <td class="non_selectable_entry gray"
+                                                data-bind="text: $root.output.distanceMatrices()[$parentContext.$parentContext.$index()][$parentContext.$index()][$index()]">
+                                            </td>
+                                        <!-- /ko -->
                                     <!-- /ko -->
                                 </tr>
                             <!-- /ko -->
@@ -418,6 +432,7 @@ Author: Alexander Mattheis
             <!-- /ko -->
         <!-- /ko -->
     </div>
+
 
     <h2>Pairwise Data</h2>
 

@@ -8,9 +8,8 @@ Author: Alexander Mattheis
 "use strict";
 
 (function () {  // namespace
-    // public methods (declaration)
-    namespace("postProcessing.inputProcessor",
-        InputProcessor, activateInputUpdates, inputUpdatesActivated, linkElements, postEdit);
+    // public methods
+    namespace("postProcessing.inputProcessor", InputProcessor);
 
     // instances
     var inputProcessorInstance;
@@ -81,7 +80,12 @@ Author: Alexander Mattheis
         linkSelectables(viewmodels.visual, calculationVerticalTable, calculationTable, calculationHorizontalTable,
             mainOutput, selectableEntryClass);
 
-        doSingleInitialHighlighting(viewmodels.visual);
+        // highlighting
+        doMinimaAndTracebackHighlighting(viewmodels.visual);
+        doTracebackHighlighting(viewmodels.visual);
+
+        // initial redrawing
+        redrawInitialOverlay(viewmodels.visual, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput);
     }
 
     /**
@@ -106,22 +110,42 @@ Author: Alexander Mattheis
 
     /**
      * Linking inputs to get some special behaviour (removing non allowed bases).
-     * @param algorithmInput - The input div in which the behaviour is changed.
-     * @param functionParameters - The parameters which should have the given behaviour.
+     * @param algorithmInput {Element} - The input div in which the behaviour is changed.
+     * @param functionParameters {Element} - The parameters which should have the given behaviour.
      */
     function linkBasicInputsBehaviour(algorithmInput, functionParameters) {
         var functionArguments = {"functionParameters": functionParameters};
         algorithmInput.find(".optimization_type").on("change", functionArguments, negateOptimizationParameters);
 
-        functionParameters.on("change", removeCriticalNumbers);
+        algorithmInput.on("keyup", ".csv_data", removeNonAllowedCSVSymbols);
         algorithmInput.on("keyup", ".sequence", removeNonAllowedBases);
         algorithmInput.on("keyup", ".sequence_multi", removeNonAllowedBases);
+        functionParameters.on("change", removeCriticalNumbers);
+    }
+
+    /**
+     * Removes non-allowed symbols from a CSV-input.
+     * Hint: The input has to be of class "sequence".
+     */
+    function removeNonAllowedCSVSymbols() {
+        if (!CHARACTER.CSV_SYMBOLS.test(this.value)) {
+            this.value = this.value.replace(CHARACTER.NON_CSV_SYMBOLS, SYMBOLS.EMPTY);
+        }
+    }
+
+    /**
+     * Removes non-english characters and special characters from an input-field.
+     * Hint: The input has to be of class "sequence".
+     */
+    function removeNonAllowedBases() {
+        if (!CHARACTER.BASES.test(this.value))
+            this.value = this.value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
     }
 
     /**
      * Negates the function parameters of an algorithm.
      * Hint: The input has to be of class "optimization_type".
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function negateOptimizationParameters(e) {
         var functionParameters = e.data.functionParameters;
@@ -135,7 +159,7 @@ Author: Alexander Mattheis
      * which can lead to problems with traceback or visualization.
      * It is especially used for the function parameters of an algorithm.
      * Hint: The input has to be of class "fx_parameter".
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function removeCriticalNumbers(e) {
         if (CHARACTER.NUMBERS.test(this.value))
@@ -154,15 +178,6 @@ Author: Alexander Mattheis
                 this.value = this.value <= INPUT.MAX ? this.value : INPUT.MAX;
             }
         }
-    }
-
-    /**
-     * Removes non-english characters from an input-field.
-     * Hint: The input has to be of class "sequence".
-     */
-    function removeNonAllowedBases() {
-        if (!CHARACTER.BASES.test(this.value))
-            this.value = this.value.replace(CHARACTER.NON_BASES, SYMBOLS.EMPTY);
     }
 
     /**
@@ -233,8 +248,15 @@ Author: Alexander Mattheis
         var input = $("#algorithm_input");
 
         input.on({
-            change: function () {
-                update(algorithm, viewmodels, processInput, changeOutput);
+            change: function (event) {
+                /*
+                BUG-FIX for Knockout 3.4.2:
+                Knockout fires an event, if the <select>-Tag is filled with Knockout:
+                https://stackoverflow.com/questions/16521552/knockout-fires-change-event-when-select-list-initializing
+                */
+                if (event.cancelable !== undefined) {  // to filter out Knockout-events and let pass all other events
+                    update(algorithm, viewmodels, processInput, changeOutput);
+                }
             },
 
             keypress: function (e) {
@@ -253,7 +275,8 @@ Author: Alexander Mattheis
      */
     function update(algorithm, viewmodels, processInput, changeOutput) {
         // avoids using not updated values (especially in displayed formulas)
-        // for example removeCriticalNumbers(e) needs to have enough time to be executed first on a value change (uses same event: [..].on(change))
+        // for example removeCriticalNumbers(e) needs to have enough time to be executed first
+        // on a value change (uses same event: [..].on(change))
         setTimeout(function () {
             processInput(algorithm, inputProcessorInstance, viewmodels.input, viewmodels.visual);
             changeOutput(algorithm.getOutput(), inputProcessorInstance, viewmodels);
@@ -269,7 +292,8 @@ Author: Alexander Mattheis
      */
     function postProcess(viewmodels) {
         linkIterationTables(viewmodels.visual);  // iterative tables are not existing from the beginning and so they have to be relinked
-        doSingleInitialHighlighting(viewmodels.visual);
+        doMinimaAndTracebackHighlighting(viewmodels.visual);
+        doTracebackHighlighting(viewmodels.visual);
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);  // reinterpret new LaTeX code
     }
 
@@ -291,7 +315,7 @@ Author: Alexander Mattheis
             var iterationTablesArray = [calculationTable1, calculationTable2, calculationTable3, calculationTable4, calculationTable5];
             var selectableEntryClass = ".selectable_entry";
 
-            doInitialHighlighting(visualViewmodel, mainOutput, iterationTablesArray);
+            doMultiTableHighlighting(visualViewmodel, mainOutput, iterationTablesArray);
             linkIterationDownloadLinks(visualViewmodel);
 
             for (var i = 0; i < iterationTablesArray.length; i++) {
@@ -300,7 +324,7 @@ Author: Alexander Mattheis
                     "calculationVerticalTable": [],
                     "iterationTablesArray": iterationTablesArray,
                     "mainOutput": mainOutput,
-                    "number": -(i+1),  // iteration numbers are negative in "defaults.js"
+                    "number": -(i + 1),  // iteration numbers are negative in "defaults.js"
                     "selectableEntryClass": selectableEntryClass,
                     "visualViewmodel": visualViewmodel
                 };
@@ -316,7 +340,7 @@ Author: Alexander Mattheis
      * @param iterationTablesArray {Array} - An array of tables.
      * @param mainOutput {Element} - The div containing only the calculation tables.
      */
-    function doInitialHighlighting(visualViewmodel, mainOutput, iterationTablesArray) {
+    function doMultiTableHighlighting(visualViewmodel, mainOutput, iterationTablesArray) {
         // the tables exist after just after the display has updated,
         // but the event is triggered before and so a delay is needed
         setTimeout(function () {
@@ -325,29 +349,89 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Some algorithms with a single table has some initial highlighting.
+     * Does minima and traceback highlighting on two tables.
      * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
      */
-    function doSingleInitialHighlighting(visualViewmodel) {
+    function doMinimaAndTracebackHighlighting(visualViewmodel) {
         if (visualViewmodel.algorithm.type === ALGORITHMS.HIRSCHBERG) {
+            var mainOutput = $(".main_output");  // output containing the calculation tables
+            var traceTable = mainOutput.find(".trace_table");
+            var tracecellsTable = mainOutput.find(".tracecells_table");
 
             // the table exist after just after the display has updated,
             // but the event is triggered before and so a delay is needed
             setTimeout(function () {
-                var mainOutput = $(".main_output");  // output containing the calculation tables
-                var traceTable = mainOutput.find(".trace_table");
-
-                visualViewmodel.showTraceback(0, undefined, traceTable[0], undefined,
-                    undefined, mainOutput[0]);
-            }, REACTION_TIME_HIGHLIGHT);
-
-            setTimeout(function () {
-                var mainOutput = $(".main_output");  // output containing the calculation tables
-                var tracecellsTable = mainOutput.find(".tracecells_table");
-
+                visualViewmodel.showTraceback(0, undefined, traceTable[0], undefined, undefined, mainOutput[0]);
                 visualViewmodel.markMinima(tracecellsTable[0]);
             }, REACTION_TIME_HIGHLIGHT);
 
+            // fallback if something goes wrong and MathJax disrupts your SVG overlay
+            var calculationTable = mainOutput.find(".calculation");
+            var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
+            var calculationVerticalTable = mainOutput.find(".calculation_vertical");
+
+            setTimeout(function () {
+                visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+            }, REACTION_TIME_REDRAWING.LONG_ARROWS.FIRST);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+
+            setTimeout(function () {
+                visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+            }, REACTION_TIME_REDRAWING.LONG_ARROWS.SECOND);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+        }
+    }
+
+    /**
+     * Does only traceback highlighting on two tables.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     */
+    function doTracebackHighlighting(visualViewmodel) {
+        if (TABLE_INITIAL_HIGHLIGHT_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
+            var mainOutput = $(".main_output");  // output containing the calculation tables
+            var calculationTable = mainOutput.find(".calculation");
+            var calculationHorizontalTable = mainOutput.find(".calculation_horizontal");
+            var calculationVerticalTable = mainOutput.find(".calculation_vertical");
+            var results = $(".results");
+
+            setTimeout(function () {
+                visualViewmodel.showTraceback(0, calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], undefined, mainOutput[0]);
+                visualViewmodel.highlight(0, results[0]);
+            }, REACTION_TIME_HIGHLIGHT);
+
+            // fallback if something goes wrong and MathJax disrupts your SVG overlay
+            if (SVG_ARROW_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
+                setTimeout(function () {
+                    visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+                }, REACTION_TIME_REDRAWING.LONG_ARROWS.FIRST);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+
+                setTimeout(function () {
+                    visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+                }, REACTION_TIME_REDRAWING.LONG_ARROWS.SECOND);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+            }
+        }
+    }
+
+    /**
+     * Redraws the Overlay during loading once.
+     * The problem is that MathJax disturbs the positioning of the overlay during the page loading.
+     * Hint: window.onload or document.ready cannot be used,
+     * because the table is generated after these events have fired with Knockout.
+     * @param visualViewmodel {Object} - Model which is used for example to highlight cells.
+     * @param calculationVerticalTable {Element} - The table storing the vertical gap costs.
+     * @param calculationTable {Element} - The default or main table.
+     * @param calculationHorizontalTable {Element} - The table storing the horizontal gap costs.
+     * @param mainOutput {Element} - The div containing only the calculation tables.
+     */
+    function redrawInitialOverlay(visualViewmodel, calculationVerticalTable, calculationTable, calculationHorizontalTable, mainOutput) {
+        if (TABLE_INITIAL_HIGHLIGHT_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0 &&
+            SVG_ARROW_ALGORITHMS.indexOf(visualViewmodel.algorithm.type) >= 0) {
+
+            setTimeout(function () {
+                visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+            }, REACTION_TIME_REDRAWING.FIRST);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
+
+            setTimeout(function () {
+                visualViewmodel.redrawOverlay(calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], mainOutput[0]);
+            }, REACTION_TIME_REDRAWING.SECOND);  // it can happen that the rendering is disturbed by MathJax and in this case we wait for a while and redraw
         }
     }
 
@@ -359,7 +443,7 @@ Author: Alexander Mattheis
         for (var i = 0; i < MAX_NUMBER_ITERATIONS; i++) {
             var currentTableNumber = (i + 1);
             linkIterationDownloadLink(
-                $(".table_download_"+ currentTableNumber),
+                $(".table_download_" + currentTableNumber),
                 $(".calculation_" + currentTableNumber),
                 -currentTableNumber,  // iteration numbers are negative in "defaults.js"
                 visualViewmodel);
@@ -404,7 +488,7 @@ Author: Alexander Mattheis
 
     /**
      * Reinitializes overlays after an event wih the browser window or a scrolling event of a table.
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function reinitialize(e) {
         var visualViewmodel = e.data.visualViewmodel;
@@ -484,7 +568,7 @@ Author: Alexander Mattheis
 
     /**
      * Selects a table entry and triggers a function of the visualizer to highlight the entry.
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function selectTableEntry(e) {
         // retrieve data
@@ -518,7 +602,7 @@ Author: Alexander Mattheis
     /**
      * Highlights a table cell and its neighbours by the help of a visualizer function
      * which shows the neighbours that were needed to compute its cell value.
-     * @param e - Stores data relevant to the event called that function.
+     * @param e {Object} - Stores data relevant to the event called that function.
      */
     function selectCell(e) {
         // retrieve data
@@ -574,7 +658,7 @@ Author: Alexander Mattheis
 
         visualViewmodel.showFlow(cellCoordinates,
             calculationVerticalTable[0], calculationTable[0], calculationHorizontalTable[0], iterationTablesArray,
-            mainOutput, -(number+1));  // MATRICES.ITERATION_NUMBER_i are negative
+            mainOutput, -(number + 1));  // MATRICES.ITERATION_NUMBER_i are negative
     }
 
     /**

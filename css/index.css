@@ -17,6 +17,17 @@ div[id=output] {
     text-align: justify;
 }
 
+.dotplotContainer {
+	max-height: 600px;
+	overflow: scroll;
+}
+
+.tableContainer {
+	overflow: scroll;
+	margin: 0px;
+	padding: 0px;
+}
+
 .userInput {
     border: 1px solid #c4c4c4;
     width: 300px;
@@ -40,12 +51,39 @@ input:focus {
     -webkit-box-shadow: 0px 0px 8px #7bc1f7;
 }
 
+
 table {
     border-collapse: collapse;
     border-spacing: 0;
     border-color: #ccc;
     opacity: 0.7;
+    margin: 0px:
+    padding: 0px 2px;
     table-layout: fixed;
+}
+
+
+.col_table{
+  position: relative;
+  max-width: 70%;
+  overflow-x: scroll;
+  display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+  *display: inline;
+  padding-top: 32px;
+}
+
+.col_structures {
+  max-width: 20%;
+  overflow-x: scroll;
+	display: inline-block;
+	margin-left: 20px;
+	vertical-align:top;
+	*zoom: 1;
+    *display: inline;
+    padding-top: 32px;
 }
 
 .cell_count {
@@ -59,6 +97,11 @@ table {
     background: rgba(255, 255, 255, 0.3);
 }
 
+:root {
+  --cell_size: 32px;
+  --cell_mea_size: 46px;
+  --cell_height: 26px;
+}
 
 /* cell style for table in nussinov.html */
 .cell {
@@ -68,9 +111,13 @@ table {
     font-size: 14px;
     border: 1px solid #a0a0a0;
     background: rgba(255, 255, 255, 1);
+    overflow: hidden;
+    min-width: var(--cell_size);
+    max-width: var(--cell_size);
+    min-height: var(--cell_size);
+    max-height: var(--cell_size);
 
 }
-
 
 .cell_th {
     /*make cell text unselectable to get rid of ugly hover*/
@@ -80,7 +127,54 @@ table {
     border: 1px solid #a0a0a0;
     background: rgba(255, 255, 255, .3);
     color: grey;
+    overflow: hidden;
+    min-width: var(--cell_size);
+    max-width: var(--cell_size);
+    min-height: var(--cell_size);
+    max-height: var(--cell_size);
+}
 
+/* cell style for table in nussinov.html */
+.cell_mea {
+    /*make cell text unselectable to get rid of ugly hover*/
+    cursor: pointer;
+    text-align: center;
+    font-size: 14px;
+    border: 1px solid #a0a0a0;
+    background: rgba(255, 255, 255, 1);
+    overflow: hidden;
+    min-width: var(--cell_mea_size);
+    max-width: var(--cell_mea_size);
+    min-height: var(--cell_height);
+    max-height: var(--cell_height);
+    height: var(--cell_height);
+
+}
+
+
+.cell_mea_th {
+    /*make cell text unselectable to get rid of ugly hover*/
+    cursor: default;
+    text-align: center;
+    font-size: 14px;
+    border: 1px solid #a0a0a0;
+    background: rgba(255, 255, 255, .3);
+    color: grey;
+    overflow: hidden;
+    /* min-width: var(--cell_mea_size);
+    max-width: var(--cell_mea_size);
+    min-height: var(--cell_size);
+    max-height: var(--cell_size); */
+    min-width: var(--cell_mea_size);
+    max-width: var(--cell_mea_size);
+    min-height: var(--cell_height);
+    max-height: var(--cell_height);
+    height: var(--cell_height);
+}
+
+.scroll_table {
+    overflow-x: scroll;
+    margin: 0px;
 }
 
 th[id=structTableHeading] {
@@ -165,5 +259,5 @@ svg {
 	height:8em;
 	border:solid;
 	border-width:1px;
-	border-color:grey;	
+	border-color:grey;
 }

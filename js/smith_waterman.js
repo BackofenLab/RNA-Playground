@@ -19,9 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("smithWaterman", startSmithWaterman, SmithWaterman,
-        initializeMatrix, computeMatrixAndScore, recursionFunction, computeTraceback,
-        getSuperclass);
+    namespace("smithWaterman", startSmithWaterman, SmithWaterman);
 
     // instances
     var alignmentInstance;

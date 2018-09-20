@@ -21,8 +21,9 @@ TestCase("test_sum_of_pairs", {
         inputData.match = 0;
         inputData.mismatch = -1;
 
-        var score1 = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , alignment1);
-        var score2 = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , alignment2);
+        var multiSequenceAlignment = new bases.multiSequenceAlignment.MultiSequenceAlignment(undefined);
+        var score1 = multiSequenceAlignment.getAffineSumOfPairsScore(inputData, alignment1);
+        var score2 = multiSequenceAlignment.getAffineSumOfPairsScore(inputData, alignment2);
         assertEquals(-6, score1);
         assertEquals(-6, score2);
     },
@@ -40,8 +41,9 @@ TestCase("test_sum_of_pairs", {
         inputData.match = 1;
         inputData.mismatch = -1;
 
-        var score1 = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , alignment1);
-        var score2 = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , alignment2);
+        var multiSequenceAlignment = new bases.multiSequenceAlignment.MultiSequenceAlignment(undefined);
+        var score1 = multiSequenceAlignment.getAffineSumOfPairsScore(inputData, alignment1);
+        var score2 = multiSequenceAlignment.getAffineSumOfPairsScore(inputData, alignment2);
         assertEquals(-5, score1);
         assertEquals(-5, score2);
     },
@@ -61,9 +63,10 @@ TestCase("test_sum_of_pairs", {
         inputData.match = 1;
         inputData.mismatch = 0;
 
-        var score1 = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , alignment1);
-        var score2 = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , alignment2);
-        var score3 = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , alignment3);
+        var multiSequenceAlignment = new bases.multiSequenceAlignment.MultiSequenceAlignment(undefined);
+        var score1 = multiSequenceAlignment.getAffineSumOfPairsScore(inputData, alignment1);
+        var score2 = multiSequenceAlignment.getAffineSumOfPairsScore(inputData, alignment2);
+        var score3 = multiSequenceAlignment.getAffineSumOfPairsScore(inputData, alignment3);
         assertEquals(-3, score1);
         assertEquals(-3, score2);
         assertEquals(-3, score3);
@@ -82,7 +85,8 @@ TestCase("test_sum_of_pairs", {
         inputData.match = 4;
         inputData.mismatch = -1;
 
-        var score1 = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , alignment1);
+        var multiSequenceAlignment = new bases.multiSequenceAlignment.MultiSequenceAlignment(undefined);
+        var score1 = multiSequenceAlignment.getAffineSumOfPairsScore(inputData, alignment1);
         assertEquals(33, score1);
     },
 
@@ -99,7 +103,8 @@ TestCase("test_sum_of_pairs", {
         inputData.match = 1;
         inputData.mismatch = 0;
 
-        var score1 = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , alignment1);
+        var multiSequenceAlignment = new bases.multiSequenceAlignment.MultiSequenceAlignment(undefined);
+        var score1 = multiSequenceAlignment.getAffineSumOfPairsScore(inputData, alignment1);
         assertEquals(2, score1);
     },
 
@@ -116,7 +121,8 @@ TestCase("test_sum_of_pairs", {
         inputData.match = 1;
         inputData.mismatch = -1;
 
-        var score1 = formats.scoringFunctions.getAffineSumOfPairsScore(inputData , alignment1);
+        var multiSequenceAlignment = new bases.multiSequenceAlignment.MultiSequenceAlignment(undefined);
+        var score1 = multiSequenceAlignment.getAffineSumOfPairsScore(inputData, alignment1);
         assertEquals(2, score1);
     }
 });

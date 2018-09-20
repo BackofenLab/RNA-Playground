@@ -16,6 +16,7 @@ TestCase("test_feng_doolittle", {
 
         var inputData = {};
         inputData.sequences = ["ACGT", "AT", "GCC"];
+        inputData.initialNamingIndex = 3;
 
         inputData.calculationType = "similarity";
         inputData.arrayPositionsOfRemovedSequences = [];
@@ -27,7 +28,6 @@ TestCase("test_feng_doolittle", {
 
         algorithm.setIO(inputData, {});
 
-        debugger;
         var ioData = algorithm.compute();
         var outputData = ioData[1];
 
@@ -71,7 +71,7 @@ TestCase("test_feng_doolittle", {
         assertEquals(9, Math.round(outputData.distanceMatrix[["b", "c"]]));
 
         // output: phylogenetic tree
-        assertEquals("(c:2.8547,(a:0.4904,b:0.4904):2.3642);", outputData.newickString);
+        assertEquals("((b:0.4904,a:0.4904):2.3642,c:2.8547);", outputData.newickString);
 
         // output: final
         assertEquals(-11, outputData.score);

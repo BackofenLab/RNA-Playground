@@ -1,0 +1,393 @@
+<!--
+University of Freiburg WS 2017/2018
+Chair for Bioinformatics
+Supervisor: Martin Raden
+Authors: Alexander Mattheis, Martin Raden
+-->
+
+<div id="algorithm_description">
+  <div class="description">
+      Originally proposed by <a href="https://doi.org/10.1016/0022-2836(87)90316-0">Geoffrey J. Barton and Michael J.E. Sternberg</a>
+      many different iterative refinement approaches were introduced to improve the MSA-score (e.g. the sum-of-pairs (SoP))
+      of a progressive alignment
+      (i.e. an alignment created with
+      <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
+      or another similar approach)
+      like Round-robin, in which the sequences are realigned in order.
+      If the score improves through the realignment,
+      then the multi-sequence alignment is kept.
+      And this approach can also be divided into different strategies:
+      you have always to go over each aligned sequence, remove the gaps and in the approach
+
+      <ol class="listed">
+          <li>
+              <em>Minimum Distance Pair:</em> You realign immediately against
+                                              the nearest sequence in the distance table you get
+                                              from <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle (1987)</a> algorithm.
+          </li>
+
+          <li>
+              <em>One-vs-All:</em> You realign once against every sequence in the multiple-sequence alignment
+                                   and select from the resulting multiple-sequence-alignments the one with highest MSA-score.
+          </li>
+
+          <li>
+              <em>Pairwise Best Pair:</em> You realign immediately against all
+                                           sequences in the multiple-sequence-alignment using progressive alignment procedure
+                                           of <a href="https://doi.org/10.1007/BF02603120">Feng-Doolittle</a>
+                                           (align against sequence with pairwise-best score).
+          </li>
+      </ol>
+
+      In the following, we provide first at all a comparison between the Feng-Doolittle alignment and the final realignment.
+      Below this the iteratively computed intermediate realignments together
+      with the guide tree used for the realignment are shown.
+      The <em>Minimum Distance Pair</em> strategy has also a distance table.
+      Our iterative refinement starts from an alignment computed with the
+      <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
+      algorithm and the affine sum-of-pairs (SoP) score together with the neutral $\#$-symbol are
+      described in our <a href="http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Feng-Doolittle">Feng-Doolittle</a>
+      implementation.
+  </div>
+
+  <div class="picture">
+      <img src="Iterative-Refinement-120x90.png" />
+  </div>
+</div>
+
+<h1>Input:</h1>
+<div id="algorithm_input">
+    <div class="row">
+        <div class="colW100"><label>Approach:</label></div>
+
+        <div class="colW400">
+            <select class="selector smaller" data-bind="options: input.availableApproaches, selectedOptions: input.selectedApproach"
+                    id="approach_selector"></select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="colW100"><label>Round-Robin order:</label></div>
+
+        <div class="colW400">
+            <select class="selector smaller" data-bind="options: input.availableOrders, selectedOptions: input.selectedOrder"
+                    id="order_selector"></select>
+        </div>
+    </div>
+
+    <!-- ko foreach: $root.input.sequences() -->
+        <div class="row">
+            <div class="colW100">
+                <label>
+                    Sequence <span data-bind="text: $root.input.clusterNames()[$index()]"></span>:
+                </label>
+            </div>
+
+            <div class="colW225">
+                <input class="sequence_multi" data-bind="value: $data" placeholder="EXAMPLE 'ATC'" title="Allowed are A-Z and '-'." type="text">
+
+                <!-- ko if: $index() == $root.input.clusterNames().length-1 -->
+                    <div class="group_hint">
+                        <b>Hints:</b> <br />
+                        The "+" and "-" buttons can be used to add or remove sequences.
+                        Duplicates of sequences are excluded from computations.
+                        <!-- The distance formula
+                        is not defined for two sequences of same type,
+                        because the denominator gets zero.
+                        Also, this allows a bigger code readability and runtime enhancement:
+                        Sequences are stored as keys in hash-tables and
+                        two times the same key is not possible in a hash-table!
+                        -->
+                    </div>
+                <!-- /ko -->
+            </div>
+
+            <!-- ko if: $index() == $root.input.clusterNames().length-1 -->
+                <button class="add_remove" data-bind="click: $root.input.addRow" title="Add Sequence" type="button">+</button>
+            <!-- /ko -->
+
+            <!-- ko if: $index() == $root.input.clusterNames().length-1 && $root.input.clusterNames().length > 2 -->
+                <button class="add_remove" data-bind="click: $root.input.removeRow" title="Remove Sequence" type="button">-</button>
+            <!-- /ko -->
+        </div>
+    <!-- /ko -->
+
+    <div class="row">
+		<div class="colW100"><label>Scoring in $s$:</label></div>
+
+		<div class="colW400">
+            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                Match <input class="fx_parameter" data-bind="value: input.match" id="match" type="number">
+                Mismatch <input class="fx_parameter" data-bind="value: input.mismatch" id="mismatch" type="number">
+            </span>
+		</div>
+    </div>
+
+    <div class="row">
+		<div class="colW100"><label>Scoring in $g$:</label></div>
+
+		<div class="colW400">
+            <span class="group"> <!-- Microsoft Browsers will fallback on text-fields using following input type -->
+                Gap opening $\alpha$ <input class="fx_parameter" data-bind="value: input.baseCosts" id="base_costs" type="number">
+                Enlargement $\beta$ <input class="fx_parameter" data-bind="value: input.enlargement" id="enlargement" type="number">
+            </span>
+            <br />
+            <br />
+            <span data-bind="text: $root.input.gapFunction"></span>
+
+            <div class="group_hint">
+				<b>Hint:</b> <br />
+				For similarity maximization, <br /> match scores should be positive and all other scores lower. <br />
+			</div>
+		</div>
+    </div>
+</div>
+
+<h1>Output:</h1>
+<div id="algorithm_output">
+    <div class="comparision">
+        <div class="alignment">
+            <table class="final_result_header">
+                <thead>
+                    <tr>
+                        <th>
+                            Feng-Doolittle Alignment
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="final_result_with_scrollbar">
+                <table class="final_result">
+                    <tbody>
+                        <tr>
+                            <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.progressiveAlignment() -->
+                                    <code data-bind="text: $root.output.progressiveAlignment()[$index()]"></code> <br />
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="final_result_footer">
+                <tr>
+                    <th>
+                        <small>
+                            Affine SoP score: <span data-bind="text: $root.output.score()"></span>
+                        </small>
+                    </th>
+                </tr>
+            </table>
+        </div>
+
+        <div class="refined_alignment">
+            <table class="final_result_header">
+                <thead>
+                    <tr>
+                        <th>
+                            Refined Alignment
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="final_result_with_scrollbar">
+                <table class="final_result">
+                    <tbody>
+                        <tr>
+                            <td class="entry entry_start">
+                                <!-- ko foreach: $root.output.progressiveAlignment() -->
+                                    <code data-bind="text: $root.output.refinedProgressiveAlignment()[$index()]"></code> <br />
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="final_result_footer">
+                <tr>
+                    <th>
+                        <small>
+                            Affine SoP score: <span data-bind="text: $root.output.refinedScore()"></span>
+                        </small>
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <h2>Realignment steps</h2>
+    <div class="merge_steps">
+        <div class="result_with_scrollbar">
+            <table class="result_categories top_border">
+                <thead>
+                    <tr>
+                        <th>
+                            <small><b>Removed Sequence</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Remaining Alignment</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Guide Alignment</b></small>
+                        </th>
+
+                        <th>
+                            <small><b>Realignment</b></small>
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- ko foreach: $root.output.guideAlignments() -->
+                        <!-- ko if: $root.output.accepted()[$index()] -->
+                            <tr>
+                                <td class="entry entry_start selected">
+                                    <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.firstGroups()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br />
+                                    <!-- /ko -->
+                                </td>
+
+                                <td class="entry entry_start selected">
+                                    <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.secondGroups()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br />
+                                    <!-- /ko -->
+                                </td>
+
+                                <td class="entry entry_start selected">
+                                    <code data-bind="text: $root.output.guideAlignmentsNames()[$index()]"></code>: <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][0]"></code> <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][1]"></code> <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][2]"></code>
+                                </td>
+
+                                <td class="entry entry_start selected">
+                                    <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br />
+                                    <!-- /ko -->
+                                    <code>Score: <span data-bind="text: $root.output.realignmentsScores()[$index()]"></span></code>
+                                </td>
+                            </tr>
+                        <!-- /ko -->
+
+                        <!-- ko ifnot: $root.output.accepted()[$index()] -->
+                            <tr>
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.firstGroupsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.firstGroups()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br />
+                                    <!-- /ko -->
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.secondGroupsNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.secondGroups()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br /><!-- /ko -->
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.guideAlignmentsNames()[$index()]"></code>: <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][0]"></code> <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][1]"></code> <br />
+                                    <code data-bind="text: $root.output.guideAlignments()[$index()][2]"></code>
+                                </td>
+
+                                <td class="entry entry_start">
+                                    <code data-bind="text: $root.output.joinedGroupNames()[$index()]"></code>: <br />
+                                    <!-- ko foreach: $root.output.joinedGroups()[$index()] -->
+                                        <code data-bind="text: $data"></code> <br />
+                                    <!-- /ko -->
+                                    <code>Score: <span data-bind="text: $root.output.realignmentsScores()[$index()]"></span></code>
+                                </td>
+                            </tr>
+                        <!-- /ko -->
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+
+        <table class="merge_steps_footer">
+            <tr>
+                <th>
+                    <small>
+                        <b>Hints:</b> Last blue marked result,
+                                      if existent shows the final realignment and else the initial alignment will be the final realignment. <br />
+                                      Remaining alignments fulfill the MSA definition (i.e. gap-only columns are removed). <br />
+                                      <!-- ko if: $root.input.selectedApproach() == "One-vs-All" -->
+                                          If the <em>One-vs-All</em> strategy is used,
+                                          then for each removed sequence only the resulting MSA-realignment with best score is shown.
+                                      <!-- /ko -->
+                    </small>
+                </th>
+            </tr>
+        </table>
+    </div>
+
+    <h2>Phylogenetic Tree</h2>
+    <div class="tree_container"> <!-- allows to delete and reinsert the div -->
+        <div id="phylogenetic_tree"></div>
+    </div>
+
+    <!-- ko if: $root.output.newickString().length !== 1 && $root.output.newickString().indexOf(SYMBOLS.MINUS) === -1 -->
+        <div class="group_hint">
+            <b>Visualization done with</b> <br />
+            Smits SA, Ouverney CC, 2010. jsPhyloSVG: <br />
+            A Javascript Library for Visualizing Interactive and Vector-Based Phylogenetic Trees on the Web. <br />
+            <a href="http://www.plosone.org/article/info:doi/10.1371/journal.pone.0012267">
+                PLoS ONE 5(8): e12267. doi:10.1371/journal.pone.0012267
+            </a>
+        </div>
+    <!-- /ko -->
+
+    <div class="group_hint">
+        <b>Hint: </b> Visualization is only shown, if there are no negative distances.
+    </div>
+
+    <!-- ko if: $root.input.selectedApproach() == "Minimum Distance Pair" -->
+        <h2>Distance Table</h2>
+        <!-- ko if: $root.output.progressiveAlignment()[0].length > 0 -->
+            <div class="distance_table">
+                <table class="distances">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <!-- ko foreach: $root.output.remainingClusters()[0] -->
+                                <th data-bind="drawChar: [$data, undefined]"></th>
+                            <!-- /ko -->
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- ko foreach: $root.output.distanceMatrix() --> <!-- to get i-indexes = $parentContext.$index() -->
+                            <tr>
+                                <th data-bind="drawChar: [$root.output.remainingClusters()[0][$index()], undefined]"></th>
+
+                                <!-- ko foreach: $root.output.distanceMatrix()[0] --> <!-- to get j-indexes = $index() -->
+                                    <!-- ko if: $index() >= $parentContext.$index() -->
+                                        <td class="non_selectable_entry"
+                                            data-bind="text: $root.output.distanceMatrix()[$parentContext.$index()][$index()]">
+                                        </td>
+                                    <!-- /ko -->
+
+                                    <!-- ko if: $index() < $parentContext.$index() -->
+                                        <td class="non_selectable_entry gray"
+                                            data-bind="text:  $root.output.distanceMatrix()[$parentContext.$index()][$index()]">
+                                        </td>
+                                    <!-- /ko -->
+                                <!-- /ko -->
+                            </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
+        <!-- /ko -->
+    <!-- /ko -->
+</div>

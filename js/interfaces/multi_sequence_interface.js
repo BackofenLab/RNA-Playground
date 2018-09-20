@@ -9,7 +9,7 @@ Author: Alexander Mattheis
 
 (function () {  // namespace
     // public methods
-    namespace("interfaces.multiSequenceInterface", MultiSequenceInterface, startMultiSequenceInterface, getMaxNumberOfAlignments);
+    namespace("interfaces.multiSequenceInterface", MultiSequenceInterface);
 
     // instances
     var alignmentInterfaceInstance;
@@ -30,14 +30,15 @@ Author: Alexander Mattheis
         this.sequencesNumberChanged = false;
         this.lastNumberOfSequences = 0;
 
-            // public class methods
+        // public class methods
         this.startMultiSequenceInterface = startMultiSequenceInterface;
+        this.getMaxNumberOfAlignments = getMaxNumberOfAlignments;
     }
 
     /**
      * Function managing objects.
-     * @param Algorithm - The algorithm which is started.
-     * @param algorithmName - The name of the algorithm which is started.
+     * @param Algorithm {Object} - The algorithm which is started.
+     * @param algorithmName {string} - The name of the algorithm which is started.
      */
     function startMultiSequenceInterface(Algorithm, algorithmName) {
         imports();
@@ -51,8 +52,7 @@ Author: Alexander Mattheis
      */
     function imports() {
         alignmentInterfaceInstance.imports();
-
-        $.getScript(PATHS.ALIGNMENT_INTERFACE);  // very important, because other interfaces are also using this class
+        //$.getScript(PATHS.MULTI_SEQUENCE_INTERFACE);  // very important, because other interfaces are also using this class
     }
 
     /*---- INPUT ----*/
@@ -67,16 +67,24 @@ Author: Alexander Mattheis
     function InputViewmodel(algorithmName) {
         var viewmodel = this;
         var isTcoffee = algorithmName === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA;
+        var isIterativeRefinement = algorithmName === ALGORITHMS.ITERATIVE_REFINMENT;
 
-        this.sequences = ko.observableArray(MULTI_SEQUENCE_DEFAULTS.SEQUENCES);
+        this.sequences = ko.observableArray(isIterativeRefinement ? ITERATIVE_SEQUENCE_DEFAULTS.SEQUENCES : MULTI_SEQUENCE_DEFAULTS.SEQUENCES);
 
-        this.calculation = ko.observable(MULTI_SEQUENCE_DEFAULTS.CALCULATION);
+        this.calculation = ko.observable(MULTI_SEQUENCE_DEFAULTS.CALCULATION);  // equal for all used MSA approaches
 
         // function
-        this.baseCosts = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS);
-        this.enlargement = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT);
-        this.match = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH);
-        this.mismatch = ko.observable(MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH);
+        this.baseCosts = ko.observable(isIterativeRefinement
+            ? ITERATIVE_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS : MULTI_SEQUENCE_DEFAULTS.FUNCTION.BASE_COSTS);
+
+        this.enlargement = ko.observable(isIterativeRefinement
+            ? ITERATIVE_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT : MULTI_SEQUENCE_DEFAULTS.FUNCTION.ENLARGEMENT);
+
+        this.match = ko.observable(isIterativeRefinement
+            ? ITERATIVE_SEQUENCE_DEFAULTS.FUNCTION.MATCH : MULTI_SEQUENCE_DEFAULTS.FUNCTION.MATCH);
+
+        this.mismatch = ko.observable(isIterativeRefinement
+            ? ITERATIVE_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH : MULTI_SEQUENCE_DEFAULTS.FUNCTION.MISMATCH);
 
         if (isTcoffee) {
             multiSequenceInterfaceInstance.lastNumberOfSequences = viewmodel.sequences().length;
@@ -108,6 +116,12 @@ Author: Alexander Mattheis
                     return getSubformula(viewmodel, true);
                 }
             );
+        } else if (isIterativeRefinement) {
+            this.availableApproaches = ko.observableArray(ITERATIVE_SEQUENCE_DEFAULTS.APPROACHES);
+            this.selectedApproach = ko.observableArray(ITERATIVE_SEQUENCE_DEFAULTS.STANDARD_APPROACH);
+
+            this.availableOrders = ko.observableArray(ITERATIVE_SEQUENCE_DEFAULTS.ORDERS);
+            this.selectedOrder = ko.observableArray(ITERATIVE_SEQUENCE_DEFAULTS.STANDARD_ORDER);
         }
 
         this.clusterNames = ko.computed(
@@ -116,7 +130,7 @@ Author: Alexander Mattheis
             }
         );
 
-        this.addRow = function() {
+        this.addRow = function () {
             setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
                 MathJax.Hub.Queue(["Typeset", MathJax.Hub])
             }, REUPDATE_TIMEOUT_MS);
@@ -124,7 +138,7 @@ Author: Alexander Mattheis
             viewmodel.sequences.push(SYMBOLS.EMPTY);
         };
 
-        this.removeRow = function() {
+        this.removeRow = function () {
             setTimeout(function () {  // to reinterpret in next statement dynamically created LaTeX-code
                 MathJax.Hub.Queue(["Typeset", MathJax.Hub])
             }, REUPDATE_TIMEOUT_MS);
@@ -159,7 +173,7 @@ Author: Alexander Mattheis
         var sequences = inputViewmodel.sequences();
         var hashTable = {};
 
-        var uniqueSequences = sequences.filter(function(sequence) {
+        var uniqueSequences = sequences.filter(function (sequence) {
             if (hashTable.hasOwnProperty(sequence))
                 return false;  // remove/filter
 
@@ -169,7 +183,7 @@ Author: Alexander Mattheis
         });
 
         var n = uniqueSequences.length;
-        return  (n * (n-1)) / 2;  // Gauss-formula
+        return (n * (n - 1)) / 2;  // Gauss-formula
     }
 
     /**
@@ -261,7 +275,6 @@ Author: Alexander Mattheis
     function processInput(algorithm, inputProcessor, inputViewmodel, visualViewmodel) {
         visualViewmodel.removeAllContents();
 
-        debugger;
         // when page was loaded the inputs have not to be updated or you get wrong inputs
         if (inputProcessor.inputUpdatesActivated()) {
             inputViewmodel.sequences(getSequencesArray(inputViewmodel));
@@ -271,7 +284,10 @@ Author: Alexander Mattheis
             inputViewmodel.match(Number($("#match").val()));
             inputViewmodel.mismatch(Number($("#mismatch").val()));
 
-            if (algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {
+            if (algorithm.type === ALGORITHMS.ITERATIVE_REFINMENT) {
+                inputViewmodel.selectedApproach([$("#approach_selector option:selected").val()]);
+                inputViewmodel.selectedOrder([$("#order_selector option:selected").val()]);
+            } else if (algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA) {
                 inputViewmodel.baseCostsLocal(Number($("#base_costs_local").val()));
                 inputViewmodel.enlargementLocal(Number($("#enlargement_local").val()));
                 inputViewmodel.matchLocal(Number($("#match_local").val()));
@@ -323,6 +339,7 @@ Author: Alexander Mattheis
 
         /* bug-fix for a Knockout-problem -> dynamically generated inputs get wrong values after typing in something */
         MULTI_SEQUENCE_DEFAULTS.SEQUENCES = MULTI_SEQUENCE_DEFAULTS.SEQUENCES_COPY.slice();
+        ITERATIVE_SEQUENCE_DEFAULTS.SEQUENCES = ITERATIVE_SEQUENCE_DEFAULTS.SEQUENCES_COPY.slice();
         inputViewmodel.sequences.removeAll();  // avoids changing on the as constant defined value
 
         return sequenceArray;
@@ -338,37 +355,20 @@ Author: Alexander Mattheis
     function changeOutput(outputData, inputProcessor, viewmodels) {
         if (viewmodels.visual.algorithm.type === ALGORITHMS.FENG_DOOLITTLE)
             changeFengDoolittleOutput(outputData, viewmodels);
+        else if (viewmodels.visual.algorithm.type === ALGORITHMS.ITERATIVE_REFINMENT)
+            changeIterativeRefinementOutput(outputData, viewmodels);
         else if (viewmodels.visual.algorithm.type === ALGORITHMS.NOTREDAME_HIGGINS_HERINGA)
             changeTcoffeeOutput(outputData, viewmodels);
     }
 
     /**
-     * Changes the output of Feng-Doolittle algorithm after processing the input.
+     * Changes the output of Feng-Doolittle algorithm.
      * @param outputData {Object} - Contains all output data.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
     function changeFengDoolittleOutput(outputData, viewmodels) {
-        // creates a visually representable distance matrix
-        outputData.distanceMatrix
-            = alignmentInterfaceInstance.getDistanceTable(outputData.distanceMatrix, outputData.distanceMatrixLength,
-            outputData.remainingClusters[0], undefined);
-
-        // distance matrix
-        viewmodels.output.distanceMatrix(outputData.distanceMatrix);
-
-        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
-            // new variables (rows) are not automatically functions
-            // and so we have to convert new variables manually into functions
-            // or we get the following error
-            // 'Uncaught TypeError: viewmodels.output.distanceMatrix[i] is not a function'
-            if (i > viewmodels.output.distanceMatrix.length)
-                viewmodels.output.distanceMatrix[i] = new Function();
-
-            viewmodels.output.distanceMatrix[i](outputData.distanceMatrix[i]);
-        }
-
         // distance matrices
-        outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData);
+        outputData.distanceMatrices = alignmentInterfaceInstance.getDistanceTables(outputData, false, true);
 
         alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
 
@@ -424,7 +424,7 @@ Author: Alexander Mattheis
     }
 
     /**
-     * Changes the output of Notredame-Higgins-Heringa algorithm after processing the input.
+     * Changes the output of Notredame-Higgins-Heringa algorithm.
      * @param outputData {Object} - Contains all output data.
      * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
      */
@@ -460,5 +460,59 @@ Author: Alexander Mattheis
         viewmodels.output.libPositionPairs(outputData.librariesData[1]);
         viewmodels.output.primLibValues(outputData.librariesData[2]);
         viewmodels.output.extendedLibValues(outputData.librariesData[3]);
+    }
+
+    /**
+     * Changes the output of an iterative refinement algorithm.
+     * @param outputData {Object} - Contains all output data.
+     * @param viewmodels {Object} - The viewmodels used to access visualization functions and input.
+     */
+    function changeIterativeRefinementOutput(outputData, viewmodels) {
+        // final output
+        alignmentInterfaceInstance.reorderFinalAlignments(outputData);  // do not move down this function
+        viewmodels.output.progressiveAlignment(outputData.progressiveAlignment);
+        viewmodels.output.score(outputData.score);
+        viewmodels.output.refinedProgressiveAlignment(outputData.refinedProgressiveAlignment);
+        viewmodels.output.refinedScore(outputData.refinedScore);
+
+        // realignment steps
+        alignmentInterfaceInstance.reorderGroupSequences(outputData);   // do not move up this function
+        viewmodels.output.guideAlignments(outputData.guideAlignments);
+        viewmodels.output.guideAlignmentsNames(outputData.guideAlignmentsNames);
+
+        viewmodels.output.firstGroups(outputData.firstGroups);
+        viewmodels.output.firstGroupsNames(outputData.firstGroupsNames);
+
+        viewmodels.output.secondGroups(outputData.secondGroups);
+        viewmodels.output.secondGroupsNames(outputData.secondGroupsNames);
+
+        viewmodels.output.joinedGroups(outputData.joinedGroups);
+        viewmodels.output.realignmentsScores(outputData.realignmentsScores);
+        viewmodels.output.joinedGroupNames(outputData.joinedGroupNames);
+
+        viewmodels.output.accepted(outputData.accepted);
+
+        // tree
+        viewmodels.output.newickString(outputData.newickString);
+        viewmodels.visual.drawTree();
+
+        // distance matrix
+        viewmodels.output.remainingClusters(outputData.remainingClusters);
+
+        outputData.distanceMatrix
+            = bases.clustering.getMatrixAsTable(outputData.distanceMatrix, outputData.distanceMatrixLength, outputData.remainingClusters[0], undefined, true);
+
+        alignmentInterfaceInstance.roundValues(viewmodels.visual.algorithm.type, outputData);
+
+        viewmodels.output.distanceMatrix(outputData.distanceMatrix);
+
+        // iteration over each row of the matrix
+        for (var i = 0; i < outputData.distanceMatrix.length; i++) {
+            // new variables (rows) are not automatically functions...
+            if (i >= viewmodels.output.distanceMatrix.length)
+                viewmodels.output.distanceMatrix[i] = new Function();
+
+            viewmodels.output.distanceMatrix[i](outputData.distanceMatrix[i]);
+        }
     }
 }());

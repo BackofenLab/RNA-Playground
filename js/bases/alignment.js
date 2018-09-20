@@ -8,12 +8,8 @@ Author: Alexander Mattheis
 "use strict";
 
 (function () {  // namespace
-    // public methods
-    namespace("bases.alignment", Vector, create,
-        Alignment, getInput, setLinearAlignmentInput, setSubadditiveAlignmentInput, compute, recursionFunction,
-        affineRecursionFunction, getEnlargementAndBaseCosts, getGlobalTraces, getLocalTraces, getAllMaxPositions,
-        createAlignments, getOutput, setIO, getLastChild, setLastChild,
-        getNeighboured, getVerticalNeighboured, getHorizontalNeighboured, differenceLowerEpsilon);
+    // public methods (for "create" an execution without initialization is needed)
+    namespace("bases.alignment", Vector, create, Alignment);
 
     // instances
     var alignmentInstance;
@@ -39,7 +35,7 @@ Author: Alexander Mattheis
      * Changes the label of a vector. It is used to create a vector with a specific label.
      * @example
      * create(new Vector(i,j), MATRICES.HORIZONTAL)
-     * @param Vector - The vector of which the label should be changed.
+     * @param Vector {Object} - The vector of which the label should be changed.
      * @param label {string} - The string label from "defaults.js".
      * @return {Vector} - The vector with the changed label.
      */
@@ -52,7 +48,7 @@ Author: Alexander Mattheis
      * Contains functions to compute optimal alignments.
      * It is used by global and local alignment algorithms as superclass
      * to avoid code duplicates.
-     * @param child - The child algorithm which inherits from this class.
+     * @param child {Object} - The child algorithm which inherits from this class.
      * @constructor
      */
     function Alignment(child) {
@@ -61,7 +57,7 @@ Author: Alexander Mattheis
 
         this.stopTraceback = false;
 
-        // public methods
+        // public class methods
         this.getInput = getInput;
 
         this.setLinearAlignmentInput = setLinearAlignmentInput;
@@ -205,7 +201,7 @@ Author: Alexander Mattheis
         if (aChar === SYMBOLS.NONE || bChar === SYMBOLS.NONE) matchOrMismatch = 0;  // extension for Feng-Doolittle
 
         if (inputData.substitutionFunction !== undefined)  // extension for T-Coffee
-            matchOrMismatch = inputData.substitutionFunction(i,j);
+            matchOrMismatch = inputData.substitutionFunction(i, j);
 
         // gap recursion-functions
         outputData.horizontalGaps[i][j] = horizontalOptimum(optimum, i, j, bChar);
@@ -235,11 +231,11 @@ Author: Alexander Mattheis
      * @return {number} - The optimal value.
      */
     function horizontalOptimum(optimum, i, j, char) {
-        var enlargmentBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);  // Hint: case s(.,#) = 0
+        var enlargementBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);  // Hint: case s(.,#) = 0
 
         return optimum(
-            outputData.horizontalGaps[i][j - 1] + enlargmentBaseCosts[0],
-            outputData.matrix[i][j - 1] +  enlargmentBaseCosts[1] +  enlargmentBaseCosts[0]);
+            outputData.horizontalGaps[i][j - 1] + enlargementBaseCosts[0],
+            outputData.matrix[i][j - 1] + enlargementBaseCosts[1] + enlargementBaseCosts[0]);
     }
 
     /**
@@ -267,11 +263,11 @@ Author: Alexander Mattheis
      * @return {number} - The optimal value.
      */
     function verticalOptimum(optimum, i, j, char) {
-        var enlargmentBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);  // Hint: case s(#, .) = 0
+        var enlargementBaseCosts = getEnlargementAndBaseCosts(inputData.enlargement, inputData.baseCosts, char);  // Hint: case s(#, .) = 0
 
         return optimum(
-            outputData.verticalGaps[i - 1][j] + enlargmentBaseCosts[0],
-            outputData.matrix[i - 1][j] + enlargmentBaseCosts[1] +  enlargmentBaseCosts[0])
+            outputData.verticalGaps[i - 1][j] + enlargementBaseCosts[0],
+            outputData.matrix[i - 1][j] + enlargementBaseCosts[1] + enlargementBaseCosts[0])
     }
 
     /**
@@ -493,7 +489,10 @@ Author: Alexander Mattheis
                 var bChar = inputData.sequenceB[currentPositionB];
 
                 alignedSequenceA += aChar;
-                matchOrMismatchString += bChar === aChar ? SYMBOLS.STAR : SYMBOLS.VERTICAL_BAR;
+                if (aChar !== SYMBOLS.NONE && bChar !== SYMBOLS.NONE)  // for Feng-Doolittle
+                    matchOrMismatchString += bChar === aChar ? SYMBOLS.STAR : SYMBOLS.VERTICAL_BAR;
+                else
+                    matchOrMismatchString += SYMBOLS.SPACE;
                 alignedSequenceB += bChar;
 
                 currentPositionB++;
@@ -693,10 +692,10 @@ Author: Alexander Mattheis
     /**
      * Tests if the difference between to values is lower some parameter Epsilon.
      * Hint: It would maybe work without this function. So, this function is only for security reasons.
-     * @param value1 - The first value.
-     * @param value2 - The second value.
-     * @param epsilon - The small number you test against.
-     * @return {boolean} - The
+     * @param value1 {number} - The first value.
+     * @param value2 {number} - The second value.
+     * @param epsilon {number} - The small number you test against.
+     * @return {boolean} - The result which tells you if the difference of the two given values is lower an epsilon or not.
      */
     function differenceLowerEpsilon(value1, value2, epsilon) {
         var difference = value1 - value2;

@@ -11,12 +11,14 @@ TestCase("test_upgma", {
      */
     "test_1": function () {
         debugger;
-        var algorithm = new upgma.Upgma();
+        var algorithm = new agglomerativeClustering.AgglomerativeClustering();
 
         var inputData = {};
         var outputData = {};
+
+        inputData.clusteringSubalgorithm = CLUSTERING_ALGORITHMS.UPGMA;
         inputData.numOfStartClusters = 5;
-        inputData.sequences = ["a", "b", "c", "d", "e"];  // needed because of Feng-Doolittle
+        inputData.initialNamingIndex = 5;  // needed because of Feng-Doolittle
 
         outputData.distanceMatrix = {};
         outputData.distanceMatrix[["a", "b"]] = 6;
@@ -40,7 +42,7 @@ TestCase("test_upgma", {
         var ioData = algorithm.compute();
         var outputData = ioData[1];
 
-        assertEquals("((a:3,b:3):2,(e:3,(c:1,d:1):2):2);", outputData.newickString);
+        assertEquals("(((d:1,c:1):2,e:3):2,(b:3,a:3):2);", outputData.newickString);
     },
 
     /**
@@ -48,12 +50,14 @@ TestCase("test_upgma", {
      */
     "test_2": function () {
         debugger;
-        var algorithm = new upgma.Upgma();
+        var algorithm = new agglomerativeClustering.AgglomerativeClustering();
 
         var inputData = {};
         var outputData = {};
+
+        inputData.clusteringSubalgorithm = CLUSTERING_ALGORITHMS.UPGMA;
         inputData.numOfStartClusters = 3;
-        inputData.sequences = ["a", "b", "c"];  // needed because of Feng-Doolittle
+        inputData.initialNamingIndex = 3;  // needed because of Feng-Doolittle
 
         outputData.distanceMatrix = {};
         outputData.distanceMatrix[["a", "b"]] = 2;
@@ -67,7 +71,7 @@ TestCase("test_upgma", {
         var ioData = algorithm.compute();
         var outputData = ioData[1];
 
-        assertEquals("(c:1.5,(a:1,b:1):0.5);", outputData.newickString);
+        assertEquals("((b:1,a:1):0.5,c:1.5);", outputData.newickString);
     },
 
     /**
@@ -77,12 +81,14 @@ TestCase("test_upgma", {
      */
     "test_3": function () {
         debugger;
-        var algorithm = new upgma.Upgma();
+        var algorithm = new agglomerativeClustering.AgglomerativeClustering();
 
         var inputData = {};
         var outputData = {};
+
+        inputData.clusteringSubalgorithm = CLUSTERING_ALGORITHMS.UPGMA;
         inputData.numOfStartClusters = 3;
-        inputData.sequences = ["a", "b", "c"];  // needed because of Feng-Doolittle
+        inputData.initialNamingIndex = 3;  // needed because of Feng-Doolittle
 
         outputData.distanceMatrix = {};
         outputData.distanceMatrix[["a", "b"]] = 3;
@@ -96,6 +102,6 @@ TestCase("test_upgma", {
         var ioData = algorithm.compute();
         var outputData = ioData[1];
 
-        assertEquals("(c:3,(a:1.5,b:1.5):1.5);", outputData.newickString);
+        assertEquals("((b:1.5,a:1.5):1.5,c:3);", outputData.newickString);
     }
 });

@@ -5,34 +5,34 @@
 			of intramolecular base pairs can be done efficiently in $O(nm)$ time and space
 			for two RNA sequences $S^{1}$ and $S^{2}$ of lengths $n$ and $m$, resp.,
 			<a href="https://dx.doi.org/10.1093%2Fnar%2Fgkl356">(Brian Tjaden et al., 2006)</a>.
-			For a <a href="index.jsp?toolName=Nussinov">Nussinov</a>-like  
+			For a <a href="index.jsp?toolName=Nussinov">Nussinov</a>-like
 			interaction prediction, a dynamic programming table $H$ is filled via the
 			<em>prefix-based</em> recursion
 			<div style="padding-left:45px;">
 				$H_{i,j}=\max\begin{cases} H_{i-1,j-1}+1 & \text{if }S^{1}_{i}, \overleftarrow{S^{2}_{j}}\text{ compl. base pair}\\ H_{i-1,j} \\ H_{i,j-1} \end{cases}$,
 			</div>
 			where an entry $H_{i,j}$ provides the maximal number of intermolecular
-			base pairs for the prefixes $S^{1}_{1..i}$ and $\overleftarrow{S^{2}_{1..j}}$, the reverse sequence of $S^2$. 
-			Note, this recursion is a variant of a local
-			<a href="https://doi.org/10.1016/0022-2836(81)90087-5">Smith-Waterman (1981)</a> 
+			base pairs for the prefixes $S^{1}_{1..i}$ and $\overleftarrow{S^{2}_{1..j}}$, the reverse sequence of $S^2$.
+			Note, this recursion is a variant of a global
+			<a href="https://dx.doi.org/10.1016/0022-2836(70)90057-4">Needleman-Wunsch (1970)</a>
 			sequence alignment with special scoring, where only
 			Watson-Crick as well as GU base pairs are considered complementary and thus similiar.
 			A traceback from the entry $H_{i,j}$ with the highest value provides
 			an according optimal interaction.
 			<br>
 			<br>
-       		Here, in order to prepare the computation of 
-       		<a href="index.jsp?toolName=accessibility">accessibility-based interaction prediction</a>, 
+       		Here, in order to prepare the computation of
+       		<a href="index.jsp?toolName=accessibility">accessibility-based interaction prediction</a>,
        		the following <em>interval-based</em> recursion is used to identify the RNA-RNA interaction
        		with the maximal number of intermolecular base pairs. To this end,
-       		the four-dimensional table $D$ is filled, where an entry $D^{i,k}_{j,l}$ 
-       		represents the maximal number of base pairs for the sequence 
+       		the four-dimensional table $D$ is filled, where an entry $D^{i,k}_{j,l}$
+       		represents the maximal number of base pairs for the sequence
        		intervals $S^{1}_{i..k}$ and $\overleftarrow{S^{2}_{j..l}}$ under the condition
        		that both interval ends are forming the intermolecular base
        		pairs $(S^{1}_{i},\overleftarrow{S^{2}_{j}})$ and $(S^{1}_{k},\overleftarrow{S^{2}_{l}})$.
 	        <div id="rec_id" data-bind="text: latex()[0]"></div>
 	        A list of up to 15 maximal base pair RNA-RNA interactions is provided
-	        via exhaustive traceback for all table entries with maximal value, 
+	        via exhaustive traceback for all table entries with maximal value,
 	        i.e. $D^{i,k}_{j,l}=\max(D)$.
 		</div>
 		<div class="colW150">
@@ -82,7 +82,7 @@
 
 	<div id="output">
 	    <h2>Visualization of interacting base pairs (selected structure)</h2>
-	
+
         <div>
        		Due to the four-dimensionality of $D$, we only list the optimal
        		hybrid structures (up to 15). On selection, the intermolecular base pairs are
@@ -90,7 +90,7 @@
         </div>
 
 		<div class="row" style="margin:0;">
-			<div class="colW200" style="margin:0;">
+			<div class="colW400" style="margin:0;overflow-x:auto;">
 			    <table id="structures">
 			        <thead>
 			        <tr><th id="structTableHeading">Possible Structures</th></tr>
@@ -100,7 +100,7 @@
 			        </tbody>
 			    </table>
 			</div>
-			<div class="colW550" style="margin:0;">
+			<div class="colW400" style="margin:0;">
 	        	<div id="4dVisual" class="hybridVisual"></div>
 			</div>
 		</div>
@@ -113,12 +113,12 @@
 
 		<div>
     		The box provides an ASCII representation of the interacting
-    		base pairs of the selected structure with $S^{1}$ on top and $\overleftarrow{S^{2}}$ 
-    		on the bottom. 
-    		Note, sequence $S^{2}$ is reversed (running from right ($5'$-) to left 
+    		base pairs of the selected structure with $S^{1}$ on top and $\overleftarrow{S^{2}}$
+    		on the bottom.
+    		Note, sequence $S^{2}$ is reversed (running from right ($5'$-) to left
     		($3'$-end)) within this representation.
     		Note further, if no interacting
-    		base pairs are present, no visualization is done. 
+    		base pairs are present, no visualization is done.
 	    </div>
 	</div>
 

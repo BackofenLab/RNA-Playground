@@ -19,7 +19,7 @@ $(document).ready(function () {
 
 (function () {  // namespace
     // public methods
-    namespace("hirschberg", startHirschberg, Hirschberg, getInput, setInput, compute, getOutput, setIO, getSuperclass);
+    namespace("hirschberg", startHirschberg, Hirschberg);
 
     // instances
     var alignmentInstance;
@@ -167,6 +167,7 @@ $(document).ready(function () {
      * Creates an array of positions.
      * Hint: Gives more information about the position of a submatrix in the initial matrix.
      * @param numberPositions {number} - The number of positions to create.
+     * @param start {number} - The number from which on positions are created.
      */
     function createMatrixPositions(numberPositions, start) {
         var positions = [];
@@ -220,7 +221,7 @@ $(document).ready(function () {
     /**
      * Computes the Needleman-Wunsch matrix with the input sequences in usual order.
      * @param input {Object} - The initialized Needleman-Wunsch input structure.
-     * @return {Object} - Output data of Needleman-Wunsch.
+     * @return {Array} - Output matrix of Needleman-Wunsch.
      */
     function computeForwardSequenceMatrix(input) {
         needlemanWunschInstance.setIO(input, {});
@@ -239,7 +240,7 @@ $(document).ready(function () {
     /**
      * Computes the Needleman-Wunsch matrix with the input sequences in reversed order.
      * @param input {Object} - The initialized Needleman-Wunsch input structure.
-     * @return {Object} - Output data of Needleman-Wunsch.
+     * @return {Array} - Output data of Needleman-Wunsch.
      */
     function computeBackwardSequenceMatrix(input) {
         input.sequenceA = input.sequenceA.split(SYMBOLS.EMPTY).reverse().join(SYMBOLS.EMPTY);
@@ -334,12 +335,12 @@ $(document).ready(function () {
      * @return {Object} - A vector.
      */
     function getGlobalTracecell(splittingPosI, splittingPosJ, currentRound) {
-        var globalPosI = outputData.firstSequencePositions[currentRound][splittingPosI-1];
-        var globalPosJ = outputData.secondSequencePositions[currentRound][splittingPosJ-1];
+        var globalPosI = outputData.firstSequencePositions[currentRound][splittingPosI - 1];
+        var globalPosJ = outputData.secondSequencePositions[currentRound][splittingPosJ - 1];
 
-        if (globalPosJ === undefined)  {  // then return first defined position
+        if (globalPosJ === undefined) {  // then return first defined position
             var firstDefinedPosition = outputData.secondSequencePositions[currentRound][0];
-            globalPosJ = firstDefinedPosition-1;
+            globalPosJ = firstDefinedPosition - 1;
         }
 
         return new bases.alignment.Vector(globalPosI, globalPosJ);
@@ -494,7 +495,6 @@ $(document).ready(function () {
     function getNextVerticalTraceCell(position) {
         var up = position.i - 1;
 
-        var tracecellLines = outputData.tracecellLines;
         var tracecellLine = undefined;
 
         // search for a defined tracecell-line
@@ -546,7 +546,7 @@ $(document).ready(function () {
     /**
      * Computes Needleman-Wunsch with the given input sequences.
      * @param input {Object} - The initialized Needleman-Wunsch input.
-     * @param {[inputData, outputData]} - The Needleman-Wunsch output structure.
+     * @return {[inputData, outputData]} - The Needleman-Wunsch output structure.
      */
     function computeWithNeedlemanWunsch(input) {
         needlemanWunschInstance.setIO(input, outputData);
