@@ -602,14 +602,14 @@ NussinovDPAlgorithm_Ambiguous.Tables[0].getSubstructures = function (sigma, P, t
         var sigma_prime = JSON.stringify(sigma);
         sigma_prime = JSON.parse(sigma_prime);
 
-        var tmp_P = JSON.stringify(P);
-        tmp_P = JSON.parse(tmp_P);
+        var P_prime = JSON.stringify(P);
+        P_prime = JSON.parse(P_prime);
 
         var tmp_traces = JSON.stringify(traces);
         tmp_traces = JSON.parse(tmp_traces);
 
         S_prime.sigma = sigma_prime;
-        S_prime.P = tmp_P;
+        S_prime.P = P_prime;
         S_prime.traces = tmp_traces;
 
         R.push(S_prime);
@@ -627,19 +627,19 @@ NussinovDPAlgorithm_Ambiguous.Tables[0].getSubstructures = function (sigma, P, t
                 sigma_prime = JSON.parse(sigma_prime);
                 sigma_prime.push([ij[0] + 1, ij[1] - 1]);
 
-                var tmp_P = JSON.stringify(P);
-                tmp_P = JSON.parse(tmp_P);
-                tmp_P.push([ij[0], ij[1]]);
+                var P_prime = JSON.stringify(P);
+                P_prime = JSON.parse(P_prime);
+                P_prime.push([ij[0], ij[1]]);
 
                 var tmp_traces = JSON.stringify(traces);
                 tmp_traces = JSON.parse(tmp_traces);
 
-                var NSprime = this.countBasepairs(tmp_P, sigma_prime);
+                var NSprime = this.countBasepairs(P_prime, sigma_prime);
 
                 if (NSprime >= Nmax - delta) {
                     var S_prime = {};
                     S_prime.sigma = sigma_prime;
-                    S_prime.P = tmp_P;
+                    S_prime.P = P_prime;
                     tmp_traces.unshift([ij, [[ij[0] + 1, ij[1] - 1]]]);
                     S_prime.traces = tmp_traces;
                     //console.log("i+1,j-1:", JSON.stringify(S_prime));
@@ -662,18 +662,18 @@ NussinovDPAlgorithm_Ambiguous.Tables[0].getSubstructures = function (sigma, P, t
         sigma_prime = JSON.parse(sigma_prime);
         sigma_prime.unshift([ij[0] + 1, ij[1]]);
 
-        var tmp_P = JSON.stringify(P);
-        tmp_P = JSON.parse(tmp_P);
+        var P_prime = JSON.stringify(P);
+        P_prime = JSON.parse(P_prime);
 
         var tmp_traces = JSON.stringify(traces);
         tmp_traces = JSON.parse(tmp_traces);
 
-        var NSprime = this.countBasepairs(P, sigma_prime);
+        var NSprime = this.countBasepairs(P_prime, sigma_prime);
 
         if (NSprime >= Nmax - delta) {
             var S_prime = {};
             S_prime.sigma = sigma_prime;
-            S_prime.P = tmp_P;
+            S_prime.P = P_prime;
             tmp_traces.unshift([ij, [[ij[0] + 1, ij[1]]]]);
             S_prime.traces = tmp_traces;
             //console.log("i+1,j:", JSON.stringify(S_prime));
@@ -694,18 +694,18 @@ NussinovDPAlgorithm_Ambiguous.Tables[0].getSubstructures = function (sigma, P, t
         sigma_prime = JSON.parse(sigma_prime);
         sigma_prime.unshift([ij[0], ij[1] - 1]);
 
-        var tmp_P = JSON.stringify(P);
-        tmp_P = JSON.parse(tmp_P);
+        var P_prime = JSON.stringify(P);
+        P_prime = JSON.parse(P_prime);
 
         var tmp_traces = JSON.stringify(traces);
         tmp_traces = JSON.parse(tmp_traces);
 
-        var NSprime = this.countBasepairs(P, sigma_prime);
+        var NSprime = this.countBasepairs(P_prime, sigma_prime);
 
         if (NSprime >= Nmax - delta) {
             var S_prime = {};
             S_prime.sigma = sigma_prime;
-            S_prime.P = tmp_P;
+            S_prime.P = P_prime;
             tmp_traces.unshift([ij, [[ij[0], ij[1] - 1]]]);
             S_prime.traces = tmp_traces;
             //console.log("i,j-1:", JSON.stringify(S_prime));
@@ -728,19 +728,19 @@ NussinovDPAlgorithm_Ambiguous.Tables[0].getSubstructures = function (sigma, P, t
         sigma_prime.push([ij[0], l]);
         sigma_prime.push([l + 1, ij[1]]);
 
-        var tmp_P = JSON.stringify(P);
-        tmp_P = JSON.parse(tmp_P);
+        var P_prime = JSON.stringify(P);
+        P_prime = JSON.parse(P_prime);
 
         var tmp_traces = JSON.stringify(traces);
         tmp_traces = JSON.parse(tmp_traces);
 
-        var NSprime = this.countBasepairs(tmp_P, sigma_prime);
+        var NSprime = this.countBasepairs(P_prime, sigma_prime);
 
         if (NSprime >= Nmax - delta) {
 
             var S_prime = {};
             S_prime.sigma = sigma_prime;
-            S_prime.P = tmp_P;
+            S_prime.P = P_prime;
             tmp_traces.unshift([ij, [[ij[0], l], [l + 1, ij[1]]]]);
             S_prime.traces = tmp_traces;
             //console.log("ilj:", JSON.stringify(S_prime));
@@ -874,7 +874,7 @@ NussinovDPAlgorithm_Unique.Tables[0].getSubstructures = function (sigma, P, trac
         var tmp_traces = JSON.stringify(traces);
         tmp_traces = JSON.parse(tmp_traces);
 
-        var NSprime = this.countBasepairs(P, sigma_prime);
+        var NSprime = this.countBasepairs(tmp_P, sigma_prime);
 
         if (NSprime >= Nmax - delta) {
             var S_prime = {};
@@ -1053,6 +1053,170 @@ NussinovDPAlgorithm_Ambiguous2.Tables[0].getSubstructures = function (sigma, P, 
     //console.log("returning R:", JSON.stringify(R));
     return R;
 };
+
+var NussinovDPAlgorithm_MostAmbiguous = Object.create(DPAlgorithm);
+
+NussinovDPAlgorithm_MostAmbiguous.Description = "Most ambiguous recursion";
+NussinovDPAlgorithm_MostAmbiguous.Tables = new Array();
+NussinovDPAlgorithm_MostAmbiguous.Tables.push(Object.create(NussinovMatrix));
+NussinovDPAlgorithm_MostAmbiguous.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i,j-1) & S_j \\text{ unpaired}  \\\\ \\max_{i \\le (p+l) < r \\le j} D(i,p-1)+1+D(p+1,r-1)+D(r+1,j) & \\text{ decomposition} \\end{cases}";
+
+NussinovDPAlgorithm_MostAmbiguous.Tables[0].computeCell = function(i, j) {
+
+    var curCell = Object.create(NussinovCell).init(i, j, 0);
+
+    if (this.isInvalidState(i, j)) {
+        return curCell;
+    }
+    // j unpaired
+    this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i, j - 1]], []));
+
+    // check base pair based decomposition : (p,r) base pair
+    for (var p = i; p + this.minLoopLength < j; p++) {
+        for(var r = p + this.minLoopLength + 1; r <= j; r++) {
+            // check if sequence positions are compatible
+            if (RnaUtil.areComplementary(this.sequence[p - 1], this.sequence[r - 1])) {
+            this.updateCell(curCell, Object.create(NussinovCellTrace).init([[i, p - 1], [p + 1, r - 1], [r + 1, j]], [[p, r]]));
+            }
+        }   
+    }
+
+    return curCell;
+};
+
+NussinovDPAlgorithm_MostAmbiguous.computeMatrix = function (input) {
+
+// resize and initialize matrix
+    this.Tables[0].init(input.sequence(), "MostAmbiguous");
+// store minimal loop length
+    this.Tables[0].minLoopLength = parseInt(input.loopLength());
+    
+    this.Tables[0].computeAllCells();
+    
+    return this.Tables;
+};
+
+NussinovDPAlgorithm_MostAmbiguous.Tables[0].getSubstructures = function (sigma, P, traces, delta, maxLengthR) {
+    var Nmax = this.getValue(1, this.sequence.length);
+    var R = [];
+    var ij = sigma.pop();
+
+    // check for sane interval
+    // if i>j dont continue
+    if (ij[0] >= ij[1]) {
+        //console.log("ij[0] > ij[1]", ij[0], ij[1]);
+        var S_prime = {};
+
+        var sigma_prime = JSON.stringify(sigma);
+        sigma_prime = JSON.parse(sigma_prime);
+
+        var p_prime = JSON.stringify(P);
+        p_prime = JSON.parse(p_prime);
+
+        var tmp_traces = JSON.stringify(traces);
+        tmp_traces = JSON.parse(tmp_traces);
+
+        S_prime.sigma = sigma_prime;
+        S_prime.P = p_prime;
+        S_prime.traces = tmp_traces;
+
+        R.push(S_prime);
+        //console.log("returning R:", JSON.stringify(R));
+        return R;
+    }
+
+    // if (i,j) == (i,j-1)
+    {
+        var sigma_prime = JSON.stringify(sigma);
+        sigma_prime = JSON.parse(sigma_prime);
+        sigma_prime.unshift([ij[0], ij[1] - 1]);
+
+        var P_prime = JSON.stringify(P);
+        P_prime = JSON.parse(P_prime);
+        
+
+        var tmp_traces = JSON.stringify(traces);
+        tmp_traces = JSON.parse(tmp_traces);
+
+        var NSprime = this.countBasepairs(P_prime, sigma_prime);
+
+        if (NSprime >= Nmax - delta) {
+            var S_prime = {};
+            S_prime.sigma = sigma_prime;
+            S_prime.P = P_prime;
+            tmp_traces.unshift([ij, [[ij[0], ij[1] - 1]]]);
+            S_prime.traces = tmp_traces;
+            //console.log("ij-1:", JSON.stringify(S_prime));
+            // push to the front to keep base pair most prominent to refine
+            R.unshift(S_prime);
+        }
+        // check if enough structures found so far
+        if (R.length >= maxLengthR) {
+            //console.log("returning R:", JSON.stringify(R));
+            return R;
+        }
+    }
+
+    // trace enclosed base pair (p,r) within i..j range
+    for (var l = ij[0]; l <= ij[1] - 1; l++) {
+       for(var m = ij[0] + 1; m <= ij[1] - 1; m++) {
+            // check if sequence positions are compatible
+            
+                if (RnaUtil.areComplementary(this.sequence[l - 1], this.sequence[m - 1])) {
+            
+                var sigma_prime = JSON.stringify(sigma);
+                sigma_prime = JSON.parse(sigma_prime);
+                sigma_prime.push([ij[0], l - 1]);
+                sigma_prime.push([l + 1, m - 1]);
+                sigma_prime.push([m + 1, ij[1] - 1]) // generate sigmaPrime
+
+                var p_prime = JSON.stringify(P);
+                p_prime = JSON.parse(p_prime);
+                p_prime.push([l, ij[1]]);
+                p_prime.push([m, ij[1] + 1]);
+
+                var tmp_traces = JSON.stringify(traces);
+                tmp_traces = JSON.parse(tmp_traces);
+
+                var NSprime = this.countBasepairs(p_prime, sigma_prime);
+                
+                // if number of base pairs is within range
+                if (NSprime >= Nmax - delta) {
+
+                    var S_prime = {};
+                    S_prime.sigma = sigma_prime;
+                    S_prime.P = p_prime;
+                    tmp_traces.unshift([ij, [[ij[0], l - 1], [l + 1, m - 1], [m + 1, ij[1] - 1]]]);
+                    S_prime.traces = tmp_traces;
+                    //console.log("ilj:", JSON.stringify(S_prime));
+                    // push to the front to keep base pair most prominent to refine
+                    R.unshift(S_prime);// add trace to R
+                }// end of number of base pairs within range
+
+
+                // check if enough structures found so far
+                if (R.length >= maxLengthR) {
+                    //console.log("returning R:", JSON.stringify(R));
+                    return R;
+                }
+
+            } // end of (p,r) complementary
+        }   
+    }
+
+    // return all found traces for i..j range
+    //console.log("returning R:", JSON.stringify(R));
+    return R;
+
+};
+
+
+
+
+
+
+
+
 
 /**
  * WUCHTY(2nd version)
