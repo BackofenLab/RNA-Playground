@@ -1157,9 +1157,9 @@ NussinovDPAlgorithm_MostAmbiguous.Tables[0].getSubstructures = function (sigma, 
         }
     }
 
-    // trace enclosed base pair (p,r) within i..j range
-    for (var l = ij[0]; l <= ij[1] - 1; l++) {
-       for(var m = ij[0] + 1; m <= ij[1] - 1; m++) {
+    // trace enclosed base pair (l,m) within i..j range
+    for (var l = ij[0]; l < ij[1] - this.minLoopLength; l++) {
+       for(var m = l + this.minLoopLength + 1; m <= ij[1]; m++) {
             // check if sequence positions are compatible
             
                 if (RnaUtil.areComplementary(this.sequence[l - 1], this.sequence[m - 1])) {
@@ -1168,12 +1168,11 @@ NussinovDPAlgorithm_MostAmbiguous.Tables[0].getSubstructures = function (sigma, 
                 sigma_prime = JSON.parse(sigma_prime);
                 sigma_prime.push([ij[0], l - 1]);
                 sigma_prime.push([l + 1, m - 1]);
-                sigma_prime.push([m + 1, ij[1] - 1]) // generate sigmaPrime
+                sigma_prime.push([m + 1, ij[1]]) // generate sigmaPrime
 
                 var p_prime = JSON.stringify(P);
                 p_prime = JSON.parse(p_prime);
-                p_prime.push([l, ij[1]]);
-                p_prime.push([m, ij[1] + 1]);
+                p_prime.push([l, m]);
 
                 var tmp_traces = JSON.stringify(traces);
                 tmp_traces = JSON.parse(tmp_traces);
@@ -1186,7 +1185,7 @@ NussinovDPAlgorithm_MostAmbiguous.Tables[0].getSubstructures = function (sigma, 
                     var S_prime = {};
                     S_prime.sigma = sigma_prime;
                     S_prime.P = p_prime;
-                    tmp_traces.unshift([ij, [[ij[0], l - 1], [l + 1, m - 1], [m + 1, ij[1] - 1]]]);
+                    tmp_traces.unshift([ij, [[ij[0], l - 1], [l + 1, m - 1], [m + 1, ij[1]]]]);
                     S_prime.traces = tmp_traces;
                     //console.log("ilj:", JSON.stringify(S_prime));
                     // push to the front to keep base pair most prominent to refine
@@ -1200,7 +1199,7 @@ NussinovDPAlgorithm_MostAmbiguous.Tables[0].getSubstructures = function (sigma, 
                     return R;
                 }
 
-            } // end of (p,r) complementary
+            } // end of (l,m) complementary
         }   
     }
 
