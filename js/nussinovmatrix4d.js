@@ -634,6 +634,9 @@ var availableAlgorithms = {
     /** nussinov neo recursion */
     nussinovAmbiguous2: NussinovDPAlgorithm_Ambiguous2,
 
+    /** Most Ambiguos recursion */
+    nussinovMostAmbiguous: NussinovDPAlgorithm_MostAmbiguous, 
+
     /** McCaskill */
     mcCaskill: NussinovDPAlgorithm_McCaskill,
 
