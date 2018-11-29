@@ -11,7 +11,7 @@ All approaches are [available in the Freiburg RNA Teaching webserver](http://rna
 
 - **Nested RNA structure prediction**
   - [Counting](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=counting) nested structures (see [`NussinovDPAlgorithm_structuresCount`](js/nussinovmatrix.js))
-  - [Nussinov](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Nussinov)'s maximal base pair structure prediction algorithm using different recursions (see [`NussinovDPAlgorithm_Unique`, `..Ambiguous`, `..Ambiguous2`](js/nussinovmatrix.js))
+  - [Nussinov](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Nussinov)'s maximal base pair structure prediction algorithm using different recursions (see [`NussinovDPAlgorithm_Unique`, `..Ambiguous`, `..Ambiguous2`, `..MostAmbiguous`](js/nussinovmatrix.js))
   - [McCaskill](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=McCaskill)'s base pair probability and unpaired probability computation (see [`NussinovDPAlgorithm_McCaskill`](js/nussinovmatrix.js))
   - [MEA](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=MEA): maximum expected accuracy structure prediction (see [`DPAlgorithm_MEA`](js/nussinovmatrix.js))
 - **RNA-RNA interaction prediction**
