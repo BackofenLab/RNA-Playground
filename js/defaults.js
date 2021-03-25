@@ -636,8 +636,8 @@ var MULTI_SEQUENCE_DEFAULTS = {
 var NORMALIZED_ALIGNMENT_DEFAULTS = {
     CALCULATION: "similarity",
     LENGTH: 10,
-    SEQUENCE_1: "CTTGACCATU",  // Hint: UPPERCASE letters!
-    SEQUENCE_2: "GCATTUGCCUU",  // Hint: UPPERCASE letters!
+    SEQUENCE_1: "CTTGACCATG",  // Hint: UPPERCASE letters!
+    SEQUENCE_2: "GCATTAGCCGG",  // Hint: UPPERCASE letters!
 
     FUNCTION: {
         GAP: -2,
