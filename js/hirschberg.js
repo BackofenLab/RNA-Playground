@@ -106,7 +106,6 @@ $(document).ready(function () {
         hirschbergInstance.numberOfIterations = 0;
         outputData.maxNumberIterations = false;
 
-        debugger;
         if (input.sequenceAPositions.length > 1 && input.sequenceBPositions.length > 1) {
             computeAllRecursionData(input, [HIRSCHBERG_UPPER_NODE]);
             processDiscoveredTracecells();
