@@ -908,7 +908,7 @@ var NussinovDPAlgorithm_Ambiguous2 = Object.create(DPAlgorithm);
 NussinovDPAlgorithm_Ambiguous2.Description = "Recursion by Nussinov et al. (1978) with Ambiguous2 decomposition";
 NussinovDPAlgorithm_Ambiguous2.Tables = new Array();
 NussinovDPAlgorithm_Ambiguous2.Tables.push(Object.create(NussinovMatrix));
-NussinovDPAlgorithm_Ambiguous2.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j-1)+1 & \\text{if } S_i,S_j \\text{ compl. base pair} \\\\ \\max_{i\\leq k< j} D(i,k)+D(k+1,j) \\end{cases}";
+NussinovDPAlgorithm_Ambiguous2.Tables[0].latex_representation = "D(i,j) = \\max \\begin{cases} D(i+1,j-1)+1 & \\text{if } S_i,S_j \\text{ compl. base pair and } i+ l< j \\\\ \\max_{i\\leq k< j} D(i,k)+D(k+1,j) \\end{cases}";
 
 NussinovDPAlgorithm_Ambiguous2.Tables[0].computeCell = function(i, j) {
 
