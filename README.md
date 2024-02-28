@@ -22,7 +22,7 @@ All approaches are [available in the Freiburg RNA Teaching webserver](http://rna
   - **pairwise alignment**
     - [Needleman-Wunsch](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Needleman-Wunsch) (global, linear gap costs, quadratic space)  (see [js](js/needleman_wunsch.js))
     - [Hirschberg](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Hirschberg) (global, linear gap costs, linear space)  (see [js](js/hirschberg.js))
-    - [Gotoh](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh) (global, affine gap costs)  (see [js](js/ 	gotoh.js))
+    - [Gotoh](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Gotoh) (global, affine gap costs)  (see [js](js/gotoh.js))
     - [Waterman-Smith-Beyer](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Waterman-Smith-Beyer) (global, arbitrary gap costs)  (see [js](js/waterman_smith_beyer.js))
     - [Smith-Waterman](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Smith-Waterman) (local, linear gap costs)  (see [js](smith_waterman.js))
     - [Arslan-Egecioglu-Pevzner](http://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Arslan-Egecioglu-Pevzner) (local, linear gap costs, normalized score)  (see [js](js/arslan_egecioglu_pevzner.js))
